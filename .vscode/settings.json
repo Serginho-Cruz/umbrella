@@ -1,0 +1,31 @@
+{
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/web": true,
+        "web": true,
+        "**/windows": true,
+        "windows": true,
+        "**/.dart_tool": true,
+        ".dart_tool": true,
+        "**/android": true,
+        "android": true,
+        "**/ios": true,
+        "ios": true,
+        "**/linux": true,
+        "linux": true,
+        "**/macos": true,
+        "macos": true,
+        "**/.metadata": true,
+        ".metadata": true,
+        "**/README.md": true,
+        "*.md": true,
+        "README.md": true,
+        "**/*.md": true
+    },
+    "explorerExclude.backup": {}
+}
