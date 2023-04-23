@@ -1,5 +1,5 @@
 import 'expense_type.dart';
-import 'recorrences.dart';
+import 'frequency.dart';
 
 class Expense {
   int? id;
@@ -7,7 +7,7 @@ class Expense {
   String name;
   String personName;
   ExpenseType type;
-  Recorrence recorrence;
+  Frequency frequency;
 
   Expense({
     this.id,
@@ -15,6 +15,6 @@ class Expense {
     required this.name,
     required this.personName,
     required this.type,
-    required this.recorrence,
+    required this.frequency,
   });
 }
