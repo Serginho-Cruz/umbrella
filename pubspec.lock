@@ -156,7 +156,7 @@ packages:
     source: hosted
     version: "1.8.3"
   result_dart:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: result_dart
       sha256: c8a6baefe21b9f5af2f4a6b47d9a2f742c379f0018bf0373cc1d5056cb2d1625

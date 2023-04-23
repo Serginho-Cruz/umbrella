@@ -3,7 +3,7 @@ import 'income_type.dart';
 import 'recorrences.dart';
 
 class Income {
-  int id;
+  int? id;
   String name;
   double value;
   DateTime paymentDay;
@@ -12,7 +12,7 @@ class Income {
   IncomeType type;
 
   Income({
-    required this.id,
+    this.id,
     required this.name,
     required this.value,
     required this.paymentDay,
