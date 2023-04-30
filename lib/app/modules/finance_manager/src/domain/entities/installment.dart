@@ -1,10 +1,10 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'credit_card.dart';
 import 'expense.dart';
 import 'expense_parcel.dart';
 import 'payment_method.dart';
 
 class Installment {
+  int id;
   CreditCard? card;
   int parcelsNumber;
   int actualParcel;
@@ -13,6 +13,7 @@ class Installment {
   List<ExpenseParcel> parcels;
 
   Installment({
+    required this.id,
     this.card,
     required this.parcelsNumber,
     required this.actualParcel,

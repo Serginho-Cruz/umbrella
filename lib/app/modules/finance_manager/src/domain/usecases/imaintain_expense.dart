@@ -5,21 +5,17 @@ import '../entities/expense.dart';
 import '../entities/expense_parcel.dart';
 
 abstract class IMaintainExpense {
-  Result<void, Fail> register(Expense expense);
+  Future<Result<void, Fail>> register(Expense expense);
 
-  Result<void, Fail> update({
+  Future<Result<void, Fail>> update({
     required ExpenseParcel newParcel,
     bool updateExpense = false,
-    bool updateThisMonthParcel = false,
   });
 
-  Result<List<ExpenseParcel>, Fail> getAll(int month);
+  Future<Result<List<ExpenseParcel>, Fail>> getAll(int month);
 
-  Result<void, Fail> reverseExpense(ExpenseParcel parcel);
-
-  Result<void, Fail> delete({
+  Future<Result<void, Fail>> delete({
     required ExpenseParcel expense,
     bool deleteExpense = false,
-    bool deleteThisMonthToo = false,
   });
 }

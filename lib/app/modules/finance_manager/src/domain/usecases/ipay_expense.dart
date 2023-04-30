@@ -5,11 +5,11 @@ import '../entities/credit_card.dart';
 import '../entities/expense_parcel.dart';
 
 abstract class IPayExpense {
-  Result<void, Fail> withoutCredit({
+  Future<Result<void, Fail>> withoutCredit({
     required ExpenseParcel expense,
     required double value,
   });
-  Result<void, Fail> withCredit({
+  Future<Result<void, Fail>> withCredit({
     required ExpenseParcel expense,
     required double value,
     required CreditCard card,

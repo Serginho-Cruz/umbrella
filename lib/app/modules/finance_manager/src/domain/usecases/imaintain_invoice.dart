@@ -5,11 +5,11 @@ import '../entities/invoice.dart';
 import '../entities/invoice_item.dart';
 
 abstract class IMaintainInvoice {
-  Result<void, Fail> generateInvoices();
-  Result<void, Fail> addItemToInvoice({
+  Future<Result<void, Fail>> generateInvoices();
+  Future<Result<void, Fail>> addItemToInvoice({
     required InvoiceItem item,
     required Invoice invoice,
   });
-  Result<List<Invoice>, Fail> getAll();
-  Result<void, Fail> deleteInvoice(Invoice invoice);
+  Future<Result<List<Invoice>, Fail>> getAll();
+  Future<Result<void, Fail>> deleteInvoice(Invoice invoice);
 }

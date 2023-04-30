@@ -1,9 +1,8 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'income_type.dart';
 import 'frequency.dart';
+import 'income_type.dart';
 
 class Income {
-  int? id;
+  int id;
   String name;
   double value;
   DateTime paymentDay;
@@ -12,7 +11,7 @@ class Income {
   IncomeType type;
 
   Income({
-    this.id,
+    required this.id,
     required this.name,
     required this.value,
     required this.paymentDay,
@@ -20,4 +19,23 @@ class Income {
     required this.personName,
     required this.type,
   });
+
+  factory Income.withoutId({
+    required String name,
+    required double value,
+    required DateTime paymentDay,
+    required Frequency frequency,
+    required String personName,
+    required IncomeType type,
+  }) {
+    return Income(
+      id: 0,
+      frequency: frequency,
+      name: name,
+      paymentDay: paymentDay,
+      personName: personName,
+      type: type,
+      value: value,
+    );
+  }
 }

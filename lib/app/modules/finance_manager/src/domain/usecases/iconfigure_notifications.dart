@@ -4,6 +4,6 @@ import '../../errors/errors.dart';
 import '../entities/notifications_configuration.dart';
 
 abstract class IConfigureNotifications {
-  Result<void, Fail> call(NotificationsConfiguration configuration);
-  Result<void, Fail> setDefaultConfiguration();
+  Future<Result<void, Fail>> call(NotificationsConfiguration configuration);
+  Future<Result<void, Fail>> setDefaultConfiguration();
 }
