@@ -1,5 +1,5 @@
 abstract class PaymentMethodTable {
-  static String table = 'payment_method';
-  static String id = 'payment_method_id';
-  static String name = 'payment_method_name';
+  static const String table = 'payment_method';
+  static const String id = 'payment_method_id';
+  static const String name = 'payment_method_name';
 }

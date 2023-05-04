@@ -7,7 +7,7 @@ class Income {
   double value;
   DateTime paymentDay;
   Frequency frequency;
-  String personName;
+  String? personName;
   IncomeType type;
 
   Income({
@@ -16,7 +16,7 @@ class Income {
     required this.value,
     required this.paymentDay,
     required this.frequency,
-    required this.personName,
+    this.personName,
     required this.type,
   });
 
@@ -25,7 +25,7 @@ class Income {
     required double value,
     required DateTime paymentDay,
     required Frequency frequency,
-    required String personName,
+    String? personName,
     required IncomeType type,
   }) {
     return Income(

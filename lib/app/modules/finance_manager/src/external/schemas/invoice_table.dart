@@ -1,8 +1,8 @@
 abstract class InvoiceTable {
-  static String table = 'invoice';
-  static String value = 'invoice_value';
-  static String isClosed = 'invoice_isClosed';
-  static String expirationDate = 'invoice_expDate';
-  static String closingDate = 'invoice_closeDate';
-  static String cardId = 'invoice_cardId';
+  static const String table = 'invoice';
+  static const String value = 'invoice_value';
+  static const String isClosed = 'invoice_isClosed';
+  static const String expirationDate = 'invoice_expDate';
+  static const String closingDate = 'invoice_closeDate';
+  static const String cardId = 'invoice_cardId';
 }

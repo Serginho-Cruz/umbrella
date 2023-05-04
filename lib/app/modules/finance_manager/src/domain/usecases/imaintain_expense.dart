@@ -15,7 +15,7 @@ abstract class IMaintainExpense {
   Future<Result<List<ExpenseParcel>, Fail>> getAll(int month);
 
   Future<Result<void, Fail>> delete({
-    required ExpenseParcel expense,
+    required ExpenseParcel parcel,
     bool deleteExpense = false,
   });
 }

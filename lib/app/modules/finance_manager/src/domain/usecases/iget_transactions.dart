@@ -4,5 +4,5 @@ import '../../errors/errors.dart';
 import '../entities/transaction.dart';
 
 abstract class IGetTransactions {
-  Result<List<Transaction>, Fail> call(int month);
+  Future<Result<List<Transaction>, Fail>> call(int month);
 }

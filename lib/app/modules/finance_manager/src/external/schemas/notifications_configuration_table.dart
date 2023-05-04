@@ -1,6 +1,6 @@
 abstract class NotificationsConfigurationTable {
-  static String table = 'notifications';
-  static String isToSend = 'notifications_isToSend';
-  static String daysBefore = 'notifications_days';
-  static String hourToSend = 'notifications_hour';
+  static const String table = 'notifications';
+  static const String isToSend = 'notifications_isToSend';
+  static const String daysBefore = 'notifications_days';
+  static const String hourToSend = 'notifications_hour';
 }

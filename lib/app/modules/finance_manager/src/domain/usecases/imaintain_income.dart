@@ -9,12 +9,10 @@ abstract class IMaintainIncome {
   Future<Result<void, Fail>> update({
     required IncomeParcel newParcel,
     bool updateIncome = false,
-    bool updateThisMonthToo = false,
   });
   Future<Result<List<IncomeParcel>, Fail>> getAll(int month);
   Future<Result<void, Fail>> delete({
     required IncomeParcel parcel,
     bool deleteIncome = false,
-    bool deleteThisMonthToo = false,
   });
 }

@@ -14,32 +14,52 @@ class MaintainExpenseUC implements IMaintainExpense {
   MaintainExpenseUC(this.repository);
 
   @override
-  Future<Result<void, Fail>> register(Expense expense) {
-    // TODO: implement register
-    throw UnimplementedError();
+  Future<Result<void, Fail>> register(Expense expense) async {
+    var result = await repository.create(expense);
+    return result;
   }
 
   @override
   Future<Result<void, Fail>> update({
     required ExpenseParcel newParcel,
     bool updateExpense = false,
-  }) {
-    // TODO: implement update
-    throw UnimplementedError();
+  }) async {
+    var updateParcel = await repository.updateParcel(newParcel);
+
+    if (updateParcel.isError()) {
+      return updateParcel;
+    }
+
+    if (updateExpense) {
+      var result = await repository.updateExpense(newParcel.expense);
+      return result;
+    }
+
+    return updateParcel;
   }
 
   @override
-  Future<Result<List<ExpenseParcel>, Fail>> getAll(int month) {
-    // TODO: implement getAll
-    throw UnimplementedError();
+  Future<Result<List<ExpenseParcel>, Fail>> getAll(int month) async {
+    var result = await repository.getAll(month);
+    return result;
   }
 
   @override
   Future<Result<void, Fail>> delete({
-    required ExpenseParcel expense,
+    required ExpenseParcel parcel,
     bool deleteExpense = false,
-  }) {
-    // TODO: implement delete
-    throw UnimplementedError();
+  }) async {
+    var deleteParcel = await repository.deleteParcel(parcel);
+
+    if (deleteParcel.isError()) {
+      return deleteParcel;
+    }
+
+    if (deleteExpense) {
+      var result = await repository.deleteExpense(parcel.expense);
+      return result;
+    }
+
+    return deleteParcel;
   }
 }
