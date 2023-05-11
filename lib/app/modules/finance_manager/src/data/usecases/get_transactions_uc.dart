@@ -1,7 +1,8 @@
-import 'package:result_dart/src/result.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/transaction.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/iget_transactions.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
+import 'package:result_dart/result_dart.dart';
+
+import '../../domain/entities/transaction.dart';
+import '../../domain/usecases/iget_transactions.dart';
+import '../../errors/errors.dart';
 
 import '../repositories/itransaction_repository.dart';
 

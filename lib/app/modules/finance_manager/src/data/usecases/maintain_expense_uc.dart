@@ -1,9 +1,9 @@
 import 'package:result_dart/result_dart.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/expense.dart';
+import '../../domain/entities/expense.dart';
 
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/expense_parcel.dart';
+import '../../domain/entities/expense_parcel.dart';
 
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
+import '../../errors/errors.dart';
 
 import '../../domain/usecases/imaintain_expense.dart';
 import '../repositories/iexpense_repository.dart';

@@ -1,6 +1,7 @@
 import 'package:result_dart/result_dart.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/credit_card.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
+
+import '../../domain/entities/credit_card.dart';
+import '../../errors/errors.dart';
 
 abstract class ICreditCardRepository {
   Future<Result<void, Fail>> create(CreditCard card);

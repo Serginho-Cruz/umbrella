@@ -1,8 +1,8 @@
-import 'package:result_dart/src/result.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/inotifications_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/notifications_configuration.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/iconfigure_notifications.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
+import 'package:result_dart/result_dart.dart';
+import '../repositories/inotifications_repository.dart';
+import '../../domain/entities/notifications_configuration.dart';
+import '../../domain/usecases/iconfigure_notifications.dart';
+import '../../errors/errors.dart';
 
 class ConfigureNotificationsUC implements IConfigureNotifications {
   final INotificationsRepository repository;

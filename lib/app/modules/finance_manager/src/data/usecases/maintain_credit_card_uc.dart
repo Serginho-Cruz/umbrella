@@ -1,8 +1,9 @@
-import 'package:result_dart/src/result.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/icredit_card_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/credit_card.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/imaintain_credit_card.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
+import 'package:result_dart/result_dart.dart';
+
+import '../../domain/entities/credit_card.dart';
+import '../../domain/usecases/imaintain_credit_card.dart';
+import '../../errors/errors.dart';
+import '../repositories/icredit_card_repository.dart';
 
 class MaintainCreditCard implements IMaintainCreditCard {
   final ICreditCardRepository repository;
