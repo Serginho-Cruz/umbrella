@@ -1,8 +1,10 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:equatable/equatable.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/datetime_extension.dart';
+
 import 'credit_card.dart';
 import 'invoice_item.dart';
 
-class Invoice {
+class Invoice with EquatableMixin {
   int id;
   double value;
   bool isClosed;
@@ -20,4 +22,15 @@ class Invoice {
     required this.card,
     required this.itens,
   });
+
+  @override
+  List<Object?> get props => [
+        id,
+        value,
+        isClosed,
+        expirationDate.date,
+        closingDate.date,
+        card,
+        itens,
+      ];
 }

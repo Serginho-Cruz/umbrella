@@ -10,7 +10,7 @@ abstract class IncomeFactory {
   static Income generate() => Income(
         id: faker.randomGenerator.integer(100),
         name: faker.lorem.word(),
-        paymentDay: faker.date.dateTime(),
+        paymentDate: faker.date.dateTime(),
         type: IncomeTypeFactory.generate(),
         value: faker.randomGenerator.decimal(),
         personName: faker.person.firstName(),

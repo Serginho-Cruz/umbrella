@@ -1,4 +1,6 @@
-class ExpenseType {
+import 'package:equatable/equatable.dart';
+
+class ExpenseType with EquatableMixin {
   int id;
   String name;
   String icon;
@@ -8,4 +10,7 @@ class ExpenseType {
     required this.name,
     required this.icon,
   });
+
+  @override
+  List<Object?> get props => [id, name, icon];
 }

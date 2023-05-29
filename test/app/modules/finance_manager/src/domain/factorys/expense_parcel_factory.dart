@@ -14,6 +14,7 @@ abstract class ExpenseParcelFactory {
     return ExpenseParcel(
       id: faker.randomGenerator.integer(100),
       expense: expense ?? ExpenseFactory.generate(),
+      expirationDate: expense?.expirationDate ?? faker.date.dateTime(),
       paymentMethod: PaymentMethodFactory.generate(),
       paidValue: paidValue,
       remainingValue: value - paidValue,

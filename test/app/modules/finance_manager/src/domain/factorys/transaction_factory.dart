@@ -13,6 +13,7 @@ abstract class TransactionFactory {
         : IncomeParcelFactory.generate();
 
     return Transaction(
+      id: faker.randomGenerator.integer(10),
       value: faker.randomGenerator.decimal(),
       date: faker.date.dateTime(),
       parcel: parcel,

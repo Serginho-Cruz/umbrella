@@ -15,6 +15,7 @@ abstract class InstalmentFactory {
     return Installment(
       id: faker.randomGenerator.integer(5),
       parcelsNumber: parcelsNumber,
+      totalValue: (expense.value * parcelsNumber * 10).roundToDouble() / 10,
       actualParcel: faker.randomGenerator.integer(parcelsNumber, min: 2),
       expense: expense,
       paymentMethod: PaymentMethodFactory.generate(),

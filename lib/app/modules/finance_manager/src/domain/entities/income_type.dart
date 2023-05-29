@@ -1,4 +1,6 @@
-class IncomeType {
+import 'package:equatable/equatable.dart';
+
+class IncomeType with EquatableMixin {
   int id;
   String name;
   String icon;
@@ -8,4 +10,7 @@ class IncomeType {
     required this.name,
     required this.icon,
   });
+
+  @override
+  List<Object?> get props => [id, name, icon];
 }

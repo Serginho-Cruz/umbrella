@@ -1,15 +1,16 @@
+import 'package:equatable/equatable.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/datetime_extension.dart';
+
 import 'expense_type.dart';
 import 'frequency.dart';
-import 'payment_method.dart';
 
-class Expense {
+class Expense with EquatableMixin {
   int id;
   double value;
   String name;
   DateTime expirationDate;
   String? personName;
   ExpenseType type;
-  PaymentMethod paymentMethod;
   Frequency frequency;
 
   Expense({
@@ -19,7 +20,6 @@ class Expense {
     required this.expirationDate,
     this.personName,
     required this.type,
-    required this.paymentMethod,
     required this.frequency,
   });
 
@@ -29,7 +29,6 @@ class Expense {
     required DateTime expirationDate,
     String? personName,
     required ExpenseType type,
-    required PaymentMethod paymentMethod,
     required Frequency frequency,
   }) =>
       Expense(
@@ -39,7 +38,17 @@ class Expense {
         expirationDate: expirationDate,
         personName: personName,
         type: type,
-        paymentMethod: paymentMethod,
         frequency: frequency,
       );
+
+  @override
+  List<Object?> get props => [
+        id,
+        name,
+        value,
+        expirationDate.date,
+        personName,
+        type,
+        frequency,
+      ];
 }

@@ -7,5 +7,6 @@ abstract class PaymentMethodFactory {
   static PaymentMethod generate() => PaymentMethod(
         id: faker.randomGenerator.integer(7),
         name: faker.lorem.word(),
+        isCredit: faker.randomGenerator.boolean(),
       );
 }

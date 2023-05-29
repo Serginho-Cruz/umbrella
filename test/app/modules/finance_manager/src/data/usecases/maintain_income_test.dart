@@ -24,7 +24,7 @@ void main() {
       id: 1,
       name: "Payment",
       value: 2500.00,
-      paymentDay: DateTime.now(),
+      paymentDate: DateTime.now(),
       frequency: Frequency.monthly,
       type: IncomeType(
         id: 1,

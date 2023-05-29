@@ -1,4 +1,7 @@
-class CreditCard {
+import 'package:equatable/equatable.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/datetime_extension.dart';
+
+class CreditCard with EquatableMixin {
   int id;
   String name;
   double annuity;
@@ -31,4 +34,14 @@ class CreditCard {
       cardInvoiceExpirationDate: cardInvoiceExpirationDate,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        id,
+        name,
+        annuity,
+        color,
+        cardInvoiceClosingDate.date,
+        cardInvoiceExpirationDate.date,
+      ];
 }

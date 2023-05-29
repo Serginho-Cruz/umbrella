@@ -1,4 +1,6 @@
-abstract class Parcel {
+import 'package:equatable/equatable.dart';
+
+abstract class Parcel with EquatableMixin {
   int id;
   double paidValue;
   double remainingValue;

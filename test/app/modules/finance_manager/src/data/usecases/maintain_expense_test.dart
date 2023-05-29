@@ -25,7 +25,6 @@ void main() {
       id: 1,
       name: "Supermarket",
       frequency: Frequency.none,
-      paymentMethod: PaymentMethod(id: 1, name: "Credit"),
       expirationDate: DateTime.now(),
       type: ExpenseType(icon: "food_icon", id: 1, name: "Food"),
       value: 2500.00,
@@ -33,7 +32,8 @@ void main() {
 
     parcel = ExpenseParcel(
       expense: expense,
-      paymentMethod: expense.paymentMethod,
+      expirationDate: expense.expirationDate,
+      paymentMethod: PaymentMethod(id: 1, name: "Money", isCredit: false),
       id: 2,
       paidValue: 0,
       remainingValue: expense.value,
