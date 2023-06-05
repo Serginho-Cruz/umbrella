@@ -6,5 +6,4 @@ class FinanceManagerModule extends Module {
 
   @override
   final List<ModularRoute> routes = [];
-
 }

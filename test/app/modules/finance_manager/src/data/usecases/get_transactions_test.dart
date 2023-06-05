@@ -7,6 +7,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entit
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/iget_transactions.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
 import '../repositories/transaction_repository_mock.dart';
+import '../../domain/factorys/transaction_factory.dart';
 
 void main() {
   late ITransactionRepository repository;
@@ -19,8 +20,9 @@ void main() {
 
   group('GetTransaction usecase is working fine', () {
     test("Returns a List of Transactions when no errors occur", () async {
+      var list = List.generate(2, (index) => TransactionFactory.generate());
       when(() => repository.getOf(any()))
-          .thenAnswer((_) async => const Success([]));
+          .thenAnswer((_) async => Success(list));
 
       final result = await usecase(2);
 
@@ -28,6 +30,7 @@ void main() {
 
       expect(result.isSuccess(), isTrue);
       expect(result.fold((s) => s, (f) => f), isA<List<Transaction>>());
+      expect(result.fold((s) => s, (f) => f), equals(list));
     });
     test("Returns a Fail when some error occur", () async {
       when(() => repository.getOf(any()))

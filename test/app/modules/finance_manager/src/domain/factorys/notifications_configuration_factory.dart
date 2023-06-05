@@ -9,4 +9,11 @@ abstract class NotificationsFactory {
         daysBefore: faker.randomGenerator.integer(15),
         hourToSend: faker.date.dateTime(minYear: 2022, maxYear: 2023),
       );
+
+  static NotificationsConfiguration generateDefault() =>
+      NotificationsConfiguration(
+        isToSend: true,
+        daysBefore: 7,
+        hourToSend: DateTime(2023, 2, 3, 20, 00),
+      );
 }

@@ -7,6 +7,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entit
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/imaintain_credit_card.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
 
+import '../../domain/factorys/credit_card_factory.dart';
 import '../repositories/credit_card_repository_mock.dart';
 
 void main() {
@@ -17,14 +18,7 @@ void main() {
   setUp(() {
     repository = CreditCardRepositoryMock();
     usecase = MaintainCreditCard(repository);
-    card = CreditCard(
-      id: 1,
-      name: "My Card",
-      color: "FFFFFF",
-      annuity: 0.00,
-      cardInvoiceClosingDate: DateTime(2023, 3, 15),
-      cardInvoiceExpirationDate: DateTime.now(),
-    );
+    card = CreditCardFactory.generate();
   });
 
   group("Maintain Credit Card usecase is working, ", () {
@@ -78,8 +72,8 @@ void main() {
     });
     group("GetAll Method is ok", () {
       test("Returns a List of Cards when no errors occur", () async {
-        when(() => repository.getAll())
-            .thenAnswer((_) async => const Success([]));
+        when(() => repository.getAll()).thenAnswer(
+            (_) async => Success(CreditCardFactory.generateCards()));
 
         final result = await usecase.getAll();
 
