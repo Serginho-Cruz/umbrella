@@ -16,22 +16,25 @@ class MaintainInvoiceUC implements IMaintainInvoice {
   Future<Result<void, Fail>> addItemToInvoice({
     required InvoiceItem item,
     required CreditCard card,
-  }) {
-    return repository.addItemToInvoice(item: item, card: card);
-  }
+  }) =>
+      repository.addItemToInvoice(item: item, card: card);
 
   @override
-  Future<Result<List<Invoice>, Fail>> getAll() {
-    return repository.getAll();
-  }
+  Future<Result<List<Invoice>, Fail>> getAll(int month) =>
+      repository.getAll(month);
 
   @override
-  Future<Result<void, Fail>> generateInvoices() {
-    return repository.generateAll();
-  }
+  Future<Result<List<Invoice>, Fail>> getByValue(int month) =>
+      repository.getByValue(month);
 
   @override
-  Future<Result<void, Fail>> deleteInvoice(Invoice invoice) {
-    return repository.deleteInvoice(invoice);
-  }
+  Future<Result<void, Fail>> generateInvoices() => repository.generateAll();
+
+  @override
+  Future<Result<void, Fail>> deleteInvoice(Invoice invoice) =>
+      repository.deleteInvoice(invoice);
+
+  @override
+  Future<Result<List<Invoice>, Fail>> getByExpirationDate(int month) =>
+      repository.getByExpirationDate(month);
 }

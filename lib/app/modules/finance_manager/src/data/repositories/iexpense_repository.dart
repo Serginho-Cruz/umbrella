@@ -9,6 +9,9 @@ abstract class IExpenseRepository {
   Future<Result<void, Fail>> updateExpense(Expense newExpense);
   Future<Result<void, Fail>> updateParcel(ExpenseParcel newParcel);
   Future<Result<List<ExpenseParcel>, Fail>> getAll(int month);
+  Future<Result<List<ExpenseParcel>, Fail>> getByExpirationDate(int month);
+  Future<Result<List<ExpenseParcel>, Fail>> getFirstWeekParcelsOf(int month);
+  Future<Result<List<ExpenseParcel>, Fail>> getWhereExpiresOn(DateTime dTime);
   Future<Result<void, Fail>> deleteExpense(Expense expense);
   Future<Result<void, Fail>> deleteParcel(ExpenseParcel expenseParcel);
 }

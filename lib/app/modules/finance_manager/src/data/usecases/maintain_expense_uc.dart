@@ -14,10 +14,8 @@ class MaintainExpenseUC implements IMaintainExpense {
   MaintainExpenseUC(this.repository);
 
   @override
-  Future<Result<void, Fail>> register(Expense expense) async {
-    var result = await repository.create(expense);
-    return result;
-  }
+  Future<Result<void, Fail>> register(Expense expense) =>
+      repository.create(expense);
 
   @override
   Future<Result<void, Fail>> update({
@@ -39,10 +37,12 @@ class MaintainExpenseUC implements IMaintainExpense {
   }
 
   @override
-  Future<Result<List<ExpenseParcel>, Fail>> getAll(int month) async {
-    var result = await repository.getAll(month);
-    return result;
-  }
+  Future<Result<List<ExpenseParcel>, Fail>> getAll(int month) =>
+      repository.getAll(month);
+
+  @override
+  Future<Result<List<ExpenseParcel>, Fail>> getByExpirationDate(int month) =>
+      repository.getByExpirationDate(month);
 
   @override
   Future<Result<void, Fail>> delete({
@@ -56,8 +56,7 @@ class MaintainExpenseUC implements IMaintainExpense {
     }
 
     if (deleteExpense) {
-      var result = await repository.deleteExpense(parcel.expense);
-      return result;
+      return repository.deleteExpense(parcel.expense);
     }
 
     return deleteParcel;

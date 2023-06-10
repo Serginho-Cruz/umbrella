@@ -76,23 +76,23 @@ void main() {
     test("Returns a List of Invoices when no errors occur", () async {
       var list = InvoiceFactory.generateInvoices();
 
-      when(() => repository.getAll()).thenAnswer((_) async => Success(list));
+      when(() => repository.getAll(2)).thenAnswer((_) async => Success(list));
 
-      final result = await usecase.getAll();
+      final result = await usecase.getAll(2);
 
-      verify(() => repository.getAll()).called(1);
+      verify(() => repository.getAll(2)).called(1);
 
       expect(result.isSuccess(), isTrue);
       expect(result.fold((s) => s, (f) => f), isA<List<Invoice>>());
       expect(result.fold((s) => s, (f) => f), equals(list));
     });
     test("Returns a Fail when some error occur", () async {
-      when(() => repository.getAll())
+      when(() => repository.getAll(2))
           .thenAnswer((_) async => Failure(Fail("")));
 
-      final result = await usecase.getAll();
+      final result = await usecase.getAll(2);
 
-      verify(() => repository.getAll()).called(1);
+      verify(() => repository.getAll(2)).called(1);
 
       expect(result.isError(), isTrue);
       expect(result.fold((s) => s, (f) => f), isA<Fail>());

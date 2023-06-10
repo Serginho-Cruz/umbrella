@@ -11,6 +11,7 @@ abstract class IMaintainIncome {
     bool updateIncome = false,
   });
   Future<Result<List<IncomeParcel>, Fail>> getAll(int month);
+  Future<Result<List<IncomeParcel>, Fail>> getByPaymentDate(int month);
   Future<Result<void, Fail>> delete({
     required IncomeParcel parcel,
     bool deleteIncome = false,

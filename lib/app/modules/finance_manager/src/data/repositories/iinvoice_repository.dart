@@ -10,7 +10,10 @@ abstract class IInvoiceRepository {
     required InvoiceItem item,
     required CreditCard card,
   });
-  Future<Result<List<Invoice>, Fail>> getAll();
+  Future<Result<List<Invoice>, Fail>> getAll(int month);
+  Future<Result<List<Invoice>, Fail>> getByValue(int month);
+  Future<Result<List<Invoice>, Fail>> getByExpirationDate(int month);
+  Future<Result<List<Invoice>, Fail>> getWhereExpiresOn(DateTime dateTime);
   Future<Result<void, Fail>> generateAll();
   Future<Result<void, Fail>> deleteInvoice(Invoice invoice);
 }

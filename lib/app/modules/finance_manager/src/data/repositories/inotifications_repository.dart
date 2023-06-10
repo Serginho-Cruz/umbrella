@@ -5,4 +5,5 @@ import '../../errors/errors.dart';
 
 abstract class INotificationsRepository {
   Future<Result<void, Fail>> call(NotificationsConfiguration configuration);
+  Future<Result<int, Fail>> getDaysBefore();
 }

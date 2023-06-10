@@ -11,10 +11,8 @@ class MaintainIncomeUC implements IMaintainIncome {
 
   MaintainIncomeUC(this.repository);
   @override
-  Future<Result<void, Fail>> register(Income income) async {
-    var result = await repository.create(income);
-    return result;
-  }
+  Future<Result<void, Fail>> register(Income income) =>
+      repository.create(income);
 
   @override
   Future<Result<void, Fail>> update({
@@ -35,10 +33,12 @@ class MaintainIncomeUC implements IMaintainIncome {
   }
 
   @override
-  Future<Result<List<IncomeParcel>, Fail>> getAll(int month) async {
-    var result = await repository.getAll(month);
-    return result;
-  }
+  Future<Result<List<IncomeParcel>, Fail>> getAll(int month) =>
+      repository.getAll(month);
+
+  @override
+  Future<Result<List<IncomeParcel>, Fail>> getByPaymentDate(int month) =>
+      repository.getByPaymentDate(month);
 
   @override
   Future<Result<void, Fail>> delete({
