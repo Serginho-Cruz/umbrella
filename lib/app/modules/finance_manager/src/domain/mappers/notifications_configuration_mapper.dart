@@ -1,6 +1,5 @@
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/external/schemas/notifications_configuration_table.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/datetime_extension.dart';
-
+import '../../external/schemas/notifications_configuration_table.dart';
+import '../../utils/extensions.dart';
 import '../entities/notifications_configuration.dart';
 
 abstract class NotificationsConfigurationMapper {

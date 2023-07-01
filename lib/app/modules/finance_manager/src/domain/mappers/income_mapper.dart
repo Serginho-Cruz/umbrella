@@ -1,5 +1,5 @@
 import '../../external/schemas/income_table.dart';
-import '../../utils/datetime_extension.dart';
+import '../../utils/extensions.dart';
 import '../entities/frequency.dart';
 import '../entities/income.dart';
 import 'income_type_mapper.dart';

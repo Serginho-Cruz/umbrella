@@ -1,8 +1,7 @@
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/mappers/expense_parcel_mapper.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/external/schemas/invoice_item_table.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/datetime_extension.dart';
-
+import '../../external/schemas/invoice_item_table.dart';
+import '../../utils/extensions.dart';
 import '../entities/invoice_item.dart';
+import 'expense_parcel_mapper.dart';
 
 abstract class InvoiceItemMapper {
   static Map<String, dynamic> toMap({

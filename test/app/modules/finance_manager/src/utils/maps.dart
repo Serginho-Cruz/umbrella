@@ -1,4 +1,4 @@
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/datetime_extension.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/extensions.dart';
 
 import 'entities.dart';
 
@@ -17,6 +17,7 @@ var incomeTypeMap = <String, dynamic>{
 var paymentMethodMap = <String, dynamic>{
   'payment_method_id': paymentMethod.id,
   'payment_method_name': paymentMethod.name,
+  'payment_method_icon': paymentMethod.icon,
   'payment_method_isCredit': paymentMethod.isCredit,
 };
 

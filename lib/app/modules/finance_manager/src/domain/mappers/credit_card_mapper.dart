@@ -1,5 +1,5 @@
 import '../../external/schemas/credit_card_table.dart';
-import '../../utils/datetime_extension.dart';
+import '../../utils/extensions.dart';
 import '../entities/credit_card.dart';
 
 abstract class CreditCardMapper {

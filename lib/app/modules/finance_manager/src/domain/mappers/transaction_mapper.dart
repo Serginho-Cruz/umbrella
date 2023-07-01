@@ -1,11 +1,10 @@
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/income_parcel.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/mappers/expense_parcel_mapper.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/mappers/income_parcel_mapper.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/external/schemas/transaction_table.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/datetime_extension.dart';
-
+import '../../external/schemas/transaction_table.dart';
+import '../../utils/extensions.dart';
 import '../entities/expense_parcel.dart';
+import '../entities/income_parcel.dart';
 import '../entities/transaction.dart';
+import 'expense_parcel_mapper.dart';
+import 'income_parcel_mapper.dart';
 
 abstract class TransactionMapper {
   static Map<String, dynamic> toMap(Transaction transaction) =>

@@ -1,6 +1,6 @@
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/mappers/credit_card_mapper.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/external/schemas/invoice_table.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/datetime_extension.dart';
+import 'credit_card_mapper.dart';
+import '../../external/schemas/invoice_table.dart';
+import '../../utils/extensions.dart';
 
 import '../entities/invoice_item.dart';
 import '../entities/invoice.dart';

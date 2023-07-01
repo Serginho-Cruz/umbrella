@@ -32,7 +32,12 @@ var notificationsConfiguration = NotificationsConfiguration(
   hourToSend: DateTime(2023, 2, 3, 20, 30),
 );
 
-var paymentMethod = PaymentMethod(id: 1, name: 'Credit', isCredit: true);
+var paymentMethod = PaymentMethod(
+  id: 1,
+  name: 'Credit',
+  icon: 'credit_icon.png',
+  isCredit: true,
+);
 
 var expense = Expense(
   id: 1,

@@ -1,9 +1,8 @@
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/mappers/expense_mapper.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/mappers/payment_method_mapper.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/external/schemas/expense_parcel_table.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/datetime_extension.dart';
-
+import '../../external/schemas/expense_parcel_table.dart';
+import '../../utils/extensions.dart';
 import '../entities/expense_parcel.dart';
+import 'expense_mapper.dart';
+import 'payment_method_mapper.dart';
 
 abstract class ExpenseParcelMapper {
   static Map<String, dynamic> toMap(

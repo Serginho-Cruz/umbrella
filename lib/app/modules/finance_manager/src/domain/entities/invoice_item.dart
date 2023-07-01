@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/datetime_extension.dart';
 
+import '../../utils/extensions.dart';
 import 'expense_parcel.dart';
 
 class InvoiceItem with EquatableMixin {

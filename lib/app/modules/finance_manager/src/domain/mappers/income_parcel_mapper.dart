@@ -1,6 +1,6 @@
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/mappers/income_mapper.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/external/schemas/income_parcel_table.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/datetime_extension.dart';
+import 'income_mapper.dart';
+import '../../external/schemas/income_parcel_table.dart';
+import '../../utils/extensions.dart';
 
 import '../entities/income_parcel.dart';
 

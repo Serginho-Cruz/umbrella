@@ -1,5 +1,4 @@
 import '../../external/schemas/payment_method_table.dart';
-
 import '../entities/payment_method.dart';
 
 abstract class PaymentMethodMapper {
@@ -15,6 +14,7 @@ abstract class PaymentMethodMapper {
     return PaymentMethod(
       id: map[PaymentMethodTable.id] as int,
       name: map[PaymentMethodTable.name] as String,
+      icon: map[PaymentMethodTable.icon] as String,
       isCredit: map[PaymentMethodTable.isCredit] as bool,
     );
   }
