@@ -1,6 +1,6 @@
 import 'package:result_dart/result_dart.dart';
 import '../gateways/inotifications_gateway.dart';
-import '../repositories/iexpense_repository.dart';
+import '../repositories/iexpense_parcel_repository.dart';
 import '../repositories/iinvoice_repository.dart';
 import '../repositories/inotifications_repository.dart';
 import '../../domain/entities/notifications_configuration.dart';
@@ -10,13 +10,13 @@ import '../../errors/errors.dart';
 class ConfigureNotificationsUC implements INotifications {
   final INotificationsRepository notificationsRepository;
   final IInvoiceRepository invoicesRepository;
-  final IExpenseRepository expensesRepository;
+  final IExpenseParcelRepository expensesParcelRepository;
 
   final INotificationsGateway gateway;
 
   ConfigureNotificationsUC({
     required this.notificationsRepository,
-    required this.expensesRepository,
+    required this.expensesParcelRepository,
     required this.invoicesRepository,
     required this.gateway,
   });
@@ -52,7 +52,7 @@ class ConfigureNotificationsUC implements INotifications {
 
     int days = result.getOrDefault(_getDefaultConfiguration().daysBefore);
 
-    var expensesResult = await expensesRepository
+    var expensesResult = await expensesParcelRepository
         .getWhereExpiresOn(DateTime.now().add(Duration(days: days)));
 
     var invoicesResult = await invoicesRepository

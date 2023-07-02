@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:result_dart/result_dart.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/gateways/inotifications_gateway.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/iexpense_repository.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/iexpense_parcel_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/iinvoice_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/inotifications_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/notifications_uc.dart';
@@ -13,13 +13,13 @@ import '../../domain/factorys/expense_parcel_factory.dart';
 import '../../domain/factorys/invoice_factory.dart';
 import '../../domain/factorys/notifications_configuration_factory.dart';
 import '../gateways/notifications_gateway_mock.dart';
-import '../repositories/expense_repository_mock.dart';
+import '../repositories/expense_parcel_repository_mock.dart';
 import '../repositories/invoice_repository_mock.dart';
 import '../repositories/notifications_repository_mock.dart';
 
 void main() {
   late INotificationsRepository repository;
-  late IExpenseRepository expenseRepository;
+  late IExpenseParcelRepository expenseParcelRepository;
   late IInvoiceRepository invoiceRepository;
   late INotificationsGateway gateway;
   late INotifications usecase;
@@ -28,12 +28,12 @@ void main() {
 
   setUp(() {
     repository = NotificationsRepoMock();
-    expenseRepository = ExpenseRepositoryMock();
+    expenseParcelRepository = ExpenseParcelRepositoryMock();
     invoiceRepository = InvoiceRepositoryMock();
     gateway = NotificationsGatewayMock();
     usecase = ConfigureNotificationsUC(
       notificationsRepository: repository,
-      expensesRepository: expenseRepository,
+      expensesParcelRepository: expenseParcelRepository,
       invoicesRepository: invoiceRepository,
       gateway: gateway,
     );
@@ -111,7 +111,7 @@ void main() {
 
     group("Send Near Expiration method is working", () {
       test("Call Notifications Repository get days before", () async {
-        when(() => expenseRepository.getWhereExpiresOn(any()))
+        when(() => expenseParcelRepository.getWhereExpiresOn(any()))
             .thenAnswer((_) async => const Success([]));
         when(() => invoiceRepository.getWhereExpiresOn(any()))
             .thenAnswer((_) async => const Success([]));
@@ -128,7 +128,7 @@ void main() {
       test(
           "Don't call gateway send expenses notification method when the list is empty",
           () async {
-        when(() => expenseRepository.getWhereExpiresOn(any()))
+        when(() => expenseParcelRepository.getWhereExpiresOn(any()))
             .thenAnswer((_) async => const Success([]));
         when(() => invoiceRepository.getWhereExpiresOn(any()))
             .thenAnswer((_) async => Success([InvoiceFactory.generate()]));
@@ -144,7 +144,7 @@ void main() {
       test(
           "Don't call gateway send invoices notification method when the list is empty",
           () async {
-        when(() => expenseRepository.getWhereExpiresOn(any())).thenAnswer(
+        when(() => expenseParcelRepository.getWhereExpiresOn(any())).thenAnswer(
             (_) async => Success([ExpenseParcelFactory.generate()]));
         when(() => invoiceRepository.getWhereExpiresOn(any()))
             .thenAnswer((_) async => const Success([]));
@@ -160,7 +160,7 @@ void main() {
       test(
           "Don't call gateway send expenses notification method when an error occur in repository",
           () async {
-        when(() => expenseRepository.getWhereExpiresOn(any()))
+        when(() => expenseParcelRepository.getWhereExpiresOn(any()))
             .thenAnswer((_) async => Failure(Fail("")));
         when(() => invoiceRepository.getWhereExpiresOn(any()))
             .thenAnswer((_) async => const Success([]));
@@ -176,7 +176,7 @@ void main() {
       test(
           "Don't call gateway send invoices notification method when an error occur in repository",
           () async {
-        when(() => expenseRepository.getWhereExpiresOn(any()))
+        when(() => expenseParcelRepository.getWhereExpiresOn(any()))
             .thenAnswer((_) async => const Success([]));
         when(() => invoiceRepository.getWhereExpiresOn(any()))
             .thenAnswer((_) async => Failure(Fail("")));
@@ -194,7 +194,7 @@ void main() {
           () async {
         var expensesList = ExpenseParcelFactory.generateList();
         var invoicesList = InvoiceFactory.generateInvoices();
-        when(() => expenseRepository.getWhereExpiresOn(any()))
+        when(() => expenseParcelRepository.getWhereExpiresOn(any()))
             .thenAnswer((_) async => Success(expensesList));
         when(() => invoiceRepository.getWhereExpiresOn(any()))
             .thenAnswer((_) async => Success(invoicesList));

@@ -7,6 +7,7 @@ abstract class PaymentMethodMapper {
       PaymentMethodTable.id: paymentMethod.id,
       PaymentMethodTable.name: paymentMethod.name,
       PaymentMethodTable.isCredit: paymentMethod.isCredit,
+      PaymentMethodTable.icon: paymentMethod.icon,
     };
   }
 
