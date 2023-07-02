@@ -11,8 +11,6 @@ class GetTransactionsUC implements IGetTransactions {
 
   GetTransactionsUC(this.repository);
   @override
-  Future<Result<List<Transaction>, Fail>> call(int month) async {
-    var result = await repository.getOf(month);
-    return result;
-  }
+  Future<Result<List<Transaction>, Fail>> call(int month) =>
+      repository.getOf(month);
 }

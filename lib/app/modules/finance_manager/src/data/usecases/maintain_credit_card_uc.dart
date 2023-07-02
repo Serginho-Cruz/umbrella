@@ -11,26 +11,16 @@ class MaintainCreditCard implements IMaintainCreditCard {
   MaintainCreditCard(this.repository);
 
   @override
-  Future<Result<void, Fail>> register(CreditCard card) async {
-    var result = await repository.create(card);
-    return result;
-  }
+  Future<Result<void, Fail>> register(CreditCard card) =>
+      repository.create(card);
 
   @override
-  Future<Result<void, Fail>> update(CreditCard newCard) async {
-    var result = await repository.updateCard(newCard);
-    return result;
-  }
+  Future<Result<void, Fail>> update(CreditCard newCard) =>
+      repository.updateCard(newCard);
 
   @override
-  Future<Result<List<CreditCard>, Fail>> getAll() async {
-    var result = await repository.getAll();
-    return result;
-  }
+  Future<Result<List<CreditCard>, Fail>> getAll() => repository.getAll();
 
   @override
-  Future<Result<void, Fail>> delete(CreditCard card) async {
-    var result = await repository.delete(card);
-    return result;
-  }
+  Future<Result<void, Fail>> delete(CreditCard card) => repository.delete(card);
 }
