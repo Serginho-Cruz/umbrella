@@ -16,7 +16,8 @@ class FilterExpenses implements IFilterExpenses {
   @override
   List<ExpenseParcel> byOverdue(List<ExpenseParcel> expenses) => expenses
       .where((parcel) =>
-          parcel.dueDate.isAfter(DateTime.now()) && parcel.remainingValue > 0)
+          parcel.dueDate.difference(DateTime.now()).inDays < 0 &&
+          parcel.remainingValue > 0)
       .toList();
 
   @override

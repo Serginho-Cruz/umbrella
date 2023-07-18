@@ -7,11 +7,12 @@ abstract class IOrderIncomes {
   });
   List<IncomeParcel> byName({
     required List<IncomeParcel> parcels,
-    required bool isCrescent,
+    required bool isAlphabetic,
   });
-  List<IncomeParcel> byPaymentDate({
+  List<IncomeParcel> byDueDate({
     required List<IncomeParcel> parcels,
     required bool isCrescent,
   });
   List<IncomeParcel> byID(List<IncomeParcel> parcels);
+  List<IncomeParcel> revertOrder(List<IncomeParcel> parcels);
 }

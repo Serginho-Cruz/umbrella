@@ -7,11 +7,12 @@ abstract class IOrderExpenses {
   });
   List<ExpenseParcel> byName({
     required List<ExpenseParcel> parcels,
-    required bool isCrescent,
+    required bool isAlphabetic,
   });
-  List<ExpenseParcel> byExpirationDate({
+  List<ExpenseParcel> byDueDate({
     required List<ExpenseParcel> parcels,
     required bool isCrescent,
   });
   List<ExpenseParcel> byID(List<ExpenseParcel> parcels);
+  List<ExpenseParcel> revertOrder(List<ExpenseParcel> parcels);
 }
