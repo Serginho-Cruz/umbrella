@@ -1,33 +1,28 @@
 import '../../utils/extensions.dart';
 import 'expense.dart';
-import 'parcel.dart';
-import 'payment_method.dart';
+import 'paiyable.dart';
 
-class ExpenseParcel extends Parcel {
+class ExpenseParcel extends Paiyable {
   Expense expense;
-  DateTime expirationDate;
-  PaymentMethod paymentMethod;
 
   ExpenseParcel({
     required this.expense,
-    required this.expirationDate,
-    required this.paymentMethod,
+    required super.dueDate,
     required super.id,
     required super.paidValue,
     required super.remainingValue,
     required super.paymentDate,
-    required super.parcelValue,
+    required super.totalValue,
   });
 
   @override
   List<Object?> get props => [
         id,
         expense,
-        paymentMethod,
-        expirationDate,
+        dueDate,
         paidValue,
         remainingValue,
-        paymentDate.date,
-        parcelValue,
+        paymentDate?.date,
+        totalValue,
       ];
 }

@@ -1,36 +1,38 @@
-import 'package:equatable/equatable.dart';
-
 import '../../utils/extensions.dart';
 import 'credit_card.dart';
 import 'invoice_item.dart';
+import 'paiyable.dart';
 
-class Invoice with EquatableMixin {
-  int id;
-  double value;
+class Invoice extends Paiyable {
   bool isClosed;
-  DateTime expirationDate;
   DateTime closingDate;
   CreditCard card;
   List<InvoiceItem> itens;
 
   Invoice({
-    required this.id,
-    required this.value,
     required this.isClosed,
-    required this.expirationDate,
     required this.closingDate,
     required this.card,
     required this.itens,
+    required super.id,
+    required super.paidValue,
+    required super.remainingValue,
+    required super.dueDate,
+    super.paymentDate,
+    required super.totalValue,
   });
 
   @override
   List<Object?> get props => [
         id,
-        value,
         isClosed,
-        expirationDate.date,
+        dueDate.date,
         closingDate.date,
         card,
         itens,
+        paidValue,
+        remainingValue,
+        paymentDate,
+        totalValue,
       ];
 }

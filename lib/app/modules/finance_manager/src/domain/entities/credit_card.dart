@@ -8,7 +8,7 @@ class CreditCard with EquatableMixin {
   double annuity;
   String color;
   DateTime cardInvoiceClosingDate;
-  DateTime cardInvoiceExpirationDate;
+  DateTime cardInvoiceDueDate;
 
   CreditCard({
     required this.id,
@@ -16,7 +16,7 @@ class CreditCard with EquatableMixin {
     required this.annuity,
     required this.color,
     required this.cardInvoiceClosingDate,
-    required this.cardInvoiceExpirationDate,
+    required this.cardInvoiceDueDate,
   });
 
   factory CreditCard.withoutId({
@@ -24,7 +24,7 @@ class CreditCard with EquatableMixin {
     required double annuity,
     required String color,
     required DateTime cardInvoiceClosingDate,
-    required DateTime cardInvoiceExpirationDate,
+    required DateTime cardInvoiceDueDate,
   }) {
     return CreditCard(
       id: 0,
@@ -32,7 +32,7 @@ class CreditCard with EquatableMixin {
       annuity: annuity,
       color: color,
       cardInvoiceClosingDate: cardInvoiceClosingDate,
-      cardInvoiceExpirationDate: cardInvoiceExpirationDate,
+      cardInvoiceDueDate: cardInvoiceDueDate,
     );
   }
 
@@ -43,6 +43,6 @@ class CreditCard with EquatableMixin {
         annuity,
         color,
         cardInvoiceClosingDate.date,
-        cardInvoiceExpirationDate.date,
+        cardInvoiceDueDate.date,
       ];
 }

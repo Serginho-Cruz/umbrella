@@ -1,8 +1,8 @@
 import '../../utils/extensions.dart';
 import 'income.dart';
-import 'parcel.dart';
+import 'paiyable.dart';
 
-class IncomeParcel extends Parcel {
+class IncomeParcel extends Paiyable {
   Income income;
 
   IncomeParcel({
@@ -10,8 +10,9 @@ class IncomeParcel extends Parcel {
     required super.id,
     required super.paidValue,
     required super.remainingValue,
+    required super.dueDate,
     required super.paymentDate,
-    required super.parcelValue,
+    required super.totalValue,
   });
 
   @override
@@ -20,7 +21,7 @@ class IncomeParcel extends Parcel {
         id,
         paidValue,
         remainingValue,
-        paymentDate.date,
-        parcelValue,
+        paymentDate?.date,
+        totalValue,
       ];
 }

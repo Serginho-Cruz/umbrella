@@ -8,7 +8,7 @@ class Expense with EquatableMixin {
   int id;
   double value;
   String name;
-  DateTime expirationDate;
+  DateTime dueDate;
   String? personName;
   ExpenseType type;
   Frequency frequency;
@@ -17,7 +17,7 @@ class Expense with EquatableMixin {
     required this.id,
     required this.value,
     required this.name,
-    required this.expirationDate,
+    required this.dueDate,
     this.personName,
     required this.type,
     required this.frequency,
@@ -26,7 +26,7 @@ class Expense with EquatableMixin {
   factory Expense.withoutId({
     required double value,
     required String name,
-    required DateTime expirationDate,
+    required DateTime dueDate,
     String? personName,
     required ExpenseType type,
     required Frequency frequency,
@@ -35,7 +35,7 @@ class Expense with EquatableMixin {
         id: 0,
         value: value,
         name: name,
-        expirationDate: expirationDate,
+        dueDate: dueDate,
         personName: personName,
         type: type,
         frequency: frequency,
@@ -46,7 +46,7 @@ class Expense with EquatableMixin {
         id,
         name,
         value,
-        expirationDate.date,
+        dueDate.date,
         personName,
         type,
         frequency,

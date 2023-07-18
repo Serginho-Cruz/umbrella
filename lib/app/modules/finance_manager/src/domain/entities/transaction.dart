@@ -1,28 +1,43 @@
 import 'package:equatable/equatable.dart';
-
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/payment_method.dart';
 import '../../utils/extensions.dart';
-import 'parcel.dart';
+import 'paiyable.dart';
 
 class Transaction with EquatableMixin {
   int id;
   double value;
-  DateTime date;
-  Parcel parcel;
+  DateTime paymentDate;
+  Paiyable paiyable;
+  PaymentMethod paymentMethod;
 
   Transaction({
     required this.id,
     required this.value,
-    required this.date,
-    required this.parcel,
+    required this.paymentDate,
+    required this.paiyable,
+    required this.paymentMethod,
   });
 
   factory Transaction.withoutId({
     required double value,
-    required DateTime date,
-    required Parcel parcel,
+    required DateTime paymentDate,
+    required Paiyable paiyable,
+    required PaymentMethod paymentMethod,
   }) =>
-      Transaction(id: 1, value: value, date: date, parcel: parcel);
+      Transaction(
+        id: 1,
+        value: value,
+        paymentDate: paymentDate,
+        paiyable: paiyable,
+        paymentMethod: paymentMethod,
+      );
 
   @override
-  List<Object?> get props => [id, value, date.date, parcel];
+  List<Object?> get props => [
+        id,
+        value,
+        paymentDate.date,
+        paiyable,
+        paymentMethod,
+      ];
 }

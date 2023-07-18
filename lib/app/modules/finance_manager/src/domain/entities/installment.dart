@@ -1,8 +1,7 @@
 import 'package:equatable/equatable.dart';
-
 import 'credit_card.dart';
 import 'expense.dart';
-import 'expense_parcel.dart';
+import 'installment_parcel.dart';
 import 'payment_method.dart';
 
 class Installment with EquatableMixin {
@@ -13,7 +12,7 @@ class Installment with EquatableMixin {
   Expense expense;
   double totalValue;
   PaymentMethod paymentMethod;
-  List<ExpenseParcel> parcels;
+  List<InstallmentParcel> parcels;
 
   Installment({
     required this.id,
@@ -45,14 +44,15 @@ class Installment with EquatableMixin {
     required int actualParcel,
     required Expense expense,
     required PaymentMethod paymentMethod,
-    required List<ExpenseParcel> parcels,
+    required List<InstallmentParcel> parcels,
   }) =>
       Installment(
-          id: 0,
-          totalValue: totalValue,
-          parcelsNumber: parcelsNumber,
-          actualParcel: actualParcel,
-          expense: expense,
-          paymentMethod: paymentMethod,
-          parcels: parcels);
+        id: 0,
+        totalValue: totalValue,
+        parcelsNumber: parcelsNumber,
+        actualParcel: actualParcel,
+        expense: expense,
+        paymentMethod: paymentMethod,
+        parcels: parcels,
+      );
 }
