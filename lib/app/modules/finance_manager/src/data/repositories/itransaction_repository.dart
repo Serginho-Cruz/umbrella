@@ -5,5 +5,5 @@ import '../../errors/errors.dart';
 
 abstract class ITransactionRepository {
   Future<Result<void, Fail>> register(Transaction transaction);
-  Future<Result<List<Transaction>, Fail>> getOf(int month);
+  Future<Result<List<Transaction>, Fail>> getOf(DateTime month);
 }
