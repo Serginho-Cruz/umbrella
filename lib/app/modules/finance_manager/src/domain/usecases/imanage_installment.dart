@@ -21,7 +21,10 @@ abstract class IManageInstallment {
     required CreditCard newCard,
     required Installment installment,
   });
-  Future<Result<List<Installment>, Fail>> getAllOf(DateTime month);
+  Future<Result<List<Installment>, Fail>> getAllOf({
+    required int month,
+    required int year,
+  });
   Future<Result<void, Fail>> deleteParcelOfInstallment({
     required int parcelNumber,
     required Installment installment,

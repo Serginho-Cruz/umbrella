@@ -5,7 +5,12 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entit
 import 'income_factory.dart';
 
 abstract class IncomeParcelFactory {
-  static IncomeParcel generate({String? name, IncomeType? type}) {
+  static IncomeParcel generate({
+    String? name,
+    IncomeType? type,
+    double? paidValue,
+    DateTime? dueDate,
+  }) {
     var finalName = name == null
         ? null
         : faker.randomGenerator.boolean()
@@ -14,7 +19,7 @@ abstract class IncomeParcelFactory {
                 ? '${faker.lorem.word()} $name ${faker.lorem.word()}'
                 : '${faker.lorem.word()} $name';
 
-    var paidValue = faker.randomGenerator.decimal() * 500;
+    paidValue = paidValue ?? faker.randomGenerator.decimal() * 500;
     var totalValue = faker.randomGenerator.decimal(min: paidValue + 0.1);
 
     return IncomeParcel(
@@ -22,7 +27,7 @@ abstract class IncomeParcelFactory {
       id: faker.randomGenerator.integer(20),
       paidValue: paidValue,
       remainingValue: totalValue - paidValue,
-      dueDate: faker.date.dateTime(minYear: 2023, maxYear: 2025),
+      dueDate: dueDate ?? faker.date.dateTime(minYear: 2023, maxYear: 2025),
       paymentDate: faker.date.dateTime(minYear: 2023, maxYear: 2025),
       totalValue: totalValue,
     );

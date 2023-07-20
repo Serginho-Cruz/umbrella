@@ -77,7 +77,8 @@ void main() {
 
       expect(filteredEqual.length, equals(filteredLower.length));
     });
-    test("by Type returns only totally paid parcels", () {
+    test("by Type returns only parcels where type is equals the type passed",
+        () {
       var type = ExpenseTypeFactory.generate();
       expenses.addAll(
           List.generate(4, (_) => ExpenseParcelFactory.generate(type: type)));
@@ -91,8 +92,12 @@ void main() {
     });
     test("by Overdue returns only not totally paid and out of due date parcels",
         () {
-      expenses.addAll(
-          List.generate(4, (_) => ExpenseParcelFactory.generatePaidParcel()));
+      expenses.addAll(List.generate(
+        4,
+        (_) => ExpenseParcelFactory.generate(
+            dueDate: DateTime.now().subtract(const Duration(days: 2)),
+            paidValue: 20.15),
+      ));
 
       var filteredExpenses = usecase.byOverdue(expenses);
 
@@ -137,8 +142,11 @@ void main() {
         }
       });
       test("In byOverdue method", () {
-        expenses
-            .addAll(List.generate(4, (_) => ExpenseParcelFactory.generate()));
+        expenses.addAll(List.generate(
+            4,
+            (_) => ExpenseParcelFactory.generate(
+                dueDate: DateTime.now().subtract(const Duration(days: 2)),
+                paidValue: 20.15)));
         var parcelsBeforeFilter = [...expenses];
 
         usecase.byOverdue(expenses);

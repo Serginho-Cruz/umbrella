@@ -26,40 +26,54 @@ void main() {
   group("Get Transactions Of Usecase is Working", () {
     test("answer the same list returned by repository when no error happens",
         () async {
-      when(() => repository.getOf(any()))
-          .thenAnswer((_) async => Success(transactions));
+      when(() => repository.getAllOf(
+            month: any(named: 'month'),
+            year: any(named: 'year'),
+          )).thenAnswer((_) async => Success(transactions));
 
-      final result = await usecase(DateTime.now());
+      final result = await usecase(month: 2, year: 2023);
 
-      verify(() => repository.getOf(any())).called(1);
+      verify(() => repository.getAllOf(
+            month: any(named: 'month'),
+            year: any(named: 'year'),
+          )).called(1);
 
       expect(result.isSuccess(), isTrue);
-      expect(result.fold((s) => s, (f) => f), isA<List<Transaction>>());
       expect(result.fold((s) => s, (f) => f), equals(transactions));
     });
     test("answer the same error returned by repository when errors happens",
         () async {
       final fail = Fail("");
 
-      when(() => repository.getOf(any()))
-          .thenAnswer((_) async => Failure(fail));
+      when(() => repository.getAllOf(
+            month: any(named: 'month'),
+            year: any(named: 'year'),
+          )).thenAnswer((_) async => Failure(fail));
 
-      final result = await usecase(DateTime.now());
+      final result = await usecase(month: 2, year: 2023);
 
-      verify(() => repository.getOf(any())).called(1);
+      verify(() => repository.getAllOf(
+            month: any(named: 'month'),
+            year: any(named: 'year'),
+          )).called(1);
 
       expect(result.isError(), isTrue);
-      expect(result.fold((s) => s, (f) => f), isA<Fail>());
       expect(result.fold((s) => s, (f) => f), equals(fail));
     });
-    test("calls repository with the same month passed by parameter", () async {
-      final month = DateTime.now();
-      when(() => repository.getOf(any()))
-          .thenAnswer((_) async => Success(transactions));
+    test("calls repository with the correct month and year", () async {
+      const month = 5;
+      const year = 6;
+      when(() => repository.getAllOf(
+            month: any(named: 'month'),
+            year: any(named: 'year'),
+          )).thenAnswer((_) async => Success(transactions));
 
-      final result = await usecase(month);
+      final result = await usecase(month: month, year: year);
 
-      verify(() => repository.getOf(month)).called(1);
+      verify(() => repository.getAllOf(
+            month: month,
+            year: year,
+          )).called(1);
 
       expect(result.isSuccess(), isTrue);
     });

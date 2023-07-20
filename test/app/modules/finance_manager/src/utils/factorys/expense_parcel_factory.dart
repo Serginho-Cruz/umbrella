@@ -5,7 +5,12 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entit
 import 'expense_factory.dart';
 
 abstract class ExpenseParcelFactory {
-  static ExpenseParcel generate({String? name, ExpenseType? type}) {
+  static ExpenseParcel generate({
+    String? name,
+    ExpenseType? type,
+    double? paidValue,
+    DateTime? dueDate,
+  }) {
     //generate a string that contains the name if passed,
     //in begin, middle or final of the string
 
@@ -17,12 +22,12 @@ abstract class ExpenseParcelFactory {
                 ? '${faker.lorem.word()} $name ${faker.lorem.word()}'
                 : '${faker.lorem.word()} $name';
 
-    var paidValue = faker.randomGenerator.decimal() * 500;
+    paidValue = paidValue ?? faker.randomGenerator.decimal() * 500;
     var totalValue = faker.randomGenerator.decimal(min: paidValue + 0.1);
 
     return ExpenseParcel(
       expense: ExpenseFactory.generate(name: finalName, type: type),
-      dueDate: faker.date.dateTime(minYear: 2020, maxYear: 2022),
+      dueDate: dueDate ?? faker.date.dateTime(minYear: 2020, maxYear: 2022),
       id: faker.randomGenerator.integer(20),
       paidValue: paidValue,
       remainingValue: totalValue - paidValue,

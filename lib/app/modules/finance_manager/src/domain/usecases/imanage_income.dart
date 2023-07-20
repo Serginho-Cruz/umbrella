@@ -10,7 +10,10 @@ abstract class IManageIncome {
     required IncomeParcel newParcel,
     bool updateIncome = false,
   });
-  Future<Result<List<IncomeParcel>, Fail>> getAllOf(DateTime month);
+  Future<Result<List<IncomeParcel>, Fail>> getAllOf({
+    required int month,
+    required int year,
+  });
   Future<Result<void, Fail>> delete({
     required IncomeParcel parcel,
     bool deleteIncome = false,

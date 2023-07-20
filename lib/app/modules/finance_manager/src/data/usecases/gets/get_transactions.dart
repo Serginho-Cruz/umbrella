@@ -12,6 +12,9 @@ class GetTransactionsOf implements IGetTransactionsOf {
   GetTransactionsOf(this.repository);
 
   @override
-  Future<Result<List<Transaction>, Fail>> call(DateTime month) =>
-      repository.getOf(month);
+  Future<Result<List<Transaction>, Fail>> call({
+    required int month,
+    required int year,
+  }) =>
+      repository.getAllOf(month: month, year: year);
 }

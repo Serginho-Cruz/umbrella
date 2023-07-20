@@ -6,6 +6,49 @@ extension DateTimeExtension on DateTime {
 
     return '$year-$month-$day';
   }
+
+  int get daysNumberOfMonth {
+    const monthsWith31Days = [
+      DateTime.january,
+      DateTime.march,
+      DateTime.may,
+      DateTime.july,
+      DateTime.august,
+      DateTime.october,
+      DateTime.december,
+    ];
+    if (monthsWith31Days.contains(month)) {
+      return 31;
+    } else if (month == DateTime.february) {
+      return year / 4 == 0 ? 29 : 28;
+    } else {
+      return 30;
+    }
+  }
+
+  ///Count how many weeks have in this month.
+  ///A week is counted when it ends on Saturday, even if it is not complete
+  int get totalWeeks {
+    final DateTime withDay1 = copyWith(day: 1);
+    final totalDaysOfMonth = daysNumberOfMonth;
+
+    if (withDay1.weekday >= DateTime.friday &&
+        withDay1.weekday <= DateTime.sunday &&
+        totalDaysOfMonth == 31) {
+      return 5;
+    } else if (withDay1.weekday >= DateTime.saturday &&
+        withDay1.weekday <= DateTime.sunday &&
+        totalDaysOfMonth == 30) {
+      return 5;
+    }
+    return 4;
+  }
+
+  static int totalDaysOfPeriod({
+    required DateTime beginning,
+    required DateTime ending,
+  }) =>
+      beginning.difference(ending).inDays.abs();
 }
 
 extension DoubleExtention on double {

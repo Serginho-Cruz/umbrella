@@ -80,7 +80,8 @@ void main() {
 
       expect(filteredEqual.length, equals(filteredLower.length));
     });
-    test("by Type returns only totally paid parcels", () {
+    test("by Type returns only parcels where type is equals the type passed",
+        () {
       var type = IncomeTypeFactory.generate();
       incomes.addAll(
           List.generate(4, (_) => IncomeParcelFactory.generate(type: type)));
@@ -94,8 +95,12 @@ void main() {
     });
     test("by Overdue returns only not totally paid and out of due date parcels",
         () {
-      incomes.addAll(
-          List.generate(4, (_) => IncomeParcelFactory.generateReceived()));
+      incomes.addAll(List.generate(
+        4,
+        (_) => IncomeParcelFactory.generate(
+            dueDate: DateTime.now().subtract(const Duration(days: 2)),
+            paidValue: 20.15),
+      ));
 
       var filteredIncomes = usecase.byOverdue(incomes);
 
@@ -140,7 +145,11 @@ void main() {
         }
       });
       test("In byOverdue method", () {
-        incomes.addAll(List.generate(4, (_) => IncomeParcelFactory.generate()));
+        incomes.addAll(List.generate(
+            4,
+            (_) => IncomeParcelFactory.generate(
+                dueDate: DateTime.now().subtract(const Duration(days: 2)),
+                paidValue: 20.15)));
         var parcelsBeforeFilter = [...incomes];
 
         usecase.byOverdue(incomes);

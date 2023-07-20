@@ -6,7 +6,13 @@ import '../../errors/errors.dart';
 abstract class IInstallmentRepository {
   Future<Result<int, Fail>> create(Installment installment);
   Future<Result<void, Fail>> update(Installment newInstallment);
-  Future<Result<List<Installment>, Fail>> getAllOfMonth(int month);
-  Future<Result<Installment, Fail>> getById(int id);
+  Future<Result<List<Installment>, Fail>> getAllOf({
+    required int month,
+    required int year,
+  });
+  Future<Result<double, Fail>> getSumOfInstallemntParcelsInRange({
+    required DateTime inferiorLimit,
+    required DateTime upperLimit,
+  });
   Future<Result<void, Fail>> delete(Installment installment);
 }

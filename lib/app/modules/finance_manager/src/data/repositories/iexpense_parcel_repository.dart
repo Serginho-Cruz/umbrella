@@ -10,7 +10,10 @@ abstract class IExpenseParcelRepository {
   });
   Future<Result<void, Fail>> update(ExpenseParcel newParcel);
   Future<Result<void, Fail>> updateParcels(List<ExpenseParcel> expenseParcels);
-  Future<Result<List<ExpenseParcel>, Fail>> getAll(DateTime month);
+  Future<Result<List<ExpenseParcel>, Fail>> getAllOf({
+    required int month,
+    required int year,
+  });
   Future<Result<void, Fail>> delete(ExpenseParcel expenseParcel);
   Future<Result<void, Fail>> deleteParcels(List<ExpenseParcel> expenseParcels);
 }

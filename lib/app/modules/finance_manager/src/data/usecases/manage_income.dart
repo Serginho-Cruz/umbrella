@@ -26,7 +26,10 @@ class ManageIncome implements IManageIncome {
   }
 
   @override
-  Future<Result<List<IncomeParcel>, Fail>> getAllOf(DateTime month) {
+  Future<Result<List<IncomeParcel>, Fail>> getAllOf({
+    required int month,
+    required int year,
+  }) {
     // TODO: implement getAllOf
     throw UnimplementedError();
   }

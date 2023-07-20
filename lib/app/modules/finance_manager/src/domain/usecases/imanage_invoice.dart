@@ -11,7 +11,10 @@ abstract class IManageInvoice {
     required Invoice oldInvoice,
   });
   Future<Result<Invoice, Fail>> getActualOf(CreditCard card);
-  Future<Result<List<Invoice>, Fail>> getAllOf(DateTime month);
+  Future<Result<List<Invoice>, Fail>> getAllOf({
+    required int month,
+    required int year,
+  });
   Future<Result<List<Invoice>, Fail>> getAllOfCard(CreditCard card);
   Future<Result<void, Fail>> deleteInvoice(Invoice invoice);
 }

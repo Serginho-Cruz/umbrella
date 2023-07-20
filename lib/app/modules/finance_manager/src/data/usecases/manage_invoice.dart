@@ -30,7 +30,10 @@ class ManageInvoice implements IManageInvoice {
   }
 
   @override
-  Future<Result<List<Invoice>, Fail>> getAllOf(DateTime month) {
+  Future<Result<List<Invoice>, Fail>> getAllOf({
+    required int month,
+    required int year,
+  }) {
     // TODO: implement getAllOf
     throw UnimplementedError();
   }

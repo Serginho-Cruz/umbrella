@@ -28,7 +28,10 @@ class ManageExpense implements IManageExpense {
   }
 
   @override
-  Future<Result<List<ExpenseParcel>, Fail>> getAllOf(DateTime month) {
+  Future<Result<List<ExpenseParcel>, Fail>> getAllOf({
+    required int month,
+    required int year,
+  }) {
     // TODO: implement getAllOf
     throw UnimplementedError();
   }
