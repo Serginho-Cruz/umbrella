@@ -15,6 +15,7 @@ abstract class IIncomeRepository {
     required DateTime inferiorLimit,
     required DateTime upperLimit,
   });
+  Future<Result<List<String>, Fail>> getPersonsNames();
   Future<Result<void, Fail>> update(Income newIncome);
   Future<Result<void, Fail>> delete(Income income);
 }

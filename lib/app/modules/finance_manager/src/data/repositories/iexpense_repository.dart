@@ -16,5 +16,6 @@ abstract class IExpenseRepository {
     required DateTime inferiorLimit,
     required DateTime upperLimit,
   });
+  Future<Result<List<String>, Fail>> getPersonsNames();
   Future<Result<void, Fail>> delete(Expense expense);
 }
