@@ -1,11 +1,11 @@
 import 'package:equatable/equatable.dart';
 
-class IncomeType with EquatableMixin {
-  int id;
-  String name;
-  String icon;
+class IncomeType extends Equatable {
+  final int id;
+  final String name;
+  final String icon;
 
-  IncomeType({
+  const IncomeType({
     required this.id,
     required this.name,
     required this.icon,

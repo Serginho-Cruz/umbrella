@@ -4,16 +4,16 @@ import '../../utils/extensions.dart';
 import 'frequency.dart';
 import 'income_type.dart';
 
-class Income with EquatableMixin {
-  int id;
-  String name;
-  double value;
-  DateTime paymentDate;
-  Frequency frequency;
-  String? personName;
-  IncomeType type;
+class Income extends Equatable {
+  final int id;
+  final String name;
+  final double value;
+  final DateTime paymentDate;
+  final Frequency frequency;
+  final String? personName;
+  final IncomeType type;
 
-  Income({
+  const Income({
     required this.id,
     required this.name,
     required this.value,

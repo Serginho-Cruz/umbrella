@@ -1,12 +1,12 @@
 import 'package:equatable/equatable.dart';
 
-class PaymentMethod with EquatableMixin {
-  int id;
-  String name;
-  String icon;
-  bool isCredit;
+class PaymentMethod extends Equatable {
+  final int id;
+  final String name;
+  final String icon;
+  final bool isCredit;
 
-  PaymentMethod({
+  const PaymentMethod({
     required this.id,
     required this.name,
     required this.isCredit,

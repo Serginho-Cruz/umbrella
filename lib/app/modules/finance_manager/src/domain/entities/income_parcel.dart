@@ -3,9 +3,9 @@ import 'income.dart';
 import 'paiyable.dart';
 
 class IncomeParcel extends Paiyable {
-  Income income;
+  final Income income;
 
-  IncomeParcel({
+  const IncomeParcel({
     required this.income,
     required super.id,
     required super.paidValue,

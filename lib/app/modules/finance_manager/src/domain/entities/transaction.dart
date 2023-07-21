@@ -3,14 +3,14 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entit
 import '../../utils/extensions.dart';
 import 'paiyable.dart';
 
-class Transaction with EquatableMixin {
-  int id;
-  double value;
-  DateTime paymentDate;
-  Paiyable paiyable;
-  PaymentMethod paymentMethod;
+class Transaction extends Equatable {
+  final int id;
+  final double value;
+  final DateTime paymentDate;
+  final Paiyable paiyable;
+  final PaymentMethod paymentMethod;
 
-  Transaction({
+  const Transaction({
     required this.id,
     required this.value,
     required this.paymentDate,

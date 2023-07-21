@@ -4,12 +4,12 @@ import 'invoice_item.dart';
 import 'paiyable.dart';
 
 class Invoice extends Paiyable {
-  bool isClosed;
-  DateTime closingDate;
-  CreditCard card;
-  List<InvoiceItem> itens;
+  final bool isClosed;
+  final DateTime closingDate;
+  final CreditCard card;
+  final List<InvoiceItem> itens;
 
-  Invoice({
+  const Invoice({
     required this.isClosed,
     required this.closingDate,
     required this.card,

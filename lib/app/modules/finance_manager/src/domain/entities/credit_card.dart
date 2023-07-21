@@ -2,15 +2,15 @@ import 'package:equatable/equatable.dart';
 
 import '../../utils/extensions.dart';
 
-class CreditCard with EquatableMixin {
-  int id;
-  String name;
-  double annuity;
-  String color;
-  DateTime cardInvoiceClosingDate;
-  DateTime cardInvoiceDueDate;
+class CreditCard extends Equatable {
+  final int id;
+  final String name;
+  final double annuity;
+  final String color;
+  final DateTime cardInvoiceClosingDate;
+  final DateTime cardInvoiceDueDate;
 
-  CreditCard({
+  const CreditCard({
     required this.id,
     required this.name,
     required this.annuity,

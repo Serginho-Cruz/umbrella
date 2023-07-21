@@ -1,7 +1,7 @@
 enum Frequency { none, monthly, weekly, daily, yearly }
 
 int frequencyToInt(Frequency frequency) {
-  var map = <Frequency, int>{
+  const map = <Frequency, int>{
     Frequency.monthly: 1,
     Frequency.weekly: 2,
     Frequency.daily: 3,
@@ -12,7 +12,7 @@ int frequencyToInt(Frequency frequency) {
 }
 
 Frequency frequencyFromInt(int number) {
-  var map = <int, Frequency>{
+  const map = <int, Frequency>{
     1: Frequency.monthly,
     2: Frequency.weekly,
     3: Frequency.daily,

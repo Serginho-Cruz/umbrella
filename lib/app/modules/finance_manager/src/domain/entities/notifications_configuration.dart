@@ -2,12 +2,12 @@ import 'package:equatable/equatable.dart';
 
 import '../../utils/extensions.dart';
 
-class NotificationsConfiguration with EquatableMixin {
-  bool isToSend;
-  int daysBefore;
-  DateTime hourToSend;
+class NotificationsConfiguration extends Equatable {
+  final bool isToSend;
+  final int daysBefore;
+  final DateTime hourToSend;
 
-  NotificationsConfiguration({
+  const NotificationsConfiguration({
     required this.isToSend,
     required this.daysBefore,
     required this.hourToSend,

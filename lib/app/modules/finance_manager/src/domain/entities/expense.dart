@@ -4,16 +4,16 @@ import '../../utils/extensions.dart';
 import 'expense_type.dart';
 import 'frequency.dart';
 
-class Expense with EquatableMixin {
-  int id;
-  double value;
-  String name;
-  DateTime dueDate;
-  String? personName;
-  ExpenseType type;
-  Frequency frequency;
+class Expense extends Equatable {
+  final int id;
+  final double value;
+  final String name;
+  final DateTime dueDate;
+  final String? personName;
+  final ExpenseType type;
+  final Frequency frequency;
 
-  Expense({
+  const Expense({
     required this.id,
     required this.value,
     required this.name,

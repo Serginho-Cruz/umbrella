@@ -3,12 +3,12 @@ import 'package:equatable/equatable.dart';
 import '../../utils/extensions.dart';
 import 'expense_parcel.dart';
 
-class InvoiceItem with EquatableMixin {
-  double value;
-  DateTime paymentDate;
-  ExpenseParcel parcel;
+class InvoiceItem extends Equatable {
+  final double value;
+  final DateTime paymentDate;
+  final ExpenseParcel parcel;
 
-  InvoiceItem({
+  const InvoiceItem({
     required this.value,
     required this.paymentDate,
     required this.parcel,

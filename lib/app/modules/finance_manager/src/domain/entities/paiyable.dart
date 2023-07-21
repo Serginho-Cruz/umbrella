@@ -1,14 +1,14 @@
 import 'package:equatable/equatable.dart';
 
-abstract class Paiyable with EquatableMixin {
-  int id;
-  double paidValue;
-  double remainingValue;
-  DateTime dueDate;
-  DateTime? paymentDate;
-  double totalValue;
+abstract class Paiyable extends Equatable {
+  final int id;
+  final double paidValue;
+  final double remainingValue;
+  final DateTime dueDate;
+  final DateTime? paymentDate;
+  final double totalValue;
 
-  Paiyable({
+  const Paiyable({
     required this.id,
     required this.paidValue,
     required this.remainingValue,

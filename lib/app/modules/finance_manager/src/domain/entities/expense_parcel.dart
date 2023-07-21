@@ -3,9 +3,9 @@ import 'expense.dart';
 import 'paiyable.dart';
 
 class ExpenseParcel extends Paiyable {
-  Expense expense;
+  final Expense expense;
 
-  ExpenseParcel({
+  const ExpenseParcel({
     required this.expense,
     required super.dueDate,
     required super.id,

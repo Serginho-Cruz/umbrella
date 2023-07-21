@@ -4,17 +4,17 @@ import 'expense.dart';
 import 'installment_parcel.dart';
 import 'payment_method.dart';
 
-class Installment with EquatableMixin {
-  int id;
-  CreditCard? card;
-  int parcelsNumber;
-  int actualParcel;
-  Expense expense;
-  double totalValue;
-  PaymentMethod paymentMethod;
-  List<InstallmentParcel> parcels;
+class Installment extends Equatable {
+  final int id;
+  final CreditCard? card;
+  final int parcelsNumber;
+  final int actualParcel;
+  final Expense expense;
+  final double totalValue;
+  final PaymentMethod paymentMethod;
+  final List<InstallmentParcel> parcels;
 
-  Installment({
+  const Installment({
     required this.id,
     this.card,
     required this.totalValue,

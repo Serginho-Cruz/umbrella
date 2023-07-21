@@ -1,11 +1,11 @@
 import 'package:equatable/equatable.dart';
 
-class ExpenseType with EquatableMixin {
-  int id;
-  String name;
-  String icon;
+class ExpenseType extends Equatable {
+  final int id;
+  final String name;
+  final String icon;
 
-  ExpenseType({
+  const ExpenseType({
     required this.id,
     required this.name,
     required this.icon,
