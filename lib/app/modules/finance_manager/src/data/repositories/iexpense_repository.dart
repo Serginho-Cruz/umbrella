@@ -5,7 +5,7 @@ import '../../domain/entities/frequency.dart';
 import '../../errors/errors.dart';
 
 abstract class IExpenseRepository {
-  Future<Result<void, Fail>> create(Expense expense);
+  Future<Result<int, Fail>> create(Expense expense);
   Future<Result<void, Fail>> update(Expense newExpense);
   Future<Result<List<Expense>, Fail>> getAll();
   Future<Result<List<Expense>, Fail>> getByFrequency(Frequency frequency);

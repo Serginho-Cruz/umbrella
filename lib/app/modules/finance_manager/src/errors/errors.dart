@@ -6,3 +6,7 @@ class Fail implements Exception {
 class DateError extends Fail {
   DateError(super.message);
 }
+
+class InvalidValue extends Fail {
+  InvalidValue(super.message);
+}

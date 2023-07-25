@@ -11,9 +11,27 @@ class ExpenseParcel extends Paiyable {
     required super.id,
     required super.paidValue,
     required super.remainingValue,
-    required super.paymentDate,
+    super.paymentDate,
     required super.totalValue,
   });
+
+  factory ExpenseParcel.withoutId({
+    required Expense expense,
+    required DateTime dueDate,
+    required double paidValue,
+    required double remainingValue,
+    required double totalValue,
+    DateTime? paymentDate,
+  }) =>
+      ExpenseParcel(
+        expense: expense,
+        dueDate: dueDate,
+        id: 0,
+        paymentDate: paymentDate,
+        paidValue: paidValue,
+        remainingValue: remainingValue,
+        totalValue: totalValue,
+      );
 
   @override
   List<Object?> get props => [

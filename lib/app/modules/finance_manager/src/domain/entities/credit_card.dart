@@ -36,6 +36,25 @@ class CreditCard extends Equatable {
     );
   }
 
+  CreditCard copyWith({
+    int? id,
+    String? name,
+    double? annuity,
+    String? color,
+    DateTime? cardInvoiceClosingDate,
+    DateTime? cardInvoiceDueDate,
+  }) {
+    return CreditCard(
+      annuity: annuity ?? this.annuity,
+      id: id ?? this.id,
+      name: name ?? this.name,
+      color: color ?? this.color,
+      cardInvoiceClosingDate:
+          cardInvoiceClosingDate ?? this.cardInvoiceClosingDate,
+      cardInvoiceDueDate: cardInvoiceDueDate ?? this.cardInvoiceDueDate,
+    );
+  }
+
   @override
   List<Object?> get props => [
         id,

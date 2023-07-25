@@ -41,6 +41,26 @@ class Expense extends Equatable {
         frequency: frequency,
       );
 
+  Expense copyWith({
+    int? id,
+    double? value,
+    String? name,
+    DateTime? dueDate,
+    String? personName,
+    ExpenseType? type,
+    Frequency? frequency,
+  }) {
+    return Expense(
+      id: id ?? this.id,
+      value: value ?? this.value,
+      name: name ?? this.name,
+      dueDate: dueDate ?? this.dueDate,
+      personName: personName ?? this.personName,
+      type: type ?? this.type,
+      frequency: frequency ?? this.frequency,
+    );
+  }
+
   @override
   List<Object?> get props => [
         id,
