@@ -10,3 +10,7 @@ class DateError extends Fail {
 class InvalidValue extends Fail {
   InvalidValue(super.message);
 }
+
+class CreditError extends Fail {
+  CreditError(super.message);
+}

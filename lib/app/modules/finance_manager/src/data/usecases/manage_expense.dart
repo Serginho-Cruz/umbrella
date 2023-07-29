@@ -1,6 +1,9 @@
 import 'package:result_dart/result_dart.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/ibalance_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/iexpense_parcel_repository.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/ipayment_method_repository.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/itransaction_repository.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/payment_method.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/date_error_messages.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/generic_messages.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/extensions.dart';
@@ -9,6 +12,7 @@ import '../../domain/entities/expense.dart';
 import '../../domain/entities/expense_parcel.dart';
 
 import '../../domain/entities/frequency.dart';
+import '../../domain/entities/transaction.dart';
 import '../../errors/errors.dart';
 
 import '../../domain/usecases/imanage_expense.dart';
@@ -18,24 +22,21 @@ class ManageExpense implements IManageExpense {
   final IExpenseRepository expenseRepository;
   final IExpenseParcelRepository expenseParcelRepository;
   final IBalanceRepository balanceRepository;
+  final ITransactionRepository transactionRepository;
+  final IPaymentMethodRepository paymentMethodRepository;
 
   ManageExpense({
     required this.expenseRepository,
     required this.expenseParcelRepository,
     required this.balanceRepository,
+    required this.transactionRepository,
+    required this.paymentMethodRepository,
   });
 
   @override
   Future<Result<void, Fail>> register(Expense expense) async {
-    if (expense.value <= 0) {
-      return Failure(InvalidValue(GenericMessages.invalidNumber));
-    }
-    if (expense.name.isEmpty) {
-      return Failure(InvalidValue(GenericMessages.emptyString));
-    }
-    if (expense.name.length > 30) {
-      return Failure(InvalidValue(GenericMessages.overLimitString));
-    }
+    final invalidValue = _checkValues(expense);
+    if (invalidValue != null) return Failure(invalidValue);
 
     final result = await expenseRepository.create(expense);
 
@@ -44,7 +45,7 @@ class ManageExpense implements IManageExpense {
     }
 
     //Usar uma trigger para atualizar o saldo previsto
-    return await expenseParcelRepository.create(
+    return expenseParcelRepository.create(
       ExpenseParcel.withoutId(
         expense: expense.copyWith(id: result.getOrDefault(0)),
         dueDate: expense.frequency == Frequency.daily
@@ -60,17 +61,11 @@ class ManageExpense implements IManageExpense {
 
   @override
   Future<Result<void, Fail>> updateExpense(Expense expense) async {
-    if (expense.value <= 0) {
-      return Failure(InvalidValue(GenericMessages.invalidNumber));
-    }
-    if (expense.name.isEmpty) {
-      return Failure(InvalidValue(GenericMessages.emptyString));
-    }
-    if (expense.name.length > 30) {
-      return Failure(InvalidValue(GenericMessages.overLimitString));
-    }
+    final invalidValue = _checkValues(expense);
 
-    return await expenseRepository.update(expense);
+    return invalidValue != null
+        ? Failure(invalidValue)
+        : await expenseRepository.update(expense);
   }
 
   @override
@@ -84,28 +79,52 @@ class ManageExpense implements IManageExpense {
 
     final result = await expenseParcelRepository.update(newParcel);
 
-    if (result.isError()) {
-      return result;
-    }
+    if (result.isError()) return result;
+
+    final totalValuesDifference =
+        _calcDifference(oldParcel.totalValue, newParcel.totalValue);
 
     if (newParcel.totalValue > oldParcel.totalValue) {
-      return await balanceRepository.decrementFromExpectedBalance(
-        newParcel.totalValue - oldParcel.totalValue,
-      );
+      return balanceRepository
+          .decrementFromExpectedBalance(totalValuesDifference);
     }
-
     if (newParcel.totalValue < oldParcel.totalValue) {
       final updateExpectedBalance =
-          await balanceRepository.sumToExpectedBalance(
-              (oldParcel.totalValue - newParcel.totalValue).roundToDecimal());
+          await balanceRepository.sumToExpectedBalance(totalValuesDifference);
 
-      if (updateExpectedBalance.isError()) {
-        return updateExpectedBalance;
-      }
+      if (updateExpectedBalance.isError()) return updateExpectedBalance;
 
       if (oldParcel.paidValue > newParcel.totalValue) {
-        return await balanceRepository.sumToActualBalance(
-            (oldParcel.paidValue - newParcel.totalValue).roundToDecimal());
+        final valuePaidWithCreditResult =
+            await paymentMethodRepository.getValuePaidWithCredit(oldParcel);
+
+        if (valuePaidWithCreditResult.isError()) {
+          return valuePaidWithCreditResult;
+        }
+
+        final valuePaidWithCredit = valuePaidWithCreditResult.getOrDefault(0.0);
+
+        if (valuePaidWithCredit > newParcel.totalValue) {
+          return Failure(
+            CreditError(GenericMessages.creditErrorUpdatingParcel),
+          );
+        }
+        _registerAdjustTransaction(
+          value: totalValuesDifference,
+          paiyable: newParcel,
+        );
+
+        final difference =
+            _calcDifference(oldParcel.paidValue, newParcel.totalValue);
+
+        final removeValueFromPayMethods = await paymentMethodRepository
+            .removeValueFromNoCreditPayMethods(totalValuesDifference);
+
+        if (removeValueFromPayMethods.isError()) {
+          return removeValueFromPayMethods;
+        }
+
+        return balanceRepository.sumToActualBalance(difference);
       }
     }
 
@@ -132,25 +151,56 @@ class ManageExpense implements IManageExpense {
 
   @override
   Future<Result<void, Fail>> deleteParcel(ExpenseParcel parcel) async {
-    //Usar uma trigger para deletar todas as transações
-    //relacionadas a parcela
+    //Usar uma trigger para deletar todas as transações e registros
+    //de métodos de pagamento relacionadas a parcela
     final deleteParcel = await expenseParcelRepository.delete(parcel);
 
-    if (deleteParcel.isError()) {
-      return deleteParcel;
-    }
+    if (deleteParcel.isError()) return deleteParcel;
 
     final updateExpectedBalance =
         await balanceRepository.sumToExpectedBalance(parcel.totalValue);
 
-    if (updateExpectedBalance.isError()) {
-      return updateExpectedBalance;
-    }
+    if (updateExpectedBalance.isError()) return updateExpectedBalance;
 
     if (parcel.paidValue > 0) {
       return balanceRepository.sumToActualBalance(parcel.paidValue);
     }
 
     return updateExpectedBalance;
+  }
+
+  InvalidValue? _checkValues(Expense expense) {
+    if (expense.value <= 0) {
+      return InvalidValue(GenericMessages.invalidNumber);
+    }
+    if (expense.name.isEmpty) {
+      return InvalidValue(GenericMessages.emptyString);
+    }
+    if (expense.name.length > 30) {
+      return InvalidValue(GenericMessages.overLimitString);
+    }
+
+    return null;
+  }
+
+  double _calcDifference(double value1, double value2) =>
+      (value1 - value2).abs().roundToDecimal();
+
+  Future<void> _registerAdjustTransaction({
+    required double value,
+    required ExpenseParcel paiyable,
+  }) async {
+    await transactionRepository.register(Transaction.withoutId(
+      isAdjust: true,
+      value: value * -1,
+      paymentDate: DateTime.now(),
+      paiyable: paiyable,
+      paymentMethod: const PaymentMethod(
+        icon: '',
+        id: 1,
+        isCredit: false,
+        name: '',
+      ),
+    ));
   }
 }

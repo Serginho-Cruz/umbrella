@@ -4,35 +4,47 @@ import 'package:result_dart/result_dart.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/ibalance_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/iexpense_parcel_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/iexpense_repository.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/ipayment_method_repository.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/itransaction_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/manage_expense.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/imanage_expense.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
 import '../../utils/factorys/expense_factory.dart';
 import '../../utils/factorys/expense_parcel_factory.dart';
+import '../../utils/factorys/transactions_factory.dart';
 import '../repositories/balance_repository_mock.dart';
 import '../repositories/expense_parcel_repository_mock.dart';
 import '../repositories/expense_repository_mock.dart';
+import '../repositories/payment_method_repository_mock.dart';
+import '../repositories/transaction_repository_mock.dart';
 
 void main() {
   late IManageExpense usecase;
   late IExpenseRepository expenseRepository;
   late IExpenseParcelRepository expenseParcelRepository;
   late IBalanceRepository balanceRepository;
+  late ITransactionRepository transactionRepository;
+  late IPaymentMethodRepository paymentMethodRepository;
 
   setUpAll(() {
     registerFallbackValue(ExpenseFactory.generate());
     registerFallbackValue(ExpenseParcelFactory.generate());
+    registerFallbackValue(TransactionsFactory.generate());
   });
 
   setUp(() {
     expenseRepository = ExpenseRepositoryMock();
     expenseParcelRepository = ExpenseParcelRepositoryMock();
     balanceRepository = BalanceRepositoryMock();
+    transactionRepository = TransactionRepositoryMock();
+    paymentMethodRepository = PaymentMethodRepositoryMock();
 
     usecase = ManageExpense(
       expenseRepository: expenseRepository,
       expenseParcelRepository: expenseParcelRepository,
       balanceRepository: balanceRepository,
+      transactionRepository: transactionRepository,
+      paymentMethodRepository: paymentMethodRepository,
     );
   });
 
@@ -248,6 +260,12 @@ void main() {
             .thenAnswer((_) async => const Success(2));
         when(() => balanceRepository.decrementFromExpectedBalance(any()))
             .thenAnswer((_) async => const Success(2));
+        when(() => transactionRepository.register(any()))
+            .thenAnswer((_) async => const Success(2));
+        when(() => paymentMethodRepository.getValuePaidWithCredit(any()))
+            .thenAnswer((_) async => const Success(0.0));
+        when(() => paymentMethodRepository.removeValueFromNoCreditPayMethods(
+            any())).thenAnswer((_) async => const Success(2));
       });
 
       test("returns success when no error happens", () async {
@@ -302,10 +320,8 @@ void main() {
 
       test("returns error when an error happens in parcel repository",
           () async {
-        final fail = Fail("");
-
         when(() => expenseParcelRepository.update(any()))
-            .thenAnswer((_) async => Failure(fail));
+            .thenAnswer((_) async => Failure(Fail("")));
 
         final result = await usecase.updateParcel(
           oldParcel: ExpenseParcelFactory.generate(),
@@ -348,7 +364,8 @@ void main() {
       });
       group("when old parcel's total value is greater than new one's", () {
         final oldParcel = ExpenseParcelFactory.generate(totalValue: 563.55);
-        final newParcel = ExpenseParcelFactory.generate(totalValue: 300.00);
+        final newParcel =
+            ExpenseParcelFactory.generate(totalValue: 300.00, paidValue: 0.0);
 
         test("returns error when updating expected balance fails", () async {
           when(() => balanceRepository.sumToExpectedBalance(any()))
@@ -389,6 +406,48 @@ void main() {
             paidValue: 400.0,
           );
 
+          test(
+            "if value paid with credit is greater than new one's total value, returns error",
+            () async {
+              when(() => paymentMethodRepository.getValuePaidWithCredit(any()))
+                  .thenAnswer((_) async => const Success(400.0));
+
+              final result = await usecase.updateParcel(
+                oldParcel: oldPaidParcel,
+                newParcel: newParcel,
+              );
+
+              expect(
+                result.isError(),
+                isTrue,
+                reason:
+                    'The value paid with Credit is greater than new total value, mus return a fail',
+              );
+
+              expect(
+                result.fold((s) {}, (f) => f),
+                isA<CreditError>(),
+                reason: 'The error returned must be a CreditError instance',
+              );
+            },
+          );
+          test("returns error if an error happens in payment method repository",
+              () async {
+            when(() => paymentMethodRepository.getValuePaidWithCredit(any()))
+                .thenAnswer((_) async => Failure(Fail("")));
+
+            final result = await usecase.updateParcel(
+              oldParcel: oldPaidParcel,
+              newParcel: newParcel,
+            );
+
+            expect(
+              result.isError(),
+              isTrue,
+              reason:
+                  'An error happened obtaining value paid with credit, must return error',
+            );
+          });
           test("update actual balance", () async {
             await usecase.updateParcel(
               oldParcel: oldPaidParcel,
@@ -412,6 +471,41 @@ void main() {
               reason:
                   'Must return an error because balance repository returned error',
             );
+          });
+          test("remove value from payment methods used to pay the parcel",
+              () async {
+            await usecase.updateParcel(
+              oldParcel: oldPaidParcel,
+              newParcel: newParcel,
+            );
+
+            verify(() => paymentMethodRepository
+                .removeValueFromNoCreditPayMethods(263.55));
+          });
+          test("returns error when removing value from payment methods fails",
+              () async {
+            when(() => paymentMethodRepository
+                    .removeValueFromNoCreditPayMethods(any()))
+                .thenAnswer((_) async => Failure(Fail("")));
+            final result = await usecase.updateParcel(
+              oldParcel: oldPaidParcel,
+              newParcel: newParcel,
+            );
+
+            expect(
+              result.isError(),
+              isTrue,
+              reason:
+                  'Must return error because an error happened removing value from payment methods',
+            );
+          });
+          test("generates a new adjust transaction", () async {
+            await usecase.updateParcel(
+              oldParcel: oldPaidParcel,
+              newParcel: newParcel,
+            );
+
+            verify(() => transactionRepository.register(any()));
           });
         });
       });
@@ -492,7 +586,7 @@ void main() {
               "The list returned must have the same lengtha as repository's list",
         );
       });
-      test("returns success when no error happens", () async {
+      test("calls expense parcel repository with correct values", () async {
         await usecase.getAllOf(month: 4, year: 2025);
 
         verify(() => expenseParcelRepository.getAllOf(month: 4, year: 2025));
@@ -543,6 +637,7 @@ void main() {
             .thenAnswer((_) async => const Success(2));
         when(() => balanceRepository.sumToExpectedBalance(any()))
             .thenAnswer((_) async => const Success(2));
+        when(() => transactionRepository);
       });
 
       test("returns error when parcel repository fail deleting parcel",
