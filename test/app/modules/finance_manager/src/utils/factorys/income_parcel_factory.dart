@@ -9,6 +9,7 @@ abstract class IncomeParcelFactory {
     String? name,
     IncomeType? type,
     double? paidValue,
+    double? totalValue,
     DateTime? dueDate,
   }) {
     var finalName = name == null
@@ -20,7 +21,8 @@ abstract class IncomeParcelFactory {
                 : '${faker.lorem.word()} $name';
 
     paidValue = paidValue ?? faker.randomGenerator.decimal() * 500;
-    var totalValue = faker.randomGenerator.decimal(min: paidValue + 0.1);
+    totalValue =
+        totalValue ?? faker.randomGenerator.decimal(min: paidValue + 0.1);
 
     return IncomeParcel(
       income: IncomeFactory.generate(name: finalName, type: type),

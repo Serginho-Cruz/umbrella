@@ -9,6 +9,8 @@ class Transaction extends Equatable {
   final DateTime paymentDate;
   final Paiyable paiyable;
   final PaymentMethod paymentMethod;
+  final bool isAdjust;
+  final bool isReversal;
 
   const Transaction({
     required this.id,
@@ -16,6 +18,8 @@ class Transaction extends Equatable {
     required this.paymentDate,
     required this.paiyable,
     required this.paymentMethod,
+    this.isAdjust = false,
+    this.isReversal = false,
   });
 
   factory Transaction.withoutId({
@@ -23,6 +27,8 @@ class Transaction extends Equatable {
     required DateTime paymentDate,
     required Paiyable paiyable,
     required PaymentMethod paymentMethod,
+    bool isAdjust = false,
+    bool isReversal = false,
   }) =>
       Transaction(
         id: 1,
@@ -30,6 +36,8 @@ class Transaction extends Equatable {
         paymentDate: paymentDate,
         paiyable: paiyable,
         paymentMethod: paymentMethod,
+        isAdjust: isAdjust,
+        isReversal: isReversal,
       );
 
   @override
@@ -39,5 +47,7 @@ class Transaction extends Equatable {
         paymentDate.date,
         paiyable,
         paymentMethod,
+        isAdjust,
+        isReversal,
       ];
 }

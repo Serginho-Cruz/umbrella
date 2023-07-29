@@ -15,6 +15,24 @@ class IncomeParcel extends Paiyable {
     required super.totalValue,
   });
 
+  factory IncomeParcel.withoutId({
+    required Income income,
+    required DateTime dueDate,
+    required double paidValue,
+    required double remainingValue,
+    required double totalValue,
+    DateTime? paymentDate,
+  }) =>
+      IncomeParcel(
+        income: income,
+        dueDate: dueDate,
+        id: 0,
+        paymentDate: paymentDate,
+        paidValue: paidValue,
+        remainingValue: remainingValue,
+        totalValue: totalValue,
+      );
+
   @override
   List<Object?> get props => [
         income,

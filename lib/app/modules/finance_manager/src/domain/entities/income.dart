@@ -8,7 +8,8 @@ class Income extends Equatable {
   final int id;
   final String name;
   final double value;
-  final DateTime paymentDate;
+  final DateTime dueDate;
+  final DateTime? paymentDate;
   final Frequency frequency;
   final String? personName;
   final IncomeType type;
@@ -17,7 +18,8 @@ class Income extends Equatable {
     required this.id,
     required this.name,
     required this.value,
-    required this.paymentDate,
+    required this.dueDate,
+    this.paymentDate,
     required this.frequency,
     this.personName,
     required this.type,
@@ -26,7 +28,8 @@ class Income extends Equatable {
   factory Income.withoutId({
     required String name,
     required double value,
-    required DateTime paymentDate,
+    required DateTime dueDate,
+    DateTime? paymentDate,
     required Frequency frequency,
     String? personName,
     required IncomeType type,
@@ -35,6 +38,7 @@ class Income extends Equatable {
       id: 0,
       frequency: frequency,
       name: name,
+      dueDate: dueDate,
       paymentDate: paymentDate,
       personName: personName,
       type: type,
@@ -47,7 +51,8 @@ class Income extends Equatable {
         id,
         name,
         value,
-        paymentDate.date,
+        dueDate.date,
+        paymentDate?.date,
         frequency,
         type,
         personName,

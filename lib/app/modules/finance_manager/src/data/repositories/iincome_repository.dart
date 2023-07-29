@@ -5,7 +5,7 @@ import '../../errors/errors.dart';
 import '../../domain/entities/income.dart';
 
 abstract class IIncomeRepository {
-  Future<Result<void, Fail>> create(Income income);
+  Future<Result<int, Fail>> create(Income income);
   Future<Result<List<Income>, Fail>> getAll();
   Future<Result<List<Income>, Fail>> getByFrequency(Frequency frequency);
   Future<Result<double, Fail>> getSumOfIncomesWithFrequency(
