@@ -264,8 +264,9 @@ void main() {
             .thenAnswer((_) async => const Success(2));
         when(() => paymentMethodRepository.getValuePaidWithCredit(any()))
             .thenAnswer((_) async => const Success(0.0));
-        when(() => paymentMethodRepository.removeValueFromNoCreditPayMethods(
-            any())).thenAnswer((_) async => const Success(2));
+        when(() => paymentMethodRepository.removeValueFromNoCreditMethods(
+                parcel: any(named: 'parcel'), value: any(named: 'value')))
+            .thenAnswer((_) async => const Success(2));
       });
 
       test("returns success when no error happens", () async {
@@ -479,13 +480,15 @@ void main() {
               newParcel: newParcel,
             );
 
-            verify(() => paymentMethodRepository
-                .removeValueFromNoCreditPayMethods(263.55));
+            verify(() => paymentMethodRepository.removeValueFromNoCreditMethods(
+                  parcel: newParcel,
+                  value: 263.55,
+                ));
           });
           test("returns error when removing value from payment methods fails",
               () async {
-            when(() => paymentMethodRepository
-                    .removeValueFromNoCreditPayMethods(any()))
+            when(() => paymentMethodRepository.removeValueFromNoCreditMethods(
+                    parcel: any(named: 'parcel'), value: any(named: 'value')))
                 .thenAnswer((_) async => Failure(Fail("")));
             final result = await usecase.updateParcel(
               oldParcel: oldPaidParcel,

@@ -96,7 +96,7 @@ class ManageExpense implements IManageExpense {
 
       if (oldParcel.paidValue > newParcel.totalValue) {
         final valuePaidWithCreditResult =
-            await paymentMethodRepository.getValuePaidWithCredit(oldParcel);
+            await paymentMethodRepository.getValuePaidWithCredit(newParcel);
 
         if (valuePaidWithCreditResult.isError()) {
           return valuePaidWithCreditResult;
@@ -117,8 +117,11 @@ class ManageExpense implements IManageExpense {
         final difference =
             _calcDifference(oldParcel.paidValue, newParcel.totalValue);
 
-        final removeValueFromPayMethods = await paymentMethodRepository
-            .removeValueFromNoCreditPayMethods(totalValuesDifference);
+        final removeValueFromPayMethods =
+            await paymentMethodRepository.removeValueFromNoCreditMethods(
+          parcel: newParcel,
+          value: totalValuesDifference,
+        );
 
         if (removeValueFromPayMethods.isError()) {
           return removeValueFromPayMethods;
