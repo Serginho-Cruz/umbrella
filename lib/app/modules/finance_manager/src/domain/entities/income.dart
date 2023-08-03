@@ -46,6 +46,28 @@ class Income extends Equatable {
     );
   }
 
+  Income copyWith({
+    int? id,
+    String? name,
+    double? value,
+    DateTime? dueDate,
+    DateTime? paymentDate,
+    Frequency? frequency,
+    String? personName,
+    IncomeType? type,
+  }) {
+    return Income(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      value: value ?? this.value,
+      dueDate: dueDate ?? this.dueDate,
+      paymentDate: paymentDate ?? this.paymentDate,
+      frequency: frequency ?? this.frequency,
+      personName: personName ?? this.personName,
+      type: type ?? this.type,
+    );
+  }
+
   @override
   List<Object?> get props => [
         id,

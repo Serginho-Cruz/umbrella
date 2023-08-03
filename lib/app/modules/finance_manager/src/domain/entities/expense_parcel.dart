@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import '../../utils/extensions.dart';
 import 'expense.dart';
 import 'paiyable.dart';
@@ -43,4 +44,24 @@ class ExpenseParcel extends Paiyable {
         paymentDate?.date,
         totalValue,
       ];
+
+  ExpenseParcel copyWith({
+    Expense? expense,
+    DateTime? dueDate,
+    int? id,
+    double? paidValue,
+    double? remainingValue,
+    DateTime? paymentDate,
+    double? totalValue,
+  }) {
+    return ExpenseParcel(
+      id: id ?? this.id,
+      dueDate: dueDate ?? this.dueDate,
+      paidValue: paidValue ?? this.paidValue,
+      remainingValue: remainingValue ?? this.remainingValue,
+      totalValue: totalValue ?? this.totalValue,
+      paymentDate: paymentDate ?? this.paymentDate,
+      expense: expense ?? this.expense,
+    );
+  }
 }

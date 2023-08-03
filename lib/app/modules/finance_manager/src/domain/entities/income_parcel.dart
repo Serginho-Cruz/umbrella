@@ -33,6 +33,26 @@ class IncomeParcel extends Paiyable {
         totalValue: totalValue,
       );
 
+  IncomeParcel copyWith({
+    Income? income,
+    DateTime? dueDate,
+    int? id,
+    double? paidValue,
+    double? remainingValue,
+    DateTime? paymentDate,
+    double? totalValue,
+  }) {
+    return IncomeParcel(
+      id: id ?? this.id,
+      dueDate: dueDate ?? this.dueDate,
+      paidValue: paidValue ?? this.paidValue,
+      remainingValue: remainingValue ?? this.remainingValue,
+      totalValue: totalValue ?? this.totalValue,
+      paymentDate: paymentDate ?? this.paymentDate,
+      income: income ?? this.income,
+    );
+  }
+
   @override
   List<Object?> get props => [
         income,

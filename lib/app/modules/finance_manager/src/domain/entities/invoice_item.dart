@@ -14,6 +14,18 @@ class InvoiceItem extends Equatable {
     required this.parcel,
   });
 
+  InvoiceItem copyWith({
+    double? value,
+    DateTime? paymentDate,
+    ExpenseParcel? parcel,
+  }) {
+    return InvoiceItem(
+      value: value ?? this.value,
+      paymentDate: paymentDate ?? this.paymentDate,
+      parcel: parcel ?? this.parcel,
+    );
+  }
+
   @override
   List<Object?> get props => [value, paymentDate.date, parcel];
 }

@@ -40,6 +40,26 @@ class Transaction extends Equatable {
         isReversal: isReversal,
       );
 
+  Transaction copyWith({
+    int? id,
+    double? value,
+    DateTime? paymentDate,
+    Paiyable? paiyable,
+    PaymentMethod? paymentMethod,
+    bool? isAdjust,
+    bool? isReversal,
+  }) {
+    return Transaction(
+      id: id ?? this.id,
+      value: value ?? this.value,
+      paymentDate: paymentDate ?? this.paymentDate,
+      paiyable: paiyable ?? this.paiyable,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
+      isAdjust: isAdjust ?? this.isAdjust,
+      isReversal: isReversal ?? this.isReversal,
+    );
+  }
+
   @override
   List<Object?> get props => [
         id,

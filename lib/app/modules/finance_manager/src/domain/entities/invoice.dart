@@ -21,6 +21,31 @@ class Invoice extends Paiyable {
     super.paymentDate,
     required super.totalValue,
   });
+  Invoice copyWith({
+    bool? isClosed,
+    DateTime? closingDate,
+    CreditCard? card,
+    List<InvoiceItem>? itens,
+    int? id,
+    double? paidValue,
+    double? remainingValue,
+    DateTime? dueDate,
+    DateTime? paymentDate,
+    double? totalValue,
+  }) {
+    return Invoice(
+      id: id ?? this.id,
+      paidValue: paidValue ?? this.paidValue,
+      remainingValue: remainingValue ?? this.remainingValue,
+      dueDate: dueDate ?? this.dueDate,
+      paymentDate: paymentDate ?? this.paymentDate,
+      totalValue: totalValue ?? this.totalValue,
+      isClosed: isClosed ?? this.isClosed,
+      closingDate: closingDate ?? this.closingDate,
+      card: card ?? this.card,
+      itens: itens ?? this.itens,
+    );
+  }
 
   @override
   List<Object?> get props => [

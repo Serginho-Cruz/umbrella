@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+
 import 'credit_card.dart';
 import 'expense.dart';
 import 'installment_parcel.dart';
@@ -25,18 +26,6 @@ class Installment extends Equatable {
     required this.parcels,
   });
 
-  @override
-  List<Object?> get props => [
-        id,
-        card,
-        totalValue,
-        parcelsNumber,
-        actualParcel,
-        expense,
-        paymentMethod,
-        parcels,
-      ];
-
   factory Installment.withoutId({
     CreditCard? card,
     required double totalValue,
@@ -55,4 +44,38 @@ class Installment extends Equatable {
         paymentMethod: paymentMethod,
         parcels: parcels,
       );
+
+  Installment copyWith({
+    int? id,
+    CreditCard? card,
+    int? parcelsNumber,
+    int? actualParcel,
+    Expense? expense,
+    double? totalValue,
+    PaymentMethod? paymentMethod,
+    List<InstallmentParcel>? parcels,
+  }) {
+    return Installment(
+      id: id ?? this.id,
+      card: card ?? this.card,
+      parcelsNumber: parcelsNumber ?? this.parcelsNumber,
+      actualParcel: actualParcel ?? this.actualParcel,
+      expense: expense ?? this.expense,
+      totalValue: totalValue ?? this.totalValue,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
+      parcels: parcels ?? this.parcels,
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+        id,
+        card,
+        totalValue,
+        parcelsNumber,
+        actualParcel,
+        expense,
+        paymentMethod,
+        parcels,
+      ];
 }
