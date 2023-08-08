@@ -7,6 +7,18 @@ extension DateTimeExtension on DateTime {
     return '$year-$month-$day';
   }
 
+  bool isMonthAfter(DateTime other) {
+    return ((year > other.year) ||
+        (month > other.month) ||
+        (month == 12 && other.month == 1));
+  }
+
+  bool get isOfActualMonth {
+    final actualDateTime = DateTime.now();
+
+    return actualDateTime.month == month && actualDateTime.year == year;
+  }
+
   int get daysNumberOfMonth {
     const monthsWith31Days = [
       DateTime.january,

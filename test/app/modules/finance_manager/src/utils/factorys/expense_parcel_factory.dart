@@ -7,6 +7,7 @@ import 'expense_factory.dart';
 
 abstract class ExpenseParcelFactory {
   static ExpenseParcel generate({
+    int? id,
     String? name,
     ExpenseType? type,
     double? paidValue,
@@ -31,7 +32,7 @@ abstract class ExpenseParcelFactory {
     return ExpenseParcel(
       expense: expense ?? ExpenseFactory.generate(name: finalName, type: type),
       dueDate: dueDate ?? faker.date.dateTime(minYear: 2020, maxYear: 2022),
-      id: faker.randomGenerator.integer(20),
+      id: id ?? faker.randomGenerator.integer(20),
       paidValue: paidValue,
       remainingValue: totalValue - paidValue,
       paymentDate: faker.date.dateTime(minYear: 2022),

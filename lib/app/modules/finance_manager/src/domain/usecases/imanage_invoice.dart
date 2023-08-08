@@ -5,16 +5,15 @@ import '../entities/credit_card.dart';
 import '../entities/invoice.dart';
 
 abstract class IManageInvoice {
-  Future<Result<void, Fail>> generateInvoices();
-  Future<Result<Invoice, Fail>> update({
+  Future<Result<void, Fail>> update({
     required Invoice newInvoice,
     required Invoice oldInvoice,
   });
-  Future<Result<Invoice, Fail>> getActualOf(CreditCard card);
   Future<Result<List<Invoice>, Fail>> getAllOf({
     required int month,
     required int year,
   });
+  Future<Result<Invoice, Fail>> getActualOfCard(CreditCard card);
   Future<Result<List<Invoice>, Fail>> getAllOfCard(CreditCard card);
-  Future<Result<void, Fail>> deleteInvoice(Invoice invoice);
+  Future<Result<void, Fail>> reset(Invoice invoice);
 }

@@ -14,3 +14,7 @@ class InvalidValue extends Fail {
 class CreditError extends Fail {
   CreditError(super.message);
 }
+
+class InvoiceUpdateError extends Fail {
+  InvoiceUpdateError(super.message);
+}
