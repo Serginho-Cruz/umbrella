@@ -16,7 +16,7 @@ abstract class IPayExpense {
     required double value,
     required CreditCard card,
   });
-  Future<Result<Installment, Fail>> turnIntoInstallment({
+  Installment turnIntoInstallment({
     required ExpenseParcel parcel,
     required int parcelsNumber,
     required PaymentMethod paymentMethod,

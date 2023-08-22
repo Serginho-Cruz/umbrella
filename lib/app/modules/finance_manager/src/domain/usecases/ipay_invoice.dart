@@ -2,7 +2,6 @@ import 'package:result_dart/result_dart.dart';
 
 import '../../errors/errors.dart';
 import '../entities/credit_card.dart';
-import '../entities/installment.dart';
 import '../entities/invoice.dart';
 import '../entities/payment_method.dart';
 
@@ -18,7 +17,7 @@ abstract class IPayInvoice {
     required CreditCard card,
     required PaymentMethod paymentMethod,
   });
-  Future<Result<Installment, Fail>> turnIntoInstallment({
+  Future<Result<void, Fail>> turnIntoInstallment({
     required Invoice invoice,
     required double parcelsValue,
     required int parcelsNumber,
