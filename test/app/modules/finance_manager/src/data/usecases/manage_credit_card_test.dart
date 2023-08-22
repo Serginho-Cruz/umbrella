@@ -164,6 +164,132 @@ void main() {
         verify(() => cardRepository.getAll());
       });
     });
+    group("sync card method", () {
+      setUp(() {
+        when(() => cardRepository.create(any()))
+            .thenAnswer((_) async => const Success(2));
+        when(() => invoiceRepository.changeInvoicesFromCard(
+              originCard: any(named: 'originCard'),
+              destinyCard: any(named: 'destinyCard'),
+            )).thenAnswer((_) async => const Success(2));
+        when(() => cardRepository.delete(any()))
+            .thenAnswer((_) async => const Success(2));
+      });
+
+      final oldCard = CreditCardFactory.generate();
+      final cardToSync = oldCard.copyWith(id: oldCard.id + 1);
+
+      group("Creates the new card", () {
+        test("passing the correct card", () async {
+          await usecase.syncCard(cardToSync: cardToSync, cardToDelete: oldCard);
+
+          verify(() => cardRepository.create(cardToSync));
+        });
+        test("returns error when create card fails", () async {
+          when(() => cardRepository.create(any()))
+              .thenAnswer((_) async => Failure(Fail("")));
+
+          final result = await usecase.syncCard(
+            cardToSync: cardToSync,
+            cardToDelete: oldCard,
+          );
+
+          expect(
+            result.isError(),
+            isTrue,
+            reason: 'Must return error when an error happens creating card',
+          );
+
+          verify(() => cardRepository.create(any()));
+        });
+      });
+
+      group("Change card of invoices", () {
+        test("with the correct values", () async {
+          await usecase.syncCard(
+            cardToSync: cardToSync,
+            cardToDelete: oldCard,
+          );
+
+          final cards = verify(() => invoiceRepository.changeInvoicesFromCard(
+              originCard: captureAny(named: 'originCard'),
+              destinyCard: captureAny(named: 'destinyCard'))).captured;
+
+          final originCard = cards.first;
+          final destinyCard = cards[1];
+
+          expect(
+            originCard,
+            equals(cardToSync),
+            reason: "Origin Card Must be the Card passed as 'Card To Sync'",
+          );
+
+          expect(
+            destinyCard,
+            equals(oldCard),
+            reason: "Destiny Card Must be the Card passed as 'Card To Delete'",
+          );
+        });
+        test("returns error when changing card of invoices fails", () async {
+          when(() => invoiceRepository.changeInvoicesFromCard(
+                  originCard: any(named: 'originCard'),
+                  destinyCard: any(named: 'destinyCard')))
+              .thenAnswer((_) async => Failure(Fail("")));
+
+          final result = await usecase.syncCard(
+            cardToSync: cardToSync,
+            cardToDelete: oldCard,
+          );
+
+          expect(
+            result.isError(),
+            isTrue,
+            reason:
+                'Must return error because changing card of invoices failed',
+          );
+
+          verify(() => invoiceRepository.changeInvoicesFromCard(
+              originCard: any(named: 'originCard'),
+              destinyCard: any(named: 'destinyCard')));
+        });
+      });
+      group("Deletes the old card", () {
+        test("passing the correct card", () async {
+          await usecase.syncCard(cardToSync: cardToSync, cardToDelete: oldCard);
+
+          verify(() => cardRepository.delete(oldCard));
+        });
+        test("returns error when deleting card fails", () async {
+          when(() => cardRepository.delete(any()))
+              .thenAnswer((_) async => Failure(Fail("")));
+
+          final result = await usecase.syncCard(
+            cardToSync: cardToSync,
+            cardToDelete: oldCard,
+          );
+
+          expect(
+            result.isError(),
+            isTrue,
+            reason: 'Must return error because deleting card failed',
+          );
+
+          verify(() => cardRepository.delete(any()));
+        });
+      });
+      test("Returns success when no error happens", () async {
+        final result = await usecase.syncCard(
+          cardToSync: cardToSync,
+          cardToDelete: oldCard,
+        );
+
+        expect(
+          result.isSuccess(),
+          isTrue,
+          reason: 'Must return success because no errors happened',
+        );
+      });
+    });
     group("cancel method", () {
       setUp(() {
         when(() => cardRepository.delete(any()))

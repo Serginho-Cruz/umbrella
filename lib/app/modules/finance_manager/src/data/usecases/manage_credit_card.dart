@@ -23,7 +23,7 @@ class ManageCreditCard implements IManageCreditCard {
       return cardCreateResult;
     }
 
-    return await invoiceRepository.generateOfCard(card);
+    return invoiceRepository.generateOfCard(card);
   }
 
   @override
@@ -32,6 +32,26 @@ class ManageCreditCard implements IManageCreditCard {
 
   @override
   Future<Result<List<CreditCard>, Fail>> getAll() => cardRepository.getAll();
+
+  @override
+  Future<Result<void, Fail>> syncCard({
+    required CreditCard cardToSync,
+    required CreditCard cardToDelete,
+  }) async {
+    final createCard = await cardRepository.create(cardToSync);
+
+    if (createCard.isError()) return createCard;
+
+    final changeCardFromInvoices =
+        await invoiceRepository.changeInvoicesFromCard(
+      originCard: cardToSync,
+      destinyCard: cardToDelete,
+    );
+
+    if (changeCardFromInvoices.isError()) return changeCardFromInvoices;
+
+    return cardRepository.delete(cardToDelete);
+  }
 
   @override
   Future<Result<void, Fail>> cancel(CreditCard card) =>

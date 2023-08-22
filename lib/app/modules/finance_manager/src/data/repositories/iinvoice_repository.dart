@@ -17,5 +17,9 @@ abstract class IInvoiceRepository {
     required DateTime inferiorLimit,
     required DateTime upperLimit,
   });
+  Future<Result<void, Fail>> changeInvoicesFromCard({
+    required CreditCard originCard,
+    required CreditCard destinyCard,
+  });
   Future<Result<void, Fail>> resetInvoice(Invoice invoice);
 }
