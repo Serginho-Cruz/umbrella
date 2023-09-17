@@ -103,7 +103,7 @@ class GetBalance implements IGetBalance {
         inferiorLimit: nextMonthDate,
         upperLimit: requestedDate,
       ),
-      installmentRepository.getSumOfInstallemntParcelsInRange(
+      installmentRepository.getSumOfInstallmentParcelsInRange(
         inferiorLimit: nextMonthDate,
         upperLimit: requestedDate,
       ),

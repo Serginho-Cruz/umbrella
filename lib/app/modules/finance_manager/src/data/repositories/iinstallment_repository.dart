@@ -10,7 +10,7 @@ abstract class IInstallmentRepository {
     required int month,
     required int year,
   });
-  Future<Result<double, Fail>> getSumOfInstallemntParcelsInRange({
+  Future<Result<double, Fail>> getSumOfInstallmentParcelsInRange({
     required DateTime inferiorLimit,
     required DateTime upperLimit,
   });

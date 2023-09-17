@@ -4,11 +4,8 @@ import '../../domain/entities/expense_parcel.dart';
 import '../../errors/errors.dart';
 
 abstract class IExpenseParcelRepository {
-  Future<Result<void, Fail>> create(ExpenseParcel parcel);
-  Future<Result<void, Fail>> createParcelsOfInstallment({
-    required List<ExpenseParcel> parcels,
-    required int installmentId,
-  });
+  Future<Result<int, Fail>> create(ExpenseParcel parcel);
+  Future<Result<List<int>, Fail>> createAll(List<ExpenseParcel> parcels);
   Future<Result<void, Fail>> update(ExpenseParcel newParcel);
   Future<Result<void, Fail>> updateParcels(List<ExpenseParcel> expenseParcels);
   Future<Result<List<ExpenseParcel>, Fail>> getAllOf({

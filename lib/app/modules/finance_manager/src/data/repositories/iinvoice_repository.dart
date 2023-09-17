@@ -5,7 +5,7 @@ import '../../domain/entities/invoice.dart';
 import '../../errors/errors.dart';
 
 abstract class IInvoiceRepository {
-  Future<Result<void, Fail>> generateOfCard(CreditCard card);
+  Future<Result<int, Fail>> generateOfCard(CreditCard card);
   Future<Result<void, Fail>> update(Invoice newInvoice);
   Future<Result<List<Invoice>, Fail>> getAllOf({
     required int month,
