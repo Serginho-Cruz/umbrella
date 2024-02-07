@@ -7,10 +7,10 @@ class AppWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'Flutter Slidy',
+      routerConfig: Modular.routerConfig,
+      debugShowCheckedModeBanner: false,
+      title: 'Umbrella Echonomics',
       theme: ThemeData(primarySwatch: Colors.blue),
-      routerDelegate: Modular.routerDelegate,
-      routeInformationParser: Modular.routeInformationParser,
     );
   }
 }

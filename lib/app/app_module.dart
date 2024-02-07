@@ -4,10 +4,10 @@ import 'modules/finance_manager/finance_manager_module.dart';
 
 class AppModule extends Module {
   @override
-  final List<Bind> binds = [];
+  void binds(Injector i) {}
 
   @override
-  final List<ModularRoute> routes = [
-    ModuleRoute('/', module: FinanceManagerModule()),
-  ];
+  void routes(RouteManager r) {
+    r.module('/', module: FinanceManagerModule());
+  }
 }
