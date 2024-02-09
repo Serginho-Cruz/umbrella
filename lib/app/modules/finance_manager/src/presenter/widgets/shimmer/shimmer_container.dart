@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
-class ShimmerFinanceCard extends StatelessWidget {
-  const ShimmerFinanceCard({super.key});
+class ShimmerContainer extends StatelessWidget {
+  const ShimmerContainer({
+    super.key,
+    required this.width,
+    required this.height,
+    this.borderRadius = 25.0,
+  });
+
+  final double width;
+  final double height;
+  final double borderRadius;
 
   @override
   Widget build(BuildContext context) {
@@ -10,11 +19,12 @@ class ShimmerFinanceCard extends StatelessWidget {
       baseColor: Colors.grey.shade400,
       highlightColor: Colors.grey.shade200,
       child: Container(
-        width: 250,
+        width: width,
+        height: height,
         margin: const EdgeInsets.symmetric(horizontal: 20.0),
         decoration: BoxDecoration(
           color: Colors.grey,
-          borderRadius: BorderRadius.circular(25.0),
+          borderRadius: BorderRadius.circular(borderRadius),
         ),
       ),
     );

@@ -7,8 +7,8 @@ class SpacedTexts extends StatelessWidget {
     required this.second,
   });
 
-  final Widget first;
-  final Widget second;
+  final Text first;
+  final Text second;
 
   @override
   Widget build(BuildContext context) {

@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class Price extends StatelessWidget {
-  const Price({
+class Price extends Text {
+  Price({
     super.key,
     required this.value,
     this.style,
-  });
+  }) : super(
+          '',
+        );
 
   final double value;
+
+  @override
   final TextStyle? style;
 
   @override
