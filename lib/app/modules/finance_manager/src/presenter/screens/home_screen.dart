@@ -13,6 +13,8 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/wi
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/income_card.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/shimmer/shimmer_container.dart';
 
+import '../../domain/entities/date.dart';
+import '../widgets/app_bar/custom_app_bar.dart';
 import '../widgets/lists/horizontal_animated_list.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -30,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late final GlobalKey<AnimatedListState> _incomeListKey = GlobalKey();
   late final GlobalKey<AnimatedListState> _expenseListKey = GlobalKey();
   late final GlobalKey<AnimatedListState> _creditCardListKey = GlobalKey();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
   @override
   void initState() {
@@ -48,13 +51,25 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        key: _scaffoldKey,
         backgroundColor: Colors.white,
+        drawer: Drawer(
+          backgroundColor: Colors.blue,
+        ),
         body: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
+          physics: const ClampingScrollPhysics(),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              CustomAppBar(
+                title: const Text(
+                  'Home',
+                  style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w900),
+                ),
+                initialMonthAndYear: Date.today(),
+                onMonthChange: (_, __) {},
+              ),
               const Padding(
                 padding: EdgeInsets.all(30.0),
                 child: Text(

@@ -22,11 +22,14 @@ class Date {
     int? month,
     int? year,
   }) {
-    return Date(
+    var date = Date(
       day: day ?? this.day,
       month: month ?? this.month,
       year: year ?? this.year,
     );
+
+    var dateTime = DateTime(date.year, date.month, date.day);
+    return Date.fromDateTime(dateTime);
   }
 
   bool isAfter(Date other) {
@@ -34,6 +37,30 @@ class Date {
     var otherDateTime = DateTime(other.year, other.month, other.day);
 
     return thisDateTime.isAfter(otherDateTime);
+  }
+
+  bool isBefore(Date other) {
+    var thisDateTime = DateTime(year, month, day);
+    var otherDateTime = DateTime(other.year, other.month, other.day);
+
+    return thisDateTime.isBefore(otherDateTime);
+  }
+
+  String get monthName {
+    return {
+      1: 'Janeiro',
+      2: 'Fevereiro',
+      3: 'Março',
+      4: 'Abril',
+      5: 'Maio',
+      6: 'Junho',
+      7: 'Julho',
+      8: 'Agosto',
+      9: 'Setembro',
+      10: 'Outubro',
+      11: 'Novembro',
+      12: 'Dezembro',
+    }[month]!;
   }
 
   static Date today() {
