@@ -7,6 +7,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/reposit
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/ipayment_method_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/itransaction_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/manage_expense.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/imanage_expense.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
 import '../../utils/factorys/expense_factory.dart';
@@ -121,15 +122,13 @@ void main() {
         verifyNever(() => expenseParcelRepository.create(any()));
       });
       test("must call expense repository to create an expense", () async {
-        await usecase
-            .register(ExpenseFactory.generate(dueDate: DateTime.now()));
+        await usecase.register(ExpenseFactory.generate(dueDate: Date.today()));
 
         verify(() => expenseRepository.create(any()));
       });
       test("must call expense parcel repository to create an expense parcel",
           () async {
-        await usecase
-            .register(ExpenseFactory.generate(dueDate: DateTime.now()));
+        await usecase.register(ExpenseFactory.generate(dueDate: Date.today()));
 
         verify(() => expenseParcelRepository.create(any()));
       });
@@ -140,7 +139,7 @@ void main() {
               .thenAnswer((_) async => Failure(Fail("")));
 
           final result = await usecase
-              .register(ExpenseFactory.generate(dueDate: DateTime.now()));
+              .register(ExpenseFactory.generate(dueDate: Date.today()));
 
           expect(
             result.isError(),
@@ -153,7 +152,7 @@ void main() {
               .thenAnswer((_) async => Failure(Fail("")));
 
           final result = await usecase
-              .register(ExpenseFactory.generate(dueDate: DateTime.now()));
+              .register(ExpenseFactory.generate(dueDate: Date.today()));
 
           expect(
             result.isError(),

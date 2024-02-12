@@ -5,6 +5,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/reposit
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/iexpense_parcel_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/ipayment_method_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/itransaction_repository.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/expense.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/expense_parcel.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/expense_type.dart';
@@ -66,7 +67,7 @@ class ManageInvoice implements IManageInvoice {
       final expense = Expense.withoutId(
         value: difference,
         name: "Ajuste de Fatura",
-        dueDate: DateTime.now(),
+        dueDate: Date.today(),
         type: const ExpenseType(id: 1, icon: '', name: ''),
         frequency: Frequency.none,
       );
@@ -86,7 +87,7 @@ class ManageInvoice implements IManageInvoice {
         item: InvoiceItem(
           isAdjust: true,
           parcel: parcel,
-          paymentDate: DateTime.now(),
+          paymentDate: Date.today(),
           value: difference,
         ),
       );
@@ -134,7 +135,7 @@ class ManageInvoice implements IManageInvoice {
         Transaction.withoutId(
           isAdjust: true,
           value: difference * -1,
-          paymentDate: DateTime.now(),
+          paymentDate: Date.today(),
           paiyable: oldInvoice,
           paymentMethod: const PaymentMethod(
             id: 1,
@@ -226,11 +227,15 @@ class ManageInvoice implements IManageInvoice {
       }
     }
 
-    final actualDate = DateTime.now();
-    final firstDayOfNextMonth = DateTime(actualDate.year, actualDate.month + 1);
+    final actualDate = Date.today();
+    final firstDayOfNextMonth = Date(
+      year: actualDate.year,
+      month: actualDate.month + 1,
+      day: 1,
+    );
 
     if (invoice.dueDate.isAfter(firstDayOfNextMonth) ||
-        invoice.dueDate.isAtSameMomentAs(firstDayOfNextMonth)) {
+        invoice.dueDate.isAtTheSameMonthAs(firstDayOfNextMonth)) {
       final sum = _sumWhere(
         itens: invoice.itens,
         test: (item) => item.parcel.dueDate.isBefore(firstDayOfNextMonth),
@@ -260,11 +265,11 @@ class ManageInvoice implements IManageInvoice {
   }) =>
       ExpenseParcel.withoutId(
         expense: expense,
-        dueDate: DateTime.now(),
+        dueDate: Date.today(),
         paidValue: value,
         remainingValue: 0,
         totalValue: value,
-        paymentDate: DateTime.now(),
+        paymentDate: Date.today(),
       );
 
   double _sumWhere({

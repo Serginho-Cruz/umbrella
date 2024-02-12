@@ -1,11 +1,12 @@
 import 'package:result_dart/result_dart.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/ibalance_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/iincome_parcel_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/itransaction_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/payment_method.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/date_error_messages.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/generic_messages.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/extensions.dart';
+import '../repositories/ibalance_repository.dart';
+import '../repositories/iincome_parcel_repository.dart';
+import '../repositories/itransaction_repository.dart';
+import '../../domain/entities/date.dart';
+import '../../domain/entities/payment_method.dart';
+import '../../errors/date_error_messages.dart';
+import '../../errors/generic_messages.dart';
+import '../../utils/extensions.dart';
 
 import '../../domain/entities/income.dart';
 import '../../domain/entities/income_parcel.dart';
@@ -94,7 +95,7 @@ class ManageIncome implements IManageIncome {
         final createAdjustTransaction =
             await transactionRepository.register(Transaction.withoutId(
           value: difference * -1,
-          paymentDate: DateTime.now(),
+          paymentDate: Date.today(),
           paiyable: newParcel,
           paymentMethod: PaymentMethod(
             id: 1,

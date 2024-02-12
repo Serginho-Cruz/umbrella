@@ -1,6 +1,7 @@
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/income_parcel.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/income_type.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/filters/ifilter_incomes.dart';
+import '../../../domain/entities/date.dart';
+import '../../../domain/entities/income_parcel.dart';
+import '../../../domain/entities/income_type.dart';
+import '../../../domain/usecases/filters/ifilter_incomes.dart';
 
 class FilterIncomes implements IFilterIncomes {
   @override
@@ -16,8 +17,7 @@ class FilterIncomes implements IFilterIncomes {
   @override
   List<IncomeParcel> byOverdue(List<IncomeParcel> incomes) => incomes
       .where((parcel) =>
-          parcel.remainingValue > 0 &&
-          parcel.dueDate.difference(DateTime.now()).inDays < 0)
+          parcel.remainingValue > 0 && parcel.dueDate.isBefore(Date.today()))
       .toList();
 
   @override

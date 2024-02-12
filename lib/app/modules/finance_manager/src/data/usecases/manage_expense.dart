@@ -1,12 +1,13 @@
 import 'package:result_dart/result_dart.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/ibalance_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/iexpense_parcel_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/ipayment_method_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/itransaction_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/payment_method.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/date_error_messages.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/generic_messages.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/extensions.dart';
+import '../repositories/ibalance_repository.dart';
+import '../repositories/iexpense_parcel_repository.dart';
+import '../repositories/ipayment_method_repository.dart';
+import '../repositories/itransaction_repository.dart';
+import '../../domain/entities/date.dart';
+import '../../domain/entities/payment_method.dart';
+import '../../errors/date_error_messages.dart';
+import '../../errors/generic_messages.dart';
+import '../../utils/extensions.dart';
 import '../../domain/entities/expense.dart';
 
 import '../../domain/entities/expense_parcel.dart';
@@ -49,7 +50,7 @@ class ManageExpense implements IManageExpense {
       ExpenseParcel.withoutId(
         expense: expense.copyWith(id: result.getOrDefault(0)),
         dueDate: expense.frequency == Frequency.daily
-            ? DateTime.now()
+            ? Date.today()
             : expense.dueDate,
         paidValue: 0,
         remainingValue: expense.value,
@@ -196,7 +197,7 @@ class ManageExpense implements IManageExpense {
     await transactionRepository.register(Transaction.withoutId(
       isAdjust: true,
       value: value * -1,
-      paymentDate: DateTime.now(),
+      paymentDate: Date.today(),
       paiyable: paiyable,
       paymentMethod: const PaymentMethod(
         icon: '',

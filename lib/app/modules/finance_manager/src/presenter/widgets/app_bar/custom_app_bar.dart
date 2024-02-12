@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/price.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/spaced_texts.dart';
+import '../price.dart';
+import '../spaced_texts.dart';
 
 import '../../../domain/entities/date.dart';
 import 'month_changer.dart';
@@ -78,8 +78,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
               left: MediaQuery.of(context).size.width * 0.05,
               right: MediaQuery.of(context).size.width * 0.05,
             ),
-            child: SpacedTexts(
-              first: const Text(
+            child: const SpacedTexts(
+              first: Text(
                 'Saldo Atual',
                 style: TextStyle(
                   fontSize: 20.0,
@@ -88,7 +88,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
               ),
               second: Price(
                 value: 200.85,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 20.0,
                   fontWeight: FontWeight.bold,
                 ),
@@ -101,8 +101,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
               left: MediaQuery.of(context).size.width * 0.05,
               right: MediaQuery.of(context).size.width * 0.05,
             ),
-            child: SpacedTexts(
-              first: const Text(
+            child: const SpacedTexts(
+              first: Text(
                 'Saldo Esperado',
                 style: TextStyle(
                   fontSize: 18.0,
@@ -111,7 +111,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
               ),
               second: Price(
                 value: 200.85,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18.0,
                   fontWeight: FontWeight.w500,
                 ),

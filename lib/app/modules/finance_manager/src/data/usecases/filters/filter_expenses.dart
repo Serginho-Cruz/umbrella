@@ -1,23 +1,23 @@
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/expense_parcel.dart';
+import '../../../domain/entities/expense_parcel.dart';
 
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/expense_type.dart';
+import '../../../domain/entities/expense_type.dart';
 
+import '../../../domain/entities/date.dart';
 import '../../../domain/usecases/filters/ifilter_expenses.dart';
 
 class FilterExpenses implements IFilterExpenses {
   @override
   List<ExpenseParcel> byPaid(List<ExpenseParcel> expenses) =>
-      expenses.where((parcel) => parcel.remainingValue == 0).toList();
+      expenses.where((parcel) => parcel.remainingValue == 0.00).toList();
 
   @override
   List<ExpenseParcel> byUnpaid(List<ExpenseParcel> expenses) =>
-      expenses.where((parcel) => parcel.remainingValue > 0).toList();
+      expenses.where((parcel) => parcel.remainingValue > 0.00).toList();
 
   @override
   List<ExpenseParcel> byOverdue(List<ExpenseParcel> expenses) => expenses
       .where((parcel) =>
-          parcel.dueDate.difference(DateTime.now()).inDays < 0 &&
-          parcel.remainingValue > 0)
+          parcel.dueDate.isBefore(Date.today()) && parcel.remainingValue > 0.00)
       .toList();
 
   @override

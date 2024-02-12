@@ -1,6 +1,7 @@
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/credit_card_model.dart';
+
+import '../../domain/entities/date.dart';
+import '../../domain/models/credit_card_model.dart';
 
 class CreditCardStore extends Store<List<CreditCardModel>> {
   CreditCardStore() : super([]);

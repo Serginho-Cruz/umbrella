@@ -1,5 +1,5 @@
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/finance_model.dart';
 import '../entities/income_parcel.dart';
+import 'finance_model.dart';
 
 class IncomeParcelModel extends FinanceModel {
   IncomeParcelModel({

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/credit_card_model.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/expense_parcel_model.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/income_parcel_model.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/credit_card_store.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/expense_store.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/income_store.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/credit_card_widget.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/expense_card.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/lists/horizontal_listview.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/horizontal_infinity_container.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/income_card.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/shimmer/shimmer_container.dart';
+import '../../domain/models/credit_card_model.dart';
+import '../../domain/models/expense_parcel_model.dart';
+import '../../domain/models/income_parcel_model.dart';
+import '../controllers/credit_card_store.dart';
+import '../controllers/expense_store.dart';
+import '../controllers/income_store.dart';
+import '../widgets/credit_card_widget.dart';
+import '../widgets/expense_card.dart';
+import '../widgets/lists/horizontal_listview.dart';
+import '../widgets/horizontal_infinity_container.dart';
+import '../widgets/income_card.dart';
+import '../widgets/shimmer/shimmer_container.dart';
 
 import '../../domain/entities/date.dart';
 import '../widgets/app_bar/custom_app_bar.dart';
@@ -53,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
         key: _scaffoldKey,
         backgroundColor: Colors.white,
-        drawer: Drawer(
+        drawer: const Drawer(
           backgroundColor: Colors.blue,
         ),
         body: SingleChildScrollView(

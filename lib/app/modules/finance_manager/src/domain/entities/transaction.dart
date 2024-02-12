@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/payment_method.dart';
+import 'date.dart';
+import 'payment_method.dart';
 import 'paiyable.dart';
 
 class Transaction extends Equatable {

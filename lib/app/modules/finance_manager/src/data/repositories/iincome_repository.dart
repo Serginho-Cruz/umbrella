@@ -1,5 +1,5 @@
 import 'package:result_dart/result_dart.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/frequency.dart';
+import '../../domain/entities/frequency.dart';
 import '../../errors/errors.dart';
 
 import '../../domain/entities/income.dart';

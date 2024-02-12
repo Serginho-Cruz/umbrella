@@ -1,12 +1,12 @@
 import 'package:result_dart/result_dart.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/iexpense_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/iincome_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/iinvoice_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/frequency.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/gets/iget_balance.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/date_error_messages.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/extensions.dart';
+import '../../repositories/iexpense_repository.dart';
+import '../../repositories/iincome_repository.dart';
+import '../../repositories/iinvoice_repository.dart';
+import '../../../domain/entities/frequency.dart';
+import '../../../domain/usecases/gets/iget_balance.dart';
+import '../../../errors/date_error_messages.dart';
+import '../../../errors/errors.dart';
+import '../../../utils/extensions.dart';
 
 import '../../repositories/ibalance_repository.dart';
 import '../../repositories/iinstallment_repository.dart';

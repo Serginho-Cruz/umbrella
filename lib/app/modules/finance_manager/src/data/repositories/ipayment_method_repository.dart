@@ -1,6 +1,6 @@
 import 'package:result_dart/result_dart.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/payment_method.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
+import '../../domain/entities/payment_method.dart';
+import '../../errors/errors.dart';
 
 import '../../domain/entities/expense_parcel.dart';
 import '../../domain/entities/paiyable.dart';

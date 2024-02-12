@@ -1,5 +1,5 @@
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/income_parcel.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/orders/iorder_incomes.dart';
+import '../../../domain/entities/income_parcel.dart';
+import '../../../domain/usecases/orders/iorder_incomes.dart';
 
 class OrderIncomes implements IOrderIncomes {
   @override

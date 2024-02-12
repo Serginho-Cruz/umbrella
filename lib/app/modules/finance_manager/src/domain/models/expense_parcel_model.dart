@@ -1,4 +1,4 @@
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/expense_parcel.dart';
+import '../entities/expense_parcel.dart';
 import 'finance_model.dart';
 
 class ExpenseParcelModel extends FinanceModel {

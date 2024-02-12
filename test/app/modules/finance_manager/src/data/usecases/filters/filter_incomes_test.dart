@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/filters/filter_incomes.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/income_parcel.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/filters/ifilter_incomes.dart';
 
@@ -98,8 +99,7 @@ void main() {
       incomes.addAll(List.generate(
         4,
         (_) => IncomeParcelFactory.generate(
-            dueDate: DateTime.now().subtract(const Duration(days: 2)),
-            paidValue: 20.15),
+            dueDate: Date.today().subtract(days: 2), paidValue: 20.15),
       ));
 
       var filteredIncomes = usecase.byOverdue(incomes);
@@ -107,7 +107,7 @@ void main() {
       expect(filteredIncomes.length, greaterThan(0));
       for (var parcel in filteredIncomes) {
         expect(
-            parcel.remainingValue > 0 && DateTime.now().isAfter(parcel.dueDate),
+            parcel.remainingValue > 0 && Date.today().isAfter(parcel.dueDate),
             isTrue);
       }
     });
@@ -148,8 +148,8 @@ void main() {
         incomes.addAll(List.generate(
             4,
             (_) => IncomeParcelFactory.generate(
-                dueDate: DateTime.now().subtract(const Duration(days: 2)),
-                paidValue: 20.15)));
+                dueDate: Date.today().subtract(days: 2), paidValue: 20.15)));
+
         var parcelsBeforeFilter = [...incomes];
 
         usecase.byOverdue(incomes);

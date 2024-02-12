@@ -1,7 +1,7 @@
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/expense_parcel_model.dart';
 
 import '../../domain/entities/date.dart';
+import '../../domain/models/expense_parcel_model.dart';
 import '../../domain/models/finance_model.dart';
 
 class ExpenseStore extends Store<List<ExpenseParcelModel>> {

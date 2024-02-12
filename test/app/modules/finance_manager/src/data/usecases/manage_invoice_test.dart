@@ -9,6 +9,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/reposit
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/ipayment_method_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/itransaction_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/manage_invoice.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/expense.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/expense_parcel.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/frequency.dart';
@@ -75,8 +76,8 @@ void main() {
   group("Manage Invoice usecase is Working", () {
     group("update method", () {
       final oldInvoice = InvoiceFactory.generate(
-        closingDate: DateTime.now().copyWith(day: 10),
-        dueDate: DateTime.now().copyWith(day: 20),
+        closingDate: Date.today().copyWith(day: 10),
+        dueDate: Date.today().copyWith(day: 20),
         paidValue: 0.0,
         totalValue: 500.0,
       );
@@ -103,8 +104,8 @@ void main() {
       group("returns InvoiceUpdateError when", () {
         test("new close date is after new due date", () async {
           final newInvoice = InvoiceFactory.generate(
-              dueDate: DateTime(2023, 2, 3),
-              closingDate: DateTime(2023, 3, 15));
+              dueDate: Date(year: 2023, month: 2, day: 3),
+              closingDate: Date(year: 2023, month: 3, day: 15));
 
           final result = await usecase.update(
             newInvoice: newInvoice,
@@ -126,8 +127,8 @@ void main() {
         });
         test("new value is negative", () async {
           final newInvoice = InvoiceFactory.generate(
-            closingDate: DateTime(2023, 4, 5),
-            dueDate: DateTime(2023, 4, 15),
+            closingDate: Date(year: 2023, month: 4, day: 5),
+            dueDate: Date(year: 2023, month: 4, day: 15),
             totalValue: -1.87,
           );
 
@@ -153,8 +154,8 @@ void main() {
       test("update invoice when no error happens", () async {
         await usecase.update(
           newInvoice: InvoiceFactory.generate(
-            closingDate: DateTime.now().copyWith(day: 15),
-            dueDate: DateTime.now().copyWith(day: 22),
+            closingDate: Date.today().copyWith(day: 15),
+            dueDate: Date.today().copyWith(day: 22),
           ),
           oldInvoice: oldInvoice,
         );
@@ -1010,8 +1011,8 @@ void main() {
       });
       group("if invoice's due date is in actual month", () {
         final invoice = InvoiceFactory.generate(
-            dueDate: DateTime.now().copyWith(day: 25),
-            closingDate: DateTime.now().copyWith(day: 14));
+            dueDate: Date.today().copyWith(day: 25),
+            closingDate: Date.today().copyWith(day: 14));
 
         test("increments the expected balance", () async {
           await usecase.reset(invoice);
@@ -1028,13 +1029,16 @@ void main() {
                   .first;
 
           final actualMonth = invoice.dueDate;
-          final nextMonth =
-              DateTime(actualMonth.year, actualMonth.month + 1, 1);
+          final nextMonth = Date(
+            year: actualMonth.year,
+            month: actualMonth.month + 1,
+            day: 1,
+          );
 
           double expectedValue = invoice.itens
               .where((item) =>
                   item.parcel.dueDate.isAfter(nextMonth) ||
-                  item.parcel.dueDate.isAtSameMomentAs(nextMonth))
+                  item.parcel.dueDate.isAtTheSameMonthAs(nextMonth))
               .fold(0.0, (v, item) => v + item.value)
               .roundToDecimal();
 
@@ -1062,10 +1066,10 @@ void main() {
         });
       });
       group("if invoice's due date is in next month", () {
-        final now = DateTime.now();
+        final now = Date.today();
         final invoice = InvoiceFactory.generate(
-            dueDate: DateTime(now.year, now.month + 1, 14),
-            closingDate: DateTime(now.year, now.month + 1, 4));
+            dueDate: Date(year: now.year, month: now.month + 1, day: 14),
+            closingDate: Date(year: now.year, month: now.month + 1, day: 4));
 
         test("decrements the expected balance", () async {
           await usecase.reset(invoice);
@@ -1081,17 +1085,8 @@ void main() {
               .captured
               .first;
 
-          final nextMonth = invoice.dueDate.copyWith(
-            day: 1,
-            second: 0,
-            hour: 0,
-            microsecond: 0,
-            millisecond: 0,
-            minute: 0,
-          );
-
           double expectedValue = invoice.itens
-              .where((item) => item.parcel.dueDate.isBefore(nextMonth))
+              .where((item) => item.parcel.dueDate.isBefore(invoice.dueDate))
               .fold(0.0, (v, item) => v + item.value)
               .roundToDecimal();
 

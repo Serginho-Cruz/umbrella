@@ -1,5 +1,5 @@
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/payment_method.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/transaction.dart';
+import '../../entities/payment_method.dart';
+import '../../entities/transaction.dart';
 
 abstract class IFilterTransactions {
   List<Transaction> byType({

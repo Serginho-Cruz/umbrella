@@ -1,5 +1,6 @@
 import 'package:result_dart/result_dart.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
+
+import '../../errors/errors.dart';
 
 abstract class IBalanceRepository {
   Future<Result<void, Fail>> sumToActualBalance(double value);

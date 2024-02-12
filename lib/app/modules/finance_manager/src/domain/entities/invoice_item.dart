@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+
 import 'date.dart';
 import 'expense_parcel.dart';
 

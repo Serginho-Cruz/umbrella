@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/price.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/spaced_texts.dart';
+import '../../domain/entities/date.dart';
+import 'price.dart';
+import 'spaced_texts.dart';
 
 import '../../domain/models/credit_card_model.dart';
 

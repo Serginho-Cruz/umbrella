@@ -2,18 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class Price extends Text {
-  Price({
+  const Price({
     super.key,
     required this.value,
-    this.style,
+    super.style,
   }) : super(
           '',
         );
 
   final double value;
-
-  @override
-  final TextStyle? style;
 
   @override
   Widget build(BuildContext context) {

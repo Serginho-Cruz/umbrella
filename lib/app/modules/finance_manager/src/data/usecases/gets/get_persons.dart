@@ -1,7 +1,7 @@
 import 'package:result_dart/result_dart.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/iexpense_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/gets/iget_persons.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
+import '../../repositories/iexpense_repository.dart';
+import '../../../domain/usecases/gets/iget_persons.dart';
+import '../../../errors/errors.dart';
 
 import '../../repositories/iincome_repository.dart';
 

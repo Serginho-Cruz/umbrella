@@ -1,10 +1,10 @@
 import 'package:result_dart/result_dart.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/iinvoice_repository.dart';
 
 import '../../domain/entities/credit_card.dart';
 import '../../domain/usecases/imanage_credit_card.dart';
 import '../../errors/errors.dart';
 import '../repositories/icredit_card_repository.dart';
+import '../repositories/iinvoice_repository.dart';
 
 class ManageCreditCard implements IManageCreditCard {
   final ICreditCardRepository cardRepository;

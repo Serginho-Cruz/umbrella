@@ -1,4 +1,4 @@
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/income_parcel_model.dart';
+import '../../domain/models/income_parcel_model.dart';
 
 import 'finance_card.dart';
 

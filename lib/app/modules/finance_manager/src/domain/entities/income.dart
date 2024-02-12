@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
+import 'date.dart';
 import 'frequency.dart';
 import 'income_type.dart';
 

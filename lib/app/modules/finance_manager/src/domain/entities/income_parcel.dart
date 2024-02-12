@@ -1,4 +1,4 @@
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
+import 'date.dart';
 import 'income.dart';
 import 'paiyable.dart';
 
