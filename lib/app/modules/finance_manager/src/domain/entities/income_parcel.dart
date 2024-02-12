@@ -1,4 +1,4 @@
-import '../../utils/extensions.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
 import 'income.dart';
 import 'paiyable.dart';
 
@@ -17,11 +17,11 @@ class IncomeParcel extends Paiyable {
 
   factory IncomeParcel.withoutId({
     required Income income,
-    required DateTime dueDate,
+    required Date dueDate,
     required double paidValue,
     required double remainingValue,
     required double totalValue,
-    DateTime? paymentDate,
+    Date? paymentDate,
   }) =>
       IncomeParcel(
         income: income,
@@ -35,11 +35,11 @@ class IncomeParcel extends Paiyable {
 
   IncomeParcel copyWith({
     Income? income,
-    DateTime? dueDate,
+    Date? dueDate,
     int? id,
     double? paidValue,
     double? remainingValue,
-    DateTime? paymentDate,
+    Date? paymentDate,
     double? totalValue,
   }) {
     return IncomeParcel(
@@ -59,7 +59,7 @@ class IncomeParcel extends Paiyable {
         id,
         paidValue,
         remainingValue,
-        paymentDate?.date,
+        paymentDate,
         totalValue,
       ];
 }

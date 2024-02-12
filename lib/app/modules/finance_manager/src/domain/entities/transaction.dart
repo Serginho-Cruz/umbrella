@@ -1,12 +1,12 @@
 import 'package:equatable/equatable.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/payment_method.dart';
-import '../../utils/extensions.dart';
 import 'paiyable.dart';
 
 class Transaction extends Equatable {
   final int id;
   final double value;
-  final DateTime paymentDate;
+  final Date paymentDate;
   final Paiyable paiyable;
   final PaymentMethod paymentMethod;
   final bool isAdjust;
@@ -24,7 +24,7 @@ class Transaction extends Equatable {
 
   factory Transaction.withoutId({
     required double value,
-    required DateTime paymentDate,
+    required Date paymentDate,
     required Paiyable paiyable,
     required PaymentMethod paymentMethod,
     bool isAdjust = false,
@@ -43,7 +43,7 @@ class Transaction extends Equatable {
   Transaction copyWith({
     int? id,
     double? value,
-    DateTime? paymentDate,
+    Date? paymentDate,
     Paiyable? paiyable,
     PaymentMethod? paymentMethod,
     bool? isAdjust,
@@ -64,7 +64,7 @@ class Transaction extends Equatable {
   List<Object?> get props => [
         id,
         value,
-        paymentDate.date,
+        paymentDate,
         paiyable,
         paymentMethod,
         isAdjust,

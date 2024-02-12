@@ -1,14 +1,13 @@
 import 'package:equatable/equatable.dart';
-
-import '../../utils/extensions.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
 
 class CreditCard extends Equatable {
   final int id;
   final String name;
   final double annuity;
   final String color;
-  final DateTime cardInvoiceClosingDate;
-  final DateTime cardInvoiceDueDate;
+  final Date cardInvoiceClosingDate;
+  final Date cardInvoiceDueDate;
 
   const CreditCard({
     required this.id,
@@ -23,8 +22,8 @@ class CreditCard extends Equatable {
     required String name,
     required double annuity,
     required String color,
-    required DateTime cardInvoiceClosingDate,
-    required DateTime cardInvoiceDueDate,
+    required Date cardInvoiceClosingDate,
+    required Date cardInvoiceDueDate,
   }) {
     return CreditCard(
       id: 0,
@@ -41,8 +40,8 @@ class CreditCard extends Equatable {
     String? name,
     double? annuity,
     String? color,
-    DateTime? cardInvoiceClosingDate,
-    DateTime? cardInvoiceDueDate,
+    Date? cardInvoiceClosingDate,
+    Date? cardInvoiceDueDate,
   }) {
     return CreditCard(
       annuity: annuity ?? this.annuity,
@@ -61,7 +60,7 @@ class CreditCard extends Equatable {
         name,
         annuity,
         color,
-        cardInvoiceClosingDate.date,
-        cardInvoiceDueDate.date,
+        cardInvoiceClosingDate,
+        cardInvoiceDueDate,
       ];
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/price.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/spaced_texts.dart';
 
 import '../../../domain/entities/date.dart';
 import 'month_changer.dart';
@@ -38,6 +40,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
         ),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -68,6 +71,52 @@ class _CustomAppBarState extends State<CustomAppBar> {
           MonthChanger(
             onMonthChange: widget.onMonthChange,
             initialMonthAndYear: widget.initialMonthAndYear,
+          ),
+          Padding(
+            padding: EdgeInsets.only(
+              top: 15.0,
+              left: MediaQuery.of(context).size.width * 0.05,
+              right: MediaQuery.of(context).size.width * 0.05,
+            ),
+            child: SpacedTexts(
+              first: const Text(
+                'Saldo Atual',
+                style: TextStyle(
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              second: Price(
+                value: 200.85,
+                style: const TextStyle(
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(
+              top: 12.0,
+              left: MediaQuery.of(context).size.width * 0.05,
+              right: MediaQuery.of(context).size.width * 0.05,
+            ),
+            child: SpacedTexts(
+              first: const Text(
+                'Saldo Esperado',
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              second: Price(
+                value: 200.85,
+                style: const TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
           ),
         ],
       ),

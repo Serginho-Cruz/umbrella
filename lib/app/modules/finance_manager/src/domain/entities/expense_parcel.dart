@@ -1,5 +1,5 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import '../../utils/extensions.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
+
 import 'expense.dart';
 import 'paiyable.dart';
 
@@ -18,11 +18,11 @@ class ExpenseParcel extends Paiyable {
 
   factory ExpenseParcel.withoutId({
     required Expense expense,
-    required DateTime dueDate,
+    required Date dueDate,
     required double paidValue,
     required double remainingValue,
     required double totalValue,
-    DateTime? paymentDate,
+    Date? paymentDate,
   }) =>
       ExpenseParcel(
         expense: expense,
@@ -41,17 +41,17 @@ class ExpenseParcel extends Paiyable {
         dueDate,
         paidValue,
         remainingValue,
-        paymentDate?.date,
+        paymentDate,
         totalValue,
       ];
 
   ExpenseParcel copyWith({
     Expense? expense,
-    DateTime? dueDate,
+    Date? dueDate,
     int? id,
     double? paidValue,
     double? remainingValue,
-    DateTime? paymentDate,
+    Date? paymentDate,
     double? totalValue,
   }) {
     return ExpenseParcel(

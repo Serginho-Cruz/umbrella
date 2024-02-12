@@ -1,8 +1,10 @@
 import 'package:faker/faker.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/expense.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/expense_parcel.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/expense_type.dart';
 
+import 'date_factory.dart';
 import 'expense_factory.dart';
 
 abstract class ExpenseParcelFactory {
@@ -11,7 +13,8 @@ abstract class ExpenseParcelFactory {
     String? name,
     ExpenseType? type,
     double? paidValue,
-    DateTime? dueDate,
+    Date? paymentDate,
+    Date? dueDate,
     double? totalValue,
     Expense? expense,
   }) {
@@ -30,12 +33,13 @@ abstract class ExpenseParcelFactory {
         totalValue ?? faker.randomGenerator.decimal(min: paidValue + 0.1);
 
     return ExpenseParcel(
-      expense: expense ?? ExpenseFactory.generate(name: finalName, type: type),
-      dueDate: dueDate ?? faker.date.dateTime(minYear: 2020, maxYear: 2022),
       id: id ?? faker.randomGenerator.integer(20),
+      expense: expense ?? ExpenseFactory.generate(name: finalName, type: type),
+      dueDate: dueDate ?? DateFactory.generate(),
       paidValue: paidValue,
       remainingValue: totalValue - paidValue,
-      paymentDate: faker.date.dateTime(minYear: 2022),
+      paymentDate: paymentDate ??
+          (faker.randomGenerator.boolean() ? DateFactory.generate() : null),
       totalValue: totalValue,
     );
   }
@@ -44,11 +48,11 @@ abstract class ExpenseParcelFactory {
     var expense = ExpenseFactory.generate();
     return ExpenseParcel(
       expense: expense,
-      dueDate: faker.date.dateTime(minYear: 2020, maxYear: 2022),
+      dueDate: DateFactory.generate(),
       id: faker.randomGenerator.integer(20),
       paidValue: expense.value,
       remainingValue: expense.value - expense.value,
-      paymentDate: faker.date.dateTime(minYear: 2022),
+      paymentDate: DateFactory.generate(),
       totalValue: expense.value,
     );
   }

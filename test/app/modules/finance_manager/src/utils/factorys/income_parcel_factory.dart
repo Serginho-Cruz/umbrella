@@ -1,7 +1,9 @@
 import 'package:faker/faker.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/income_parcel.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/income_type.dart';
 
+import 'date_factory.dart';
 import 'income_factory.dart';
 
 abstract class IncomeParcelFactory {
@@ -10,7 +12,8 @@ abstract class IncomeParcelFactory {
     IncomeType? type,
     double? paidValue,
     double? totalValue,
-    DateTime? dueDate,
+    Date? paymentDate,
+    Date? dueDate,
   }) {
     var finalName = name == null
         ? null
@@ -29,8 +32,8 @@ abstract class IncomeParcelFactory {
       id: faker.randomGenerator.integer(20),
       paidValue: paidValue,
       remainingValue: totalValue - paidValue,
-      dueDate: dueDate ?? faker.date.dateTime(minYear: 2023, maxYear: 2025),
-      paymentDate: faker.date.dateTime(minYear: 2023, maxYear: 2025),
+      dueDate: dueDate ?? DateFactory.generate(),
+      paymentDate: paymentDate ?? DateFactory.generate(),
       totalValue: totalValue,
     );
   }
@@ -39,11 +42,11 @@ abstract class IncomeParcelFactory {
     var income = IncomeFactory.generate();
     return IncomeParcel(
       income: income,
-      dueDate: faker.date.dateTime(minYear: 2020, maxYear: 2022),
+      dueDate: DateFactory.generate(),
       id: faker.randomGenerator.integer(20),
       paidValue: income.value,
-      remainingValue: income.value - income.value,
-      paymentDate: faker.date.dateTime(minYear: 2022),
+      remainingValue: 0.0,
+      paymentDate: DateFactory.generate(),
       totalValue: income.value,
     );
   }

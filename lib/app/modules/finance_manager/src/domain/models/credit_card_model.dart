@@ -22,7 +22,7 @@ class CreditCardModel {
     return CreditCardModel(
       name: entity.name,
       color: entity.color,
-      overdueDate: Date.fromDateTime(entity.cardInvoiceDueDate),
+      overdueDate: entity.cardInvoiceDueDate,
       castValue: castValue,
     );
   }

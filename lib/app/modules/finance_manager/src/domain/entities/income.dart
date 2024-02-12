@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
-
-import '../../utils/extensions.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
 import 'frequency.dart';
 import 'income_type.dart';
 
@@ -8,8 +7,8 @@ class Income extends Equatable {
   final int id;
   final String name;
   final double value;
-  final DateTime dueDate;
-  final DateTime? paymentDate;
+  final Date dueDate;
+  final Date? paymentDate;
   final Frequency frequency;
   final String? personName;
   final IncomeType type;
@@ -28,8 +27,8 @@ class Income extends Equatable {
   factory Income.withoutId({
     required String name,
     required double value,
-    required DateTime dueDate,
-    DateTime? paymentDate,
+    required Date dueDate,
+    Date? paymentDate,
     required Frequency frequency,
     String? personName,
     required IncomeType type,
@@ -50,8 +49,8 @@ class Income extends Equatable {
     int? id,
     String? name,
     double? value,
-    DateTime? dueDate,
-    DateTime? paymentDate,
+    Date? dueDate,
+    Date? paymentDate,
     Frequency? frequency,
     String? personName,
     IncomeType? type,
@@ -73,8 +72,8 @@ class Income extends Equatable {
         id,
         name,
         value,
-        dueDate.date,
-        paymentDate?.date,
+        dueDate,
+        paymentDate,
         frequency,
         type,
         personName,

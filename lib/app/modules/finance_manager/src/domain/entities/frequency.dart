@@ -1,23 +1,13 @@
 enum Frequency { none, monthly, weekly, daily, yearly }
 
-int frequencyToInt(Frequency frequency) {
-  const map = <Frequency, int>{
-    Frequency.monthly: 1,
-    Frequency.weekly: 2,
-    Frequency.daily: 3,
-    Frequency.yearly: 4,
-  };
+extension FrequencyMethods on Frequency {
+  int toInt() => index;
 
-  return map[frequency] ?? 0;
-}
+  static Frequency fromInt(int number) {
+    if (number > 0 && number <= 4) {
+      return Frequency.values[number];
+    }
 
-Frequency frequencyFromInt(int number) {
-  const map = <int, Frequency>{
-    1: Frequency.monthly,
-    2: Frequency.weekly,
-    3: Frequency.daily,
-    4: Frequency.yearly,
-  };
-
-  return map[number] ?? Frequency.none;
+    return Frequency.none;
+  }
 }

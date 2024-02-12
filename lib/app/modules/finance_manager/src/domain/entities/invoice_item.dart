@@ -1,11 +1,10 @@
 import 'package:equatable/equatable.dart';
-
-import '../../utils/extensions.dart';
+import 'date.dart';
 import 'expense_parcel.dart';
 
 class InvoiceItem extends Equatable {
   final double value;
-  final DateTime paymentDate;
+  final Date paymentDate;
   final ExpenseParcel parcel;
   final bool isAdjust;
   final bool isInterest;
@@ -20,7 +19,7 @@ class InvoiceItem extends Equatable {
 
   InvoiceItem copyWith({
     double? value,
-    DateTime? paymentDate,
+    Date? paymentDate,
     ExpenseParcel? parcel,
     bool? isAdjust,
     bool? isInterest,
@@ -37,7 +36,7 @@ class InvoiceItem extends Equatable {
   @override
   List<Object?> get props => [
         value,
-        paymentDate.date,
+        paymentDate,
         parcel,
         isAdjust,
         isInterest,

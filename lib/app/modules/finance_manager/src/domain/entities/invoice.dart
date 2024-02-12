@@ -1,11 +1,11 @@
-import '../../utils/extensions.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
 import 'credit_card.dart';
 import 'invoice_item.dart';
 import 'paiyable.dart';
 
 class Invoice extends Paiyable {
   final bool isClosed;
-  final DateTime closingDate;
+  final Date closingDate;
   final CreditCard card;
   final List<InvoiceItem> itens;
 
@@ -23,14 +23,14 @@ class Invoice extends Paiyable {
   });
   Invoice copyWith({
     bool? isClosed,
-    DateTime? closingDate,
+    Date? closingDate,
     CreditCard? card,
     List<InvoiceItem>? itens,
     int? id,
     double? paidValue,
     double? remainingValue,
-    DateTime? dueDate,
-    DateTime? paymentDate,
+    Date? dueDate,
+    Date? paymentDate,
     double? totalValue,
   }) {
     return Invoice(
@@ -51,8 +51,8 @@ class Invoice extends Paiyable {
   List<Object?> get props => [
         id,
         isClosed,
-        dueDate.date,
-        closingDate.date,
+        dueDate,
+        closingDate,
         card,
         itens,
         paidValue,

@@ -1,47 +1,43 @@
 import 'package:equatable/equatable.dart';
 
 import 'credit_card.dart';
-import 'expense.dart';
+import 'expense_parcel.dart';
 import 'installment_parcel.dart';
-import 'payment_method.dart';
 
 class Installment extends Equatable {
   final int id;
-  final CreditCard? card;
+  final CreditCard card;
   final int parcelsNumber;
   final int actualParcel;
-  final Expense expense;
+  final ExpenseParcel expense;
   final double totalValue;
-  final PaymentMethod paymentMethod;
   final List<InstallmentParcel> parcels;
 
   const Installment({
     required this.id,
-    this.card,
+    required this.card,
     required this.totalValue,
     required this.parcelsNumber,
     required this.actualParcel,
     required this.expense,
-    required this.paymentMethod,
     required this.parcels,
   });
 
   factory Installment.withoutId({
-    CreditCard? card,
+    required CreditCard card,
     required double totalValue,
     required int parcelsNumber,
     required int actualParcel,
-    required Expense expense,
-    required PaymentMethod paymentMethod,
+    required ExpenseParcel expense,
     required List<InstallmentParcel> parcels,
   }) =>
       Installment(
         id: 0,
+        card: card,
         totalValue: totalValue,
         parcelsNumber: parcelsNumber,
         actualParcel: actualParcel,
         expense: expense,
-        paymentMethod: paymentMethod,
         parcels: parcels,
       );
 
@@ -50,9 +46,8 @@ class Installment extends Equatable {
     CreditCard? card,
     int? parcelsNumber,
     int? actualParcel,
-    Expense? expense,
+    ExpenseParcel? expense,
     double? totalValue,
-    PaymentMethod? paymentMethod,
     List<InstallmentParcel>? parcels,
   }) {
     return Installment(
@@ -62,7 +57,6 @@ class Installment extends Equatable {
       actualParcel: actualParcel ?? this.actualParcel,
       expense: expense ?? this.expense,
       totalValue: totalValue ?? this.totalValue,
-      paymentMethod: paymentMethod ?? this.paymentMethod,
       parcels: parcels ?? this.parcels,
     );
   }
@@ -75,7 +69,6 @@ class Installment extends Equatable {
         parcelsNumber,
         actualParcel,
         expense,
-        paymentMethod,
         parcels,
       ];
 }

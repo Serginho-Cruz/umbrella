@@ -1,6 +1,4 @@
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/expense_parcel.dart';
-
-import '../entities/date.dart';
 import 'finance_model.dart';
 
 class ExpenseParcelModel extends FinanceModel {
@@ -25,7 +23,7 @@ class ExpenseParcelModel extends FinanceModel {
       paidValue: parcel.paidValue,
       remainingValue: parcel.remainingValue,
       status: status,
-      overdueDate: Date.fromDateTime(parcel.dueDate),
+      overdueDate: parcel.dueDate,
     );
   }
 }
