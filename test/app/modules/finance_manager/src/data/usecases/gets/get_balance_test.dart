@@ -7,6 +7,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/reposit
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/iinstallment_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/iinvoice_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/gets/get_balance.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/frequency.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/gets/iget_balance.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
@@ -28,6 +29,7 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(Frequency.monthly);
+    registerFallbackValue(Date.today());
   });
 
   setUp(() {
@@ -110,8 +112,8 @@ void main() {
             month: any(named: 'month'), year: any(named: 'year'))).called(2);
       });
       test("calls repository passing the actual month and year", () async {
-        int month = DateTime.now().month;
-        int year = DateTime.now().year;
+        int month = Date.today().month;
+        int year = Date.today().year;
 
         await usecase.actual;
 
@@ -188,8 +190,8 @@ void main() {
             month: any(named: 'month'), year: any(named: 'year'))).called(2);
       });
       test("calls repository passing the actual month and year", () async {
-        int month = DateTime.now().month;
-        int year = DateTime.now().year;
+        int month = Date.today().month;
+        int year = Date.today().year;
 
         await usecase.expected;
 
@@ -339,7 +341,7 @@ void main() {
       });
     });
     group("Get Expected Value Of method", () {
-      final date = DateTime.now();
+      final date = Date.today();
       setUp(() {
         when(() => balanceRepository.getExpectedBalanceOf(
               month: any(named: 'month'),
@@ -353,7 +355,7 @@ void main() {
                 inferiorLimit: any(named: 'inferiorLimit'),
                 upperLimit: any(named: 'upperLimit')))
             .thenAnswer((_) async => const Success(230));
-        when(() => installmentRepository.getSumOfInstallemntParcelsInRange(
+        when(() => installmentRepository.getSumOfInstallmentParcelsInRange(
               inferiorLimit: any(named: 'inferiorLimit'),
               upperLimit: any(named: 'upperLimit'),
             )).thenAnswer((_) async => const Success(203.76));
@@ -425,9 +427,9 @@ void main() {
       });
       test("returns the expected balance of a month if no error happens",
           () async {
-        final date = DateTime.now();
-        final date1MonthBefore = date.subtract(const Duration(days: 31));
-        final date1MonthAfter = date.add(const Duration(days: 31));
+        final date = Date.today();
+        final date1MonthBefore = date.subtract(months: 1);
+        final date1MonthAfter = date.add(months: 1);
         var result = await usecase.expectedBalanceOf(
           month: date1MonthBefore.month,
           year: date1MonthBefore.year,
@@ -454,9 +456,7 @@ void main() {
       });
 
       group("when date is before or same as actual date", () {
-        final dateBefore = date.day > 15
-            ? date.subtract(const Duration(days: 20))
-            : date.subtract(const Duration(days: 40));
+        final dateBefore = date.subtract(months: 1);
         test(
             "returns a Fail when fetching expected balance and an error happens",
             () async {
@@ -476,8 +476,8 @@ void main() {
           );
 
           result = await usecase.expectedBalanceOf(
-            month: DateTime.now().month,
-            year: DateTime.now().year,
+            month: Date.today().month,
+            year: Date.today().year,
           );
 
           expect(
@@ -505,8 +505,8 @@ void main() {
           );
 
           result = await usecase.expectedBalanceOf(
-            month: DateTime.now().month,
-            year: DateTime.now().year,
+            month: Date.today().month,
+            year: Date.today().year,
           );
 
           expect(
@@ -524,9 +524,7 @@ void main() {
       });
 
       group("when date is after actual date", () {
-        final dateAfter = date.day > 15
-            ? date.add(const Duration(days: 20))
-            : date.add(const Duration(days: 40));
+        final dateAfter = date.add(months: 1);
         group("returns a Fail while fetching", () {
           test("the expected value for the actual month", () async {
             when(() => balanceRepository.getExpectedBalanceOf(
@@ -596,7 +594,7 @@ void main() {
             );
           });
           test("the sum of installment parcels in a range", () async {
-            when(() => installmentRepository.getSumOfInstallemntParcelsInRange(
+            when(() => installmentRepository.getSumOfInstallmentParcelsInRange(
                   inferiorLimit: any(named: 'inferiorLimit'),
                   upperLimit: any(named: 'upperLimit'),
                 )).thenAnswer((_) async => Failure(Fail("")));
@@ -701,7 +699,7 @@ void main() {
       });
     });
     group("Get Final Value Of method", () {
-      final dateBefore = DateTime.now().subtract(const Duration(days: 31));
+      final dateBefore = Date.today().subtract(months: 3);
 
       setUp(() {
         when(() => balanceRepository.getFinalBalanceOf(
@@ -743,7 +741,7 @@ void main() {
       });
       test("returns DateError when date is actual or later than actual",
           () async {
-        final date = DateTime.now();
+        final date = Date.today();
         var result = await usecase.finalBalanceOf(
           month: date.month,
           year: date.year,
@@ -761,7 +759,7 @@ void main() {
           reason: 'The error must be a DateError',
         );
 
-        final dateAfter = date.add(const Duration(days: 40));
+        final dateAfter = date.add(months: 1);
         result = await usecase.finalBalanceOf(
           month: dateAfter.month,
           year: dateAfter.year,
@@ -784,11 +782,11 @@ void main() {
 }
 
 double _calcMonthBalanceOf({
-  required DateTime date,
+  required Date date,
   required double monthlyValue,
   required double weeklyValue,
   required double dailyValue,
 }) =>
     monthlyValue +
-    dailyValue * date.daysNumberOfMonth +
-    weeklyValue * date.totalWeeks;
+    dailyValue * date.totalDaysOfMonth +
+    weeklyValue * date.toDateTime().totalWeeks;

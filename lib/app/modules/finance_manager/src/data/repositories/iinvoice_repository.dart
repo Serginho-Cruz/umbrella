@@ -1,4 +1,5 @@
 import 'package:result_dart/result_dart.dart';
+import '../../domain/entities/date.dart';
 
 import '../../domain/entities/credit_card.dart';
 import '../../domain/entities/invoice.dart';
@@ -11,11 +12,17 @@ abstract class IInvoiceRepository {
     required int month,
     required int year,
   });
+  Future<Result<Invoice, Fail>> get(int id);
   Future<Result<List<Invoice>, Fail>> getAllOfCard(CreditCard card);
   Future<Result<Invoice, Fail>> getActualOfCard(CreditCard card);
+  Future<Result<Invoice, Fail>> getLastOfCard(CreditCard card);
+  Future<Result<Invoice, Fail>> getFirstOpenInDateOfCard({
+    required Date date,
+    required CreditCard card,
+  });
   Future<Result<double, Fail>> getSumOfInvoicesInRange({
-    required DateTime inferiorLimit,
-    required DateTime upperLimit,
+    required Date inferiorLimit,
+    required Date upperLimit,
   });
   Future<Result<void, Fail>> changeInvoicesFromCard({
     required CreditCard originCard,

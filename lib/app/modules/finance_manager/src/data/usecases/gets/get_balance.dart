@@ -1,4 +1,5 @@
 import 'package:result_dart/result_dart.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
 import '../../repositories/iexpense_repository.dart';
 import '../../repositories/iincome_repository.dart';
 import '../../repositories/iinvoice_repository.dart';
@@ -28,15 +29,15 @@ class GetBalance implements IGetBalance {
   @override
   Future<Result<double, Fail>> get actual =>
       balanceRepository.getActualBalanceOf(
-        month: DateTime.now().month,
-        year: DateTime.now().year,
+        month: Date.today().month,
+        year: Date.today().year,
       );
 
   @override
   Future<Result<double, Fail>> get expected =>
       balanceRepository.getExpectedBalanceOf(
-        month: DateTime.now().month,
-        year: DateTime.now().year,
+        month: Date.today().month,
+        year: Date.today().year,
       );
 
   @override
@@ -49,7 +50,7 @@ class GetBalance implements IGetBalance {
       return Failure(dateError);
     }
 
-    if (DateTime(year, month).isAfter(DateTime.now())) {
+    if (Date(year: year, month: month, day: 1).isMonthAfter(Date.today())) {
       return Failure(DateError(DateErrorMessages.dateMustBeBefore));
     }
 
@@ -69,17 +70,15 @@ class GetBalance implements IGetBalance {
       return Failure(dateError);
     }
 
-    final actualDate = DateTime.now();
-    final requestedDate = DateTime(year, month);
-    final nextMonthDate = actualDate.day > 15
-        ? actualDate.add(const Duration(days: 20))
-        : actualDate.add(const Duration(days: 40));
+    final actualDate = Date.today();
+    final requestedDate = Date(year: year, month: month, day: 1);
+    final nextMonthDate = actualDate.add(months: 1);
 
     if (requestedDate.isBefore(actualDate)) {
       return balanceRepository.getExpectedBalanceOf(month: month, year: year);
     }
 
-    if (DateTime(year, month).difference(DateTime.now()).inDays == 0) {
+    if (requestedDate.isAtTheSameMonthAs(actualDate)) {
       return expected;
     }
 
@@ -137,9 +136,7 @@ class GetBalance implements IGetBalance {
         yearlyExpensesInRangeValue;
 
     do {
-      date = date.month == 12
-          ? date.copyWith(year: date.year + 1, month: 1)
-          : date.copyWith(month: date.month + 1);
+      date = date.add(months: 1);
 
       expensesSum += _getTotalValueIn(
         month: date,
@@ -170,7 +167,8 @@ class GetBalance implements IGetBalance {
       return Failure(dateError);
     }
 
-    if (month >= DateTime.now().month || year > DateTime.now().year) {
+    var date = Date(day: 1, month: month, year: year);
+    if (!date.isMonthBefore(Date.today())) {
       return Failure(DateError(DateErrorMessages.dateMustBeBefore));
     }
 
@@ -178,13 +176,13 @@ class GetBalance implements IGetBalance {
   }
 
   double _getTotalValueIn({
-    required DateTime month,
+    required Date month,
     required double dailyValue,
     required double monthlyValue,
     required double weeklyValue,
   }) =>
-      dailyValue * month.daysNumberOfMonth +
-      weeklyValue * month.totalWeeks +
+      dailyValue * month.totalDaysOfMonth +
+      weeklyValue * month.toDateTime().totalWeeks +
       monthlyValue;
 
   DateError? _checkMonthAndYear(int month, int year) {

@@ -1,4 +1,5 @@
 import 'package:result_dart/result_dart.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
 
 import '../../errors/errors.dart';
 import '../entities/credit_card.dart';
@@ -21,6 +22,6 @@ abstract class IPayInvoice {
     required Invoice invoice,
     required double parcelsValue,
     required int parcelsNumber,
-    required DateTime dueDate,
+    required Date dueDate,
   });
 }

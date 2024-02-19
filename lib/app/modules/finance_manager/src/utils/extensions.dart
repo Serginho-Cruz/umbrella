@@ -1,48 +1,11 @@
+import '../domain/entities/date.dart';
+
 extension DateTimeExtension on DateTime {
-  String get time => '$hour:$minute';
-  String get date {
-    String month = this.month < 10 ? '0${this.month}' : this.month.toString();
-    String day = this.day < 10 ? '0${this.day}' : this.day.toString();
-
-    return '$year-$month-$day';
-  }
-
-  bool isMonthAfter(DateTime other) {
-    return ((year > other.year) ||
-        (month > other.month) ||
-        (month == 12 && other.month == 1));
-  }
-
-  bool get isOfActualMonth {
-    final actualDateTime = DateTime.now();
-
-    return actualDateTime.month == month && actualDateTime.year == year;
-  }
-
-  int get daysNumberOfMonth {
-    const monthsWith31Days = [
-      DateTime.january,
-      DateTime.march,
-      DateTime.may,
-      DateTime.july,
-      DateTime.august,
-      DateTime.october,
-      DateTime.december,
-    ];
-    if (monthsWith31Days.contains(month)) {
-      return 31;
-    } else if (month == DateTime.february) {
-      return year / 4 == 0 ? 29 : 28;
-    } else {
-      return 30;
-    }
-  }
-
   ///Count how many weeks have in this month.
   ///A week is counted when it ends on Saturday, even if it is not complete
   int get totalWeeks {
     final DateTime withDay1 = copyWith(day: 1);
-    final totalDaysOfMonth = daysNumberOfMonth;
+    final totalDaysOfMonth = Date.fromDateTime(this).totalDaysOfMonth;
 
     if (withDay1.weekday >= DateTime.friday &&
         withDay1.weekday <= DateTime.sunday &&

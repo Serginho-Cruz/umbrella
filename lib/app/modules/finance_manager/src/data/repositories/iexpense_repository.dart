@@ -1,4 +1,5 @@
 import 'package:result_dart/result_dart.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
 
 import '../../domain/entities/expense.dart';
 import '../../domain/entities/frequency.dart';
@@ -13,8 +14,8 @@ abstract class IExpenseRepository {
     Frequency frequency,
   );
   Future<Result<double, Fail>> getSumOfYearlyExpensesInRange({
-    required DateTime inferiorLimit,
-    required DateTime upperLimit,
+    required Date inferiorLimit,
+    required Date upperLimit,
   });
   Future<Result<List<String>, Fail>> getPersonsNames();
   Future<Result<void, Fail>> delete(Expense expense);

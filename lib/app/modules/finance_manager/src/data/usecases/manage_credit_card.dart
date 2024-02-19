@@ -1,4 +1,5 @@
 import 'package:result_dart/result_dart.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/credit_card_model.dart';
 
 import '../../domain/entities/credit_card.dart';
 import '../../domain/usecases/imanage_credit_card.dart';
@@ -31,7 +32,20 @@ class ManageCreditCard implements IManageCreditCard {
       cardRepository.updateCard(newCard);
 
   @override
-  Future<Result<List<CreditCard>, Fail>> getAll() => cardRepository.getAll();
+  Future<Result<List<CreditCardModel>, Fail>> getAll() async {
+    var cards = await cardRepository.getAll();
+
+    return cards.map((success) {
+      List<CreditCardModel> models = [];
+      for (var card in success) {
+        models.add(
+          CreditCardModel.fromEntity(card, castValue: 150.52 * card.id),
+        );
+      }
+
+      return models;
+    });
+  }
 
   @override
   Future<Result<void, Fail>> syncCard({

@@ -169,7 +169,7 @@ class Date extends Equatable implements Comparable<Date> {
   @override
   String toString({
     DateFormat format = DateFormat.iso,
-    String? separator = '/',
+    String separator = '/',
   }) {
     String day = this.day < 10 ? '0${this.day}' : this.day.toString();
     String month = this.month < 10 ? '0${this.month}' : this.month.toString();
@@ -178,6 +178,32 @@ class Date extends Equatable implements Comparable<Date> {
       DateFormat.ddmmyyyy => '$day$separator$month$separator$year',
       DateFormat.iso => '$year$separator$month$separator$day',
       DateFormat.mmddyyyy => '$month$separator$day$separator$year',
+    };
+  }
+
+  static Date parse(
+    String string, {
+    DateFormat usedFormat = DateFormat.iso,
+    String usedSeparator = '/',
+  }) {
+    var separated = string.split(usedSeparator);
+
+    return switch (usedFormat) {
+      DateFormat.ddmmyyyy => Date(
+          day: int.parse(separated[0]),
+          month: int.parse(separated[1]),
+          year: int.parse(separated[2]),
+        ),
+      DateFormat.iso => Date(
+          year: int.parse(separated[0]),
+          month: int.parse(separated[1]),
+          day: int.parse(separated[2]),
+        ),
+      DateFormat.mmddyyyy => Date(
+          month: int.parse(separated[0]),
+          day: int.parse(separated[1]),
+          year: int.parse(separated[2]),
+        ),
     };
   }
 

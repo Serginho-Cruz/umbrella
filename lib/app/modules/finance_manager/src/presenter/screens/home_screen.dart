@@ -1,4 +1,7 @@
+import 'dart:isolate';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import '../../domain/models/credit_card_model.dart';
 import '../../domain/models/expense_parcel_model.dart';
@@ -22,7 +25,7 @@ class HomeScreen extends StatefulWidget {
 
   final IncomeStore _incomeStore = IncomeStore();
   final ExpenseStore _expenseStore = ExpenseStore();
-  final CreditCardStore _creditCardStore = CreditCardStore();
+  final CreditCardStore _creditCardStore = Modular.get();
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
