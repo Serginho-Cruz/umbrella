@@ -1,53 +1,35 @@
 import 'package:equatable/equatable.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/expense.dart';
 
 import 'credit_card.dart';
-import 'expense_parcel.dart';
 import 'installment_parcel.dart';
 
 class Installment extends Equatable {
   final int id;
+  final double value;
   final CreditCard card;
   final int parcelsNumber;
   final int actualParcel;
-  final ExpenseParcel expense;
-  final double totalValue;
+  final Expense expense;
   final List<InstallmentParcel> parcels;
 
   const Installment({
     required this.id,
     required this.card,
-    required this.totalValue,
+    required this.value,
     required this.parcelsNumber,
     required this.actualParcel,
     required this.expense,
     required this.parcels,
   });
 
-  factory Installment.withoutId({
-    required CreditCard card,
-    required double totalValue,
-    required int parcelsNumber,
-    required int actualParcel,
-    required ExpenseParcel expense,
-    required List<InstallmentParcel> parcels,
-  }) =>
-      Installment(
-        id: 0,
-        card: card,
-        totalValue: totalValue,
-        parcelsNumber: parcelsNumber,
-        actualParcel: actualParcel,
-        expense: expense,
-        parcels: parcels,
-      );
-
   Installment copyWith({
     int? id,
     CreditCard? card,
     int? parcelsNumber,
     int? actualParcel,
-    ExpenseParcel? expense,
-    double? totalValue,
+    Expense? expense,
+    double? value,
     List<InstallmentParcel>? parcels,
   }) {
     return Installment(
@@ -56,7 +38,7 @@ class Installment extends Equatable {
       parcelsNumber: parcelsNumber ?? this.parcelsNumber,
       actualParcel: actualParcel ?? this.actualParcel,
       expense: expense ?? this.expense,
-      totalValue: totalValue ?? this.totalValue,
+      value: value ?? this.value,
       parcels: parcels ?? this.parcels,
     );
   }
@@ -65,7 +47,7 @@ class Installment extends Equatable {
   List<Object?> get props => [
         id,
         card,
-        totalValue,
+        value,
         parcelsNumber,
         actualParcel,
         expense,

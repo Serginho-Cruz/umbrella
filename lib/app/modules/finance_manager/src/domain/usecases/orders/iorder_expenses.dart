@@ -1,18 +1,18 @@
-import '../../entities/expense_parcel.dart';
+import '../../entities/expense.dart';
 
 abstract class IOrderExpenses {
-  List<ExpenseParcel> byValue({
-    required List<ExpenseParcel> parcels,
+  List<Expense> byValue({
+    required List<Expense> expenses,
     required bool isCrescent,
   });
-  List<ExpenseParcel> byName({
-    required List<ExpenseParcel> parcels,
+  List<Expense> byName({
+    required List<Expense> expenses,
     required bool isAlphabetic,
   });
-  List<ExpenseParcel> byDueDate({
-    required List<ExpenseParcel> parcels,
+  List<Expense> byDueDate({
+    required List<Expense> expenses,
     required bool isCrescent,
   });
-  List<ExpenseParcel> byID(List<ExpenseParcel> parcels);
-  List<ExpenseParcel> revertOrder(List<ExpenseParcel> parcels);
+  List<Expense> byID(List<Expense> expenses);
+  List<Expense> revertOrder(List<Expense> expenses);
 }

@@ -33,5 +33,5 @@ abstract class IManageInstallment {
     required int parcelNumber,
     required Installment installment,
   });
-  Future<Result<void, Fail>> delete(Installment installment);
+  Future<Result<void, Fail>> cancel(Installment installment);
 }

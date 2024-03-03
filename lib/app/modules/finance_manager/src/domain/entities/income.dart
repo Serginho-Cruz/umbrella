@@ -1,54 +1,34 @@
 import 'package:equatable/equatable.dart';
+import 'paiyable.dart';
 import 'date.dart';
 import 'frequency.dart';
 import 'income_type.dart';
 
-class Income extends Equatable {
-  final int id;
+class Income extends Paiyable with EquatableMixin {
   final String name;
-  final double value;
-  final Date dueDate;
-  final Date? paymentDate;
   final Frequency frequency;
   final String? personName;
   final IncomeType type;
 
   const Income({
-    required this.id,
+    required super.id,
     required this.name,
-    required this.value,
-    required this.dueDate,
-    this.paymentDate,
+    required super.totalValue,
+    required super.paidValue,
+    required super.remainingValue,
+    required super.dueDate,
+    super.paymentDate,
     required this.frequency,
     this.personName,
     required this.type,
   });
 
-  factory Income.withoutId({
-    required String name,
-    required double value,
-    required Date dueDate,
-    Date? paymentDate,
-    required Frequency frequency,
-    String? personName,
-    required IncomeType type,
-  }) {
-    return Income(
-      id: 0,
-      frequency: frequency,
-      name: name,
-      dueDate: dueDate,
-      paymentDate: paymentDate,
-      personName: personName,
-      type: type,
-      value: value,
-    );
-  }
-
   Income copyWith({
     int? id,
     String? name,
-    double? value,
+    double? totalValue,
+    double? paidValue,
+    double? remainingValue,
     Date? dueDate,
     Date? paymentDate,
     Frequency? frequency,
@@ -58,7 +38,9 @@ class Income extends Equatable {
     return Income(
       id: id ?? this.id,
       name: name ?? this.name,
-      value: value ?? this.value,
+      totalValue: totalValue ?? this.totalValue,
+      paidValue: paidValue ?? this.paidValue,
+      remainingValue: remainingValue ?? this.remainingValue,
       dueDate: dueDate ?? this.dueDate,
       paymentDate: paymentDate ?? this.paymentDate,
       frequency: frequency ?? this.frequency,
@@ -71,7 +53,9 @@ class Income extends Equatable {
   List<Object?> get props => [
         id,
         name,
-        value,
+        totalValue,
+        paidValue,
+        remainingValue,
         dueDate,
         paymentDate,
         frequency,

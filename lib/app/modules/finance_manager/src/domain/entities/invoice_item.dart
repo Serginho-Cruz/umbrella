@@ -1,19 +1,18 @@
 import 'package:equatable/equatable.dart';
-
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/expense.dart';
 import 'date.dart';
-import 'expense_parcel.dart';
 
 class InvoiceItem extends Equatable {
   final double value;
   final Date paymentDate;
-  final ExpenseParcel parcel;
+  final Expense expense;
   final bool isAdjust;
   final bool isInterest;
 
   const InvoiceItem({
     required this.value,
     required this.paymentDate,
-    required this.parcel,
+    required this.expense,
     this.isAdjust = false,
     this.isInterest = false,
   });
@@ -21,14 +20,14 @@ class InvoiceItem extends Equatable {
   InvoiceItem copyWith({
     double? value,
     Date? paymentDate,
-    ExpenseParcel? parcel,
+    Expense? expense,
     bool? isAdjust,
     bool? isInterest,
   }) {
     return InvoiceItem(
       value: value ?? this.value,
       paymentDate: paymentDate ?? this.paymentDate,
-      parcel: parcel ?? this.parcel,
+      expense: expense ?? this.expense,
       isAdjust: isAdjust ?? false,
       isInterest: isInterest ?? false,
     );
@@ -38,7 +37,7 @@ class InvoiceItem extends Equatable {
   List<Object?> get props => [
         value,
         paymentDate,
-        parcel,
+        expense,
         isAdjust,
         isInterest,
       ];

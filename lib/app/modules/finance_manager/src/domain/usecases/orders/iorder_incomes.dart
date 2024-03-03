@@ -1,18 +1,18 @@
-import '../../entities/income_parcel.dart';
+import '../../entities/income.dart';
 
 abstract class IOrderIncomes {
-  List<IncomeParcel> byValue({
-    required List<IncomeParcel> parcels,
+  List<Income> byValue({
+    required List<Income> incomes,
     required bool isCrescent,
   });
-  List<IncomeParcel> byName({
-    required List<IncomeParcel> parcels,
+  List<Income> byName({
+    required List<Income> incomes,
     required bool isAlphabetic,
   });
-  List<IncomeParcel> byDueDate({
-    required List<IncomeParcel> parcels,
+  List<Income> byDueDate({
+    required List<Income> incomes,
     required bool isCrescent,
   });
-  List<IncomeParcel> byID(List<IncomeParcel> parcels);
-  List<IncomeParcel> revertOrder(List<IncomeParcel> parcels);
+  List<Income> byID(List<Income> incomes);
+  List<Income> revertOrder(List<Income> incomes);
 }

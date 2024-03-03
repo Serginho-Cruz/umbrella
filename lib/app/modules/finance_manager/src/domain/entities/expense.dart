@@ -1,73 +1,66 @@
 import 'package:equatable/equatable.dart';
-import 'date.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
+
 import 'expense_type.dart';
 import 'frequency.dart';
+import 'paiyable.dart';
 
-class Expense extends Equatable {
-  final int id;
-  final double value;
+class Expense extends Paiyable with EquatableMixin {
   final String name;
-  final Date dueDate;
   final String? personName;
   final ExpenseType type;
   final Frequency frequency;
 
   const Expense({
-    required this.id,
-    required this.value,
+    required super.id,
     required this.name,
-    required this.dueDate,
+    required super.totalValue,
+    required super.paidValue,
+    required super.remainingValue,
+    required super.dueDate,
+    required super.paymentDate,
     this.personName,
     required this.type,
     required this.frequency,
   });
 
-  factory Expense.withoutId({
-    required double value,
-    required String name,
-    required Date dueDate,
-    String? personName,
-    required ExpenseType type,
-    required Frequency frequency,
-  }) =>
-      Expense(
-        id: 0,
-        value: value,
-        name: name,
-        dueDate: dueDate,
-        personName: personName,
-        type: type,
-        frequency: frequency,
-      );
+  @override
+  List<Object?> get props => [
+        id,
+        name,
+        totalValue,
+        paidValue,
+        remainingValue,
+        paymentDate,
+        dueDate,
+        personName,
+        type,
+        frequency,
+      ];
 
   Expense copyWith({
     int? id,
-    double? value,
     String? name,
+    double? totalValue,
+    double? paidValue,
+    double? remainingValue,
     Date? dueDate,
+    Date? paymentDate,
     String? personName,
     ExpenseType? type,
     Frequency? frequency,
   }) {
     return Expense(
       id: id ?? this.id,
-      value: value ?? this.value,
       name: name ?? this.name,
+      totalValue: totalValue ?? this.totalValue,
+      paidValue: paidValue ?? this.paidValue,
+      remainingValue: remainingValue ?? this.remainingValue,
       dueDate: dueDate ?? this.dueDate,
+      paymentDate: paymentDate ?? this.paymentDate,
       personName: personName ?? this.personName,
       type: type ?? this.type,
       frequency: frequency ?? this.frequency,
     );
   }
-
-  @override
-  List<Object?> get props => [
-        id,
-        name,
-        value,
-        dueDate,
-        personName,
-        type,
-        frequency,
-      ];
 }

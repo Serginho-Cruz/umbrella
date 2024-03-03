@@ -1,25 +1,26 @@
 import 'package:result_dart/result_dart.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/expense.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/payment_method.dart';
 
 import '../../errors/errors.dart';
 import '../entities/credit_card.dart';
-import '../entities/expense_parcel.dart';
 import '../entities/installment.dart';
-import '../entities/payment_method.dart';
 
 abstract class IPayExpense {
   Future<Result<void, Fail>> withoutCredit({
-    required ExpenseParcel expense,
+    required Expense expense,
     required double value,
+    required PaymentMethod paymentMethod,
   });
   Future<Result<void, Fail>> withCredit({
-    required ExpenseParcel expense,
+    required Expense expense,
     required double value,
     required CreditCard card,
   });
   Installment turnIntoInstallment({
-    required ExpenseParcel parcel,
+    required Expense expense,
     required int parcelsNumber,
-    required PaymentMethod paymentMethod,
+    required CreditCard card,
     double parcelsValue,
   });
 }

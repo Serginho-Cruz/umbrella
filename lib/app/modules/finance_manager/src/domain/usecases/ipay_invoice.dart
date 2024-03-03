@@ -16,7 +16,6 @@ abstract class IPayInvoice {
     required Invoice invoice,
     required double value,
     required CreditCard card,
-    required PaymentMethod paymentMethod,
   });
   Future<Result<void, Fail>> turnIntoInstallment({
     required Invoice invoice,
