@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/filters/filter_transactions.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/expense_parcel.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/income_parcel.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/expense.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/income.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/invoice.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/paiyable.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/transaction.dart';
@@ -26,7 +26,7 @@ void main() {
     test(
         "by PaymentMethod returns only transactions paiyed with a specific paymentMethod",
         () {
-      var paymentMethod = PaymentMethodFactory.generate();
+      var paymentMethod = PaymentMethodFactory.getRandom();
       transactions.addAll(List.generate(
           5, (_) => TransactionsFactory.generate(method: paymentMethod)));
 
@@ -53,8 +53,8 @@ void main() {
       );
 
       bool Function(Paiyable) test = <TransactionType, bool Function(Paiyable)>{
-        TransactionType.expense: (p) => p is ExpenseParcel,
-        TransactionType.income: (p) => p is IncomeParcel,
+        TransactionType.expense: (p) => p is Expense,
+        TransactionType.income: (p) => p is Income,
         TransactionType.invoice: (p) => p is Invoice,
       }[type]!;
 
@@ -97,7 +97,7 @@ void main() {
         }
       });
       test("In byPaymentMethod method", () {
-        var method = PaymentMethodFactory.generate();
+        var method = PaymentMethodFactory.getRandom();
         transactions.addAll(List.generate(
             4, (_) => TransactionsFactory.generate(method: method)));
 

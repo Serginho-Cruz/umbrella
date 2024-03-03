@@ -13,6 +13,5 @@ abstract class IOrderExpenses {
     required List<Expense> expenses,
     required bool isCrescent,
   });
-  List<Expense> byID(List<Expense> expenses);
   List<Expense> revertOrder(List<Expense> expenses);
 }

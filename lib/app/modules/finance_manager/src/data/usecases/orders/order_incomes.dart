@@ -1,58 +1,54 @@
-import '../../../domain/entities/income_parcel.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/income.dart';
+
 import '../../../domain/usecases/orders/iorder_incomes.dart';
 
 class OrderIncomes implements IOrderIncomes {
   @override
-  List<IncomeParcel> byID(List<IncomeParcel> parcels) =>
-      List.from(parcels)..sort((a, b) => a.id.compareTo(b.id));
-
-  @override
-  List<IncomeParcel> byName({
-    required List<IncomeParcel> parcels,
+  List<Income> byName({
+    required List<Income> incomes,
     required bool isAlphabetic,
   }) =>
       _sortList(
-        sortFunction: (a, b) => a.income.name.compareTo(b.income.name),
-        parcels: parcels,
+        sortFunction: (a, b) => a.name.compareTo(b.name),
+        incomes: incomes,
         isCrescent: isAlphabetic,
       );
 
   @override
-  List<IncomeParcel> byValue({
-    required List<IncomeParcel> parcels,
+  List<Income> byValue({
+    required List<Income> incomes,
     required bool isCrescent,
   }) =>
       _sortList(
         sortFunction: (a, b) => a.totalValue.compareTo(b.totalValue),
-        parcels: parcels,
+        incomes: incomes,
         isCrescent: isCrescent,
       );
 
   @override
-  List<IncomeParcel> byDueDate({
-    required List<IncomeParcel> parcels,
+  List<Income> byDueDate({
+    required List<Income> incomes,
     required bool isCrescent,
   }) =>
       _sortList(
         sortFunction: (a, b) => a.dueDate.compareTo(b.dueDate),
-        parcels: parcels,
+        incomes: incomes,
         isCrescent: isCrescent,
       );
 
   @override
-  List<IncomeParcel> revertOrder(List<IncomeParcel> parcels) =>
-      parcels.reversed.toList();
+  List<Income> revertOrder(List<Income> incomes) => incomes.reversed.toList();
 
-  List<IncomeParcel> _sortList({
-    required int Function(IncomeParcel, IncomeParcel) sortFunction,
-    required List<IncomeParcel> parcels,
+  List<Income> _sortList({
+    required int Function(Income, Income) sortFunction,
+    required List<Income> incomes,
     required bool isCrescent,
   }) {
     //Multiplier Number in compare will order the list in crescent or decrescent
     //without using .reverse in the final of processing, saving cellphone resources
 
     int multiplierNumber = isCrescent ? 1 : -1;
-    return List.from(parcels)
+    return List.from(incomes)
       ..sort((a, b) => sortFunction(a, b) * multiplierNumber);
   }
 }

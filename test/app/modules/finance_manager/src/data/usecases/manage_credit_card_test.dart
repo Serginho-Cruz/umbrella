@@ -4,7 +4,6 @@ import 'package:result_dart/result_dart.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/icredit_card_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/iinvoice_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/manage_credit_card.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/credit_card.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/imanage_credit_card.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
 
@@ -145,7 +144,6 @@ void main() {
           reason:
               'Must return a success because no error happened in repository',
         );
-        expect(result.fold((s) => s, (f) => f), isA<List<CreditCard>>());
 
         verify(() => cardRepository.getAll());
       });

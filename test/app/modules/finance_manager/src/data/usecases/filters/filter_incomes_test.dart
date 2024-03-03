@@ -1,52 +1,50 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/filters/filter_incomes.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/income_parcel.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/income.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/filters/ifilter_incomes.dart';
 
-import '../../../utils/factorys/income_parcel_factory.dart';
+import '../../../utils/factorys/income_factory.dart';
 import '../../../utils/factorys/income_type_factory.dart';
 
 void main() {
   late IFilterIncomes usecase;
-  List<IncomeParcel> incomes = [];
+  List<Income> incomes = [];
 
   setUp(() {
     usecase = FilterIncomes();
     incomes.clear();
-    incomes.addAll(List.generate(8, (_) => IncomeParcelFactory.generate()));
+    incomes.addAll(List.generate(8, (_) => IncomeFactory.generate()));
   });
 
   group('Filter Incomes Usecase is Working ', () {
     test("by Received returns only totally paid parcels", () {
-      incomes.addAll(
-          List.generate(4, (_) => IncomeParcelFactory.generateReceived()));
+      incomes.addAll(List.generate(4, (_) => IncomeFactory.generateReceived()));
 
-      var filteredIncomes = usecase.byReceived(incomes);
+      var filteredIncomes = usecase.byPaid(incomes);
       expect(filteredIncomes.length, greaterThan(0));
 
-      for (var parcel in filteredIncomes) {
+      for (var income in filteredIncomes) {
         expect(
-            parcel.remainingValue == 0 && parcel.paidValue == parcel.totalValue,
+            income.remainingValue == 0 && income.paidValue == income.totalValue,
             isTrue);
       }
     });
     test("by Unreceived returns only not totally paid parcels", () {
-      incomes.addAll(
-          List.generate(4, (_) => IncomeParcelFactory.generateReceived()));
+      incomes.addAll(List.generate(4, (_) => IncomeFactory.generateReceived()));
 
-      var filteredIncomes = usecase.byUnreceived(incomes);
+      var filteredIncomes = usecase.byUnpaid(incomes);
       expect(filteredIncomes.length, greaterThan(0));
 
-      for (var parcel in filteredIncomes) {
+      for (var income in filteredIncomes) {
         expect(
-            parcel.remainingValue > 0 && parcel.paidValue < parcel.totalValue,
+            income.remainingValue > 0 && income.paidValue < income.totalValue,
             isTrue);
       }
     });
     test("by Name returns only parcels that contains the name", () {
-      incomes.addAll(List.generate(
-          5, (_) => IncomeParcelFactory.generate(name: 'Salary')));
+      incomes.addAll(
+          List.generate(5, (_) => IncomeFactory.generate(name: 'Salary')));
 
       var filteredIncomes = usecase.byName(
         incomes: incomes,
@@ -54,13 +52,13 @@ void main() {
       );
 
       expect(filteredIncomes.length, greaterThan(0));
-      for (var parcel in filteredIncomes) {
-        expect(parcel.income.name.contains('Salary'), isTrue);
+      for (var income in filteredIncomes) {
+        expect(income.name.contains('Salary'), isTrue);
       }
     });
     test("by Name must be case-insensitive", () {
-      incomes.addAll(List.generate(
-          5, (_) => IncomeParcelFactory.generate(name: 'SALARY')));
+      incomes.addAll(
+          List.generate(5, (_) => IncomeFactory.generate(name: 'SALARY')));
 
       var filteredLower = usecase.byName(
         incomes: incomes,
@@ -75,8 +73,8 @@ void main() {
       expect(filteredLower.length, greaterThan(0));
       expect(filteredEqual.length, greaterThan(0));
 
-      for (var parcel in filteredEqual) {
-        expect(filteredLower.contains(parcel), isTrue);
+      for (var income in filteredEqual) {
+        expect(filteredLower.contains(income), isTrue);
       }
 
       expect(filteredEqual.length, equals(filteredLower.length));
@@ -84,21 +82,21 @@ void main() {
     test("by Type returns only parcels where type is equals the type passed",
         () {
       var type = IncomeTypeFactory.generate();
-      incomes.addAll(
-          List.generate(4, (_) => IncomeParcelFactory.generate(type: type)));
+      incomes
+          .addAll(List.generate(4, (_) => IncomeFactory.generate(type: type)));
 
       var filteredIncomes = usecase.byType(incomes: incomes, type: type);
 
       expect(filteredIncomes.length, greaterThan(0));
-      for (var parcel in filteredIncomes) {
-        expect(parcel.income.type, equals(type));
+      for (var income in filteredIncomes) {
+        expect(income.type, equals(type));
       }
     });
     test("by Overdue returns only not totally paid and out of due date parcels",
         () {
       incomes.addAll(List.generate(
         4,
-        (_) => IncomeParcelFactory.generate(
+        (_) => IncomeFactory.generate(
             dueDate: Date.today().subtract(days: 2), paidValue: 20.15),
       ));
 
@@ -113,11 +111,11 @@ void main() {
     });
     group("Parcels List passed by parameter remains unmodified", () {
       test("In byReceived method", () {
-        incomes.addAll(
-            List.generate(4, (_) => IncomeParcelFactory.generateReceived()));
+        incomes
+            .addAll(List.generate(4, (_) => IncomeFactory.generateReceived()));
         var parcelsBeforeFilter = [...incomes];
 
-        usecase.byReceived(incomes);
+        usecase.byPaid(incomes);
 
         expect(parcelsBeforeFilter.length, equals(incomes.length));
 
@@ -129,11 +127,11 @@ void main() {
         }
       });
       test("In byUnReceived method", () {
-        incomes.addAll(
-            List.generate(4, (_) => IncomeParcelFactory.generateReceived()));
+        incomes
+            .addAll(List.generate(4, (_) => IncomeFactory.generateReceived()));
         var parcelsBeforeFilter = [...incomes];
 
-        usecase.byUnreceived(incomes);
+        usecase.byUnpaid(incomes);
 
         expect(parcelsBeforeFilter.length, equals(incomes.length));
 
@@ -147,7 +145,7 @@ void main() {
       test("In byOverdue method", () {
         incomes.addAll(List.generate(
             4,
-            (_) => IncomeParcelFactory.generate(
+            (_) => IncomeFactory.generate(
                 dueDate: Date.today().subtract(days: 2), paidValue: 20.15)));
 
         var parcelsBeforeFilter = [...incomes];
@@ -164,8 +162,8 @@ void main() {
         }
       });
       test("In byName method", () {
-        incomes.addAll(List.generate(
-            4, (_) => IncomeParcelFactory.generate(name: 'Salary')));
+        incomes.addAll(
+            List.generate(4, (_) => IncomeFactory.generate(name: 'Salary')));
         var parcelsBeforeFilter = [...incomes];
 
         usecase.byName(incomes: incomes, searchName: 'Salary');
@@ -182,7 +180,7 @@ void main() {
       test("In byType method", () {
         var type = IncomeTypeFactory.generate();
         incomes.addAll(
-            List.generate(4, (_) => IncomeParcelFactory.generate(type: type)));
+            List.generate(4, (_) => IncomeFactory.generate(type: type)));
         var parcelsBeforeFilter = [...incomes];
 
         usecase.byType(incomes: incomes, type: type);

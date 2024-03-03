@@ -1,9 +1,9 @@
+import '../../../domain/entities/expense.dart';
+import '../../../domain/entities/income.dart';
 import '../../../domain/entities/payment_method.dart';
 
 import '../../../domain/entities/transaction.dart';
 
-import '../../../domain/entities/expense_parcel.dart';
-import '../../../domain/entities/income_parcel.dart';
 import '../../../domain/entities/invoice.dart';
 import '../../../domain/usecases/filters/ifilter_transactions.dart';
 
@@ -24,8 +24,8 @@ class FilterTransactions implements IFilterTransactions {
   }) {
     bool Function(Transaction) isTheSpecifiedType =
         <TransactionType, bool Function(Transaction)>{
-      TransactionType.expense: (t) => t.paiyable is ExpenseParcel,
-      TransactionType.income: (t) => t.paiyable is IncomeParcel,
+      TransactionType.expense: (t) => t.paiyable is Expense,
+      TransactionType.income: (t) => t.paiyable is Income,
       TransactionType.invoice: (t) => t.paiyable is Invoice,
     }[type]!;
 

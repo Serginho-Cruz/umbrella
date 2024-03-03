@@ -6,8 +6,8 @@ abstract class IFilterIncomes {
     required List<Income> incomes,
     required String searchName,
   });
-  List<Income> byReceived(List<Income> incomes);
-  List<Income> byUnreceived(List<Income> incomes);
+  List<Income> byPaid(List<Income> incomes);
+  List<Income> byUnpaid(List<Income> incomes);
   List<Income> byOverdue(List<Income> incomes);
   List<Income> byType({
     required List<Income> incomes,

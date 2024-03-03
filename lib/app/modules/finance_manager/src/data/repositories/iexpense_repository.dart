@@ -7,8 +7,13 @@ import '../../errors/errors.dart';
 
 abstract class IExpenseRepository {
   Future<Result<int, Fail>> create(Expense expense);
+  Future<Result<List<int>, Fail>> createAll(List<Expense> expenses);
   Future<Result<void, Fail>> update(Expense newExpense);
   Future<Result<List<Expense>, Fail>> getAll();
+  Future<Result<List<Expense>, Fail>> getAllOf({
+    required int year,
+    required int month,
+  });
   Future<Result<List<Expense>, Fail>> getByFrequency(Frequency frequency);
   Future<Result<double, Fail>> getSumOfExpensesWithFrequency(
     Frequency frequency,

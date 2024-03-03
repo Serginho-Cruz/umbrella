@@ -17,11 +17,11 @@ abstract class InvoiceFactory {
     Date? dueDate,
   }) {
     return Invoice(
+      id: faker.randomGenerator.integer(20),
       isClosed: faker.randomGenerator.boolean(),
       closingDate: closingDate ?? DateFactory.generate(),
       card: card ?? CreditCardFactory.generate(),
-      itens: List.generate(8, (i) => InvoiceItemFactory.generate(parcelId: i)),
-      id: faker.randomGenerator.integer(20),
+      itens: List.generate(8, (i) => InvoiceItemFactory.generate(expenseId: i)),
       paidValue:
           paidValue ?? (faker.randomGenerator.decimal() * 500).roundToDecimal(),
       remainingValue: (faker.randomGenerator.decimal() * 500).roundToDecimal(),

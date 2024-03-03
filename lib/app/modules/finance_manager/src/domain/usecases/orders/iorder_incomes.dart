@@ -13,6 +13,5 @@ abstract class IOrderIncomes {
     required List<Income> incomes,
     required bool isCrescent,
   });
-  List<Income> byID(List<Income> incomes);
   List<Income> revertOrder(List<Income> incomes);
 }

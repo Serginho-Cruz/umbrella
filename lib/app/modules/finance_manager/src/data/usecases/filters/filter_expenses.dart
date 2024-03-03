@@ -1,40 +1,23 @@
-import '../../../domain/entities/expense_parcel.dart';
-
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/filters/filter_paiyable.dart';
+import '../../../domain/entities/expense.dart';
 import '../../../domain/entities/expense_type.dart';
-
-import '../../../domain/entities/date.dart';
 import '../../../domain/usecases/filters/ifilter_expenses.dart';
 
-class FilterExpenses implements IFilterExpenses {
+class FilterExpenses extends FilterPaiyable<Expense>
+    implements IFilterExpenses {
   @override
-  List<ExpenseParcel> byPaid(List<ExpenseParcel> expenses) =>
-      expenses.where((parcel) => parcel.remainingValue == 0.00).toList();
-
-  @override
-  List<ExpenseParcel> byUnpaid(List<ExpenseParcel> expenses) =>
-      expenses.where((parcel) => parcel.remainingValue > 0.00).toList();
-
-  @override
-  List<ExpenseParcel> byOverdue(List<ExpenseParcel> expenses) => expenses
-      .where((parcel) =>
-          parcel.dueDate.isBefore(Date.today()) && parcel.remainingValue > 0.00)
-      .toList();
-
-  @override
-  List<ExpenseParcel> byName({
-    required List<ExpenseParcel> expenses,
+  List<Expense> byName({
+    required List<Expense> expenses,
     required String searchName,
   }) =>
       expenses
-          .where((parcel) => parcel.expense.name
-              .toLowerCase()
-              .contains(searchName.toLowerCase()))
+          .where((e) => e.name.toLowerCase().contains(searchName.toLowerCase()))
           .toList();
 
   @override
-  List<ExpenseParcel> byType({
-    required List<ExpenseParcel> expenses,
+  List<Expense> byType({
+    required List<Expense> expenses,
     required ExpenseType type,
   }) =>
-      expenses.where((parcel) => parcel.expense.type == type).toList();
+      expenses.where((e) => e.type == type).toList();
 }

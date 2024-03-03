@@ -6,8 +6,8 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entit
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/filters/ifilter_transactions.dart';
 
 import 'date_factory.dart';
-import 'expense_parcel_factory.dart';
-import 'income_parcel_factory.dart';
+import 'expense_factory.dart';
+import 'income_factory.dart';
 import 'invoice_factory.dart';
 import 'payment_method_factory.dart';
 
@@ -27,11 +27,11 @@ abstract class TransactionsFactory {
       paymentDate: paymentDate ?? DateFactory.generate(),
       paiyable: paiyable ??
           (faker.randomGenerator.boolean()
-              ? ExpenseParcelFactory.generate()
+              ? ExpenseFactory.generate()
               : faker.randomGenerator.boolean()
-                  ? IncomeParcelFactory.generate()
+                  ? IncomeFactory.generate()
                   : InvoiceFactory.generate()),
-      paymentMethod: method ?? PaymentMethodFactory.generate(),
+      paymentMethod: method ?? PaymentMethodFactory.getRandom(),
     );
   }
 
@@ -43,8 +43,8 @@ abstract class TransactionsFactory {
     PaymentMethod? method,
   }) {
     var typesMap = <TransactionType, Paiyable>{
-      TransactionType.expense: ExpenseParcelFactory.generate(),
-      TransactionType.income: IncomeParcelFactory.generate(),
+      TransactionType.expense: ExpenseFactory.generate(),
+      TransactionType.income: IncomeFactory.generate(),
       TransactionType.invoice: InvoiceFactory.generate(),
     };
 
@@ -53,7 +53,7 @@ abstract class TransactionsFactory {
       value: value ?? faker.randomGenerator.decimal(scale: 300),
       paymentDate: paymentDate ?? DateFactory.generate(),
       paiyable: typesMap[type]!,
-      paymentMethod: method ?? PaymentMethodFactory.generate(),
+      paymentMethod: method ?? PaymentMethodFactory.getRandom(),
     );
   }
 }
