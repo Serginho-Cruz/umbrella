@@ -2,9 +2,9 @@ import 'package:flutter_triple/flutter_triple.dart';
 
 import '../../domain/entities/date.dart';
 import '../../domain/models/finance_model.dart';
-import '../../domain/models/income_parcel_model.dart';
+import '../../domain/models/income_model.dart';
 
-class IncomeStore extends Store<List<IncomeParcelModel>> {
+class IncomeStore extends Store<List<IncomeModel>> {
   IncomeStore() : super([]);
 
   Future<void> getAll() async {
@@ -13,7 +13,7 @@ class IncomeStore extends Store<List<IncomeParcelModel>> {
     await Future.delayed(const Duration(seconds: 5), () {
       var incomes = List.generate(
         5,
-        (index) => IncomeParcelModel(
+        (index) => IncomeModel(
             id: index,
             name: 'Receita ${index + 1}',
             totalValue: 159.99 * index,

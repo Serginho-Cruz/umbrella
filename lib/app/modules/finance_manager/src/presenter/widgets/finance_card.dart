@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'price.dart';
-import 'spaced_texts.dart';
+import 'common/price.dart';
+import 'common/spaced_widgets.dart';
 
 import '../../domain/entities/date.dart';
 import '../../domain/models/finance_model.dart';
@@ -101,7 +101,7 @@ abstract class FinanceCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                SpacedTexts(
+                SpacedWidgets(
                   first: const Text(
                     'Vencimento:',
                     style: TextStyle(
@@ -117,7 +117,7 @@ abstract class FinanceCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                SpacedTexts(
+                SpacedWidgets(
                   first: const Text(
                     'Pago:',
                     style: TextStyle(
@@ -133,7 +133,7 @@ abstract class FinanceCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                SpacedTexts(
+                SpacedWidgets(
                   first: const Text(
                     'Restante:',
                     style: TextStyle(

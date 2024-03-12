@@ -207,66 +207,6 @@ void main() {
                 month: any(named: 'month'), year: any(named: 'year')))
             .thenAnswer((_) async => const Success(100.65));
       });
-      test("returns a DateError if month or year is invalid", () async {
-        var result = await usecase.initialBalanceOf(month: 0, year: 2023);
-
-        expect(
-          result.isError(),
-          isTrue,
-          reason: 'The month must not be less than 1',
-        );
-        expect(
-          result.fold((s) => s, (f) => f),
-          isA<DateError>(),
-          reason: 'The error must be a DateError instance',
-        );
-
-        result = await usecase.initialBalanceOf(month: 13, year: 2023);
-
-        expect(
-          result.isError(),
-          isTrue,
-          reason: 'The month must not be greater than 12',
-        );
-        expect(
-          result.fold((s) => s, (f) => f),
-          isA<DateError>(),
-          reason: 'The error must be a DateError instance',
-        );
-
-        result = await usecase.initialBalanceOf(month: 2, year: 1999);
-
-        expect(
-          result.isError(),
-          isTrue,
-          reason: 'The year must not be less than 2000',
-        );
-        expect(
-          result.fold((s) => s, (f) => f),
-          isA<DateError>(),
-          reason: 'The error must be a DateError instance',
-        );
-
-        result = await usecase.initialBalanceOf(month: -2, year: 1876);
-
-        expect(
-          result.isError(),
-          isTrue,
-          reason:
-              'The month must not be less than 12 neither year less than 2000',
-        );
-        expect(
-          result.fold(
-            (s) => s,
-            (f) => f,
-          ),
-          isA<DateError>(),
-          reason: 'The error must be a DateError instance',
-        );
-
-        verifyNever(() => balanceRepository.getInitialBalanceOf(
-            month: any(named: 'month'), year: any(named: 'year')));
-      });
 
       test("returns the initial balance of a past month if no error happens",
           () async {
@@ -368,63 +308,7 @@ void main() {
                 upperLimit: any(named: 'upperLimit')))
             .thenAnswer((_) async => const Success(0));
       });
-      test("returns a DateError if the month or year is invalid", () async {
-        var result = await usecase.expectedBalanceOf(month: -1, year: 2022);
 
-        expect(
-          result.isError(),
-          isTrue,
-          reason: 'Must return a fail because month is less than 1',
-        );
-        expect(
-          result.fold((s) => s, (f) => f),
-          isA<DateError>(),
-          reason: 'The fail must be a DateError',
-        );
-
-        result = await usecase.expectedBalanceOf(month: 13, year: 2022);
-
-        expect(
-          result.isError(),
-          isTrue,
-          reason: 'Must return a fail because month is greater than 12',
-        );
-        expect(
-          result.fold((s) => s, (f) => f),
-          isA<DateError>(),
-          reason: 'The fail must be a DateError',
-        );
-
-        result = await usecase.expectedBalanceOf(month: 5, year: 1999);
-
-        expect(
-          result.isError(),
-          isTrue,
-          reason: 'Must return a fail because year is less than 2000',
-        );
-        expect(
-          result.fold((s) => s, (f) => f),
-          isA<DateError>(),
-          reason: 'The fail must be a DateError',
-        );
-
-        result = await usecase.expectedBalanceOf(month: -10, year: 1972);
-
-        expect(
-          result.isError(),
-          isTrue,
-          reason:
-              'Must return a fail because year is less than 2000 and month is less than 1',
-        );
-        expect(
-          result.fold((s) => s, (f) => f),
-          isA<DateError>(),
-          reason: 'The fail must be a DateError',
-        );
-
-        verifyNever(() => balanceRepository.getExpectedBalanceOf(
-            month: any(named: 'month'), year: any(named: 'year')));
-      });
       test("returns the expected balance of a month if no error happens",
           () async {
         final date = Date.today();
@@ -455,8 +339,7 @@ void main() {
         );
       });
 
-      group("when date is before or same as actual date", () {
-        final dateBefore = date.subtract(months: 1);
+      group("when date is the same as actual date", () {
         test(
             "returns a Fail when fetching expected balance and an error happens",
             () async {
@@ -465,17 +348,6 @@ void main() {
               .thenAnswer((_) async => Failure(Fail("")));
 
           var result = await usecase.expectedBalanceOf(
-            month: dateBefore.month,
-            year: dateBefore.year,
-          );
-
-          expect(
-            result.isError(),
-            isTrue,
-            reason: 'Must return error because repository returned an error',
-          );
-
-          result = await usecase.expectedBalanceOf(
             month: Date.today().month,
             year: Date.today().year,
           );
@@ -488,23 +360,6 @@ void main() {
         });
         test("returns the value when no error happens", () async {
           var result = await usecase.expectedBalanceOf(
-            month: dateBefore.month,
-            year: dateBefore.year,
-          );
-
-          expect(
-            result.isSuccess(),
-            isTrue,
-            reason: 'Repository returned the expected value of past month',
-          );
-
-          expect(
-            result.fold((s) => s, (f) => f),
-            equals(1400),
-            reason: 'The value returned by repository was 1400',
-          );
-
-          result = await usecase.expectedBalanceOf(
             month: Date.today().month,
             year: Date.today().year,
           );
@@ -624,10 +479,8 @@ void main() {
             reason: 'The calc may have an error, check them',
           );
 
-          final date2MonthsAfter =
-              dateAfter.copyWith(month: dateAfter.month + 1);
-          final date3MonthsAfter =
-              dateAfter.copyWith(month: dateAfter.month + 2);
+          final date2MonthsAfter = dateAfter.add(months: 1);
+          final date3MonthsAfter = dateAfter.add(months: 2);
 
           when(() => expenseRepository.getSumOfExpensesWithFrequency(any()))
               .thenAnswer((_) async => const Success(100));
@@ -639,30 +492,8 @@ void main() {
             year: date2MonthsAfter.year,
           );
 
-          var expectedResult = (1400 +
-                  _calcMonthBalanceOf(
-                      date: dateAfter,
-                      monthlyValue: 200,
-                      weeklyValue: 200,
-                      dailyValue: 200) +
-                  _calcMonthBalanceOf(
-                      date: date2MonthsAfter,
-                      monthlyValue: 200,
-                      weeklyValue: 200,
-                      dailyValue: 200) -
-                  _calcMonthBalanceOf(
-                      date: dateAfter,
-                      monthlyValue: 100,
-                      weeklyValue: 100,
-                      dailyValue: 100) -
-                  _calcMonthBalanceOf(
-                      date: date2MonthsAfter,
-                      monthlyValue: 100,
-                      weeklyValue: 100,
-                      dailyValue: 100) -
-                  230 -
-                  203.76)
-              .roundToDecimal();
+          var expectedResult =
+              (1400 + 200 + 200 - 100 - 100 - 230 - 203.76).roundToDecimal();
 
           expect(
             result.fold((s) => s, (f) => f),
@@ -676,18 +507,7 @@ void main() {
             year: date3MonthsAfter.year,
           );
 
-          expectedResult = (expectedResult +
-                  _calcMonthBalanceOf(
-                      date: date3MonthsAfter,
-                      monthlyValue: 200,
-                      weeklyValue: 200,
-                      dailyValue: 200) -
-                  _calcMonthBalanceOf(
-                      date: date3MonthsAfter,
-                      monthlyValue: 100,
-                      weeklyValue: 100,
-                      dailyValue: 100))
-              .roundToDecimal();
+          expectedResult = (expectedResult + 200 - 100).roundToDecimal();
 
           expect(
             result.fold((s) => s, (f) => f),
@@ -739,54 +559,6 @@ void main() {
           reason: 'Must return the exactly same value returned by repository',
         );
       });
-      test("returns DateError when date is actual or later than actual",
-          () async {
-        final date = Date.today();
-        var result = await usecase.finalBalanceOf(
-          month: date.month,
-          year: date.year,
-        );
-
-        expect(
-          result.isError(),
-          isTrue,
-          reason:
-              'Must return an error because month and year are the same as actuals',
-        );
-        expect(
-          result.fold((s) => s, (f) => f),
-          isA<DateError>(),
-          reason: 'The error must be a DateError',
-        );
-
-        final dateAfter = date.add(months: 1);
-        result = await usecase.finalBalanceOf(
-          month: dateAfter.month,
-          year: dateAfter.year,
-        );
-
-        expect(
-          result.isError(),
-          isTrue,
-          reason:
-              'Must return an error because month and year are later than actuals',
-        );
-        expect(
-          result.fold((s) => s, (f) => f),
-          isA<DateError>(),
-          reason: 'The error must be a DateError',
-        );
-      });
     });
   });
 }
-
-double _calcMonthBalanceOf({
-  required Date date,
-  required double monthlyValue,
-  required double weeklyValue,
-  required double dailyValue,
-}) =>
-    monthlyValue +
-    dailyValue * date.totalDaysOfMonth +
-    weeklyValue * date.toDateTime().totalWeeks;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import '../price.dart';
-import '../spaced_texts.dart';
+import '../common/price.dart';
+import '../common/spaced_widgets.dart';
 
 import '../../../domain/entities/date.dart';
 import 'month_changer.dart';
@@ -12,11 +12,15 @@ class CustomAppBar extends StatefulWidget {
     this.title,
     required this.onMonthChange,
     required this.initialMonthAndYear,
+    this.showBalances = true,
+    this.showMonthChanger = true,
   });
 
   final Widget? title;
   final Date initialMonthAndYear;
   final void Function(int, int) onMonthChange;
+  final bool showBalances;
+  final bool showMonthChanger;
 
   @override
   State<CustomAppBar> createState() => _CustomAppBarState();
@@ -68,56 +72,59 @@ class _CustomAppBarState extends State<CustomAppBar> {
               ),
             ],
           ),
-          MonthChanger(
-            onMonthChange: widget.onMonthChange,
-            initialMonthAndYear: widget.initialMonthAndYear,
-          ),
-          Padding(
-            padding: EdgeInsets.only(
-              top: 15.0,
-              left: MediaQuery.of(context).size.width * 0.05,
-              right: MediaQuery.of(context).size.width * 0.05,
+          if (widget.showMonthChanger)
+            MonthChanger(
+              onMonthChange: widget.onMonthChange,
+              initialMonthAndYear: widget.initialMonthAndYear,
             ),
-            child: const SpacedTexts(
-              first: Text(
-                'Saldo Atual',
-                style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
-                ),
+          if (widget.showBalances)
+            Padding(
+              padding: EdgeInsets.only(
+                top: 15.0,
+                left: MediaQuery.of(context).size.width * 0.05,
+                right: MediaQuery.of(context).size.width * 0.05,
               ),
-              second: Price(
-                value: 200.85,
-                style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
+              child: const SpacedWidgets(
+                first: Text(
+                  'Saldo Atual',
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(
-              top: 12.0,
-              left: MediaQuery.of(context).size.width * 0.05,
-              right: MediaQuery.of(context).size.width * 0.05,
-            ),
-            child: const SpacedTexts(
-              first: Text(
-                'Saldo Esperado',
-                style: TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              second: Price(
-                value: 200.85,
-                style: TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w500,
+                second: Price(
+                  value: 200.85,
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
-          ),
+          if (widget.showBalances)
+            Padding(
+              padding: EdgeInsets.only(
+                top: 12.0,
+                left: MediaQuery.of(context).size.width * 0.05,
+                right: MediaQuery.of(context).size.width * 0.05,
+              ),
+              child: const SpacedWidgets(
+                first: Text(
+                  'Saldo Esperado',
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                second: Price(
+                  value: 200.85,
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );

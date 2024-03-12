@@ -5,7 +5,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/external/dat
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/external/schemas/credit_card_table.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/external/schemas/expense_type_table.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/external/schemas/income_type_table.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/external/schemas/month_table.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/external/schemas/balance_table.dart';
 
 import '../../../domain/entities/date.dart';
 
@@ -50,15 +50,13 @@ class SQLite {
     await db.execute(expenseTableScript);
     await db.execute(creditCardTableScript);
     await db.execute(invoiceTableScript);
-    await db.execute(incomeParcelTableScript);
-    await db.execute(expenseParcelTableScript);
     await db.execute(invoiceItemTableScript);
     await db.execute(transactionTableScript);
     await db.execute(paymentMethodTableScript);
     await db.execute(paymentMethodsUsedTableScript);
     await db.execute(installmentTableScript);
     await db.execute(installmentParcelTableScript);
-    await db.execute(monthTableScript);
+    await db.execute(balanceTableScript);
     await db.execute(notificationsConfigurationTableScript);
   }
 
@@ -71,12 +69,12 @@ class SQLite {
       await db.insert(IncomeTypeTable.table, item);
     }
 
-    await db.insert(MonthTable.table, {
-      MonthTable.date: Date.today().copyWith(day: 1).toString(),
-      MonthTable.initialBalance: 0.0,
-      MonthTable.actualBalance: 0.0,
-      MonthTable.expectedBalance: 0.0,
-      MonthTable.finalBalance: null,
+    await db.insert(BalanceTable.table, {
+      BalanceTable.month: Date.today().copyWith(day: 1).toString(),
+      BalanceTable.initial: 0.0,
+      BalanceTable.actual: 0.0,
+      BalanceTable.expected: 0.0,
+      BalanceTable.last: null,
     });
 
     //For tests only

@@ -7,6 +7,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/external/dat
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/repositories/credit_card_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/repositories/invoice_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/credit_card_store.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/screens/create_expense_screen.dart';
 
 import 'src/infra/datasources/icredit_card_datasource.dart';
 import 'src/presenter/screens/home_screen.dart';
@@ -34,5 +35,7 @@ class FinanceManagerModule extends Module {
   @override
   void routes(RouteManager r) {
     r.add(ChildRoute('/', child: (context) => HomeScreen()));
+    r.add(ChildRoute('/expense/create',
+        child: (context) => const CreateExpenseScreen()));
   }
 }

@@ -10,14 +10,18 @@ class CreditCardStore extends Store<List<CreditCardModel>> {
   }
 
   late final IManageCreditCard _manageCreditCard;
+  bool hasAll = false;
 
   Future<void> getAll() async {
+    if (hasAll) return;
+
     setLoading(true);
 
     var result = await _manageCreditCard.getAll();
 
     result.fold((cards) {
       update(cards);
+      hasAll = true;
     }, (error) {
       setError(error);
     });

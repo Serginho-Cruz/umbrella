@@ -3,5 +3,4 @@ abstract class PaymentMethodTable {
   static const String id = 'payment_method_id';
   static const String name = 'payment_method_name';
   static const String icon = 'payment_method_icon';
-  static const String isCredit = 'payment_method_isCredit';
 }

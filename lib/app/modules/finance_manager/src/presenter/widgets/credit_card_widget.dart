@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/common/spaced_widgets.dart';
 import '../../domain/entities/date.dart';
-import 'price.dart';
-import 'spaced_texts.dart';
+import 'common/price.dart';
 
 import '../../domain/models/credit_card_model.dart';
 
@@ -59,7 +59,7 @@ class CreditCardWidget extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  SpacedTexts(
+                  SpacedWidgets(
                     first: const Text(
                       'Total Gasto: ',
                       style: TextStyle(
@@ -75,7 +75,7 @@ class CreditCardWidget extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SpacedTexts(
+                  SpacedWidgets(
                     first: const Text(
                       'Vencimento da Fatura',
                       style: TextStyle(

@@ -1,18 +1,16 @@
-import 'dart:isolate';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import '../../domain/models/credit_card_model.dart';
-import '../../domain/models/expense_parcel_model.dart';
-import '../../domain/models/income_parcel_model.dart';
+import '../../domain/models/expense_model.dart';
+import '../../domain/models/income_model.dart';
 import '../controllers/credit_card_store.dart';
 import '../controllers/expense_store.dart';
 import '../controllers/income_store.dart';
 import '../widgets/credit_card_widget.dart';
 import '../widgets/expense_card.dart';
 import '../widgets/lists/horizontal_listview.dart';
-import '../widgets/horizontal_infinity_container.dart';
+import '../widgets/common/horizontal_infinity_container.dart';
 import '../widgets/income_card.dart';
 import '../widgets/shimmer/shimmer_container.dart';
 
@@ -97,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                    ScopedBuilder<IncomeStore, List<IncomeParcelModel>>(
+                    ScopedBuilder<IncomeStore, List<IncomeModel>>(
                       store: widget._incomeStore,
                       onLoading: (context) {
                         return SizedBox(
@@ -147,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                    ScopedBuilder<ExpenseStore, List<ExpenseParcelModel>>(
+                    ScopedBuilder<ExpenseStore, List<ExpenseModel>>(
                       store: widget._expenseStore,
                       onLoading: (context) {
                         return SizedBox(
