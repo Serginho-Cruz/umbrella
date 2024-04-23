@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/common/horizontal_infinity_container.dart';
 
 abstract class Selector<T> extends StatelessWidget {
   const Selector({
@@ -62,21 +63,24 @@ class LinearSelector<T extends Object> extends Selector<T> {
     required super.onItemTap,
     required super.itemBuilder,
     required super.child,
-    this.title,
+    required this.title,
+    this.direction = Axis.vertical,
   });
 
   final Widget? title;
+  final Axis direction;
 
   @override
   Widget build(BuildContext context) {
+    var widgetFunction =
+        direction == Axis.vertical ? _columnSelector : _rowSelector;
+
     return InkWell(
       onTap: () {
         _showModalBottomSheet(
           context,
-          Column(
-            mainAxisSize: MainAxisSize.min,
+          widgetFunction(
             children: [
-              if (title != null) title!,
               for (var item in items)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -95,6 +99,36 @@ class LinearSelector<T extends Object> extends Selector<T> {
       child: child,
     );
   }
+
+  Widget _columnSelector({required List<Widget> children}) {
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [if (title != null) title!, ...children],
+      ),
+    );
+  }
+
+  Widget _rowSelector({required List<Widget> children}) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (title != null) title!,
+        HorizontallyInfinityContainer(
+          color: Colors.transparent,
+          noShadow: true,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: children,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 _showModalBottomSheet(
@@ -104,7 +138,10 @@ _showModalBottomSheet(
   showModalBottomSheet(
     context: context,
     elevation: 12.0,
-    constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
+    constraints: BoxConstraints(
+      minWidth: MediaQuery.of(context).size.width,
+      maxWidth: double.infinity,
+    ),
     builder: (ctx) => Padding(
       padding: const EdgeInsets.only(top: 20.0, bottom: 25.0),
       child: child,

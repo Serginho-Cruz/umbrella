@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/common/my_drawer.dart';
 import '../../domain/models/credit_card_model.dart';
 import '../../domain/models/expense_model.dart';
 import '../../domain/models/income_model.dart';
@@ -54,9 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
         key: _scaffoldKey,
         backgroundColor: Colors.white,
-        drawer: const Drawer(
-          backgroundColor: Colors.blue,
-        ),
+        drawer: const MyDrawer(),
         body: SingleChildScrollView(
           physics: const ClampingScrollPhysics(),
           child: Column(
@@ -217,7 +216,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           height: 240,
                           child: HorizontalAnimatedList(
                             itemBuilderFunction: (context, index) =>
-                                CreditCardWidget(creditCard: state[index]),
+                                CreditCardWidget(
+                                    creditCard: state[index],
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 20.0)),
                             length: state.length,
                             animatedListKey: _creditCardListKey,
                           ),

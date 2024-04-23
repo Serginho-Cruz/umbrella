@@ -1,3 +1,4 @@
+import 'account.dart';
 import 'date.dart';
 import 'credit_card.dart';
 import 'invoice_item.dart';
@@ -10,16 +11,17 @@ class Invoice extends Paiyable {
   final List<InvoiceItem> itens;
 
   const Invoice({
+    required super.id,
+    required super.totalValue,
+    required super.paidValue,
+    required super.remainingValue,
+    required super.dueDate,
+    required super.account,
+    super.paymentDate,
     required this.isClosed,
     required this.closingDate,
     required this.card,
     required this.itens,
-    required super.id,
-    required super.paidValue,
-    required super.remainingValue,
-    required super.dueDate,
-    super.paymentDate,
-    required super.totalValue,
   });
   Invoice copyWith({
     bool? isClosed,
@@ -32,6 +34,7 @@ class Invoice extends Paiyable {
     Date? dueDate,
     Date? paymentDate,
     double? totalValue,
+    Account? account,
   }) {
     return Invoice(
       id: id ?? this.id,
@@ -44,6 +47,7 @@ class Invoice extends Paiyable {
       closingDate: closingDate ?? this.closingDate,
       card: card ?? this.card,
       itens: itens ?? this.itens,
+      account: account ?? this.account,
     );
   }
 
@@ -59,5 +63,6 @@ class Invoice extends Paiyable {
         remainingValue,
         paymentDate,
         totalValue,
+        account,
       ];
 }

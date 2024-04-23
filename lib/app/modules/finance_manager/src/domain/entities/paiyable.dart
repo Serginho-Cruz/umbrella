@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'account.dart';
 import 'date.dart';
 
 abstract class Paiyable extends Equatable {
@@ -8,6 +9,7 @@ abstract class Paiyable extends Equatable {
   final Date dueDate;
   final Date? paymentDate;
   final double totalValue;
+  final Account account;
 
   const Paiyable({
     required this.id,
@@ -16,5 +18,6 @@ abstract class Paiyable extends Equatable {
     required this.dueDate,
     this.paymentDate,
     required this.totalValue,
+    required this.account,
   });
 }

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'account.dart';
 import 'date.dart';
 
 class CreditCard extends Equatable {
@@ -8,6 +9,7 @@ class CreditCard extends Equatable {
   final String color;
   final Date cardInvoiceClosingDate;
   final Date cardInvoiceDueDate;
+  final Account accountToDiscountInvoice;
 
   const CreditCard({
     required this.id,
@@ -16,6 +18,7 @@ class CreditCard extends Equatable {
     required this.color,
     required this.cardInvoiceClosingDate,
     required this.cardInvoiceDueDate,
+    required this.accountToDiscountInvoice,
   });
 
   factory CreditCard.withoutId({
@@ -24,6 +27,7 @@ class CreditCard extends Equatable {
     required String color,
     required Date cardInvoiceClosingDate,
     required Date cardInvoiceDueDate,
+    required Account accountToDiscountInvoice,
   }) {
     return CreditCard(
       id: 0,
@@ -32,6 +36,7 @@ class CreditCard extends Equatable {
       color: color,
       cardInvoiceClosingDate: cardInvoiceClosingDate,
       cardInvoiceDueDate: cardInvoiceDueDate,
+      accountToDiscountInvoice: accountToDiscountInvoice,
     );
   }
 
@@ -42,6 +47,7 @@ class CreditCard extends Equatable {
     String? color,
     Date? cardInvoiceClosingDate,
     Date? cardInvoiceDueDate,
+    Account? accountToDiscountInvoice,
   }) {
     return CreditCard(
       annuity: annuity ?? this.annuity,
@@ -51,6 +57,8 @@ class CreditCard extends Equatable {
       cardInvoiceClosingDate:
           cardInvoiceClosingDate ?? this.cardInvoiceClosingDate,
       cardInvoiceDueDate: cardInvoiceDueDate ?? this.cardInvoiceDueDate,
+      accountToDiscountInvoice:
+          accountToDiscountInvoice ?? this.accountToDiscountInvoice,
     );
   }
 
@@ -62,5 +70,6 @@ class CreditCard extends Equatable {
         color,
         cardInvoiceClosingDate,
         cardInvoiceDueDate,
+        accountToDiscountInvoice,
       ];
 }
