@@ -7,6 +7,4 @@ abstract interface class Auth {
   AsyncResult<User, AuthFail> login(String email, String password);
   AsyncResult<Unit, AuthFail> logout();
   AsyncResult<Unit, AuthFail> setLastLogin(User user);
-  Future<AuthFail?> saveLocal(User user);
-  Future<User?> searchLocal();
 }

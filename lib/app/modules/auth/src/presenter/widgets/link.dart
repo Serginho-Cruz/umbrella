@@ -14,14 +14,17 @@ class Link extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Navigator.pushNamed(widget.destinyRoute);
+        Navigator.pushReplacementNamed(context, destinyRoute);
       },
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 14.0,
-          fontWeight: FontWeight.w900,
-          decoration: TextDecoration.underline,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontSize: 16.0,
+            fontWeight: FontWeight.w900,
+            decoration: TextDecoration.underline,
+          ),
         ),
       ),
     );

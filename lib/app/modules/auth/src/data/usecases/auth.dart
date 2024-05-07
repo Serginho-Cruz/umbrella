@@ -8,10 +8,10 @@ import 'package:umbrella_echonomics/app/modules/auth/src/errors/user_fail.dart';
 import '../../../../finance_manager/src/domain/entities/date.dart';
 import '../../domain/usecases/auth.dart';
 
-class AuthUImpl implements Auth {
+class AuthImpl implements Auth {
   final UserRepository _repository;
 
-  AuthUImpl(this._repository);
+  AuthImpl(this._repository);
 
   @override
   AsyncResult<User, AuthFail> login(String email, String password) async {
@@ -29,6 +29,7 @@ class AuthUImpl implements Auth {
 
     if (user.password != password) return IncorrectPassword().toFailure();
 
+    setLastLogin(user);
     return Success(user);
   }
 
@@ -42,22 +43,6 @@ class AuthUImpl implements Auth {
     }
 
     return unit.toSuccess();
-  }
-
-  @override
-  Future<AuthFail?> saveLocal(User user) async {
-    var result = await _repository.saveLocal(user);
-
-    return result.isError()
-        ? GenericAuthFail.withMessage(result.exceptionOrNull()!.message)
-        : null;
-  }
-
-  @override
-  Future<User?> searchLocal() async {
-    var result = await _repository.retrieveLocal();
-
-    return result.getOrNull();
   }
 
   @override

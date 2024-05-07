@@ -1,13 +1,16 @@
-import 'dart:ui';
-
-import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:umbrella_echonomics/app/modules/auth/src/presenter/widgets/auth_field.dart';
-
+import '../controllers/auth_controller.dart';
+import '../widgets/auth_button.dart';
+import '../widgets/error_dialog.dart';
 import '../widgets/link.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({super.key, required AuthController controller})
+      : _controller = controller;
+
+  final AuthController _controller;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -20,17 +23,22 @@ class _LoginScreenState extends State<LoginScreen> {
   late final FocusNode _emailFocusNode;
   late final FocusNode _passwordFocusNode;
 
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late bool isToRemindUser;
 
-  String? _validateEmail(String email) {
-    if (email.trim().isEmpty) return 'O Campo E-mail é obrigatório';
+  String? _validateEmail(String? email) {
+    if (email == null || email.trim().isEmpty) {
+      return 'O Campo E-mail é obrigatório';
+    }
     if (!EmailValidator.validate(email)) return 'O E-mail informado é inválido';
 
     return null;
   }
 
-  String? _validatePassword(String password) {
-    if (password.trim().isEmpty) return 'O Campo Senha é obrigatório';
+  String? _validatePassword(String? password) {
+    if (password == null || password.trim().isEmpty) {
+      return 'O Campo Senha é obrigatório';
+    }
     if (password.length < 6 || password.length > 10) {
       return 'A Senha deve ter de 6 a 10 dígitos';
     }
@@ -65,8 +73,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: DecoratedBox(
+    return SafeArea(
+      child: DecoratedBox(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [Color(0xFF6FDCFF), Color(0xFFB172FF)],
@@ -101,106 +109,91 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ],
                 ),
-                Container(
-                  width: MediaQuery.sizeOf(context).width * 0.8,
-                  height: 400.0,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      width: 2.0,
-                      color: Colors.white.withOpacity(0.2),
+                Form(
+                  key: _formKey,
+                  child: Container(
+                    width: MediaQuery.sizeOf(context).width * 0.8,
+                    height: 400.0,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        width: 2.0,
+                        color: Colors.white.withOpacity(0.2),
+                      ),
+                      borderRadius: BorderRadius.circular(25.0),
+                      color: Colors.white.withOpacity(0.65),
                     ),
-                    borderRadius: BorderRadius.circular(25.0),
-                    color: Colors.white.withOpacity(0.7),
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      const Text(
-                        'Entrar no Aplicativo',
-                        style: TextStyle(fontSize: 20.0),
-                      ),
-                      AuthTextField(
-                        controller: _emailController,
-                        focusNode: _emailFocusNode,
-                        nextFocusNode: _passwordFocusNode,
-                        label: "E-mail",
-                        icon: Icons.mail,
-                        keyboardType: TextInputType.emailAddress,
-                        validate: (email) {
-                          String? error = _validateEmail(email);
-                          bool isValid = error == null;
-
-                          return (isValid: isValid, errorMessage: error ?? '');
-                        },
-                      ),
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          AuthTextField(
-                            controller: _passwordController,
-                            focusNode: _passwordFocusNode,
-                            label: "Senha",
-                            icon: Icons.lock_open_rounded,
-                            isPassword: true,
-                            validate: (password) {
-                              String? error = _validatePassword(password);
-
-                              bool isValid = error == null;
-                              return (
-                                isValid: isValid,
-                                errorMessage: error ?? ''
-                              );
-                            },
-                          ),
-                          CheckboxListTile.adaptive(
-                            value: isToRemindUser,
-                            contentPadding: EdgeInsets.zero,
-                            title: const Text(
-                              "Lembre de Mim",
-                              style: TextStyle(fontSize: 14.0),
-                            ),
-                            checkboxShape: const RoundedRectangleBorder(
-                              side: BorderSide(),
-                            ),
-                            checkboxSemanticLabel:
-                                'Gostaria de entrar diretamente no app nos próximos acessos? Sem precisar passar pela fase de login',
-                            hoverColor: Colors.grey,
-                            onChanged: (newValue) {
-                              if (newValue == null) return;
-
-                              setState(() {
-                                isToRemindUser = newValue;
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                      MaterialButton(
-                        minWidth: MediaQuery.sizeOf(context).width * 0.8 * 0.6,
-                        height: 40.0,
-                        color: const Color(0xFFC786F9),
-                        elevation: 4.0,
-                        shape: RoundedRectangleBorder(
-                          side: const BorderSide(),
-                          borderRadius: BorderRadius.circular(8.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        const Text(
+                          'Entrar no Aplicativo',
+                          style: TextStyle(fontSize: 20.0),
                         ),
-                        animationDuration: const Duration(milliseconds: 500),
-                        highlightColor: Colors.purple,
-                        onPressed: () {},
-                        child: const Text(
-                          'Entrar',
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            color: Colors.black,
-                          ),
+                        AuthTextField(
+                          controller: _emailController,
+                          focusNode: _emailFocusNode,
+                          nextFocusNode: _passwordFocusNode,
+                          label: "E-mail",
+                          icon: Icons.mail,
+                          keyboardType: TextInputType.emailAddress,
+                          validate: _validateEmail,
                         ),
-                      ),
-                    ],
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            AuthTextField(
+                              controller: _passwordController,
+                              focusNode: _passwordFocusNode,
+                              label: "Senha",
+                              icon: Icons.lock_open_rounded,
+                              isPassword: true,
+                              validate: _validatePassword,
+                            ),
+                            Material(
+                              type: MaterialType.transparency,
+                              child: ListTile(
+                                title: const Text(
+                                  "Lembre de Mim",
+                                  style: TextStyle(fontSize: 14.0),
+                                ),
+                                trailing: IgnorePointer(
+                                  child: Checkbox.adaptive(
+                                    value: isToRemindUser,
+                                    semanticLabel:
+                                        'Gostaria de entrar diretamente no app nos próximos acessos? Sem precisar passar pela fase de login',
+                                    onChanged: (value) {
+                                      setState(() {
+                                        isToRemindUser = value!;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                hoverColor: Colors.grey,
+                                contentPadding: EdgeInsets.zero,
+                                onTap: () {
+                                  setState(() {
+                                    isToRemindUser = !isToRemindUser;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        AuthButton(
+                          text: 'Entrar',
+                          size: Size(
+                            MediaQuery.sizeOf(context).width * 0.8 - 20.0,
+                            50.0,
+                          ),
+                          onPressed: _onPressed,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const Link(
-                  destinyRoute: '/register',
+                  destinyRoute: './register',
                   text: 'Novo por aqui? Cadastre-se!',
                 ),
               ],
@@ -209,5 +202,24 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  void _onPressed() {
+    if (_formKey.currentState!.validate()) {
+      widget._controller
+          .login(
+        email: _emailController.text,
+        password: _passwordController.text,
+        isToRemember: isToRemindUser,
+      )
+          .then((error) {
+        if (error != null) {
+          ErrorDialog.show(context, error: error);
+          return;
+        }
+
+        Navigator.of(context).pushReplacementNamed('/finance_manager/');
+      });
+    }
   }
 }

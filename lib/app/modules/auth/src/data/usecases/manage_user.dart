@@ -17,7 +17,7 @@ class ManageUserImpl implements ManageUser {
 
     if (emailSearch.isSuccess()) return Failure(EmailAlreadyRegistered());
 
-    if (emailSearch.exceptionOrNull()! != UserDoesntExist()) {
+    if (emailSearch.exceptionOrNull()! is! UserDoesntExist) {
       return emailSearch.map((_) => 1);
     }
 
