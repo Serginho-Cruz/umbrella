@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'account.dart';
 import 'paiyable.dart';
 import 'date.dart';
 import 'frequency.dart';
@@ -18,7 +17,6 @@ class Income extends Paiyable with EquatableMixin {
     required super.paidValue,
     required super.remainingValue,
     required super.dueDate,
-    required super.account,
     super.paymentDate,
     required this.frequency,
     this.personName,
@@ -36,7 +34,6 @@ class Income extends Paiyable with EquatableMixin {
     Frequency? frequency,
     String? personName,
     IncomeType? type,
-    Account? account,
   }) {
     return Income(
       id: id ?? this.id,
@@ -49,7 +46,6 @@ class Income extends Paiyable with EquatableMixin {
       frequency: frequency ?? this.frequency,
       personName: personName ?? this.personName,
       type: type ?? this.type,
-      account: account ?? this.account,
     );
   }
 
@@ -65,6 +61,5 @@ class Income extends Paiyable with EquatableMixin {
         frequency,
         type,
         personName,
-        account,
       ];
 }

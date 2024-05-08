@@ -9,6 +9,7 @@ class Invoice extends Paiyable {
   final Date closingDate;
   final CreditCard card;
   final List<InvoiceItem> itens;
+  final Account accountToDiscount;
 
   const Invoice({
     required super.id,
@@ -16,12 +17,12 @@ class Invoice extends Paiyable {
     required super.paidValue,
     required super.remainingValue,
     required super.dueDate,
-    required super.account,
     super.paymentDate,
     required this.isClosed,
     required this.closingDate,
     required this.card,
     required this.itens,
+    required this.accountToDiscount,
   });
   Invoice copyWith({
     bool? isClosed,
@@ -34,7 +35,7 @@ class Invoice extends Paiyable {
     Date? dueDate,
     Date? paymentDate,
     double? totalValue,
-    Account? account,
+    Account? accountToDiscount,
   }) {
     return Invoice(
       id: id ?? this.id,
@@ -47,7 +48,7 @@ class Invoice extends Paiyable {
       closingDate: closingDate ?? this.closingDate,
       card: card ?? this.card,
       itens: itens ?? this.itens,
-      account: account ?? this.account,
+      accountToDiscount: accountToDiscount ?? this.accountToDiscount,
     );
   }
 
@@ -63,6 +64,6 @@ class Invoice extends Paiyable {
         remainingValue,
         paymentDate,
         totalValue,
-        account,
+        accountToDiscount,
       ];
 }
