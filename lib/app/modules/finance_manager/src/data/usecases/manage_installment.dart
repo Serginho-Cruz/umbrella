@@ -1,25 +1,15 @@
 import 'package:result_dart/result_dart.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/iexpense_parcel_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/iexpense_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/iinvoice_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/credit_card.dart';
-import '../repositories/iinstallment_repository.dart';
-import '../../domain/entities/installment.dart';
-import '../../domain/usecases/imanage_installment.dart';
-import '../../errors/errors.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/installment.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/imanage_installment.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
 
 class ManageInstallment implements IManageInstallment {
-  final IInstallmentRepository installmentRepository;
-  final IInvoiceRepository invoiceRepository;
-  final IExpenseRepository expenseRepository;
-  final IExpenseParcelRepository expenseParcelRepository;
-
-  ManageInstallment({
-    required this.installmentRepository,
-    required this.expenseRepository,
-    required this.expenseParcelRepository,
-    required this.invoiceRepository,
-  });
+  @override
+  Future<Result<void, Fail>> cancel(Installment installment) {
+    // TODO: implement cancel
+    throw UnimplementedError();
+  }
 
   @override
   Future<Result<void, Fail>> changeCardOfInstallment({
@@ -31,44 +21,31 @@ class ManageInstallment implements IManageInstallment {
   }
 
   @override
-  Future<Result<void, Fail>> changeParcelValue({
-    required int parcelNumber,
-    required double newValue,
-    required Installment installment,
-  }) {
+  Future<Result<void, Fail>> changeParcelValue(
+      {required int parcelNumber,
+      required double newValue,
+      required Installment installment}) {
     // TODO: implement changeParcelValue
     throw UnimplementedError();
   }
 
   @override
-  Future<Result<void, Fail>> delete(Installment installment) {
-    // TODO: implement delete
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Result<void, Fail>> deleteParcelAndNextOnesOfInstallment({
-    required int parcelNumber,
-    required Installment installment,
-  }) {
+  Future<Result<void, Fail>> deleteParcelAndNextOnesOfInstallment(
+      {required int parcelNumber, required Installment installment}) {
     // TODO: implement deleteParcelAndNextOnesOfInstallment
     throw UnimplementedError();
   }
 
   @override
-  Future<Result<void, Fail>> deleteParcelOfInstallment({
-    required int parcelNumber,
-    required Installment installment,
-  }) {
+  Future<Result<void, Fail>> deleteParcelOfInstallment(
+      {required int parcelNumber, required Installment installment}) {
     // TODO: implement deleteParcelOfInstallment
     throw UnimplementedError();
   }
 
   @override
-  Future<Result<List<Installment>, Fail>> getAllOf({
-    required int month,
-    required int year,
-  }) {
+  Future<Result<List<Installment>, Fail>> getAllOf(
+      {required int month, required int year}) {
     // TODO: implement getAllOf
     throw UnimplementedError();
   }
@@ -80,12 +57,11 @@ class ManageInstallment implements IManageInstallment {
   }
 
   @override
-  Future<Result<void, Fail>> update({
-    required Installment newInstallment,
-    required Installment oldInstallment,
-    bool isToShareValue = true,
-    int parcelNumber = 0,
-  }) {
+  Future<Result<void, Fail>> update(
+      {required Installment newInstallment,
+      required Installment oldInstallment,
+      bool isToShareValue = true,
+      int parcelNumber = 0}) {
     // TODO: implement update
     throw UnimplementedError();
   }

@@ -1,190 +1,154 @@
 import 'package:result_dart/result_dart.dart';
-import '../repositories/ibalance_repository.dart';
-import '../repositories/iexpense_parcel_repository.dart';
-import '../repositories/ipayment_method_repository.dart';
-import '../repositories/itransaction_repository.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/installment_repository.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/invoice_repository.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/expense_model.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/finance_model.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/imanage_installment.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/imanage_invoice.dart';
+import '../repositories/balance_repository.dart';
+import '../repositories/payment_method_repository.dart';
+import '../repositories/transaction_repository.dart';
 import '../../domain/entities/date.dart';
 import '../../domain/entities/payment_method.dart';
-import '../../errors/date_error_messages.dart';
-import '../../errors/generic_messages.dart';
 import '../../utils/extensions.dart';
 import '../../domain/entities/expense.dart';
-
-import '../../domain/entities/expense_parcel.dart';
 
 import '../../domain/entities/frequency.dart';
 import '../../domain/entities/transaction.dart';
 import '../../errors/errors.dart';
 
 import '../../domain/usecases/imanage_expense.dart';
-import '../repositories/iexpense_repository.dart';
+import '../repositories/expense_repository.dart';
 
 class ManageExpense implements IManageExpense {
-  final IExpenseRepository expenseRepository;
-  final IExpenseParcelRepository expenseParcelRepository;
-  final IBalanceRepository balanceRepository;
-  final ITransactionRepository transactionRepository;
-  final IPaymentMethodRepository paymentMethodRepository;
+  final ExpenseRepository expenseRepository;
+  final IManageInstallment manageInstallment;
+  final InvoiceRepository invoiceRepository;
+  final InstallmentRepository installmentRepository;
+  final IManageInvoice manageInvoice;
+  final BalanceRepository balanceRepository;
+  final TransactionRepository transactionRepository;
+  final PaymentMethodRepository paymentMethodRepository;
 
   ManageExpense({
     required this.expenseRepository,
-    required this.expenseParcelRepository,
+    required this.installmentRepository,
+    required this.manageInstallment,
+    required this.invoiceRepository,
+    required this.manageInvoice,
     required this.balanceRepository,
     required this.transactionRepository,
     required this.paymentMethodRepository,
   });
 
   @override
-  Future<Result<void, Fail>> register(Expense expense) async {
-    final invalidValue = _checkValues(expense);
-    if (invalidValue != null) return Failure(invalidValue);
-
+  Future<Result<int, Fail>> register(Expense expense) async {
     final result = await expenseRepository.create(expense);
-
-    if (result.isError()) {
-      return result;
-    }
-
-    //Usar uma trigger para atualizar o saldo previsto
-    return expenseParcelRepository.create(
-      ExpenseParcel.withoutId(
-        expense: expense.copyWith(id: result.getOrDefault(0)),
-        dueDate: expense.frequency == Frequency.daily
-            ? Date.today()
-            : expense.dueDate,
-        paidValue: 0,
-        remainingValue: expense.value,
-        paymentDate: null,
-        totalValue: expense.value,
-      ),
-    );
-  }
-
-  @override
-  Future<Result<void, Fail>> updateExpense(Expense expense) async {
-    final invalidValue = _checkValues(expense);
-
-    return invalidValue != null
-        ? Failure(invalidValue)
-        : await expenseRepository.update(expense);
-  }
-
-  @override
-  Future<Result<void, Fail>> updateParcel({
-    required ExpenseParcel oldParcel,
-    required ExpenseParcel newParcel,
-  }) async {
-    if (newParcel.totalValue <= 0) {
-      return Failure(InvalidValue(GenericMessages.invalidNumber));
-    }
-
-    final result = await expenseParcelRepository.update(newParcel);
 
     if (result.isError()) return result;
 
-    final totalValuesDifference =
-        _calcDifference(oldParcel.totalValue, newParcel.totalValue);
+    if (expense.dueDate.isOfActualMonth) {
+      var decrementResult =
+          await balanceRepository.decrementFromExpectedBalance(
+        expense.totalValue,
+        expense.account,
+      );
 
-    if (newParcel.totalValue > oldParcel.totalValue) {
-      return balanceRepository
-          .decrementFromExpectedBalance(totalValuesDifference);
-    }
-    if (newParcel.totalValue < oldParcel.totalValue) {
-      final updateExpectedBalance =
-          await balanceRepository.sumToExpectedBalance(totalValuesDifference);
-
-      if (updateExpectedBalance.isError()) return updateExpectedBalance;
-
-      if (oldParcel.paidValue > newParcel.totalValue) {
-        final valuePaidWithCreditResult =
-            await paymentMethodRepository.getValuePaidWithCredit(newParcel);
-
-        if (valuePaidWithCreditResult.isError()) {
-          return valuePaidWithCreditResult;
-        }
-
-        final valuePaidWithCredit = valuePaidWithCreditResult.getOrDefault(0.0);
-
-        if (valuePaidWithCredit > newParcel.totalValue) {
-          return Failure(
-            CreditError(GenericMessages.creditErrorUpdatingParcel),
-          );
-        }
-        _registerAdjustTransaction(
-          value: totalValuesDifference,
-          paiyable: newParcel,
-        );
-
-        final difference =
-            _calcDifference(oldParcel.paidValue, newParcel.totalValue);
-
-        final removeValueFromPayMethods =
-            await paymentMethodRepository.removeValueFromNoCreditMethods(
-          parcel: newParcel,
-          value: totalValuesDifference,
-        );
-
-        if (removeValueFromPayMethods.isError()) {
-          return removeValueFromPayMethods;
-        }
-
-        return balanceRepository.sumToActualBalance(difference);
-      }
+      if (decrementResult.isError()) return decrementResult.pure(2);
     }
 
     return result;
   }
 
   @override
-  Future<Result<List<ExpenseParcel>, Fail>> getAllOf({
+  Future<Result<void, Fail>> update({
+    required Expense oldExpense,
+    required Expense newExpense,
+  }) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Result<List<ExpenseModel>, Fail>> getAllOf({
     required int month,
     required int year,
   }) async {
-    if (month < 1 || month > 12) {
-      return Failure(DateError(DateErrorMessages.invalidMonth));
-    } else if (year < 2000) {
-      return Failure(DateError(DateErrorMessages.invalidYear));
+    var expenses = <Expense>[];
+
+    var requiredDate = Date(day: 1, month: month, year: year);
+
+    if (requiredDate.isMonthAfter(Date.today())) {
+      var monthlyExpenses =
+          await expenseRepository.getByFrequency(Frequency.monthly);
+
+      if (monthlyExpenses.isError()) {
+        return Failure(monthlyExpenses.exceptionOrNull()!);
+      }
+
+      for (var expense in monthlyExpenses.getOrDefault([])) {
+        expenses.add(expense.copyWith(
+          id: 0,
+          remainingValue: expense.totalValue,
+          paidValue: 0.00,
+          paymentDate: null,
+          dueDate: expense.dueDate.copyWith(
+            day: requiredDate.totalDaysOfMonth < expense.dueDate.day
+                ? requiredDate.totalDaysOfMonth
+                : null,
+            month: requiredDate.month,
+            year: requiredDate.year,
+          ),
+        ));
+      }
     }
 
-    return expenseParcelRepository.getAllOf(month: month, year: year);
+    var requiredMonthExpenses = await expenseRepository.getAllOf(
+      month: month,
+      year: year,
+    );
+
+    if (requiredMonthExpenses.isError()) {
+      return Failure(requiredMonthExpenses.exceptionOrNull()!);
+    }
+
+    expenses.addAll(requiredMonthExpenses.getOrDefault([]));
+
+    return Success(List.generate(
+        expenses.length,
+        (i) => ExpenseModel.fromExpense(expenses[i],
+            status: _determineExpenseStatus(expenses[i]))));
+  }
+
+  Status _determineExpenseStatus(Expense e) {
+    if (e.dueDate.isBefore(Date.today()) && e.remainingValue == 0.00) {
+      return Status.overdue;
+    }
+    if (e.remainingValue == 0.00) return Status.okay;
+
+    return Status.inTime;
   }
 
   @override
-  Future<Result<void, Fail>> deleteExpense(Expense expense) =>
-      expenseRepository.delete(expense);
+  Future<Result<void, Fail>> delete(Expense expense) async {
+    final deleteResult = await expenseRepository.delete(expense);
 
-  @override
-  Future<Result<void, Fail>> deleteParcel(ExpenseParcel parcel) async {
-    //Usar uma trigger para deletar todas as transações e registros
-    //de métodos de pagamento relacionadas a parcela
-    final deleteParcel = await expenseParcelRepository.delete(parcel);
+    if (deleteResult.isError()) return deleteResult;
 
-    if (deleteParcel.isError()) return deleteParcel;
-
-    final updateExpectedBalance =
-        await balanceRepository.sumToExpectedBalance(parcel.totalValue);
+    final updateExpectedBalance = await balanceRepository.sumToExpectedBalance(
+      expense.totalValue,
+      expense.account,
+    );
 
     if (updateExpectedBalance.isError()) return updateExpectedBalance;
 
-    if (parcel.paidValue > 0) {
-      return balanceRepository.sumToActualBalance(parcel.paidValue);
+    if (expense.paidValue > 0.00) {
+      return balanceRepository.sumToActualBalance(
+        expense.paidValue,
+        expense.account,
+      );
     }
 
     return updateExpectedBalance;
-  }
-
-  InvalidValue? _checkValues(Expense expense) {
-    if (expense.value <= 0) {
-      return InvalidValue(GenericMessages.invalidNumber);
-    }
-    if (expense.name.isEmpty) {
-      return InvalidValue(GenericMessages.emptyString);
-    }
-    if (expense.name.length > 30) {
-      return InvalidValue(GenericMessages.overLimitString);
-    }
-
-    return null;
   }
 
   double _calcDifference(double value1, double value2) =>
@@ -192,19 +156,14 @@ class ManageExpense implements IManageExpense {
 
   Future<void> _registerAdjustTransaction({
     required double value,
-    required ExpenseParcel paiyable,
+    required Expense paiyable,
   }) async {
     await transactionRepository.register(Transaction.withoutId(
       isAdjust: true,
       value: value * -1,
       paymentDate: Date.today(),
       paiyable: paiyable,
-      paymentMethod: const PaymentMethod(
-        icon: '',
-        id: 1,
-        isCredit: false,
-        name: '',
-      ),
+      paymentMethod: PaymentMethod.money(),
     ));
   }
 }

@@ -1,11 +1,11 @@
 import 'package:result_dart/result_dart.dart';
-import '../../repositories/iexpense_type_repository.dart';
+import '../../repositories/expense_type_repository.dart';
 import '../../../domain/entities/expense_type.dart';
 import '../../../domain/usecases/gets/iget_expense_types.dart';
 import '../../../errors/errors.dart';
 
 class GetExpenseTypes implements IGetExpenseTypes {
-  final IExpenseTypeRepository repository;
+  final ExpenseTypeRepository repository;
 
   GetExpenseTypes(this.repository);
   @override

@@ -1,13 +1,13 @@
 import 'package:result_dart/result_dart.dart';
-import '../../repositories/iexpense_repository.dart';
+import '../../repositories/expense_repository.dart';
 import '../../../domain/usecases/gets/iget_persons.dart';
 import '../../../errors/errors.dart';
 
-import '../../repositories/iincome_repository.dart';
+import '../../repositories/income_repository.dart';
 
 class GetPersons implements IGetPersons {
-  final IIncomeRepository incomeRepository;
-  final IExpenseRepository expenseRepository;
+  final IncomeRepository incomeRepository;
+  final ExpenseRepository expenseRepository;
 
   GetPersons({required this.incomeRepository, required this.expenseRepository});
   @override
