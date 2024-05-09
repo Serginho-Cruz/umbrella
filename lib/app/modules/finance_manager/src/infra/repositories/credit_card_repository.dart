@@ -1,31 +1,32 @@
 import 'package:result_dart/result_dart.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/icredit_card_repository.dart';
+import 'package:umbrella_echonomics/app/modules/auth/src/domain/entities/user.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/credit_card_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/credit_card.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
 
-import '../datasources/icredit_card_datasource.dart';
+import '../datasources/credit_card_datasource.dart';
 
-class CreditCardRepository implements ICreditCardRepository {
+class CreditCardRepositoryImpl implements CreditCardRepository {
   final ICreditCardDatasource creditCardDatasource;
 
-  CreditCardRepository({
+  CreditCardRepositoryImpl({
     required this.creditCardDatasource,
   });
 
   @override
-  Future<Result<int, Fail>> create(CreditCard card) {
+  Future<Result<int, Fail>> create(CreditCard card, User user) {
     // TODO: implement create
     throw UnimplementedError();
   }
 
   @override
-  Future<Result<void, Fail>> updateCard(CreditCard newCard) {
+  Future<Result<Unit, Fail>> update(CreditCard newCard) {
     // TODO: implement updateCard
     throw UnimplementedError();
   }
 
   @override
-  Future<Result<List<CreditCard>, Fail>> getAll() async {
+  Future<Result<List<CreditCard>, Fail>> getAll(User user) async {
     List<CreditCard> cards;
     try {
       cards = await creditCardDatasource.getAll();
@@ -39,7 +40,7 @@ class CreditCardRepository implements ICreditCardRepository {
   }
 
   @override
-  Future<Result<void, Fail>> delete(CreditCard card) {
+  Future<Result<Unit, Fail>> delete(CreditCard card) {
     // TODO: implement delete
     throw UnimplementedError();
   }

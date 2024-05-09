@@ -1,6 +1,6 @@
 import '../../entities/income.dart';
 
-abstract class IOrderIncomes {
+abstract interface class OrderIncomes {
   List<Income> byValue({
     required List<Income> incomes,
     required bool isCrescent,
