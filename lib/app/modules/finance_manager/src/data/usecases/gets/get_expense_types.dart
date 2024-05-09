@@ -1,13 +1,13 @@
 import 'package:result_dart/result_dart.dart';
 import '../../repositories/expense_type_repository.dart';
 import '../../../domain/entities/expense_type.dart';
-import '../../../domain/usecases/gets/iget_expense_types.dart';
+import '../../../domain/usecases/gets/get_expense_types.dart';
 import '../../../errors/errors.dart';
 
-class GetExpenseTypes implements IGetExpenseTypes {
+class RemoteGetExpenseTypes implements GetExpenseTypes {
   final ExpenseTypeRepository repository;
 
-  GetExpenseTypes(this.repository);
+  RemoteGetExpenseTypes(this.repository);
   @override
-  Future<Result<List<ExpenseType>, Fail>> call() => repository.getAll();
+  AsyncResult<List<ExpenseType>, Fail> call() => repository.getAll();
 }

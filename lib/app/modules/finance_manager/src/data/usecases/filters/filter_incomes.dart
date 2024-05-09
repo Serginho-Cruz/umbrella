@@ -2,9 +2,10 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecase
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/income.dart';
 
 import '../../../domain/entities/income_type.dart';
-import '../../../domain/usecases/filters/ifilter_incomes.dart';
+import '../../../domain/usecases/filters/filter_incomes.dart';
 
-class FilterIncomes extends FilterPaiyable<Income> implements IFilterIncomes {
+class FilterIncomesImpl extends FilterPaiyable<Income>
+    implements FilterIncomes {
   @override
   List<Income> byType({
     required List<Income> incomes,

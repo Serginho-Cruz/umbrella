@@ -1,7 +1,7 @@
 import '../../entities/payment_method.dart';
 import '../../entities/transaction.dart';
 
-abstract class IFilterTransactions {
+abstract interface class FilterTransactions {
   List<Transaction> byType({
     required List<Transaction> transactions,
     required TransactionType type,
@@ -15,5 +15,3 @@ abstract class IFilterTransactions {
     required double value,
   });
 }
-
-enum TransactionType { expense, income, invoice }

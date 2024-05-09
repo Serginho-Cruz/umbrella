@@ -3,6 +3,8 @@ import 'date.dart';
 import 'payment_method.dart';
 import 'paiyable.dart';
 
+enum TransactionType { expense, income, invoice }
+
 class Transaction extends Equatable {
   final int id;
   final double value;

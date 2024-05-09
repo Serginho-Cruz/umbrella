@@ -1,7 +1,7 @@
 import '../../entities/expense.dart';
 import '../../entities/expense_type.dart';
 
-abstract class IFilterExpenses {
+abstract interface class FilterExpenses {
   List<Expense> byName({
     required List<Expense> expenses,
     required String searchName,

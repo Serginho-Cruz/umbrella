@@ -5,13 +5,13 @@ import '../../../domain/entities/account.dart';
 import '../../repositories/expense_repository.dart';
 import '../../repositories/income_repository.dart';
 import '../../repositories/invoice_repository.dart';
-import '../../../domain/usecases/gets/iget_balance.dart';
+import '../../../domain/usecases/gets/get_balance.dart';
 import '../../../errors/errors.dart';
 
 import '../../repositories/balance_repository.dart';
 import '../../repositories/installment_repository.dart';
 
-class GetBalance implements IGetBalance {
+class GetBalanceImpl implements GetBalance {
   final BalanceRepository balanceRepository;
   final IncomeRepository incomeRepository;
   final ExpenseRepository expenseRepository;
@@ -19,7 +19,7 @@ class GetBalance implements IGetBalance {
   final InstallmentRepository installmentRepository;
   final AccountRepository accountRepository;
 
-  GetBalance({
+  GetBalanceImpl({
     required this.balanceRepository,
     required this.expenseRepository,
     required this.incomeRepository,
@@ -29,49 +29,29 @@ class GetBalance implements IGetBalance {
   });
 
   @override
-  Future<Result<double, Fail>> initialBalanceOf({
+  Future<Result<double, Fail>> initialOf({
     required int month,
     required int year,
-    Account? account,
+    required Account account,
   }) async {
     if (Date(day: 1, month: month, year: year).isMonthAfter(Date.today())) {
-      return expectedBalanceOf(month: month, year: year, account: account);
+      return expectedOf(month: month - 1, year: year, account: account);
     }
 
-    List<Account> accounts = [];
+    var initialBalance = await balanceRepository.getInitialBalanceOf(
+      month: month,
+      year: year,
+      account: account,
+    );
 
-    if (account != null) {
-      accounts.add(account);
-    } else {
-      var accountsFetchResult = await accountRepository.getAll();
-
-      if (accountsFetchResult.isError()) {
-        return accountsFetchResult.map((_) => 0.00);
-      }
-
-      accounts.addAll(accountsFetchResult.getOrDefault([]));
-    }
-
-    double initialBalance = 0.00;
-    for (var account in accounts) {
-      var fetchResult = await balanceRepository.getInitialBalanceOf(
-        month: month,
-        year: year,
-        account: account,
-      );
-
-      if (fetchResult.isError()) return fetchResult;
-      initialBalance += fetchResult.getOrDefault(0.00);
-    }
-
-    return initialBalance.toSuccess();
+    return initialBalance;
   }
 
   @override
-  Future<Result<double, Fail>> expectedBalanceOf({
+  Future<Result<double, Fail>> expectedOf({
     required int month,
     required int year,
-    Account? account,
+    required Account account,
   }) async {
     // List<Account> accounts = [];
 
@@ -161,10 +141,10 @@ class GetBalance implements IGetBalance {
   }
 
   @override
-  Future<Result<double, Fail>> finalBalanceOf({
+  Future<Result<double, Fail>> finalOf({
     required int month,
     required int year,
-    Account? account,
+    required Account account,
   }) async {
     throw UnimplementedError();
     // return balanceRepository.getFinalBalanceOf(month: month, year: year);

@@ -1,24 +1,24 @@
 import 'package:result_dart/result_dart.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/credit_card_model.dart';
+import 'package:umbrella_echonomics/app/modules/auth/src/domain/entities/user.dart';
 
 import '../../domain/entities/credit_card.dart';
-import '../../domain/usecases/imanage_credit_card.dart';
+import '../../domain/usecases/manage_credit_card.dart';
 import '../../errors/errors.dart';
 import '../repositories/credit_card_repository.dart';
 import '../repositories/invoice_repository.dart';
 
-class ManageCreditCard implements IManageCreditCard {
+class ManageCreditCardImpl implements ManageCreditCard {
   final CreditCardRepository cardRepository;
   final InvoiceRepository invoiceRepository;
 
-  ManageCreditCard({
+  ManageCreditCardImpl({
     required this.cardRepository,
     required this.invoiceRepository,
   });
 
   @override
-  Future<Result<void, Fail>> register(CreditCard card) async {
-    final cardCreateResult = await cardRepository.create(card);
+  Future<Result<int, Fail>> register(CreditCard card, User user) async {
+    final cardCreateResult = await cardRepository.create(card, user);
 
     if (cardCreateResult.isError()) {
       return cardCreateResult;
@@ -28,34 +28,21 @@ class ManageCreditCard implements IManageCreditCard {
   }
 
   @override
-  Future<Result<void, Fail>> update(CreditCard newCard) =>
-      cardRepository.updateCard(newCard);
+  Future<Result<Unit, Fail>> update(CreditCard newCard) =>
+      cardRepository.update(newCard);
 
   @override
-  Future<Result<List<CreditCardModel>, Fail>> getAll() async {
-    var cards = await cardRepository.getAll();
+  Future<Result<List<CreditCard>, Fail>> getAll(User user) async {
+    var cards = await cardRepository.getAll(user);
 
-    return cards.map((success) {
-      List<CreditCardModel> models = [];
-      for (var card in success) {
-        models.add(
-          CreditCardModel.fromEntity(card, castValue: 150.52 * card.id),
-        );
-      }
-
-      return models;
-    });
+    return cards;
   }
 
   @override
-  Future<Result<void, Fail>> syncCard({
+  Future<Result<Unit, Fail>> syncCard({
     required CreditCard cardToSync,
     required CreditCard cardToDelete,
   }) async {
-    final createCard = await cardRepository.create(cardToSync);
-
-    if (createCard.isError()) return createCard;
-
     final changeCardFromInvoices =
         await invoiceRepository.changeInvoicesFromCard(
       originCard: cardToSync,
@@ -68,6 +55,6 @@ class ManageCreditCard implements IManageCreditCard {
   }
 
   @override
-  Future<Result<void, Fail>> cancel(CreditCard card) =>
+  Future<Result<Unit, Fail>> cancel(CreditCard card) =>
       cardRepository.delete(card);
 }

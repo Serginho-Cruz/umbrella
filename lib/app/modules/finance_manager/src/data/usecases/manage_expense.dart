@@ -3,34 +3,32 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/reposit
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/invoice_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/expense_model.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/finance_model.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/imanage_installment.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/imanage_invoice.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/manage_installment.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/manage_invoice.dart';
+import '../../domain/entities/account.dart';
 import '../repositories/balance_repository.dart';
 import '../repositories/payment_method_repository.dart';
 import '../repositories/transaction_repository.dart';
 import '../../domain/entities/date.dart';
-import '../../domain/entities/payment_method.dart';
-import '../../utils/extensions.dart';
 import '../../domain/entities/expense.dart';
 
 import '../../domain/entities/frequency.dart';
-import '../../domain/entities/transaction.dart';
 import '../../errors/errors.dart';
 
-import '../../domain/usecases/imanage_expense.dart';
+import '../../domain/usecases/manage_expense.dart';
 import '../repositories/expense_repository.dart';
 
-class ManageExpense implements IManageExpense {
+class ManageExpenseImpl implements ManageExpense {
   final ExpenseRepository expenseRepository;
-  final IManageInstallment manageInstallment;
+  final ManageInstallment manageInstallment;
   final InvoiceRepository invoiceRepository;
   final InstallmentRepository installmentRepository;
-  final IManageInvoice manageInvoice;
+  final ManageInvoice manageInvoice;
   final BalanceRepository balanceRepository;
   final TransactionRepository transactionRepository;
   final PaymentMethodRepository paymentMethodRepository;
 
-  ManageExpense({
+  ManageExpenseImpl({
     required this.expenseRepository,
     required this.installmentRepository,
     required this.manageInstallment,
@@ -42,16 +40,15 @@ class ManageExpense implements IManageExpense {
   });
 
   @override
-  Future<Result<int, Fail>> register(Expense expense) async {
-    final result = await expenseRepository.create(expense);
+  Future<Result<int, Fail>> register(Expense expense, Account account) async {
+    final result = await expenseRepository.create(expense, account);
 
     if (result.isError()) return result;
 
     if (expense.dueDate.isOfActualMonth) {
-      var decrementResult =
-          await balanceRepository.decrementFromExpectedBalance(
+      var decrementResult = await balanceRepository.subtractFromExpectedBalance(
         expense.totalValue,
-        expense.account,
+        account,
       );
 
       if (decrementResult.isError()) return decrementResult.pure(2);
@@ -61,9 +58,10 @@ class ManageExpense implements IManageExpense {
   }
 
   @override
-  Future<Result<void, Fail>> update({
+  Future<Result<Unit, Fail>> update({
     required Expense oldExpense,
     required Expense newExpense,
+    required Account account,
   }) async {
     throw UnimplementedError();
   }
@@ -72,6 +70,7 @@ class ManageExpense implements IManageExpense {
   Future<Result<List<ExpenseModel>, Fail>> getAllOf({
     required int month,
     required int year,
+    required Account account,
   }) async {
     var expenses = <Expense>[];
 
@@ -79,7 +78,7 @@ class ManageExpense implements IManageExpense {
 
     if (requiredDate.isMonthAfter(Date.today())) {
       var monthlyExpenses =
-          await expenseRepository.getByFrequency(Frequency.monthly);
+          await expenseRepository.getByFrequency(Frequency.monthly, account);
 
       if (monthlyExpenses.isError()) {
         return Failure(monthlyExpenses.exceptionOrNull()!);
@@ -105,6 +104,7 @@ class ManageExpense implements IManageExpense {
     var requiredMonthExpenses = await expenseRepository.getAllOf(
       month: month,
       year: year,
+      account: account,
     );
 
     if (requiredMonthExpenses.isError()) {
@@ -129,41 +129,25 @@ class ManageExpense implements IManageExpense {
   }
 
   @override
-  Future<Result<void, Fail>> delete(Expense expense) async {
-    final deleteResult = await expenseRepository.delete(expense);
+  Future<Result<Unit, Fail>> delete(Expense expense, Account account) async {
+    final deleteResult = await expenseRepository.delete(expense, account);
 
     if (deleteResult.isError()) return deleteResult;
 
-    final updateExpectedBalance = await balanceRepository.sumToExpectedBalance(
+    final updateExpectedBalance = await balanceRepository.addToExpectedBalance(
       expense.totalValue,
-      expense.account,
+      account,
     );
 
     if (updateExpectedBalance.isError()) return updateExpectedBalance;
 
     if (expense.paidValue > 0.00) {
-      return balanceRepository.sumToActualBalance(
+      return balanceRepository.addToActualBalance(
         expense.paidValue,
-        expense.account,
+        account,
       );
     }
 
     return updateExpectedBalance;
-  }
-
-  double _calcDifference(double value1, double value2) =>
-      (value1 - value2).abs().roundToDecimal();
-
-  Future<void> _registerAdjustTransaction({
-    required double value,
-    required Expense paiyable,
-  }) async {
-    await transactionRepository.register(Transaction.withoutId(
-      isAdjust: true,
-      value: value * -1,
-      paymentDate: Date.today(),
-      paiyable: paiyable,
-      paymentMethod: PaymentMethod.money(),
-    ));
   }
 }

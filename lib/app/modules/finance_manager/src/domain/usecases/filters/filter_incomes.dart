@@ -1,7 +1,7 @@
 import '../../entities/income.dart';
 import '../../entities/income_type.dart';
 
-abstract class IFilterIncomes {
+abstract interface class FilterIncomes {
   List<Income> byName({
     required List<Income> incomes,
     required String searchName,

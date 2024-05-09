@@ -1,37 +1,39 @@
 import 'package:result_dart/result_dart.dart';
 
 import '../../errors/errors.dart';
+import '../entities/account.dart';
 import '../entities/credit_card.dart';
 import '../entities/installment.dart';
 
-abstract class IManageInstallment {
-  Future<Result<void, Fail>> register(Installment installment);
-  Future<Result<void, Fail>> update({
+abstract interface class ManageInstallment {
+  AsyncResult<int, Fail> register(Installment installment);
+  AsyncResult<Unit, Fail> update({
     required Installment newInstallment,
     required Installment oldInstallment,
     bool isToShareValue = true,
     int parcelNumber = 0,
   });
-  Future<Result<void, Fail>> changeParcelValue({
+  AsyncResult<Unit, Fail> changeParcelValue({
     required int parcelNumber,
     required double newValue,
     required Installment installment,
   });
-  Future<Result<void, Fail>> changeCardOfInstallment({
+  AsyncResult<Unit, Fail> changeCardOfInstallment({
     required CreditCard newCard,
     required Installment installment,
   });
-  Future<Result<List<Installment>, Fail>> getAllOf({
+  AsyncResult<List<Installment>, Fail> getAllOf({
     required int month,
     required int year,
+    required Account account,
   });
-  Future<Result<void, Fail>> deleteParcelOfInstallment({
+  AsyncResult<Unit, Fail> deleteParcelOfInstallment({
     required int parcelNumber,
     required Installment installment,
   });
-  Future<Result<void, Fail>> deleteParcelAndNextOnesOfInstallment({
+  AsyncResult<Unit, Fail> deleteParcelAndNextOnesOfInstallment({
     required int parcelNumber,
     required Installment installment,
   });
-  Future<Result<void, Fail>> cancel(Installment installment);
+  AsyncResult<Unit, Fail> cancel(Installment installment);
 }

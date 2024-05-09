@@ -3,27 +3,29 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entit
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/paiyable.dart';
 
 import '../../errors/errors.dart';
+import '../entities/account.dart';
 import '../entities/credit_card.dart';
 import '../entities/invoice.dart';
 
-abstract class IManageInvoice {
-  Future<Result<void, Fail>> update({
+abstract interface class ManageInvoice {
+  AsyncResult<Unit, Fail> update({
     required Invoice newInvoice,
     required Invoice oldInvoice,
   });
-  Future<Result<List<Invoice>, Fail>> getAllOf({
+  AsyncResult<List<Invoice>, Fail> getAllOf({
     required int month,
     required int year,
+    required Account account,
   });
-  Future<Result<Invoice, Fail>> getActualOfCard(CreditCard card);
-  Future<Result<List<Invoice>, Fail>> getAllOfCard(CreditCard card);
-  Future<Result<void, Fail>> removeItem({
+  AsyncResult<Invoice, Fail> getActualOfCard(CreditCard card);
+  AsyncResult<List<Invoice>, Fail> getAllOfCard(CreditCard card);
+  AsyncResult<Unit, Fail> removeItem({
     required Invoice invoice,
     required InvoiceItem item,
   });
-  Future<Result<void, Fail>> remove({
+  AsyncResult<Unit, Fail> remove({
     required Invoice invoice,
     required Paiyable paiyable,
   });
-  Future<Result<void, Fail>> reset(Invoice invoice);
+  AsyncResult<Unit, Fail> reset(Invoice invoice);
 }

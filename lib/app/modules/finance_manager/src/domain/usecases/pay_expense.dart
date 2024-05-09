@@ -3,16 +3,18 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entit
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/payment_method.dart';
 
 import '../../errors/errors.dart';
+import '../entities/account.dart';
 import '../entities/credit_card.dart';
 import '../entities/installment.dart';
 
-abstract class IPayExpense {
-  Future<Result<void, Fail>> withoutCredit({
+abstract interface class PayExpense {
+  AsyncResult<Unit, Fail> withoutCredit({
     required Expense expense,
     required double value,
     required PaymentMethod paymentMethod,
+    required Account account,
   });
-  Future<Result<void, Fail>> withCredit({
+  AsyncResult<Unit, Fail> withCredit({
     required Expense expense,
     required double value,
     required CreditCard card,
@@ -21,6 +23,6 @@ abstract class IPayExpense {
     required Expense expense,
     required int parcelsNumber,
     required CreditCard card,
-    double parcelsValue,
+    double? parcelsValue,
   });
 }

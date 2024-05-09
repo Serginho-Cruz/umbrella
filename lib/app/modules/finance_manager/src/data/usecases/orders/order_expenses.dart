@@ -1,7 +1,7 @@
 import '../../../domain/entities/expense.dart';
-import '../../../domain/usecases/orders/iorder_expenses.dart';
+import '../../../domain/usecases/orders/order_expenses.dart';
 
-class OrderExpenses implements IOrderExpenses {
+class OrderExpensesImpl implements OrderExpenses {
   @override
   List<Expense> byName({
     required List<Expense> expenses,

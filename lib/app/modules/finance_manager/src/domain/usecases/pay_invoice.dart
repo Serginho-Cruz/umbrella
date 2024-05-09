@@ -3,21 +3,22 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entit
 
 import '../../errors/errors.dart';
 import '../entities/credit_card.dart';
+import '../entities/installment.dart';
 import '../entities/invoice.dart';
 import '../entities/payment_method.dart';
 
-abstract class IPayInvoice {
-  Future<Result<void, Fail>> withoutCredit({
+abstract interface class PayInvoice {
+  AsyncResult<Unit, Fail> withoutCredit({
     required Invoice invoice,
     required double value,
     required PaymentMethod paymentMethod,
   });
-  Future<Result<void, Fail>> withCredit({
+  AsyncResult<Unit, Fail> withCredit({
     required Invoice invoice,
     required double value,
     required CreditCard card,
   });
-  Future<Result<void, Fail>> turnIntoInstallment({
+  Installment turnIntoInstallment({
     required Invoice invoice,
     required double parcelsValue,
     required int parcelsNumber,

@@ -5,9 +5,9 @@ import '../../../domain/entities/payment_method.dart';
 import '../../../domain/entities/transaction.dart';
 
 import '../../../domain/entities/invoice.dart';
-import '../../../domain/usecases/filters/ifilter_transactions.dart';
+import '../../../domain/usecases/filters/filter_transactions.dart';
 
-class FilterTransactions implements IFilterTransactions {
+class FilterTransactionsImpl implements FilterTransactions {
   @override
   List<Transaction> byPaymentMethod({
     required List<Transaction> transactions,

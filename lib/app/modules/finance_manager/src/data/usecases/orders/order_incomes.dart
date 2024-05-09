@@ -1,8 +1,8 @@
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/income.dart';
 
-import '../../../domain/usecases/orders/iorder_incomes.dart';
+import '../../../domain/usecases/orders/order_incomes.dart';
 
-class OrderIncomes implements IOrderIncomes {
+class OrderIncomesImpl implements OrderIncomes {
   @override
   List<Income> byName({
     required List<Income> incomes,

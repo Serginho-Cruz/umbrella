@@ -1,10 +1,10 @@
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/filters/filter_paiyable.dart';
 import '../../../domain/entities/expense.dart';
 import '../../../domain/entities/expense_type.dart';
-import '../../../domain/usecases/filters/ifilter_expenses.dart';
+import '../../../domain/usecases/filters/filter_expenses.dart';
 
-class FilterExpenses extends FilterPaiyable<Expense>
-    implements IFilterExpenses {
+class FilterExpensesImpl extends FilterPaiyable<Expense>
+    implements FilterExpenses {
   @override
   List<Expense> byName({
     required List<Expense> expenses,

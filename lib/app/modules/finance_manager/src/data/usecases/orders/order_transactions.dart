@@ -1,7 +1,7 @@
 import '../../../domain/entities/transaction.dart';
-import '../../../domain/usecases/orders/iorder_transactions.dart';
+import '../../../domain/usecases/orders/order_transactions.dart';
 
-class OrderTransactions implements IOrderTransactions {
+class OrderTransactionsImpl implements OrderTransactions {
   @override
   List<Transaction> byID(List<Transaction> transactions) =>
       List.from(transactions)..sort((a, b) => a.id.compareTo(b.id));
@@ -9,7 +9,7 @@ class OrderTransactions implements IOrderTransactions {
   @override
   List<Transaction> byValue({
     required List<Transaction> transactions,
-    required bool isCrescent,
+    bool isCrescent = true,
   }) =>
       _sortList(
         sortFunction: (a, b) => a.value.compareTo(b.value),
@@ -19,7 +19,7 @@ class OrderTransactions implements IOrderTransactions {
   @override
   List<Transaction> byPaymentDate({
     required List<Transaction> transactions,
-    required bool isCrescent,
+    bool isCrescent = true,
   }) =>
       _sortList(
         sortFunction: (a, b) => a.paymentDate.compareTo(b.paymentDate),
