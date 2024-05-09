@@ -1,5 +1,4 @@
 import 'package:result_dart/result_dart.dart';
-import 'package:umbrella_echonomics/app/modules/auth/src/domain/entities/user.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
 import '../../domain/entities/account.dart';
 import '../../domain/entities/frequency.dart';
@@ -29,6 +28,5 @@ abstract interface class IncomeRepository {
     required Date upperLimit,
     required Account account,
   });
-  AsyncResult<List<String>, Fail> getPersonsNames(User user);
   AsyncResult<Unit, Fail> delete(Income income, Account account);
 }
