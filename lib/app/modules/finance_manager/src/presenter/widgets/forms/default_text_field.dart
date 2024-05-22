@@ -6,9 +6,9 @@ class DefaultTextField extends StatelessWidget {
   final TextEditingController? controller;
   final TextInputType? keyboardType;
   final int? maxLength;
-  final String? Function(String? value)? validator;
+  final String? Function(String? value) validator;
   final void Function()? onEditingComplete;
-  final String? labelText;
+  final String labelText;
   final double? height;
   final double? width;
   final List<TextInputFormatter>? inputFormatters;
@@ -22,9 +22,9 @@ class DefaultTextField extends StatelessWidget {
     this.controller,
     this.keyboardType,
     this.maxLength,
-    this.validator,
+    required this.validator,
     this.onEditingComplete,
-    this.labelText,
+    required this.labelText,
     this.inputFormatters,
     this.padding = EdgeInsets.zero,
   });
@@ -34,7 +34,7 @@ class DefaultTextField extends StatelessWidget {
     return Padding(
       padding: padding,
       child: SizedBox(
-        height: height ?? 60.0,
+        height: height,
         width: width,
         child: TextFormField(
           validator: validator,
@@ -44,8 +44,8 @@ class DefaultTextField extends StatelessWidget {
           keyboardType: keyboardType,
           inputFormatters: inputFormatters,
           onEditingComplete: () {
-            onEditingComplete?.call();
             focusNode?.unfocus();
+            onEditingComplete?.call();
           },
           autovalidateMode: AutovalidateMode.onUserInteraction,
           onTapOutside: (_) => focusNode?.unfocus(),

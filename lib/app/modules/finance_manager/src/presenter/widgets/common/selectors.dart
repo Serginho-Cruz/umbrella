@@ -31,23 +31,18 @@ class RadialSelector<T extends Object> extends Selector<T> {
       onTap: () {
         _showModalBottomSheet(
           context,
-          ListView.builder(
-            itemCount: items.length ~/ 4 + 1,
-            itemBuilder: (ctx, number) {
-              return Row(
-                children: [
-                  for (var item in items.sublist(
-                      number, number + 3 > items.length ? null : number + 3))
-                    GestureDetector(
-                      onTap: () {
-                        onItemTap(item);
-                        Navigator.pop(context);
-                      },
-                      child: itemBuilder(item),
-                    ),
-                ],
-              );
-            },
+          GridView.count(
+            crossAxisCount: (items.length / 4).ceil(),
+            children: List.generate(
+              items.length,
+              (i) => InkWell(
+                onTap: () {
+                  onItemTap(items[i]);
+                  Navigator.pop(context);
+                },
+                child: itemBuilder(items[i]),
+              ),
+            ),
           ),
         );
       },

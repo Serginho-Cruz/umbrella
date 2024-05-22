@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../utils/umbrella_sizes.dart';
+
 class ButtonWithIcon extends StatelessWidget {
   const ButtonWithIcon({
     super.key,
@@ -43,7 +45,7 @@ class ButtonWithIcon extends StatelessWidget {
       label: Text(
         text,
         style: const TextStyle(
-          fontSize: 18.0,
+          fontSize: UmbrellaSizes.medium,
           fontWeight: FontWeight.bold,
           color: Colors.black,
         ),
