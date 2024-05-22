@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({super.key});
@@ -7,7 +6,6 @@ class MyDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: Colors.blue,
       elevation: 12.0,
       child: ListView(
         children: [
@@ -15,14 +13,15 @@ class MyDrawer extends StatelessWidget {
             title: const Text('Home'),
             leading: const Icon(Icons.home_rounded, color: Colors.white),
             onTap: () {
-              Modular.to.pushReplacementNamed('/');
+              Navigator.of(context).pushReplacementNamed('/finance_manager/');
             },
           ),
           ListTile(
             title: const Text('Adicionar Despesa'),
             leading: const Icon(Icons.add_circle_outline, color: Colors.red),
             onTap: () {
-              Modular.to.pushReplacementNamed('/expense/add');
+              Navigator.of(context)
+                  .pushReplacementNamed('/finance_manager/expense/add');
             },
           )
         ],

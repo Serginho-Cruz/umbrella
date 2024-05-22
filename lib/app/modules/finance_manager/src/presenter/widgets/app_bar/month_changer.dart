@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../../domain/entities/date.dart';
@@ -25,12 +27,14 @@ class _MonthChangerState extends State<MonthChanger>
 
   Date date = Date.today().copyWith(day: 1);
 
+  Timer timer = Timer(Duration.zero, () {});
+
   @override
   void initState() {
     super.initState();
     slideController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 1),
+      duration: const Duration(milliseconds: 500),
       value: 0.5,
     );
 
@@ -39,12 +43,12 @@ class _MonthChangerState extends State<MonthChanger>
             .animate(slideController);
 
     fadeController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 500), value: 1.0);
+        vsync: this, duration: const Duration(milliseconds: 250), value: 1.0);
   }
 
   Future<void> toNextMonth() async {
     await Future.wait([
-      slideController.forward(),
+      slideController.forward(from: 0.5),
       fadeController.reverse(),
     ]);
 
@@ -92,7 +96,13 @@ class _MonthChangerState extends State<MonthChanger>
             size: 30.0,
           ),
           onPressed: () {
-            if (!slideController.isAnimating) toPreviousMonth();
+            if (!slideController.isAnimating) {
+              toPreviousMonth();
+              timer.cancel();
+              timer = Timer(const Duration(milliseconds: 2000), () {
+                widget.onMonthChange(date.month, date.year);
+              });
+            }
           },
         ),
         FadeTransition(
@@ -116,11 +126,24 @@ class _MonthChangerState extends State<MonthChanger>
             size: 30.0,
           ),
           onPressed: () {
-            if (!slideController.isAnimating) toNextMonth();
+            if (!slideController.isAnimating) {
+              toNextMonth();
+              timer.cancel();
+              timer = Timer(const Duration(seconds: 2), () {
+                widget.onMonthChange(date.month, date.year);
+              });
+            }
           },
         ),
       ],
     );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    widget.onMonthChange(
+        widget.initialMonthAndYear.month, widget.initialMonthAndYear.year);
   }
 
   @override

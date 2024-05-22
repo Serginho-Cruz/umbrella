@@ -5,11 +5,9 @@ class HorizontalAnimatedList extends StatefulWidget {
     super.key,
     required this.itemBuilderFunction,
     required this.length,
-    required this.animatedListKey,
   });
 
   final Widget Function(BuildContext, int) itemBuilderFunction;
-  final GlobalKey<AnimatedListState> animatedListKey;
   final int length;
 
   @override
@@ -17,10 +15,21 @@ class HorizontalAnimatedList extends StatefulWidget {
 }
 
 class _HorizontalAnimatedListState extends State<HorizontalAnimatedList> {
+  late final GlobalKey<AnimatedListState> _key;
+
+  @override
+  void initState() {
+    super.initState();
+    _key = GlobalKey();
+  }
+
   @override
   Widget build(BuildContext context) {
     Future.delayed(Duration.zero, () {
-      widget.animatedListKey.currentState!.insertItem(0);
+      _key.currentState!.removeAllItems(
+          (context, animation) => SizeTransition(sizeFactor: animation));
+
+      _key.currentState!.insertItem(0);
     });
 
     if (widget.length > 1) {
@@ -28,18 +37,15 @@ class _HorizontalAnimatedListState extends State<HorizontalAnimatedList> {
       for (int i = 1; i < widget.length; i++) {
         future = future.then((_) {
           return Future.delayed(const Duration(milliseconds: 750), () {
-            widget.animatedListKey.currentState!.insertItem(i);
+            _key.currentState!.insertItem(i);
           });
         });
       }
     }
-
     return AnimatedList(
-      key: widget.animatedListKey,
+      key: _key,
       initialItemCount: 0,
-      padding: const EdgeInsets.symmetric(
-        vertical: 40.0,
-      ),
+      padding: const EdgeInsets.symmetric(vertical: 40.0),
       physics: const BouncingScrollPhysics(),
       scrollDirection: Axis.horizontal,
       itemBuilder: (context, index, animation) {

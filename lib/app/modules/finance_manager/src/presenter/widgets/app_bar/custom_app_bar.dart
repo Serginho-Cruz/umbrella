@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
+import '../../../utils/umbrella_palette.dart';
+import '../../../utils/umbrella_sizes.dart';
 import '../common/price.dart';
 import '../common/spaced_widgets.dart';
 
@@ -16,7 +17,7 @@ class CustomAppBar extends StatefulWidget {
     this.showMonthChanger = true,
   });
 
-  final Widget? title;
+  final String? title;
   final Date initialMonthAndYear;
   final void Function(int, int) onMonthChange;
   final bool showBalances;
@@ -35,7 +36,10 @@ class _CustomAppBarState extends State<CustomAppBar> {
       padding: const EdgeInsets.only(top: 10.0, bottom: 15.0),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF6FDBFF), Color(0xFFBF6DFF)],
+          colors: [
+            UmbrellaPalette.secondaryColor,
+            UmbrellaPalette.primaryColor,
+          ],
         ),
         border: Border.all(width: 1.5),
         borderRadius: const BorderRadius.only(
@@ -51,7 +55,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
             children: [
               IconButton(
                 onPressed: () {
-                  Modular.to.pushNamedAndRemoveUntil('/', (_) => false);
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                      '/finance_manager/', (_) => false);
                 },
                 icon: const Icon(
                   Icons.home,
@@ -59,7 +64,14 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   size: 35.0,
                 ),
               ),
-              widget.title ?? Container(),
+              if (widget.title != null)
+                Text(
+                  widget.title!,
+                  style: const TextStyle(
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               IconButton(
                 onPressed: () {
                   Scaffold.maybeOf(context)?.openDrawer();
@@ -88,14 +100,14 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 first: Text(
                   'Saldo Atual',
                   style: TextStyle(
-                    fontSize: 20.0,
+                    fontSize: UmbrellaSizes.big,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 second: Price(
                   value: 200.85,
                   style: TextStyle(
-                    fontSize: 20.0,
+                    fontSize: UmbrellaSizes.big,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -112,14 +124,14 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 first: Text(
                   'Saldo Esperado',
                   style: TextStyle(
-                    fontSize: 18.0,
+                    fontSize: UmbrellaSizes.medium,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 second: Price(
                   value: 200.85,
                   style: TextStyle(
-                    fontSize: 18.0,
+                    fontSize: UmbrellaSizes.medium,
                     fontWeight: FontWeight.w500,
                   ),
                 ),

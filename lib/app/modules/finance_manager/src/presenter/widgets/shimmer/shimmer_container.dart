@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../utils/umbrella_palette.dart';
+
 class ShimmerContainer extends StatelessWidget {
   const ShimmerContainer({
     super.key,
@@ -23,8 +25,9 @@ class ShimmerContainer extends StatelessWidget {
         height: height,
         margin: const EdgeInsets.symmetric(horizontal: 20.0),
         decoration: BoxDecoration(
-          color: Colors.grey,
+          color: UmbrellaPalette.gray,
           borderRadius: BorderRadius.circular(borderRadius),
+          border: Border.all(),
         ),
       ),
     );

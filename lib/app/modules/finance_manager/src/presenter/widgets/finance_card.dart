@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/umbrella_sizes.dart';
 import 'common/price.dart';
 import 'common/spaced_widgets.dart';
 
@@ -86,15 +87,20 @@ abstract class FinanceCard extends StatelessWidget {
               Price(
                 value: totalValue,
                 style: const TextStyle(
-                  fontSize: 22.0,
+                  fontSize: UmbrellaSizes.big,
                   fontWeight: FontWeight.bold,
                 ),
               )
             ],
           ),
+          const SizedBox(height: 20.0),
           Text(
             name,
-            style: const TextStyle(fontSize: 22.0, fontWeight: FontWeight.w900),
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: UmbrellaSizes.big,
+              fontWeight: FontWeight.w900,
+            ),
           ),
           Expanded(
             child: Column(
@@ -103,48 +109,48 @@ abstract class FinanceCard extends StatelessWidget {
               children: [
                 SpacedWidgets(
                   first: const Text(
-                    'Vencimento:',
+                    'Vencimento',
                     style: TextStyle(
-                      fontSize: 18.0,
+                      fontSize: UmbrellaSizes.medium,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   second: Text(
                     overdueDate.toString(format: DateFormat.ddmmyyyy),
                     style: const TextStyle(
-                      fontSize: 18.0,
+                      fontSize: UmbrellaSizes.medium,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
                 SpacedWidgets(
                   first: const Text(
-                    'Pago:',
+                    'Pago',
                     style: TextStyle(
-                      fontSize: 18.0,
+                      fontSize: UmbrellaSizes.medium,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   second: Price(
                     value: totalValue - remainingValue,
                     style: const TextStyle(
-                      fontSize: 18.0,
+                      fontSize: UmbrellaSizes.medium,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
                 SpacedWidgets(
                   first: const Text(
-                    'Restante:',
+                    'Restante',
                     style: TextStyle(
-                      fontSize: 18.0,
+                      fontSize: UmbrellaSizes.medium,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   second: Price(
                     value: remainingValue,
                     style: const TextStyle(
-                      fontSize: 18.0,
+                      fontSize: UmbrellaSizes.medium,
                       fontWeight: FontWeight.w500,
                     ),
                   ),

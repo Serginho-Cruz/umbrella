@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/account.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/common/my_drawer.dart';
-import '../../domain/models/credit_card_model.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/list_scoped_builder.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/umbrella_sizes.dart';
+import '../../domain/entities/credit_card.dart';
 import '../../domain/models/expense_model.dart';
 import '../../domain/models/income_model.dart';
+import '../../utils/umbrella_palette.dart';
+import '../controllers/account_controller.dart';
 import '../controllers/credit_card_store.dart';
 import '../controllers/expense_store.dart';
 import '../controllers/income_store.dart';
@@ -20,218 +24,220 @@ import '../widgets/app_bar/custom_app_bar.dart';
 import '../widgets/lists/horizontal_animated_list.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({super.key});
+  const HomeScreen({
+    required this.incomeStore,
+    required this.expenseStore,
+    required this.creditCardStore,
+    required this.accountStore,
+    super.key,
+  });
 
-  final IncomeStore _incomeStore = IncomeStore();
-  final ExpenseStore _expenseStore = ExpenseStore();
-  final CreditCardStore _creditCardStore = Modular.get();
+  final AccountStore accountStore;
+  final IncomeStore incomeStore;
+  final ExpenseStore expenseStore;
+  final CreditCardStore creditCardStore;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late final GlobalKey<AnimatedListState> _incomeListKey = GlobalKey();
-  late final GlobalKey<AnimatedListState> _expenseListKey = GlobalKey();
-  late final GlobalKey<AnimatedListState> _creditCardListKey = GlobalKey();
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
-
   @override
   void initState() {
     super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    widget._incomeStore.getAll();
-    widget._expenseStore.getAll();
-    widget._creditCardStore.getAll();
+    widget.creditCardStore.getAll();
+    widget.accountStore.getAll();
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        key: _scaffoldKey,
         backgroundColor: Colors.white,
         drawer: const MyDrawer(),
         body: SingleChildScrollView(
           physics: const ClampingScrollPhysics(),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomAppBar(
-                title: const Text(
-                  'Home',
-                  style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w900),
+          child: ScopedBuilder<AccountStore, List<Account>>(
+            store: widget.accountStore,
+            onLoading: (ctx) {
+              return const Center(
+                child: SizedBox(
+                  width: 300,
+                  height: 400,
+                  child: CircularProgressIndicator(),
                 ),
-                initialMonthAndYear: Date.today(),
-                onMonthChange: (_, __) {},
-              ),
-              const Padding(
-                padding: EdgeInsets.all(30.0),
-                child: Text(
-                  'Olá! Obrigado por Voltar',
-                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w500),
-                ),
-              ),
-              HorizontallyInfinityContainer(
-                color: const Color(0xFFFAFAFA),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(left: 20.0),
-                      child: Text(
-                        'Receitas',
-                        style: TextStyle(
-                          fontSize: 24.0,
-                          fontWeight: FontWeight.w700,
-                        ),
+              );
+            },
+            onState: (ctx, accounts) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomAppBar(
+                    title: 'Home',
+                    initialMonthAndYear: Date.today(),
+                    onMonthChange: (month, year) {
+                      _onMonthChange(month, year, accounts);
+                    },
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.all(30.0),
+                    child: Text(
+                      'Olá! Obrigado por Voltar',
+                      style: TextStyle(
+                        fontSize: UmbrellaSizes.big,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                    ScopedBuilder<IncomeStore, List<IncomeModel>>(
-                      store: widget._incomeStore,
-                      onLoading: (context) {
+                  ),
+                  _makeSection(
+                    title: 'Receitas',
+                    child: ListScopedBuilder<IncomeStore, List<IncomeModel>>(
+                      store: widget.incomeStore,
+                      loadingWidget: SizedBox(
+                        height: 325,
+                        child: _makeShimmerList(),
+                      ),
+                      onError: (ctx, f) => Text(f.message),
+                      onState: (ctx, state) => SizedBox(
+                        height: 325,
+                        child: HorizontalAnimatedList(
+                          length: state.length,
+                          itemBuilderFunction: (context, index) {
+                            return IncomeCard(model: state[index]);
+                          },
+                        ),
+                      ),
+                      onEmptyState: () => const SizedBox(height: 300),
+                    ),
+                  ),
+                  _makeSection(
+                    title: 'Despesas',
+                    child: ListScopedBuilder<ExpenseStore, List<ExpenseModel>>(
+                      store: widget.expenseStore,
+                      loadingWidget: SizedBox(
+                        height: 325,
+                        child: _makeShimmerList(),
+                      ),
+                      onError: (ctx, f) => Text(f.message),
+                      onState: (ctx, state) => SizedBox(
+                        height: 325,
+                        child: HorizontalAnimatedList(
+                          length: state.length,
+                          itemBuilderFunction: (context, index) {
+                            return ExpenseCard(model: state[index]);
+                          },
+                        ),
+                      ),
+                      onEmptyState: () => const SizedBox(height: 300),
+                    ),
+                  ),
+                  _makeSection(
+                    title: 'Cartões de Crédito',
+                    child: ListScopedBuilder<CreditCardStore, List<CreditCard>>(
+                      store: widget.creditCardStore,
+                      loadingWidget: SizedBox(
+                        height: 240,
+                        child: _makeShimmerList(width: 275, height: 150),
+                      ),
+                      onError: (ctx, f) => Text(f.message),
+                      onState: (ctx, state) {
                         return SizedBox(
-                          height: 325,
-                          child: HorizontalListView(
-                            itemCount: 4,
-                            itemCallback: (i) => const ShimmerContainer(
-                              height: 300,
-                              width: 250,
-                            ),
-                          ),
-                        );
-                      },
-                      onState: (context, state) {
-                        //Retornar uma imagem
-                        if (state.isEmpty) return Container();
-
-                        return SizedBox(
-                          height: 325,
+                          height: 240,
                           child: HorizontalAnimatedList(
-                            animatedListKey: _incomeListKey,
                             length: state.length,
                             itemBuilderFunction: (context, index) {
-                              return IncomeCard(model: state[index]);
+                              return CreditCardWidget(
+                                  creditCard: state[index],
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 20.0));
                             },
                           ),
                         );
                       },
+                      onEmptyState: () => const SizedBox(height: 300),
                     ),
-                  ],
-                ),
-              ),
-              HorizontallyInfinityContainer(
-                color: const Color(0xFFFAFAFA),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(left: 20.0),
-                      child: Text(
-                        'Despesas',
-                        style: TextStyle(
-                          fontSize: 24.0,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                    ScopedBuilder<ExpenseStore, List<ExpenseModel>>(
-                      store: widget._expenseStore,
-                      onLoading: (context) {
-                        return SizedBox(
-                          height: 325,
-                          child: HorizontalListView(
-                            itemCount: 4,
-                            itemCallback: (i) => const ShimmerContainer(
-                              height: 300,
-                              width: 250,
-                            ),
-                          ),
-                        );
-                      },
-                      onState: (context, state) {
-                        //Retornar uma imagem
-                        if (state.isEmpty) return Container();
-
-                        return SizedBox(
-                          height: 325,
-                          child: HorizontalAnimatedList(
-                            animatedListKey: _expenseListKey,
-                            length: state.length,
-                            itemBuilderFunction: (context, index) {
-                              return ExpenseCard(model: state[index]);
-                            },
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              HorizontallyInfinityContainer(
-                color: const Color(0xFFFAFAFA),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(left: 20.0),
-                      child: Text(
-                        'Cartões de Crédito',
-                        style: TextStyle(
-                          fontSize: 24.0,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                    ScopedBuilder<CreditCardStore, List<CreditCardModel>>(
-                      store: widget._creditCardStore,
-                      onLoading: (context) {
-                        return SizedBox(
-                          height: 240,
-                          child: HorizontalListView(
-                            itemCount: 4,
-                            itemCallback: (i) => const ShimmerContainer(
-                              height: 150,
-                              width: 275,
-                              borderRadius: 10.0,
-                            ),
-                          ),
-                        );
-                      },
-                      onState: (context, state) {
-                        if (state.isEmpty) return Container();
-
-                        return SizedBox(
-                          height: 240,
-                          child: HorizontalAnimatedList(
-                            itemBuilderFunction: (context, index) =>
-                                CreditCardWidget(
-                                    creditCard: state[index],
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 20.0)),
-                            length: state.length,
-                            animatedListKey: _creditCardListKey,
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
+                  ),
+                ],
+              );
+            },
           ),
         ),
+      ),
+    );
+  }
+
+  void _onMonthChange(int month, int year, List<Account> accounts) {
+    _fetchData(
+      month: month,
+      year: year,
+      accounts: accounts,
+      fetchAll: widget.expenseStore.getForAll,
+      fetchOne: widget.expenseStore.getAllOf,
+    );
+
+    _fetchData(
+      month: month,
+      year: year,
+      accounts: accounts,
+      fetchAll: widget.incomeStore.getForAll,
+      fetchOne: widget.incomeStore.getAllOf,
+    );
+  }
+
+  void _fetchData({
+    required int month,
+    required int year,
+    required List<Account> accounts,
+    required void Function({
+      required int month,
+      required int year,
+      required List<Account> accounts,
+    }) fetchAll,
+    required void Function({
+      required int month,
+      required int year,
+      required Account account,
+    }) fetchOne,
+  }) {
+    var selectedAccount = widget.accountStore.selectedAccount;
+    if (selectedAccount != null) {
+      fetchOne(month: month, year: year, account: selectedAccount);
+      return;
+    }
+    fetchAll(month: month, year: year, accounts: accounts);
+  }
+
+  Widget _makeSection({required String title, required Widget child}) {
+    return HorizontallyInfinityContainer(
+      color: UmbrellaPalette.gray,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 20.0),
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontSize: UmbrellaSizes.title,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          child,
+        ],
+      ),
+    );
+  }
+
+  Widget _makeShimmerList({double width = 250, double height = 300}) {
+    return HorizontalListView(
+      itemCount: 4,
+      itemCallback: (i) => ShimmerContainer(
+        height: height,
+        width: width,
       ),
     );
   }
