@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
+import 'modules/finance_manager/src/utils/umbrella_palette.dart';
+
 class AppWidget extends StatelessWidget {
   const AppWidget({super.key});
 
@@ -11,7 +13,17 @@ class AppWidget extends StatelessWidget {
       routerConfig: Modular.routerConfig,
       debugShowCheckedModeBanner: false,
       title: 'Umbrella Echonomics',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: ThemeData(
+        primaryColor: UmbrellaPalette.primaryColor,
+        expansionTileTheme: ExpansionTileThemeData(
+          expansionAnimationStyle: AnimationStyle(
+            curve: Curves.easeInOut,
+            duration: const Duration(milliseconds: 500),
+          ),
+          shape: const Border(),
+          tilePadding: EdgeInsets.zero,
+        ),
+      ),
     );
   }
 }
