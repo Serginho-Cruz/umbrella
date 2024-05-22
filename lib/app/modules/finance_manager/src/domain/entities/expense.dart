@@ -18,7 +18,7 @@ class Expense extends Paiyable with EquatableMixin {
     required super.paidValue,
     required super.remainingValue,
     required super.dueDate,
-    required super.paymentDate,
+    super.paymentDate,
     this.personName,
     required this.type,
     required this.frequency,

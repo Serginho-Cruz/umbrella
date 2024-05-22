@@ -1,14 +1,13 @@
 import 'package:equatable/equatable.dart';
 import 'account.dart';
-import 'date.dart';
 
 class CreditCard extends Equatable {
   final int id;
   final String name;
   final double annuity;
   final String color;
-  final Date cardInvoiceClosingDate;
-  final Date cardInvoiceDueDate;
+  final int cardInvoiceClosingDay;
+  final int cardInvoiceDueDay;
   final Account accountToDiscountInvoice;
 
   const CreditCard({
@@ -16,8 +15,8 @@ class CreditCard extends Equatable {
     required this.name,
     required this.annuity,
     required this.color,
-    required this.cardInvoiceClosingDate,
-    required this.cardInvoiceDueDate,
+    required this.cardInvoiceClosingDay,
+    required this.cardInvoiceDueDay,
     required this.accountToDiscountInvoice,
   });
 
@@ -25,8 +24,8 @@ class CreditCard extends Equatable {
     required String name,
     required double annuity,
     required String color,
-    required Date cardInvoiceClosingDate,
-    required Date cardInvoiceDueDate,
+    required int cardInvoiceClosingDay,
+    required int cardInvoiceDueDay,
     required Account accountToDiscountInvoice,
   }) {
     return CreditCard(
@@ -34,8 +33,8 @@ class CreditCard extends Equatable {
       name: name,
       annuity: annuity,
       color: color,
-      cardInvoiceClosingDate: cardInvoiceClosingDate,
-      cardInvoiceDueDate: cardInvoiceDueDate,
+      cardInvoiceClosingDay: cardInvoiceClosingDay,
+      cardInvoiceDueDay: cardInvoiceDueDay,
       accountToDiscountInvoice: accountToDiscountInvoice,
     );
   }
@@ -45,8 +44,8 @@ class CreditCard extends Equatable {
     String? name,
     double? annuity,
     String? color,
-    Date? cardInvoiceClosingDate,
-    Date? cardInvoiceDueDate,
+    int? cardInvoiceClosingDay,
+    int? cardInvoiceDueDay,
     Account? accountToDiscountInvoice,
   }) {
     return CreditCard(
@@ -54,9 +53,9 @@ class CreditCard extends Equatable {
       id: id ?? this.id,
       name: name ?? this.name,
       color: color ?? this.color,
-      cardInvoiceClosingDate:
-          cardInvoiceClosingDate ?? this.cardInvoiceClosingDate,
-      cardInvoiceDueDate: cardInvoiceDueDate ?? this.cardInvoiceDueDate,
+      cardInvoiceClosingDay:
+          cardInvoiceClosingDay ?? this.cardInvoiceClosingDay,
+      cardInvoiceDueDay: cardInvoiceDueDay ?? this.cardInvoiceDueDay,
       accountToDiscountInvoice:
           accountToDiscountInvoice ?? this.accountToDiscountInvoice,
     );
@@ -68,8 +67,8 @@ class CreditCard extends Equatable {
         name,
         annuity,
         color,
-        cardInvoiceClosingDate,
-        cardInvoiceDueDate,
+        cardInvoiceClosingDay,
+        cardInvoiceDueDay,
         accountToDiscountInvoice,
       ];
 }

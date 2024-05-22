@@ -1,24 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/common/spaced_widgets.dart';
-import '../../domain/entities/date.dart';
-import 'common/price.dart';
-
-import '../../domain/models/credit_card_model.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/umbrella_sizes.dart';
+import '../../domain/entities/credit_card.dart';
 
 class CreditCardWidget extends StatelessWidget {
   const CreditCardWidget({
     super.key,
     required this.creditCard,
+    this.width = 275,
+    this.height = 150,
+    this.margin,
   });
 
-  final CreditCardModel creditCard;
+  final CreditCard creditCard;
+  final double width;
+  final double height;
+  final EdgeInsetsGeometry? margin;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 275,
-      height: 150,
-      margin: const EdgeInsets.symmetric(horizontal: 20.0),
+      width: width,
+      height: height,
+      margin: margin,
       decoration: BoxDecoration(
         border: Border.all(width: 2.0),
         borderRadius: BorderRadius.circular(10.0),
@@ -37,7 +41,7 @@ class CreditCardWidget extends StatelessWidget {
                 Text(
                   creditCard.name,
                   style: const TextStyle(
-                    fontSize: 20.0,
+                    fontSize: UmbrellaSizes.big,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -61,34 +65,33 @@ class CreditCardWidget extends StatelessWidget {
                 children: [
                   SpacedWidgets(
                     first: const Text(
-                      'Total Gasto: ',
+                      'Fec. da Fatura',
                       style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 18.0,
+                        fontWeight: FontWeight.w500,
+                        fontSize: UmbrellaSizes.medium,
                       ),
                     ),
-                    second: Price(
-                      value: creditCard.castValue,
+                    second: Text(
+                      'Dia ${creditCard.cardInvoiceClosingDay}',
                       style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 18.0,
+                        fontWeight: FontWeight.w500,
+                        fontSize: UmbrellaSizes.medium,
                       ),
                     ),
                   ),
                   SpacedWidgets(
                     first: const Text(
-                      'Vencimento da Fatura',
+                      'Venc. da Fatura',
                       style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14.0,
+                        fontWeight: FontWeight.w500,
+                        fontSize: UmbrellaSizes.medium,
                       ),
                     ),
                     second: Text(
-                      creditCard.overdueDate
-                          .toString(format: DateFormat.ddmmyyyy),
+                      'Dia ${creditCard.cardInvoiceDueDay}',
                       style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14.0,
+                        fontWeight: FontWeight.w500,
+                        fontSize: UmbrellaSizes.medium,
                       ),
                     ),
                   ),
