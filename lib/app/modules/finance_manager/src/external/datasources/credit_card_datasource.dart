@@ -1,58 +1,87 @@
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/datasources/credit_card_datasource.dart';
+import 'package:umbrella_echonomics/app/modules/auth/src/domain/entities/user.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/credit_card.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/credit_card_messages.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/external/databases/SQLite/sqlite.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/external/mappers/credit_card_mapper.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/external/schemas/credit_card_table.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/datasources/icredit_card_datasource.dart';
 
+import '../../domain/entities/account.dart';
 import '../../errors/errors.dart';
 
-class CreditCardDatasource implements ICreditCardDatasource {
+class TemporaryCreditCardDatasource implements CreditCardDatasource {
+  final List<CreditCard> _cards = [
+    const CreditCard(
+      id: 1,
+      name: 'Marisa',
+      annuity: 0.00,
+      color: '45ACFF',
+      cardInvoiceClosingDay: 9,
+      cardInvoiceDueDay: 18,
+      accountToDiscountInvoice:
+          Account(id: 50, actualBalance: 200.00, name: 'Banco do Brasil'),
+    ),
+    const CreditCard(
+      id: 2,
+      name: 'Banco do Brasil',
+      annuity: 0.00,
+      color: '12601A',
+      cardInvoiceClosingDay: 27,
+      cardInvoiceDueDay: 7,
+      accountToDiscountInvoice:
+          Account(id: 50, actualBalance: 200.00, name: 'Banco do Brasil'),
+    ),
+    const CreditCard(
+      id: 3,
+      name: 'Daju',
+      annuity: 10.00,
+      color: '45ACFF',
+      cardInvoiceClosingDay: 2,
+      cardInvoiceDueDay: 12,
+      accountToDiscountInvoice:
+          Account(id: 49, actualBalance: 200.00, name: 'Conta Padrão'),
+    ),
+  ];
   @override
-  Future<int> create(CreditCard card) async {
-    var db = await SQLite.instance.database;
-    return await db.insert(
-      CreditCardTable.table,
-      CreditCardMapper.toMap(
-        card,
-        withId: false,
-      ),
-    );
+  Future<int> create(CreditCard card, User user) {
+    int newId = _cards.last.id;
+
+    _cards.add(card.copyWith(id: newId));
+
+    return Future.value(newId);
   }
 
   @override
   Future<void> update(CreditCard newCard) async {
-    var db = await SQLite.instance.database;
-    int changesMade = await db.update(
-      CreditCardTable.table,
-      CreditCardMapper.toMap(newCard),
-      where: '${CreditCardTable.id} = ?',
-      whereArgs: [newCard.id],
-    );
+    int? index;
 
-    if (changesMade != 1) throw Fail(CreditCardMessages.updateError);
+    for (var element in _cards.indexed) {
+      if (element.$2.id == newCard.id) {
+        index = element.$1;
+        break;
+      }
+    }
+
+    if (index == null) throw GenericError();
+
+    _cards.removeAt(index);
+    _cards.insert(index, newCard);
   }
 
   @override
-  Future<List<CreditCard>> getAll() async {
-    var db = await SQLite.instance.database;
-
-    var cards = await db.query(
-      CreditCardTable.table,
-      where: '${CreditCardTable.isDeleted} = ?',
-      whereArgs: [0],
-    );
-
-    return cards.map((e) => CreditCardMapper.fromMap(e)).toList();
+  Future<List<CreditCard>> getAll(User user) {
+    return Future.value(_cards);
   }
 
   @override
   Future<void> delete(CreditCard card) async {
-    var db = await SQLite.instance.database;
+    int? index;
 
-    db.rawUpdate(
-      'UPDATE ${CreditCardTable.table} SET ${CreditCardTable.isDeleted} = ? WHERE ${CreditCardTable.id} = ?',
-      [1, card.id],
-    );
+    for (var element in _cards.indexed) {
+      if (element.$2.id == card.id) {
+        index = element.$1;
+        break;
+      }
+    }
+
+    if (index == null) throw GenericError();
+
+    _cards.removeAt(index);
   }
 }
