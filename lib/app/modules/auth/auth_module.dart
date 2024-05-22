@@ -70,6 +70,8 @@ class AuthGuard extends RouteGuard {
 
     if (controller.isLogged) return true;
 
-    return await Modular.get<AuthController>().isUserInLocal();
+    bool isInLocal = await Modular.get<AuthController>().isUserInLocal();
+
+    return isInLocal;
   }
 }

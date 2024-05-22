@@ -12,7 +12,6 @@ class AuthTextField extends StatefulWidget {
     required this.focusNode,
     this.padding = EdgeInsets.zero,
     this.nextFocusNode,
-    this.errorText,
   });
 
   final EdgeInsetsGeometry padding;
@@ -24,7 +23,6 @@ class AuthTextField extends StatefulWidget {
   final FocusNode focusNode;
   final FocusNode? nextFocusNode;
   final String? Function(String?) validate;
-  final String? errorText;
 
   @override
   State<AuthTextField> createState() => _AuthTextFieldState();
