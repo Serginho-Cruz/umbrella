@@ -6,5 +6,7 @@ abstract interface class SetBalance {
   AsyncResult<Unit, Fail> initial({
     required Account account,
     required double newBalance,
+    required int month,
+    required int year,
   });
 }

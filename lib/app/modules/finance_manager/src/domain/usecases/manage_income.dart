@@ -3,6 +3,7 @@ import 'package:result_dart/result_dart.dart';
 import '../../errors/errors.dart';
 import '../entities/account.dart';
 import '../entities/income.dart';
+import '../models/income_model.dart';
 
 abstract interface class ManageIncome {
   AsyncResult<int, Fail> register(Income income, Account account);
@@ -11,7 +12,7 @@ abstract interface class ManageIncome {
     required Income newIncome,
   });
 
-  AsyncResult<List<Income>, Fail> getAllOf({
+  AsyncResult<List<IncomeModel>, Fail> getAllOf({
     required int month,
     required int year,
     required Account account,

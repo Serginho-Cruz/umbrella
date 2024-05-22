@@ -1,11 +1,13 @@
 import 'package:result_dart/result_dart.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/iinvoice_repository.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/invoice_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/credit_card.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/invoice.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
 
-class InvoiceRepository implements IInvoiceRepository {
+import '../../domain/entities/account.dart';
+
+class InvoiceRepositoryImpl implements InvoiceRepository {
   @override
   Future<Result<int, Fail>> generateOfCard(CreditCard card) {
     // TODO: implement generateOfCard
@@ -13,23 +15,17 @@ class InvoiceRepository implements IInvoiceRepository {
   }
 
   @override
-  Future<Result<void, Fail>> update(Invoice newInvoice) {
+  Future<Result<Unit, Fail>> update(Invoice newInvoice) {
     // TODO: implement update
     throw UnimplementedError();
   }
 
   @override
-  Future<Result<void, Fail>> changeInvoicesFromCard({
+  Future<Result<Unit, Fail>> changeInvoicesFromCard({
     required CreditCard originCard,
     required CreditCard destinyCard,
   }) {
     // TODO: implement changeInvoicesFromCard
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Result<Invoice, Fail>> get(int id) {
-    // TODO: implement get
     throw UnimplementedError();
   }
 
@@ -43,6 +39,7 @@ class InvoiceRepository implements IInvoiceRepository {
   Future<Result<List<Invoice>, Fail>> getAllOf({
     required int month,
     required int year,
+    required Account account,
   }) {
     // TODO: implement getAllOf
     throw UnimplementedError();
@@ -64,22 +61,22 @@ class InvoiceRepository implements IInvoiceRepository {
   }
 
   @override
-  Future<Result<Invoice, Fail>> getLastOfCard(CreditCard card) {
-    // TODO: implement getLastOfCard
+  AsyncResult<Invoice, Fail> getById(int id) {
+    // TODO: implement getById
     throw UnimplementedError();
   }
 
   @override
-  Future<Result<double, Fail>> getSumOfInvoicesInRange({
+  AsyncResult<double, Fail> getInvoicesInRange({
     required Date inferiorLimit,
     required Date upperLimit,
   }) {
-    // TODO: implement getSumOfInvoicesInRange
+    // TODO: implement getInvoicesInRange
     throw UnimplementedError();
   }
 
   @override
-  Future<Result<void, Fail>> resetInvoice(Invoice invoice) {
+  AsyncResult<Unit, Fail> resetInvoice(Invoice invoice) {
     // TODO: implement resetInvoice
     throw UnimplementedError();
   }

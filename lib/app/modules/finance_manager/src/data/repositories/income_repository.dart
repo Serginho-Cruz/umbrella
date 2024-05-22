@@ -8,11 +8,7 @@ import '../../errors/errors.dart';
 
 abstract interface class IncomeRepository {
   AsyncResult<int, Fail> create(Income income, Account account);
-  AsyncResult<Unit, Fail> update(
-    Income oldIncome,
-    Income newIncome,
-    Account account,
-  );
+  AsyncResult<Unit, Fail> update(Income newIncome);
   AsyncResult<List<Income>, Fail> getAllOf({
     required int month,
     required int year,
@@ -22,11 +18,11 @@ abstract interface class IncomeRepository {
     Frequency frequency,
     Account account,
   );
-  AsyncResult<double, Fail> getByFrequencyInRange({
+  AsyncResult<List<Income>, Fail> getByFrequencyInRange({
     required Frequency frequency,
     required Date inferiorLimit,
     required Date upperLimit,
     required Account account,
   });
-  AsyncResult<Unit, Fail> delete(Income income, Account account);
+  AsyncResult<Unit, Fail> delete(Income income);
 }

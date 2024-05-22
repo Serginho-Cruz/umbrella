@@ -46,12 +46,12 @@ class ManageExpenseImpl implements ManageExpense {
     if (result.isError()) return result;
 
     if (expense.dueDate.isOfActualMonth) {
-      var decrementResult = await balanceRepository.subtractFromExpectedBalance(
+      var decrementResult = await balanceRepository.subtractFromExpected(
         expense.totalValue,
         account,
       );
 
-      if (decrementResult.isError()) return decrementResult.pure(2);
+      if (decrementResult.isError()) return decrementResult.pure(0);
     }
 
     return result;
@@ -119,22 +119,13 @@ class ManageExpenseImpl implements ManageExpense {
             status: _determineExpenseStatus(expenses[i]))));
   }
 
-  Status _determineExpenseStatus(Expense e) {
-    if (e.dueDate.isBefore(Date.today()) && e.remainingValue == 0.00) {
-      return Status.overdue;
-    }
-    if (e.remainingValue == 0.00) return Status.okay;
-
-    return Status.inTime;
-  }
-
   @override
   Future<Result<Unit, Fail>> delete(Expense expense, Account account) async {
-    final deleteResult = await expenseRepository.delete(expense, account);
+    final deleteResult = await expenseRepository.delete(expense);
 
     if (deleteResult.isError()) return deleteResult;
 
-    final updateExpectedBalance = await balanceRepository.addToExpectedBalance(
+    final updateExpectedBalance = await balanceRepository.addToExpected(
       expense.totalValue,
       account,
     );
@@ -142,12 +133,22 @@ class ManageExpenseImpl implements ManageExpense {
     if (updateExpectedBalance.isError()) return updateExpectedBalance;
 
     if (expense.paidValue > 0.00) {
-      return balanceRepository.addToActualBalance(
+      return balanceRepository.addToActual(
         expense.paidValue,
         account,
       );
     }
 
     return updateExpectedBalance;
+  }
+
+  Status _determineExpenseStatus(Expense e) {
+    if (e.remainingValue == 0.00) return Status.okay;
+
+    if (e.dueDate.isBefore(Date.today())) {
+      return Status.overdue;
+    }
+
+    return Status.inTime;
   }
 }

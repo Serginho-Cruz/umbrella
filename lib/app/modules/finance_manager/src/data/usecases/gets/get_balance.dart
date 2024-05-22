@@ -38,7 +38,7 @@ class GetBalanceImpl implements GetBalance {
       return expectedOf(month: month - 1, year: year, account: account);
     }
 
-    var initialBalance = await balanceRepository.getInitialBalanceOf(
+    var initialBalance = await balanceRepository.getInitialOf(
       month: month,
       year: year,
       account: account,

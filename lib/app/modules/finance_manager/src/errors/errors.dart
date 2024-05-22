@@ -3,16 +3,16 @@ class Fail implements Exception {
   Fail(this.message);
 }
 
+class AccountDoesntExist extends Fail {
+  AccountDoesntExist(super.meesage);
+}
+
 class GenericError extends Fail {
   GenericError() : super("Um Erro inesperado aconteceu, tente novamente");
 }
 
 class DateError extends Fail {
   DateError(super.message);
-}
-
-class InvalidValue extends Fail {
-  InvalidValue(super.message);
 }
 
 class CreditError extends Fail {

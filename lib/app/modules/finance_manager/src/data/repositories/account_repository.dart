@@ -7,9 +7,9 @@ import '../../domain/entities/paiyable.dart';
 
 abstract interface class AccountRepository {
   AsyncResult<int, Fail> create(Account account, User user);
-  AsyncResult<Unit, Fail> update(Account oldAccount, Account newAccount);
+  AsyncResult<Unit, Fail> update(Account newAccount);
+  AsyncResult<Unit, Fail> incrementBalance(Account account, double value);
   AsyncResult<List<Account>, Fail> getAll(User user);
-  AsyncResult<Account, Fail> getDefaultFor(User user);
   AsyncResult<Account, Fail> getOfPaiyable(Paiyable paiyable);
   AsyncResult<Unit, Fail> delete(Account account);
 }

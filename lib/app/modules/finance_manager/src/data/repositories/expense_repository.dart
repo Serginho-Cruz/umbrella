@@ -8,11 +8,7 @@ import '../../errors/errors.dart';
 
 abstract interface class ExpenseRepository {
   AsyncResult<int, Fail> create(Expense expense, Account account);
-  AsyncResult<Unit, Fail> update(
-    Expense oldExpense,
-    Expense newExpense,
-    Account account,
-  );
+  AsyncResult<Unit, Fail> update(Expense newExpense);
   AsyncResult<List<Expense>, Fail> getAllOf({
     required int year,
     required int month,
@@ -28,5 +24,5 @@ abstract interface class ExpenseRepository {
     required Frequency frequency,
     required Account account,
   });
-  AsyncResult<Unit, Fail> delete(Expense expense, Account account);
+  AsyncResult<Unit, Fail> delete(Expense expense);
 }

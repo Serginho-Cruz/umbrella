@@ -1,5 +1,5 @@
 import 'package:result_dart/result_dart.dart';
-import 'package:umbrella_echonomics/app/modules/auth/src/domain/entities/user.dart';
+import '../../domain/entities/account.dart';
 import '../../domain/entities/date.dart';
 
 import '../../domain/entities/credit_card.dart';
@@ -12,7 +12,7 @@ abstract interface class InvoiceRepository {
   AsyncResult<List<Invoice>, Fail> getAllOf({
     required int month,
     required int year,
-    required User user,
+    required Account account,
   });
   AsyncResult<Invoice, Fail> getById(int id);
   AsyncResult<List<Invoice>, Fail> getAllOfCard(CreditCard card);

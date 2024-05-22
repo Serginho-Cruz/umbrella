@@ -14,7 +14,14 @@ class SetInitialBalance implements SetBalance {
   AsyncResult<Unit, Fail> initial({
     required Account account,
     required double newBalance,
+    required int month,
+    required int year,
   }) {
-    return repository.setInitial(newBalance, account);
+    return repository.setInitialOf(
+      newValue: newBalance,
+      account: account,
+      month: month,
+      year: year,
+    );
   }
 }

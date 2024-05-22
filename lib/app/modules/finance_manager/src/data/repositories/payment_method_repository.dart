@@ -15,7 +15,10 @@ abstract interface class PaymentMethodRepository {
     required double newValue,
     required PaymentMethod method,
   });
-  AsyncResult<double, Fail> getValuePaidWithMethod(Paiyable paiyable);
+  AsyncResult<double, Fail> getValuePaidWithMethod(
+    Paiyable paiyable,
+    PaymentMethod method,
+  );
   AsyncResult<Unit, Fail> removeValueFromMethod({
     required Paiyable paiyable,
     required PaymentMethod method,

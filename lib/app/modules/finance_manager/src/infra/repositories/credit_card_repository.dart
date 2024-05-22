@@ -7,29 +7,39 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/error
 import '../datasources/credit_card_datasource.dart';
 
 class CreditCardRepositoryImpl implements CreditCardRepository {
-  final ICreditCardDatasource creditCardDatasource;
+  final CreditCardDatasource _creditCardDatasource;
 
-  CreditCardRepositoryImpl({
-    required this.creditCardDatasource,
-  });
+  CreditCardRepositoryImpl(this._creditCardDatasource);
 
   @override
-  Future<Result<int, Fail>> create(CreditCard card, User user) {
-    // TODO: implement create
-    throw UnimplementedError();
+  Future<Result<int, Fail>> create(CreditCard card, User user) async {
+    try {
+      var id = await _creditCardDatasource.create(card, user);
+      return Success(id);
+    } on Fail catch (f) {
+      return Failure(f);
+    } catch (_) {
+      return Failure(GenericError());
+    }
   }
 
   @override
-  Future<Result<Unit, Fail>> update(CreditCard newCard) {
-    // TODO: implement updateCard
-    throw UnimplementedError();
+  Future<Result<Unit, Fail>> update(CreditCard newCard) async {
+    try {
+      await _creditCardDatasource.update(newCard);
+      return const Success(unit);
+    } on Fail catch (f) {
+      return Failure(f);
+    } catch (_) {
+      return Failure(GenericError());
+    }
   }
 
   @override
   Future<Result<List<CreditCard>, Fail>> getAll(User user) async {
     List<CreditCard> cards;
     try {
-      cards = await creditCardDatasource.getAll();
+      cards = await _creditCardDatasource.getAll(user);
     } on Fail catch (fail) {
       return Failure(fail);
     } catch (exception) {
@@ -40,8 +50,14 @@ class CreditCardRepositoryImpl implements CreditCardRepository {
   }
 
   @override
-  Future<Result<Unit, Fail>> delete(CreditCard card) {
-    // TODO: implement delete
-    throw UnimplementedError();
+  Future<Result<Unit, Fail>> delete(CreditCard card) async {
+    try {
+      await _creditCardDatasource.delete(card);
+      return const Success(unit);
+    } on Fail catch (f) {
+      return Failure(f);
+    } catch (_) {
+      return Failure(GenericError());
+    }
   }
 }

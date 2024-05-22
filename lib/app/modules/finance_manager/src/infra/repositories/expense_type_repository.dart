@@ -5,14 +5,14 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/error
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/datasources/expense_type_datasource.dart';
 
 class ExpenseTypeRepositoryImpl implements ExpenseTypeRepository {
-  final IExpenseTypeDatasource datasource;
+  final ExpenseTypeDatasource _datasource;
 
-  ExpenseTypeRepositoryImpl(this.datasource);
+  ExpenseTypeRepositoryImpl(this._datasource);
 
   @override
   Future<Result<List<ExpenseType>, Fail>> getAll() async {
     try {
-      var types = await datasource.getAll();
+      var types = await _datasource.getAll();
       return Success(types);
     } on Fail catch (f) {
       return Failure(f);

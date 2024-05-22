@@ -56,8 +56,10 @@ class ManageInvoiceImpl implements ManageInvoice {
   }
 
   @override
-  Future<Result<Unit, Fail>> update(
-      {required Invoice newInvoice, required Invoice oldInvoice}) {
+  Future<Result<Unit, Fail>> update({
+    required Invoice newInvoice,
+    required Invoice oldInvoice,
+  }) {
     // TODO: implement update
     throw UnimplementedError();
   }
