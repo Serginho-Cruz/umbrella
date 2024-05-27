@@ -12,6 +12,7 @@ class ExpenseTypeStore extends Store<List<ExpenseType>> {
   final GetExpenseTypes _usecase;
 
   Future<void> getAll() async {
+    setLoading(true);
     var result = await _usecase();
 
     result.fold((list) {
@@ -19,5 +20,7 @@ class ExpenseTypeStore extends Store<List<ExpenseType>> {
     }, (fail) {
       setError(fail);
     });
+
+    setLoading(false);
   }
 }

@@ -12,14 +12,12 @@ class AccountSelector extends StatelessWidget {
     required this.selectedAccount,
     required this.onSelected,
     this.label = 'Conta',
-    this.padding = EdgeInsets.zero,
   });
 
   final String label;
   final List<Account> accounts;
   final Account selectedAccount;
   final void Function(Account) onSelected;
-  final EdgeInsetsGeometry padding;
 
   @override
   Widget build(BuildContext context) {

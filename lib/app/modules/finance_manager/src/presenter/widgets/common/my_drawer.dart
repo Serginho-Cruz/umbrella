@@ -23,6 +23,15 @@ class MyDrawer extends StatelessWidget {
               Navigator.of(context)
                   .pushReplacementNamed('/finance_manager/expense/add');
             },
+          ),
+          ListTile(
+            title: const Text('Adicionar Receita'),
+            leading:
+                const Icon(Icons.add_circle_outline, color: Colors.lightGreen),
+            onTap: () {
+              Navigator.of(context)
+                  .pushReplacementNamed('/finance_manager/income/add');
+            },
           )
         ],
       ),

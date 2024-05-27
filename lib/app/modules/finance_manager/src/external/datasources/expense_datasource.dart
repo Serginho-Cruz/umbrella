@@ -7,13 +7,8 @@ import '../../errors/errors.dart';
 import '../../infra/datasources/expense_datasource.dart';
 
 class TemporaryExpenseDatasource implements ExpenseDatasource {
-  final Map<Account, List<Expense>> _expenses = {
-    const Account(
-      id: 1,
-      name: 'Conta Padrão',
-      actualBalance: 0.00,
-      isDefault: true,
-    ): [
+  final Map<int, List<Expense>> _expenses = {
+    1: [
       Expense(
         id: 1,
         name: "Conta de Luz",
@@ -53,7 +48,7 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         frequency: Frequency.monthly,
       ),
     ],
-    const Account(id: 2, name: 'Banco do Brasil', actualBalance: 200.00): [
+    2: [
       Expense(
         id: 4,
         name: 'Roupas Novas',
@@ -67,7 +62,7 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         frequency: Frequency.none,
       ),
       Expense(
-        id: 4,
+        id: 5,
         name: 'Aluguel',
         totalValue: 900.00,
         paidValue: 0.00,
@@ -78,9 +73,9 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         frequency: Frequency.monthly,
       ),
     ],
-    const Account(id: 3, name: 'Itaú', actualBalance: 156.32): [
+    3: [
       Expense(
-        id: 5,
+        id: 6,
         name: 'IPVA',
         totalValue: 2000.00,
         paidValue: 0.00,
@@ -98,25 +93,33 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
 
   @override
   Future<int> create(Expense expense, Account account) {
-    var expenses = _expenses.values.reduce((all, list) => all..addAll(list));
+    List<Expense> all = [];
 
-    expenses.sort((e1, e2) => e1.id.compareTo(e2.id));
-    int newId = expenses.last.id + 1;
+    for (var list in _expenses.values) {
+      for (var expense in list) {
+        all.add(expense.copyWith());
+      }
+    }
 
-    _expenses.putIfAbsent(account, () => []).add(expense.copyWith(id: newId));
+    all.sort((e1, e2) => e1.id.compareTo(e2.id));
+    int newId = all.last.id + 1;
+
+    _expenses
+        .putIfAbsent(account.id, () => [])
+        .add(expense.copyWith(id: newId));
     return Future.value(newId);
   }
 
   @override
   Future<void> update(Expense newExpense) async {
     int? index;
-    Account? account;
+    int? accountId;
 
-    for (var acc in _expenses.keys) {
-      for (var element in _expenses[acc]!.indexed) {
+    for (var accId in _expenses.keys) {
+      for (var element in _expenses[accId]!.indexed) {
         if (element.$2.id == newExpense.id) {
           index = element.$1;
-          account = acc;
+          accountId = accId;
           break;
         }
       }
@@ -124,10 +127,10 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
       if (index != null) break;
     }
 
-    if (index == null || account == null) throw GenericError();
+    if (index == null || accountId == null) throw GenericError();
 
-    _expenses[account]!.removeAt(index);
-    _expenses[account]!.insert(index, newExpense);
+    _expenses[accountId]!.removeAt(index);
+    _expenses[accountId]!.insert(index, newExpense);
   }
 
   @override
@@ -137,10 +140,10 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
     required Account account,
   }) {
     var expenses = _expenses
-        .putIfAbsent(account, () => [])
+        .putIfAbsent(account.id, () => [])
         .where((e) => e.dueDate.month == month && e.dueDate.year == year);
 
-    return Future.delayed(const Duration(seconds: 4), () {
+    return Future.delayed(const Duration(seconds: 2), () {
       return expenses.toList();
     });
   }
@@ -148,13 +151,13 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
   @override
   Future<void> delete(Expense expense) async {
     int? index;
-    Account? account;
+    int? accountId;
 
-    for (var acc in _expenses.keys) {
-      for (var element in _expenses[acc]!.indexed) {
+    for (var accId in _expenses.keys) {
+      for (var element in _expenses[accId]!.indexed) {
         if (element.$2.id == expense.id) {
           index = element.$1;
-          account = acc;
+          accountId = accId;
           break;
         }
       }
@@ -162,15 +165,15 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
       if (index != null) break;
     }
 
-    if (index == null || account == null) throw GenericError();
+    if (index == null || accountId == null) throw GenericError();
 
-    _expenses[account]!.removeAt(index);
+    _expenses[accountId]!.removeAt(index);
   }
 
   @override
   Future<List<Expense>> getByFrequency(Frequency frequency, Account account) {
     var expenses = _expenses
-        .putIfAbsent(account, () => [])
+        .putIfAbsent(account.id, () => [])
         .where((e) => e.frequency == frequency);
 
     return Future.delayed(const Duration(seconds: 4), () {
@@ -185,7 +188,7 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
     required Date inferiorLimit,
     required Date upperLimit,
   }) {
-    var expenses = _expenses.putIfAbsent(account, () => []).where((e) {
+    var expenses = _expenses.putIfAbsent(account.id, () => []).where((e) {
       return e.frequency == frequency &&
           e.dueDate.isAfter(inferiorLimit) &&
           e.dueDate.isBefore(upperLimit);

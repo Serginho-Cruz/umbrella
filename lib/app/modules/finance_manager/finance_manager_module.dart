@@ -1,65 +1,11 @@
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:umbrella_echonomics/app/modules/auth/auth_module.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/account_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/credit_card_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/expense_type_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/income_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/income_type_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/installment_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/invoice_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/payment_method_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/transaction_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/gets/get_expense_types.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/manage_account.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/manage_credit_card.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/manage_income.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/manage_installment.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/gets/get_expense_types.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/manage_account.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/manage_credit_card.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/manage_installment.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/external/datasources/account_datasource.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/external/datasources/balance_datasource.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/external/datasources/credit_card_datasource.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/external/datasources/expense_datasource.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/external/datasources/income_datasource.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/external/datasources/transaction_datasource.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/datasources/account_datasource.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/datasources/balance_datasource.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/datasources/expense_type_datasource.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/datasources/transaction_datasource.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/repositories/account_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/repositories/balance_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/repositories/credit_card_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/repositories/expense_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/repositories/expense_type_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/repositories/installment_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/repositories/invoice_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/account_controller.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/credit_card_store.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/expense_type_store.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/screens/create_expense_screen.dart';
 
-import 'src/data/repositories/balance_repository.dart';
-import 'src/data/repositories/expense_repository.dart';
-import 'src/data/usecases/manage_expense.dart';
-import 'src/data/usecases/manage_invoice.dart';
-import 'src/domain/usecases/manage_expense.dart';
-import 'src/domain/usecases/manage_income.dart';
-import 'src/domain/usecases/manage_invoice.dart';
-import 'src/external/datasources/expense_type_datasource.dart';
-import 'src/external/datasources/income_type_datasource.dart';
-import 'src/infra/datasources/credit_card_datasource.dart';
-import 'src/infra/datasources/expense_datasource.dart';
-import 'src/infra/datasources/income_datasource.dart';
-import 'src/infra/datasources/income_type_datasource.dart';
-import 'src/infra/repositories/income_repository.dart';
-import 'src/infra/repositories/income_type_repository.dart';
-import 'src/infra/repositories/payment_method_repository.dart';
-import 'src/infra/repositories/transaction_repository.dart';
-import 'src/presenter/controllers/expense_store.dart';
-import 'src/presenter/controllers/income_store.dart';
-import 'src/presenter/screens/home_screen.dart';
+import 'datasources.dart';
+import 'repositories.dart';
+import 'usecases.dart';
+import 'controllers.dart';
+import 'routes.dart';
 
 class FinanceManagerModule extends Module {
   @override
@@ -97,6 +43,16 @@ class FinanceManagerModule extends Module {
         ),
       ),
     );
+    r.add(
+      ChildRoute(
+        '/income/add',
+        child: (context) => CreateIncomeScreen(
+          accountStore: Modular.get(),
+          incomeStore: Modular.get(),
+          typeStore: Modular.get(),
+        ),
+      ),
+    );
   }
 
   void _addDatasources(Injector i) {
@@ -120,63 +76,64 @@ class FinanceManagerModule extends Module {
   }
 
   void _addRepositories(Injector i) {
-    i.addLazySingleton<AccountRepository>(() => AccountRepositoryImpl(i.get()));
+    i.addLazySingleton<AccountRepository>(() => AccountRepositoryImpl(i()));
 
-    i.addLazySingleton<BalanceRepository>(() => BalanceRepositoryImpl(
-        balanceDatasource: i.get(), accountRepository: i.get()));
+    i.addLazySingleton<BalanceRepository>(() =>
+        BalanceRepositoryImpl(balanceDatasource: i(), accountRepository: i()));
 
     i.addLazySingleton<CreditCardRepository>(
-      () => CreditCardRepositoryImpl(i.get()),
+      () => CreditCardRepositoryImpl(i()),
     );
 
     i.addLazySingleton<InvoiceRepository>(() => InvoiceRepositoryImpl());
 
-    i.addLazySingleton<ExpenseRepository>(() => ExpenseRepositoryImpl(i.get()));
+    i.addLazySingleton<ExpenseRepository>(() => ExpenseRepositoryImpl(i()));
 
     i.addLazySingleton<ExpenseTypeRepository>(
-      () => ExpenseTypeRepositoryImpl(i.get()),
+      () => ExpenseTypeRepositoryImpl(i()),
     );
 
-    i.addLazySingleton<IncomeRepository>(() => IncomeRepositoryImpl(i.get()));
+    i.addLazySingleton<IncomeRepository>(() => IncomeRepositoryImpl(i()));
 
     i.addLazySingleton<IncomeTypeRepository>(
-        () => IncomeTypeRepositoryImpl(i.get()));
+        () => IncomeTypeRepositoryImpl(i()));
 
     i.addLazySingleton<InstallmentRepository>(
         () => InstallmentRepositoryImpl());
 
     i.addLazySingleton<TransactionRepository>(
-        () => TransactionRepositoryImpl(i.get()));
+        () => TransactionRepositoryImpl(i()));
 
     i.addLazySingleton<PaymentMethodRepository>(
         () => PaymentMethodRepositoryImpl());
   }
 
   void _addUsecases(Injector i) {
-    i.addLazySingleton<ManageAccount>(() => ManageAccountImpl(i.get()));
+    i.addLazySingleton<ManageAccount>(() => ManageAccountImpl(i()));
 
     i.addLazySingleton<ManageCreditCard>(
       () => ManageCreditCardImpl(
-        cardRepository: i.get(),
-        invoiceRepository: i.get(),
+        cardRepository: i(),
+        invoiceRepository: i(),
       ),
     );
 
-    i.addLazySingleton<GetExpenseTypes>(() => RemoteGetExpenseTypes(i.get()));
+    i.addLazySingleton<GetExpenseTypes>(() => RemoteGetExpenseTypes(i()));
+    i.addLazySingleton<GetIncomeTypes>(() => RemoteGetIncomeTypes(i()));
 
     i.addLazySingleton<ManageExpense>(() => ManageExpenseImpl(
-          expenseRepository: i.get(),
-          balanceRepository: i.get(),
-          installmentRepository: i.get(),
-          invoiceRepository: i.get(),
-          manageInstallment: i.get(),
-          manageInvoice: i.get(),
-          paymentMethodRepository: i.get(),
-          transactionRepository: i.get(),
+          expenseRepository: i(),
+          balanceRepository: i(),
+          installmentRepository: i(),
+          invoiceRepository: i(),
+          manageInstallment: i(),
+          manageInvoice: i(),
+          paymentMethodRepository: i(),
+          transactionRepository: i(),
         ));
 
     i.addLazySingleton<ManageIncome>(
-        () => ManageIncomeImpl(incomeRepository: i.get()));
+        () => ManageIncomeImpl(incomeRepository: i(), balanceRepository: i()));
 
     i.addLazySingleton<ManageInstallment>(() => ManageInstallmentImpl());
 
@@ -185,16 +142,18 @@ class FinanceManagerModule extends Module {
 
   void _addControllers(Injector i) {
     i.addLazySingleton<AccountStore>(
-        () => AccountStore(authController: i.get(), manageAccount: i.get()));
+        () => AccountStore(authController: i(), manageAccount: i()));
 
     i.addLazySingleton<CreditCardStore>(
-      () => CreditCardStore(manageCreditCard: i.get(), authController: i.get()),
+      () => CreditCardStore(manageCreditCard: i(), authController: i()),
     );
 
-    i.addLazySingleton<ExpenseTypeStore>(() => ExpenseTypeStore(i.get()));
+    i.addLazySingleton<ExpenseTypeStore>(() => ExpenseTypeStore(i()));
 
-    i.addLazySingleton<ExpenseStore>(() => ExpenseStore(i.get()));
+    i.addLazySingleton<ExpenseStore>(() => ExpenseStore(i()));
 
-    i.addLazySingleton<IncomeStore>(() => IncomeStore(i.get()));
+    i.addLazySingleton<IncomeStore>(() => IncomeStore(i()));
+
+    i.addLazySingleton<IncomeTypeStore>(() => IncomeTypeStore(i()));
   }
 }

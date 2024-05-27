@@ -136,8 +136,8 @@ sealed class UmbrellaDialogs {
                                     borderRadius: BorderRadius.circular(8.0))),
                           ),
                           onPressed: () {
-                            onRetry();
                             Navigator.pop(context);
+                            onRetry();
                           },
                           child: const Text(
                             'Tentar Novamente',

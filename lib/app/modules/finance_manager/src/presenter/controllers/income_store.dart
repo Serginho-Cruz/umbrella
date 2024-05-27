@@ -1,9 +1,12 @@
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:result_dart/result_dart.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/manage_income.dart';
 
 import '../../domain/entities/account.dart';
 import '../../domain/entities/date.dart';
+import '../../domain/entities/income.dart';
 import '../../domain/models/income_model.dart';
+import '../../errors/errors.dart';
 
 class IncomeStore extends Store<List<IncomeModel>> {
   final ManageIncome _manageIncome;
@@ -13,6 +16,13 @@ class IncomeStore extends Store<List<IncomeModel>> {
   bool _hasAll = false;
 
   IncomeStore(this._manageIncome) : super([]);
+
+  AsyncResult<int, Fail> register(Income expense, Account account) async {
+    var result = await _manageIncome.register(expense, account);
+
+    if (result.isSuccess()) _hasAll = false;
+    return result;
+  }
 
   Future<void> getForAll({
     required List<Account> accounts,

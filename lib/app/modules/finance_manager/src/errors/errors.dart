@@ -3,6 +3,11 @@ class Fail implements Exception {
   Fail(this.message);
 }
 
+class NetworkFail extends Fail {
+  NetworkFail()
+      : super('Houve um problema de conexão. Cheque e tente novamente');
+}
+
 class AccountDoesntExist extends Fail {
   AccountDoesntExist(super.meesage);
 }

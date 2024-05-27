@@ -9,17 +9,34 @@ import '../../domain/entities/frequency.dart';
 import '../../domain/models/finance_model.dart';
 import '../../domain/models/income_model.dart';
 import '../../domain/usecases/manage_income.dart';
+import '../repositories/balance_repository.dart';
 
 class ManageIncomeImpl implements ManageIncome {
   final IncomeRepository _incomeRepository;
+  final BalanceRepository _balanceRepository;
 
-  ManageIncomeImpl({required IncomeRepository incomeRepository})
-      : _incomeRepository = incomeRepository;
+  ManageIncomeImpl({
+    required IncomeRepository incomeRepository,
+    required BalanceRepository balanceRepository,
+  })  : _incomeRepository = incomeRepository,
+        _balanceRepository = balanceRepository;
 
   @override
-  AsyncResult<int, Fail> register(Income income, Account account) {
-    // TODO: implement register
-    throw UnimplementedError();
+  AsyncResult<int, Fail> register(Income income, Account account) async {
+    final result = await _incomeRepository.create(income, account);
+
+    if (result.isError()) return result;
+
+    if (income.dueDate.isOfActualMonth) {
+      var incrementResult = await _balanceRepository.addToExpected(
+        income.totalValue,
+        account,
+      );
+
+      if (incrementResult.isError()) return incrementResult.pure(0);
+    }
+
+    return result;
   }
 
   @override

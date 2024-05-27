@@ -505,7 +505,7 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                         height: 70.0,
                         controller: _personNameFieldController,
                         focusNode: _personNameFocusNode,
-                        labelText: 'Quem você deve? (Opcional)',
+                        labelText: 'A Quem você deve isso? (Opcional)',
                         maxLength: 20,
                         validator: (_) => null,
                         padding: const EdgeInsets.only(top: 30.0),
@@ -573,7 +573,19 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
             : _personNameFieldController.text.trim());
 
     //TODO: Put logic to pay in credit or in installments
-    widget._expenseStore.register(newExpense, account!);
+    widget._expenseStore.register(newExpense, account!).then((result) {
+      result.fold((success) {
+        UmbrellaDialogs.showSuccess(
+          context,
+          title: 'Despesa Cadastrada',
+          message:
+              'Sua despesa foi cadastrada com sucesso. Iremos redireciona-lo para a Tela Principal',
+        );
+        Navigator.pushReplacementNamed(context, '/finance_manager/');
+      }, (failure) {
+        UmbrellaDialogs.showError(context, failure);
+      });
+    });
   }
 
   void _resetForm() {
@@ -586,6 +598,7 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
       date = Date.today();
       expenseType = null;
       logicalCardError = null;
+      logicalTypeError = null;
       willBePaidWithCredit = false;
       cardSelected = null;
       willBeTurntIntoInstallment = false;
