@@ -18,8 +18,6 @@ import '../widgets/lists/horizontal_listview.dart';
 import '../widgets/common/horizontal_infinity_container.dart';
 import '../widgets/income_card.dart';
 import '../widgets/shimmer/shimmer_container.dart';
-
-import '../../domain/entities/date.dart';
 import '../widgets/app_bar/custom_app_bar.dart';
 import '../widgets/lists/horizontal_animated_list.dart';
 
@@ -54,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
-        drawer: const MyDrawer(),
+        drawer: MyDrawer(),
         body: SingleChildScrollView(
           physics: const ClampingScrollPhysics(),
           child: ScopedBuilder<AccountStore, List<Account>>(
@@ -75,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   CustomAppBar(
                     title: 'Home',
-                    initialMonthAndYear: Date.today(),
+                    showMonthChanger: true,
                     onMonthChange: (month, year) {
                       _onMonthChange(month, year, accounts);
                     },

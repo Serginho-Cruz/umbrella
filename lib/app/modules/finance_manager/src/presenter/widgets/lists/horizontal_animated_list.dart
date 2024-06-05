@@ -36,7 +36,7 @@ class _HorizontalAnimatedListState extends State<HorizontalAnimatedList> {
       var future = Future(() {});
       for (int i = 1; i < widget.length; i++) {
         future = future.then((_) {
-          return Future.delayed(const Duration(milliseconds: 750), () {
+          return Future.delayed(const Duration(milliseconds: 500), () {
             _key.currentState!.insertItem(i);
           });
         });
@@ -49,25 +49,9 @@ class _HorizontalAnimatedListState extends State<HorizontalAnimatedList> {
       physics: const BouncingScrollPhysics(),
       scrollDirection: Axis.horizontal,
       itemBuilder: (context, index, animation) {
-        return FadeTransition(
-          opacity: CurvedAnimation(
-            parent: animation,
-            curve: const Interval(
-              0.0,
-              0.5,
-              curve: Curves.fastOutSlowIn,
-            ),
-          ),
-          child: SlideTransition(
-            position: CurvedAnimation(
-              curve: Curves.easeInOut,
-              parent: animation,
-            ).drive((Tween<Offset>(
-              begin: const Offset(0.0, 1.0),
-              end: const Offset(0.0, 0.0),
-            ))),
-            child: widget.itemBuilderFunction(context, index),
-          ),
+        return ScaleTransition(
+          scale: CurvedAnimation(parent: animation, curve: Curves.decelerate),
+          child: widget.itemBuilderFunction(context, index),
         );
       },
     );

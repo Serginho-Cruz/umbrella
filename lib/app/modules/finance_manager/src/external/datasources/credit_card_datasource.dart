@@ -66,7 +66,7 @@ class TemporaryCreditCardDatasource implements CreditCardDatasource {
 
   @override
   Future<List<CreditCard>> getAll(User user) {
-    return Future.value(_cards);
+    return Future.delayed(const Duration(seconds: 2), () => _cards);
   }
 
   @override

@@ -6,12 +6,23 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entit
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
 
 import '../../domain/entities/account.dart';
+import '../datasources/invoice_datasource.dart';
 
 class InvoiceRepositoryImpl implements InvoiceRepository {
+  final InvoiceDatasource _invoiceDatasource;
+
+  InvoiceRepositoryImpl(this._invoiceDatasource);
+
   @override
-  Future<Result<int, Fail>> generateOfCard(CreditCard card) {
-    // TODO: implement generateOfCard
-    throw UnimplementedError();
+  Future<Result<int, Fail>> generateOfCard(CreditCard card) async {
+    try {
+      var id = await _invoiceDatasource.generateOfCard(card);
+      return Success(id);
+    } on Fail catch (fail) {
+      return Failure(fail);
+    } catch (e) {
+      return GenericError().toFailure();
+    }
   }
 
   @override
@@ -67,7 +78,7 @@ class InvoiceRepositoryImpl implements InvoiceRepository {
   }
 
   @override
-  AsyncResult<double, Fail> getInvoicesInRange({
+  AsyncResult<List<Invoice>, Fail> getInvoicesInRange({
     required Date inferiorLimit,
     required Date upperLimit,
   }) {

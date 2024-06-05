@@ -8,18 +8,25 @@ import '../../../domain/entities/date.dart';
 import 'month_changer.dart';
 
 class CustomAppBar extends StatefulWidget {
-  const CustomAppBar({
+  CustomAppBar({
     super.key,
     this.title,
-    required this.onMonthChange,
-    required this.initialMonthAndYear,
+    this.onMonthChange,
+    Date? monthAndYear,
     this.showBalances = true,
-    this.showMonthChanger = true,
-  });
+    this.showMonthChanger = false,
+  }) {
+    assert((showMonthChanger && onMonthChange != null) || !showMonthChanger,
+        'onMonthChange must be provided if showMonthChanger is true');
+    if (monthAndYear != null) {
+      currentMonthAndYear = monthAndYear;
+    }
+  }
+
+  static Date currentMonthAndYear = Date.today();
 
   final String? title;
-  final Date initialMonthAndYear;
-  final void Function(int, int) onMonthChange;
+  final void Function(int, int)? onMonthChange;
   final bool showBalances;
   final bool showMonthChanger;
 
@@ -86,8 +93,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
           ),
           if (widget.showMonthChanger)
             MonthChanger(
-              onMonthChange: widget.onMonthChange,
-              initialMonthAndYear: widget.initialMonthAndYear,
+              onMonthChange: widget.onMonthChange!,
+              initialMonthAndYear: CustomAppBar.currentMonthAndYear,
             ),
           if (widget.showBalances)
             Padding(

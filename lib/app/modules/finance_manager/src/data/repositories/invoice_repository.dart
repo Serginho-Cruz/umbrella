@@ -21,7 +21,7 @@ abstract interface class InvoiceRepository {
     required Date date,
     required CreditCard card,
   });
-  AsyncResult<double, Fail> getInvoicesInRange({
+  AsyncResult<List<Invoice>, Fail> getInvoicesInRange({
     required Date inferiorLimit,
     required Date upperLimit,
   });

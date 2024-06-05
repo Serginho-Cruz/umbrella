@@ -8,7 +8,7 @@ class TemporaryExpenseTypeDatasource implements ExpenseTypeDatasource {
     return Future.value([
       const ExpenseType(
         id: 1,
-        name: 'Conta',
+        name: 'Contas',
         icon: 'icons/conta.png',
       ),
       const ExpenseType(
@@ -28,7 +28,7 @@ class TemporaryExpenseTypeDatasource implements ExpenseTypeDatasource {
       ),
       const ExpenseType(
         id: 5,
-        name: 'Alimentação',
+        name: 'Comida',
         icon: 'icons/alimentacao.png',
       ),
       const ExpenseType(
@@ -38,7 +38,7 @@ class TemporaryExpenseTypeDatasource implements ExpenseTypeDatasource {
       ),
       const ExpenseType(
         id: 7,
-        name: 'Comemoração',
+        name: 'Festas',
         icon: 'icons/comemoracao.png',
       ),
       const ExpenseType(id: 8, name: 'Moradia', icon: 'icons/moradia.png'),

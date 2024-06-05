@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../domain/entities/credit_card.dart';
-import 'common/selectors.dart';
-import 'credit_card_widget.dart';
+import '../../../domain/entities/credit_card.dart';
+import 'base_selectors.dart';
+import '../credit_card_widget.dart';
 
 class CardSelector extends StatelessWidget {
   const CardSelector({

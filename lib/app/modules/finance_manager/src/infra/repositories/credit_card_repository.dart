@@ -37,16 +37,14 @@ class CreditCardRepositoryImpl implements CreditCardRepository {
 
   @override
   Future<Result<List<CreditCard>, Fail>> getAll(User user) async {
-    List<CreditCard> cards;
     try {
-      cards = await _creditCardDatasource.getAll(user);
+      var cards = await _creditCardDatasource.getAll(user);
+      return Success(cards);
     } on Fail catch (fail) {
       return Failure(fail);
     } catch (exception) {
       return Failure(GenericError());
     }
-
-    return Success(cards);
   }
 
   @override

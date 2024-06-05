@@ -9,7 +9,7 @@ class TemporaryIncomeTypeDatasource implements IncomeTypeDatasource {
       () => [
         const IncomeType(
           id: 1,
-          name: 'Conta',
+          name: 'Contas',
           icon: 'icons/conta.png',
         ),
         const IncomeType(
@@ -29,7 +29,7 @@ class TemporaryIncomeTypeDatasource implements IncomeTypeDatasource {
         ),
         const IncomeType(
           id: 5,
-          name: 'Alimentação',
+          name: 'Comida',
           icon: 'icons/alimentacao.png',
         ),
         const IncomeType(
@@ -39,7 +39,7 @@ class TemporaryIncomeTypeDatasource implements IncomeTypeDatasource {
         ),
         const IncomeType(
           id: 7,
-          name: 'Comemoração',
+          name: 'Festas',
           icon: 'icons/comemoracao.png',
         ),
         const IncomeType(id: 8, name: 'Moradia', icon: 'icons/moradia.png'),

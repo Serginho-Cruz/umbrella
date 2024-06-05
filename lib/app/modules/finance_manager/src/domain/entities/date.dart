@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_initializing_formals
+
 import 'package:equatable/equatable.dart';
 
 enum DateFormat { ddmmyyyy, iso, mmddyyyy }
@@ -12,11 +14,19 @@ class Date extends Equatable implements Comparable<Date> {
     required int month,
     required int year,
   }) {
-    var datetime = DateTime(year, month, day);
+    int plusYears = (month / 12).truncate();
 
-    this.day = datetime.day;
-    this.month = datetime.month;
-    this.year = datetime.year;
+    year += plusYears;
+    month = month % 12;
+    if (month == 0) month = 12;
+
+    int totalDays = Date.totalDaysOnMonth(month, year);
+
+    if (day > totalDays) day = totalDays;
+
+    this.day = day;
+    this.month = month;
+    this.year = year;
   }
 
   int get totalDaysOfMonth {

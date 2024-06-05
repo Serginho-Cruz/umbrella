@@ -7,7 +7,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/co
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/app_bar/custom_app_bar.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/common/button_with_icon.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/common/my_drawer.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/common/selectors.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/selectors/base_selectors.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/common/umbrella_dialogs.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/forms/account_selector.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/forms/my_form.dart';
@@ -26,11 +26,11 @@ import '../../utils/umbrella_palette.dart';
 import '../../utils/umbrella_sizes.dart';
 import '../controllers/account_controller.dart';
 import '../controllers/expense_store.dart';
-import '../widgets/card_selector.dart';
-import '../widgets/common/date_picker.dart';
+import '../widgets/selectors/card_selector.dart';
+import '../widgets/forms/date_picker.dart';
 import '../widgets/common/text_link.dart';
 import '../widgets/forms/default_text_field.dart';
-import '../widgets/forms/frequency_selector.dart';
+import '../widgets/selectors/frequency_selector.dart';
 import '../widgets/forms/number_text_field.dart';
 
 class CreateExpenseScreen extends StatefulWidget {
@@ -112,16 +112,11 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        drawer: const MyDrawer(),
+        drawer: MyDrawer(),
         body: SingleChildScrollView(
           child: Column(
             children: [
-              CustomAppBar(
-                title: 'Nova Despesa',
-                onMonthChange: (_, __) {},
-                initialMonthAndYear: Date.today(),
-                showMonthChanger: false,
-              ),
+              CustomAppBar(title: 'Nova Despesa'),
               MyForm(
                 formKey: _formKey,
                 padding: const EdgeInsets.only(top: 12.0),
@@ -202,6 +197,7 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                     },
                   ),
                   FrequencySelector(
+                    title: 'Qual a Frequência dessa Despesa?',
                     selectedFrequency: frequency,
                     onSelected: (newFrequency) {
                       setState(() {
@@ -222,34 +218,43 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                   ),
                   ScopedBuilder<ExpenseTypeStore, List<ExpenseType>>(
                     store: widget._typeStore,
-                    onState: (ctx, types) => RadialSelector<ExpenseType>(
+                    onState: (ctx, types) => GridSelector<ExpenseType>(
                       items: types,
+                      itemsPerLine: 3,
+                      linesGap: 20.0,
+                      itemSize: 80.0,
                       itemBuilder: (type) {
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              height: 60.0,
-                              width: 60.0,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(width: 2),
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: AssetImage(
-                                    'assets/${type.icon}',
+                        return LimitedBox(
+                          maxWidth: 80.0,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                height: 80.0,
+                                width: 80.0,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(width: 2),
+                                  image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: AssetImage(
+                                      'assets/${type.icon}',
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            Text(
-                              type.name,
-                              style: const TextStyle(
-                                fontSize: UmbrellaSizes.medium,
+                              const SizedBox(height: 8.0),
+                              Text(
+                                type.name,
+                                maxLines: 1,
+                                style: const TextStyle(
+                                  fontSize: UmbrellaSizes.small,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         );
                       },
                       onItemTap: (type) {
@@ -533,9 +538,7 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                   ),
                   color: const Color(0xFFCD8CFF),
                   text: 'Adicionar',
-                  onPressed: () {
-                    _onFormSubmitted(context);
-                  },
+                  onPressed: _onFormSubmitted,
                 ),
               ),
             ],
@@ -545,14 +548,14 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
     );
   }
 
-  void _onFormSubmitted(BuildContext context) {
+  void _onFormSubmitted() {
     var (isFormValid, message) = _validateForm();
 
     if (!isFormValid) {
       UmbrellaDialogs.showError(
           context,
-          Fail(message ??
-              'Parece que o formulário contém erros. Corrija-os e tente denovo'));
+          message ??
+              'Parece que o formulário contém erros. Corrija-os e tente denovo');
       return;
     }
 
@@ -583,7 +586,7 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
         );
         Navigator.pushReplacementNamed(context, '/finance_manager/');
       }, (failure) {
-        UmbrellaDialogs.showError(context, failure);
+        UmbrellaDialogs.showError(context, failure.message);
       });
     });
   }

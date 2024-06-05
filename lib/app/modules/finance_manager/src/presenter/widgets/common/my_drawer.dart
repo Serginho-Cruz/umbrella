@@ -1,40 +1,66 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
+import 'package:umbrella_echonomics/app/modules/auth/src/domain/entities/user.dart';
+import 'package:umbrella_echonomics/app/modules/auth/src/presenter/controllers/auth_controller.dart';
 
 class MyDrawer extends StatelessWidget {
-  const MyDrawer({super.key});
+  MyDrawer({super.key});
+
+  final String _prefix = '/finance_manager';
+  final User user = Modular.get<AuthController>().user!;
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
       elevation: 12.0,
+      backgroundColor: Colors.white,
       child: ListView(
         children: [
-          ListTile(
-            title: const Text('Home'),
-            leading: const Icon(Icons.home_rounded, color: Colors.white),
-            onTap: () {
-              Navigator.of(context).pushReplacementNamed('/finance_manager/');
-            },
+          //TODO: Make the Header of Drawer with User's name, email and first letter
+          _makeDrawerOption(
+            context,
+            title: 'Home',
+            icon: const Icon(Icons.home_rounded, color: Colors.black),
+            routeName: '/',
           ),
-          ListTile(
-            title: const Text('Adicionar Despesa'),
-            leading: const Icon(Icons.add_circle_outline, color: Colors.red),
-            onTap: () {
-              Navigator.of(context)
-                  .pushReplacementNamed('/finance_manager/expense/add');
-            },
+          _makeDrawerOption(
+            context,
+            title: 'Adiicionar Despesa',
+            icon: const Icon(Icons.add_circle_outline, color: Colors.red),
+            routeName: '/expense/add',
           ),
-          ListTile(
-            title: const Text('Adicionar Receita'),
-            leading:
+          _makeDrawerOption(
+            context,
+            title: 'Adicionar Receita',
+            icon:
                 const Icon(Icons.add_circle_outline, color: Colors.lightGreen),
-            onTap: () {
-              Navigator.of(context)
-                  .pushReplacementNamed('/finance_manager/income/add');
-            },
-          )
+            routeName: '/income/add',
+          ),
+          _makeDrawerOption(
+            context,
+            title: 'Adicionar Cartão',
+            icon: const Icon(Icons.add_circle_outline, color: Colors.lightBlue),
+            routeName: '/card/add',
+          ),
         ],
       ),
+    );
+  }
+
+  ///Makes a Drawer Option that navigates to other screens. Don't use the prefix on [routeName]
+  Widget _makeDrawerOption(
+    BuildContext context, {
+    required String title,
+    required Icon icon,
+    required String routeName,
+  }) {
+    return ListTile(
+      title: Text(title),
+      leading: icon,
+      style: ListTileStyle.drawer,
+      onTap: () {
+        Navigator.of(context).pushReplacementNamed('$_prefix$routeName');
+      },
     );
   }
 }

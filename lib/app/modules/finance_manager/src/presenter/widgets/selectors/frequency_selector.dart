@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../domain/entities/frequency.dart';
 import '../../../utils/umbrella_sizes.dart';
-import '../common/selectors.dart';
+import 'base_selectors.dart';
 import '../common/spaced_widgets.dart';
 
 class FrequencySelector extends StatelessWidget {
@@ -10,22 +10,24 @@ class FrequencySelector extends StatelessWidget {
     super.key,
     required this.onSelected,
     required this.selectedFrequency,
+    required this.title,
   });
 
   final void Function(Frequency) onSelected;
   final Frequency selectedFrequency;
+  final String title;
 
   @override
   Widget build(BuildContext context) {
     return LinearSelector<Frequency>(
       items: Frequency.values,
       onItemTap: onSelected,
-      title: const Padding(
-        padding: EdgeInsets.only(top: 20.0, bottom: 25.0),
+      title: Padding(
+        padding: const EdgeInsets.only(top: 20.0, bottom: 25.0),
         child: Text(
-          "Qual a Frequência da Despesa?",
+          title,
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: UmbrellaSizes.big),
+          style: const TextStyle(fontSize: UmbrellaSizes.big),
         ),
       ),
       itemBuilder: (frequency) => Container(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/entities/date.dart';
-import 'date_picker_dialog.dart';
+import '../common/date_picker_dialog.dart';
 
 class DatePicker extends StatefulWidget {
   const DatePicker({

@@ -9,6 +9,7 @@ class AppWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Modular.setInitialRoute('/finance_manager/');
+
     return MaterialApp.router(
       routerConfig: Modular.routerConfig,
       debugShowCheckedModeBanner: false,

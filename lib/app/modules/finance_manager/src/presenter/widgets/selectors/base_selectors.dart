@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/common/horizontal_infinity_container.dart';
 
-abstract class Selector<T> extends StatelessWidget {
-  const Selector({
+abstract class BaseSelector<T> extends StatelessWidget {
+  const BaseSelector({
     super.key,
     required this.items,
     required this.onItemTap,
@@ -14,34 +14,73 @@ abstract class Selector<T> extends StatelessWidget {
   final void Function(T) onItemTap;
   final Widget Function(T) itemBuilder;
   final Widget child;
+
+  Widget _toucheableWidget(T item, BuildContext context) => InkWell(
+        onTap: () {
+          onItemTap(item);
+          Navigator.pop(context);
+        },
+        child: itemBuilder(item),
+      );
 }
 
-class RadialSelector<T extends Object> extends Selector<T> {
-  const RadialSelector({
+class GridSelector<T extends Object> extends BaseSelector<T> {
+  const GridSelector({
     super.key,
     required super.items,
     required super.onItemTap,
     required super.itemBuilder,
     required super.child,
+    required this.itemSize,
+    this.itemsPerLine = 4,
+    this.linesGap = 10.00,
   });
+
+  final double itemSize;
+  final int itemsPerLine;
+  final double linesGap;
 
   @override
   Widget build(BuildContext context) {
+    double availableSpace =
+        MediaQuery.sizeOf(context).width - 40.0 - itemSize * itemsPerLine;
+
+    int spaces = itemsPerLine - 1;
+
+    double spaceBetweenItems = availableSpace / spaces;
+    double space = spaceBetweenItems / 2;
+
     return InkWell(
       onTap: () {
         _showModalBottomSheet(
           context,
-          GridView.count(
-            crossAxisCount: (items.length / 4).ceil(),
+          ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
             children: List.generate(
-              items.length,
-              (i) => InkWell(
-                onTap: () {
-                  onItemTap(items[i]);
-                  Navigator.pop(context);
-                },
-                child: itemBuilder(items[i]),
-              ),
+              (items.length / itemsPerLine).ceil(),
+              (i) {
+                var sublist = items
+                    .sublist(itemsPerLine * i, _resolveEndIndex(i))
+                    .indexed;
+
+                return Padding(
+                  padding: EdgeInsets.symmetric(vertical: linesGap / 2),
+                  child: Row(
+                    children: sublist
+                        .map(
+                          (e) => Padding(
+                            padding: _resolvePadding(
+                              index: e.$1,
+                              length: sublist.length,
+                              space: space,
+                            ),
+                            child: super._toucheableWidget(e.$2, context),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                );
+              },
             ),
           ),
         );
@@ -49,9 +88,32 @@ class RadialSelector<T extends Object> extends Selector<T> {
       child: child,
     );
   }
+
+  EdgeInsetsGeometry _resolvePadding({
+    required int index,
+    required int length,
+    required double space,
+  }) {
+    //First Item in the list
+    if (index == 0) return EdgeInsets.only(right: space);
+
+    //Last Item in the list
+    if (index == itemsPerLine - 1) return EdgeInsets.only(left: space);
+
+    //Any other item
+    return EdgeInsets.symmetric(horizontal: space);
+  }
+
+  int _resolveEndIndex(int i) {
+    if (itemsPerLine * (i + 1) > items.length) {
+      return items.length;
+    }
+
+    return itemsPerLine * (i + 1);
+  }
 }
 
-class LinearSelector<T extends Object> extends Selector<T> {
+class LinearSelector<T extends Object> extends BaseSelector<T> {
   const LinearSelector({
     super.key,
     required super.items,
@@ -79,13 +141,7 @@ class LinearSelector<T extends Object> extends Selector<T> {
               for (var item in items)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: InkWell(
-                    onTap: () {
-                      onItemTap(item);
-                      Navigator.pop(context);
-                    },
-                    child: itemBuilder(item),
-                  ),
+                  child: super._toucheableWidget(item, context),
                 )
             ],
           ),

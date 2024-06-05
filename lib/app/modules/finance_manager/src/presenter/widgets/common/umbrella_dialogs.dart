@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/umbrella_palette.dart';
 
 sealed class UmbrellaDialogs {
   static void showError(
     BuildContext context,
-    Fail fail, {
+    String fail, {
     VoidCallback? onRetry,
     VoidCallback? onConfirmPressed,
   }) {
@@ -15,7 +14,7 @@ sealed class UmbrellaDialogs {
       titleColor: Colors.red,
       icon: Icons.close_rounded,
       iconColor: Colors.red,
-      message: fail.message,
+      message: fail,
       onRetry: onRetry,
       onConfirmPressed: onConfirmPressed,
     );

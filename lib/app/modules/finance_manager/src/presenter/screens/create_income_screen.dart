@@ -14,14 +14,14 @@ import '../controllers/income_store.dart';
 import '../controllers/income_type_store.dart';
 import '../widgets/app_bar/custom_app_bar.dart';
 import '../widgets/common/button_with_icon.dart';
-import '../widgets/common/date_picker.dart';
+import '../widgets/forms/date_picker.dart';
 import '../widgets/common/my_drawer.dart';
-import '../widgets/common/selectors.dart';
+import '../widgets/selectors/base_selectors.dart';
 import '../widgets/common/spaced_widgets.dart';
 import '../widgets/common/umbrella_dialogs.dart';
 import '../widgets/forms/account_selector.dart';
 import '../widgets/forms/default_text_field.dart';
-import '../widgets/forms/frequency_selector.dart';
+import '../widgets/selectors/frequency_selector.dart';
 import '../widgets/forms/my_form.dart';
 import '../widgets/forms/number_text_field.dart';
 import '../widgets/list_scoped_builder.dart';
@@ -89,16 +89,11 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        drawer: const MyDrawer(),
+        drawer: MyDrawer(),
         body: SingleChildScrollView(
           child: Column(
             children: [
-              CustomAppBar(
-                title: 'Nova Receita',
-                onMonthChange: (_, __) {},
-                initialMonthAndYear: Date.today(),
-                showMonthChanger: false,
-              ),
+              CustomAppBar(title: 'Nova Receita'),
               MyForm(
                 formKey: _formKey,
                 padding: const EdgeInsets.only(top: 12.0),
@@ -161,6 +156,7 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
                     },
                   ),
                   FrequencySelector(
+                    title: 'Qual a Frequência dessa Receita?',
                     selectedFrequency: frequency,
                     onSelected: (newFrequency) {
                       setState(() {
@@ -185,8 +181,7 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
                     onEmptyState: () {
                       UmbrellaDialogs.showError(
                         context,
-                        Fail(
-                            "Não foi possível obter as Categorias. Por favor, aperte em 'Tentar novamente'"),
+                        "Não foi possível obter as Categorias. Por favor, aperte em 'Tentar novamente'",
                         onRetry: () => widget._typeStore.getAll(),
                       );
                       return const SizedBox.shrink();
@@ -195,40 +190,48 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
                       fail is NetworkFail
                           ? UmbrellaDialogs.showNetworkProblem(context,
                               onRetry: () => widget._typeStore.getAll())
-                          : UmbrellaDialogs.showError(context, fail,
+                          : UmbrellaDialogs.showError(context, fail.message,
                               onRetry: () => widget._typeStore.getAll());
 
                       /*TODO Create a Widget that substitutes the category selector on fetch error and empty state */
                       return const SizedBox.shrink();
                     },
-                    onState: (ctx, types) => RadialSelector<IncomeType>(
+                    onState: (ctx, types) => GridSelector<IncomeType>(
                       items: types,
+                      itemsPerLine: 3,
+                      linesGap: 20.0,
+                      itemSize: 80.0,
                       itemBuilder: (type) {
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              height: 60.0,
-                              width: 60.0,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(width: 2),
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: AssetImage(
-                                    'assets/${type.icon}',
+                        return LimitedBox(
+                          maxWidth: 80.0,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 80.0,
+                                height: 80.0,
+                                decoration: BoxDecoration(
+                                  border: Border.all(width: 2.0),
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    alignment: Alignment.center,
+                                    image: AssetImage('assets/${type.icon}'),
                                   ),
                                 ),
                               ),
-                            ),
-                            Text(
-                              type.name,
-                              style: const TextStyle(
-                                fontSize: UmbrellaSizes.medium,
+                              const SizedBox(height: 8.0),
+                              Text(
+                                type.name,
+                                maxLines: 1,
+                                style: const TextStyle(
+                                  fontSize: UmbrellaSizes.small,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         );
                       },
                       onItemTap: (newType) {
@@ -339,8 +342,8 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
     if (!isFormValid) {
       UmbrellaDialogs.showError(
           context,
-          Fail(message ??
-              'Parece que o formulário contém erros. Corrija-os e tente denovo'));
+          message ??
+              'Parece que o formulário contém erros. Corrija-os e tente denovo');
       return;
     }
 
@@ -370,7 +373,7 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
         );
         Navigator.pushReplacementNamed(context, '/finance_manager/');
       }, (failure) {
-        UmbrellaDialogs.showError(context, failure);
+        UmbrellaDialogs.showError(context, failure.message);
       });
     });
   }

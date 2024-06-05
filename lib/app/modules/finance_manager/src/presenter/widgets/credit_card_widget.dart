@@ -27,36 +27,22 @@ class CreditCardWidget extends StatelessWidget {
         border: Border.all(width: 2.0),
         borderRadius: BorderRadius.circular(10.0),
         boxShadow: kElevationToShadow[4],
-        color: Color(
-          int.parse('0xFF${creditCard.color}'),
-        ),
+        color: Color(int.parse('0xFF${creditCard.color}')),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: const EdgeInsets.all(10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  creditCard.name,
-                  style: const TextStyle(
-                    fontSize: UmbrellaSizes.big,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const Image(
-                  image: AssetImage('assets/images/chip.png'),
-                  height: 30.0,
-                  width: 35.0,
-                ),
-              ],
+            child: Text(
+              creditCard.name,
+              style: const TextStyle(
+                fontSize: UmbrellaSizes.big,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-          Container(
-            height: 15.0,
-            color: Colors.black,
-          ),
+          Container(height: 15.0, color: Colors.black),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10.0),

@@ -15,7 +15,7 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         totalValue: 250.00,
         paidValue: 0.00,
         remainingValue: 250.00,
-        dueDate: Date(day: 12, month: 5, year: 2024),
+        dueDate: Date(day: 12, month: 6, year: 2024),
         paymentDate: null,
         type: const ExpenseType(id: 1, icon: 'icons/conta.png', name: 'Conta'),
         frequency: Frequency.monthly,
@@ -26,8 +26,8 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         totalValue: 609.23,
         paidValue: 609.23,
         remainingValue: 0.00,
-        dueDate: Date(day: 10, month: 5, year: 2024),
-        paymentDate: Date(day: 10, month: 5, year: 2024),
+        dueDate: Date(day: 10, month: 6, year: 2024),
+        paymentDate: Date(day: 10, month: 6, year: 2024),
         type: const ExpenseType(
           id: 2,
           icon: 'icons/alimentacao.png',
@@ -41,7 +41,7 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         totalValue: 20.00,
         paidValue: 0.00,
         remainingValue: 20.00,
-        dueDate: Date(day: 9, month: 5, year: 2024),
+        dueDate: Date(day: 9, month: 6, year: 2024),
         paymentDate: null,
         type:
             const ExpenseType(id: 5, icon: 'icons/outros.png', name: 'Outros'),
@@ -67,7 +67,7 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         totalValue: 900.00,
         paidValue: 0.00,
         remainingValue: 900.00,
-        dueDate: Date(day: 20, month: 5, year: 2024),
+        dueDate: Date(day: 20, month: 6, year: 2024),
         type: const ExpenseType(
             id: 4, name: "Moradia", icon: 'icons/moradia.png'),
         frequency: Frequency.monthly,
