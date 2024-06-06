@@ -38,6 +38,12 @@ class MyDrawer extends StatelessWidget {
           ),
           _makeDrawerOption(
             context,
+            title: 'Receitas',
+            icon: const Icon(Icons.attach_money),
+            routeName: '/income',
+          ),
+          _makeDrawerOption(
+            context,
             title: 'Adicionar Cartão',
             icon: const Icon(Icons.add_circle_outline, color: Colors.lightBlue),
             routeName: '/card/add',

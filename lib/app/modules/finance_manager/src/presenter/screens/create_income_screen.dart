@@ -90,10 +90,10 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
     return SafeArea(
       child: Scaffold(
         drawer: MyDrawer(),
+        appBar: CustomAppBar(title: 'Nova Receita'),
         body: SingleChildScrollView(
           child: Column(
             children: [
-              CustomAppBar(title: 'Nova Receita'),
               MyForm(
                 formKey: _formKey,
                 padding: const EdgeInsets.only(top: 12.0),

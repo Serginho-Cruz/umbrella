@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_triple/flutter_triple.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/account.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/common/my_drawer.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/list_scoped_builder.dart';
@@ -50,34 +49,42 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        drawer: MyDrawer(),
-        body: SingleChildScrollView(
-          physics: const ClampingScrollPhysics(),
-          child: ScopedBuilder<AccountStore, List<Account>>(
-            store: widget.accountStore,
-            onLoading: (ctx) {
-              return const Center(
-                child: SizedBox(
-                  width: 300,
-                  height: 400,
-                  child: CircularProgressIndicator(),
-                ),
-              );
-            },
-            onState: (ctx, accounts) {
-              return Column(
+      child: ListScopedBuilder<AccountStore, List<Account>>(
+        store: widget.accountStore,
+        loadingWidget: Scaffold(
+          appBar: CustomAppBar(title: 'Home', showBalances: false),
+          body: Center(
+            child: SizedBox.fromSize(
+              size: MediaQuery.sizeOf(context),
+              child: const CircularProgressIndicator(),
+            ),
+          ),
+        ),
+        //Implements Something when an error occurs on account store
+        onError: (ctx, fail) {
+          return const SizedBox.shrink();
+        },
+        //Same here, users cannot have 0 accounts
+        onEmptyState: () {
+          return const SizedBox.shrink();
+        },
+        onState: (ctx, accounts) {
+          return Scaffold(
+            backgroundColor: Colors.white,
+            drawer: MyDrawer(),
+            appBar: CustomAppBar(
+              title: 'Home',
+              showMonthChanger: true,
+              onMonthChange: (month, year) {
+                _onMonthChange(month, year, accounts);
+              },
+            ),
+            body: SingleChildScrollView(
+              physics: const ClampingScrollPhysics(),
+              child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CustomAppBar(
-                    title: 'Home',
-                    showMonthChanger: true,
-                    onMonthChange: (month, year) {
-                      _onMonthChange(month, year, accounts);
-                    },
-                  ),
                   const Padding(
                     padding: EdgeInsets.all(30.0),
                     child: Text(
@@ -146,9 +153,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             length: state.length,
                             itemBuilderFunction: (context, index) {
                               return CreditCardWidget(
-                                  creditCard: state[index],
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 20.0));
+                                creditCard: state[index],
+                                margin: const EdgeInsets.symmetric(
+                                    horizontal: 20.0),
+                              );
                             },
                           ),
                         );
@@ -157,10 +165,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ],
-              );
-            },
-          ),
-        ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -200,10 +208,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }) {
     var selectedAccount = widget.accountStore.selectedAccount;
     if (selectedAccount != null) {
-      fetchOne(month: month, year: year, account: selectedAccount);
+      Future(() {
+        fetchOne(month: month, year: year, account: selectedAccount);
+      });
+
       return;
     }
-    fetchAll(month: month, year: year, accounts: accounts);
+
+    Future<void>(() {
+      fetchAll(month: month, year: year, accounts: accounts);
+    });
   }
 
   Widget _makeSection({required String title, required Widget child}) {

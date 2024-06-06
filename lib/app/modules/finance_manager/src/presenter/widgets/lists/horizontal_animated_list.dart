@@ -28,20 +28,9 @@ class _HorizontalAnimatedListState extends State<HorizontalAnimatedList> {
     Future.delayed(Duration.zero, () {
       _key.currentState!.removeAllItems(
           (context, animation) => SizeTransition(sizeFactor: animation));
-
-      _key.currentState!.insertItem(0);
+      _key.currentState!.insertAllItems(0, widget.length,
+          duration: const Duration(milliseconds: 1200));
     });
-
-    if (widget.length > 1) {
-      var future = Future(() {});
-      for (int i = 1; i < widget.length; i++) {
-        future = future.then((_) {
-          return Future.delayed(const Duration(milliseconds: 500), () {
-            _key.currentState!.insertItem(i);
-          });
-        });
-      }
-    }
     return AnimatedList(
       key: _key,
       initialItemCount: 0,
@@ -50,7 +39,8 @@ class _HorizontalAnimatedListState extends State<HorizontalAnimatedList> {
       scrollDirection: Axis.horizontal,
       itemBuilder: (context, index, animation) {
         return ScaleTransition(
-          scale: CurvedAnimation(parent: animation, curve: Curves.decelerate),
+          scale:
+              CurvedAnimation(parent: animation, curve: Curves.linearToEaseOut),
           child: widget.itemBuilderFunction(context, index),
         );
       },

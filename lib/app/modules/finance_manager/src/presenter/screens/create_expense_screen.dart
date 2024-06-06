@@ -113,10 +113,10 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
     return SafeArea(
       child: Scaffold(
         drawer: MyDrawer(),
+        appBar: CustomAppBar(title: 'Nova Despesa'),
         body: SingleChildScrollView(
           child: Column(
             children: [
-              CustomAppBar(title: 'Nova Despesa'),
               MyForm(
                 formKey: _formKey,
                 padding: const EdgeInsets.only(top: 12.0),

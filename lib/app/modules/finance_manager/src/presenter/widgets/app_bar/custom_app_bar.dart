@@ -7,24 +7,20 @@ import '../common/spaced_widgets.dart';
 import '../../../domain/entities/date.dart';
 import 'month_changer.dart';
 
-class CustomAppBar extends StatefulWidget {
+class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   CustomAppBar({
     super.key,
     this.title,
     this.onMonthChange,
-    Date? monthAndYear,
+    this.monthAndYear,
     this.showBalances = true,
     this.showMonthChanger = false,
   }) {
     assert((showMonthChanger && onMonthChange != null) || !showMonthChanger,
         'onMonthChange must be provided if showMonthChanger is true');
-    if (monthAndYear != null) {
-      currentMonthAndYear = monthAndYear;
-    }
   }
 
-  static Date currentMonthAndYear = Date.today();
-
+  final Date? monthAndYear;
   final String? title;
   final void Function(int, int)? onMonthChange;
   final bool showBalances;
@@ -32,6 +28,17 @@ class CustomAppBar extends StatefulWidget {
 
   @override
   State<CustomAppBar> createState() => _CustomAppBarState();
+
+  @override
+  Size get preferredSize {
+    double height = 99.0; //Minimal
+
+    if (showBalances) height += 79.0;
+
+    if (showMonthChanger) height += 48.0;
+
+    return Size.fromHeight(height - 20.0); //Margin
+  }
 }
 
 class _CustomAppBarState extends State<CustomAppBar> {
@@ -39,7 +46,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
-      margin: const EdgeInsets.only(bottom: 20.0),
       padding: const EdgeInsets.only(top: 10.0, bottom: 15.0),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
@@ -50,8 +56,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
         ),
         border: Border.all(width: 1.5),
         borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(25.0),
-          bottomRight: Radius.circular(25.0),
+          bottomLeft: Radius.circular(12.0),
+          bottomRight: Radius.circular(12.0),
         ),
       ),
       child: Column(
@@ -94,7 +100,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
           if (widget.showMonthChanger)
             MonthChanger(
               onMonthChange: widget.onMonthChange!,
-              initialMonthAndYear: CustomAppBar.currentMonthAndYear,
+              monthAndYear: widget.monthAndYear,
             ),
           if (widget.showBalances)
             Padding(

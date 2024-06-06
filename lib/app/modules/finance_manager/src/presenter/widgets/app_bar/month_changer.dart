@@ -5,14 +5,19 @@ import 'package:flutter/material.dart';
 import '../../../domain/entities/date.dart';
 
 class MonthChanger extends StatefulWidget {
-  const MonthChanger({
+  MonthChanger({
     super.key,
     required this.onMonthChange,
-    required this.initialMonthAndYear,
-  });
+    Date? monthAndYear,
+  }) {
+    if (monthAndYear != null) {
+      MonthChanger.currentMonthAndYear = monthAndYear;
+    }
+  }
+
+  static Date currentMonthAndYear = Date.today();
 
   final void Function(int, int) onMonthChange;
-  final Date initialMonthAndYear;
 
   @override
   State<MonthChanger> createState() => _MonthChangerState();
@@ -25,7 +30,7 @@ class _MonthChangerState extends State<MonthChanger>
 
   late final AnimationController fadeController;
 
-  Date date = Date.today().copyWith(day: 1);
+  Date date = MonthChanger.currentMonthAndYear;
 
   Timer timer = Timer(Duration.zero, () {});
 
@@ -142,8 +147,7 @@ class _MonthChangerState extends State<MonthChanger>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    widget.onMonthChange(
-        widget.initialMonthAndYear.month, widget.initialMonthAndYear.year);
+    widget.onMonthChange(date.month, date.year);
   }
 
   @override

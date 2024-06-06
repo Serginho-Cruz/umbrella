@@ -81,15 +81,17 @@ class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
     return SafeArea(
       child: Scaffold(
         drawer: MyDrawer(),
+        appBar: CustomAppBar(title: 'Novo Cartão'),
         body: SingleChildScrollView(
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             children: [
-              CustomAppBar(title: 'Novo Cartão'),
               MyForm(
                 formKey: _formKey,
-                padding: const EdgeInsets.only(top: 12.0),
-                width: MediaQuery.of(context).size.width * 0.9,
+                padding: EdgeInsets.only(
+                  top: 12.0,
+                  left: MediaQuery.sizeOf(context).width * 0.05,
+                  right: MediaQuery.sizeOf(context).width * 0.05,
+                ),
                 children: [
                   ListScopedBuilder<AccountStore, List<Account>>(
                     store: widget._accountStore,
