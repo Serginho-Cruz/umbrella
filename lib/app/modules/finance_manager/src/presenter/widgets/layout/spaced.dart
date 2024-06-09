@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class SpacedWidgets extends StatelessWidget {
-  const SpacedWidgets({
+class Spaced extends StatelessWidget {
+  const Spaced({
     super.key,
     required this.first,
     required this.second,

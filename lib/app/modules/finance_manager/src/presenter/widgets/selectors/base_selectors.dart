@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/common/horizontal_infinity_container.dart';
+
+import '../layout/horizontal_infinity_container.dart';
 
 abstract class BaseSelector<T> extends StatelessWidget {
   const BaseSelector({
@@ -190,7 +191,7 @@ _showModalBottomSheet(
     context: context,
     elevation: 12.0,
     constraints: BoxConstraints(
-      minWidth: MediaQuery.of(context).size.width,
+      minWidth: MediaQuery.sizeOf(context).width,
       maxWidth: double.infinity,
     ),
     builder: (ctx) => Padding(

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/entities/credit_card.dart';
+import '../texts/big_text.dart';
+import '../texts/medium_text.dart';
 import 'base_selectors.dart';
-import '../credit_card_widget.dart';
+import '../cards/credit_card_widget.dart';
 
 class CardSelector extends StatelessWidget {
   const CardSelector({
@@ -21,19 +23,14 @@ class CardSelector extends StatelessWidget {
     return LinearSelector<CreditCard>(
       title: const Padding(
         padding: EdgeInsets.symmetric(vertical: 12.0),
-        child: Text(
-          'Selecione o Cartão',
-          style: TextStyle(fontSize: 20.0),
-        ),
+        child: BigText('Selecione o Cartão'),
       ),
       items: cards,
       itemBuilder: (card) {
         return CreditCardWidget(
           creditCard: card,
           width: 225,
-          margin: const EdgeInsets.symmetric(
-            horizontal: 20.0,
-          ),
+          margin: const EdgeInsets.symmetric(horizontal: 20.0),
         );
       },
       onItemTap: (card) {
@@ -54,13 +51,7 @@ class CardSelector extends StatelessWidget {
                 color: Colors.grey,
               ),
               child: const Center(
-                child: Text(
-                  'Clique Aqui',
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    color: Colors.white,
-                  ),
-                ),
+                child: MediumText('Clique Aqui', color: Colors.white),
               ),
             ),
     );

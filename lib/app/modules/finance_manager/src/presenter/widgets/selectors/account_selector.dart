@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/entities/account.dart';
-import '../../../utils/currency_format.dart';
 import '../../../utils/umbrella_sizes.dart';
-import '../common/spaced_widgets.dart';
+import '../layout/spaced.dart';
+import '../texts/big_text.dart';
+import '../texts/medium_text.dart';
+import '../texts/price.dart';
 
 class AccountSelector extends StatelessWidget {
   const AccountSelector({
@@ -25,20 +27,11 @@ class AccountSelector extends StatelessWidget {
       tooltip: 'Mostrar Contas',
       itemBuilder: _buildMenuItems,
       position: PopupMenuPosition.under,
-      child: SpacedWidgets(
+      child: Spaced(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
-        first: Text(
-          label,
-          style: const TextStyle(fontSize: UmbrellaSizes.big),
-        ),
+        first: BigText(label),
         second: Row(children: [
-          Text(
-            selectedAccount.name,
-            style: const TextStyle(
-              fontSize: UmbrellaSizes.big,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          BigText.bold(selectedAccount.name),
           const Icon(Icons.arrow_drop_down_rounded, size: 32.0)
         ]),
       ),
@@ -55,19 +48,11 @@ class AccountSelector extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              accounts[index].name,
-              style: const TextStyle(
-                fontSize: UmbrellaSizes.medium,
-                fontWeight: FontWeight.normal,
-              ),
-            ),
+            MediumText(accounts[index].name),
             const SizedBox(width: 25.0),
-            Text(
-              CurrencyFormat.format(accounts[index].actualBalance),
-              style: const TextStyle(
-                fontSize: UmbrellaSizes.medium,
-              ),
+            Price(
+              value: (accounts[index].actualBalance),
+              fontSize: UmbrellaSizes.medium,
             ),
           ],
         ),

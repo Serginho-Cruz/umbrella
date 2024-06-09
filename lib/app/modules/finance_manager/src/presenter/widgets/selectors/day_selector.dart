@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../utils/umbrella_sizes.dart';
+import '../texts/big_text.dart';
+import '../texts/medium_text.dart';
 import 'base_selectors.dart';
 
 class DaySelector extends StatelessWidget {
@@ -32,23 +33,14 @@ class DaySelector extends StatelessWidget {
             color: Colors.white,
           ),
           child: Center(
-            child: Text(
-              day.toString(),
-              style: const TextStyle(
-                fontSize: UmbrellaSizes.medium,
-              ),
-            ),
+            child: MediumText(day.toString()),
           ),
         );
       },
       onItemTap: onDaySelected,
       title: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: Text(
-          bottomSheetText,
-          style: const TextStyle(fontSize: UmbrellaSizes.big),
-          textAlign: TextAlign.center,
-        ),
+        child: BigText(bottomSheetText, textAlign: TextAlign.center),
       ),
       child: child,
     );

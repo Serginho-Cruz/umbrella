@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/entities/frequency.dart';
-import '../../../utils/umbrella_sizes.dart';
+import '../texts/big_text.dart';
+import '../texts/medium_text.dart';
 import 'base_selectors.dart';
-import '../common/spaced_widgets.dart';
+import '../layout/spaced.dart';
 
 class FrequencySelector extends StatelessWidget {
   const FrequencySelector({
@@ -24,46 +25,23 @@ class FrequencySelector extends StatelessWidget {
       onItemTap: onSelected,
       title: Padding(
         padding: const EdgeInsets.only(top: 20.0, bottom: 25.0),
-        child: Text(
-          title,
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: UmbrellaSizes.big),
-        ),
+        child: BigText(title, textAlign: TextAlign.center),
       ),
       itemBuilder: (frequency) => Container(
         height: 50,
         padding: const EdgeInsets.fromLTRB(20.0, 10.0, 0, 10.0),
         child: Row(
-          children: [
-            Text(
-              frequency.name,
-              style: const TextStyle(
-                fontSize: UmbrellaSizes.medium,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ],
+          children: [MediumText(frequency.name)],
         ),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: SpacedWidgets(
-          first: const Text(
-            "Frequência",
-            style: TextStyle(
-              fontSize: UmbrellaSizes.big,
-            ),
-          ),
+        child: Spaced(
+          first: const BigText("Frequência"),
           second: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                selectedFrequency.name,
-                style: const TextStyle(
-                  fontSize: UmbrellaSizes.medium,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              MediumText.bold(selectedFrequency.name),
               const Icon(Icons.arrow_drop_down_rounded, size: 32.0)
             ],
           ),

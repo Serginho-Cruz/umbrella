@@ -7,8 +7,11 @@ sealed class UmbrellaPalette {
   static const Color successColor = Colors.green;
   static const Color actionButtonColor = primaryColor;
   static const Color secondaryButtonColor = secondaryColor;
+  static const Color resetButtonColor = Colors.yellow;
   static const Color activePrimaryButton = Color(0xFFD7A3FF);
   static const Color activeSecondaryButton = Color(0xFFA8D8E8);
+  static const Color activeResetButton = Color(0xFFC9B81A);
+
   static const Color gray = Color(0xFFFAFAFA);
   static const List<(String, String)> cardColorsHexAndNames = [
     ('FFFFFF', 'Branco'),

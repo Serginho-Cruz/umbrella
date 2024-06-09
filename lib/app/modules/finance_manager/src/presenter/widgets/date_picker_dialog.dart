@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/umbrella_sizes.dart';
 
-import '../../../domain/entities/date.dart';
+import '../../domain/entities/date.dart';
+import 'texts/big_text.dart';
+import 'texts/small_text.dart';
 
 sealed class CustomDatePickerDialog {
   static Future<Date?> show(
@@ -44,10 +45,7 @@ class _CustomDatePickerState extends State<_CustomDatePicker> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: 15.0,
-        horizontal: 10.0,
-      ),
+      padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -62,17 +60,9 @@ class _CustomDatePickerState extends State<_CustomDatePicker> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Selecione a Data',
-                    style: TextStyle(fontSize: UmbrellaSizes.small),
-                  ),
-                  const SizedBox(
-                    height: 20.0,
-                  ),
-                  Text(
-                    _formatInLongForm(selectedDate),
-                    style: const TextStyle(fontSize: UmbrellaSizes.big),
-                  ),
+                  const SmallText('Selecione a Data'),
+                  const SizedBox(height: 20.0),
+                  BigText(_formatInLongForm(selectedDate)),
                 ],
               ),
             ),

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/entities/date.dart';
-import '../common/date_picker_dialog.dart';
+import '../date_picker_dialog.dart';
 
-class DatePicker extends StatefulWidget {
-  const DatePicker({
+class DateSelector extends StatefulWidget {
+  const DateSelector({
     super.key,
     required this.initialDate,
     required this.onDateSelected,
@@ -14,10 +14,10 @@ class DatePicker extends StatefulWidget {
   final void Function(Date) onDateSelected;
 
   @override
-  State<DatePicker> createState() => _DatePickerState();
+  State<DateSelector> createState() => _DateSelectorState();
 }
 
-class _DatePickerState extends State<DatePicker> {
+class _DateSelectorState extends State<DateSelector> {
   late Date selectedDate;
   final TextEditingController _controller = TextEditingController();
 
@@ -54,26 +54,6 @@ class _DatePickerState extends State<DatePicker> {
               widget.onDateSelected(date);
             }
           });
-          // showDatePicker(
-          //   context: context,
-          //   initialDate: widget.initialDate.toDateTime(),
-          //   firstDate: Date.today().subtract(years: 5).toDateTime(),
-          //   lastDate: Date.today().add(years: 5).toDateTime(),
-          //   cancelText: 'Cancelar',
-          //   confirmText: 'Confirmar',
-          //   helpText: 'Selecione a Data',
-          // ).then((date) {
-          //   if (date != null) {
-          //     Date newDate = (Date.fromDateTime(date));
-
-          //     setState(() {
-          //       selectedDate = newDate;
-          //       _controller.text =
-          //           selectedDate.toString(format: DateFormat.ddmmyyyy);
-          //     });
-          //     widget.onDateSelected(newDate);
-          //   }
-          // });
         },
       ),
     );
