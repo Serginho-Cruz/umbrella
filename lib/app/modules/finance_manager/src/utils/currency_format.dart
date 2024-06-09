@@ -7,9 +7,7 @@ sealed class CurrencyFormat {
     symbol: 'R\$',
   );
 
-  static String format(num number) {
-    return _formatter.format(number);
-  }
+  static String format(num number) => _formatter.format(number);
 
   static get formatter => _formatter;
 }

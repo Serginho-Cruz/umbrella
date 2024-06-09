@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../utils/umbrella_sizes.dart';
+import 'medium_text.dart';
 
 class TextLink extends StatelessWidget {
   const TextLink({super.key, required this.route, required this.text});
@@ -12,14 +12,7 @@ class TextLink extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, route),
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: UmbrellaSizes.medium,
-          fontWeight: FontWeight.w900,
-          decoration: TextDecoration.underline,
-        ),
-      ),
+      child: MediumText.bold(text, decoration: TextDecoration.underline),
     );
   }
 }
