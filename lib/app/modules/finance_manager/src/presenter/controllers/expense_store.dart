@@ -12,7 +12,7 @@ class ExpenseStore extends Store<List<ExpenseModel>> {
   ExpenseStore(this._manageExpense) : super([]);
 
   final ManageExpense _manageExpense;
-  final Map<Account, List<ExpenseModel>> _allByAccount = {};
+  final Map<int, List<ExpenseModel>> _allByAccount = {};
 
   Date _lastDateRequested = Date.today();
   bool _hasAll = false;
@@ -61,7 +61,7 @@ class ExpenseStore extends Store<List<ExpenseModel>> {
 
       var account = accounts[i];
 
-      _allByAccount.update(account, (value) => result.getOrDefault([]),
+      _allByAccount.update(account.id, (value) => result.getOrDefault([]),
           ifAbsent: () => result.getOrDefault([]));
     }
 
@@ -78,9 +78,9 @@ class ExpenseStore extends Store<List<ExpenseModel>> {
   }) async {
     setLoading(true);
 
-    if (!_needToFetch(month, year) && _allByAccount.containsKey(account)) {
+    if (!_needToFetch(month, year) && _allByAccount.containsKey(account.id)) {
       _lastDateRequested = Date(day: 1, month: month, year: year);
-      update(_allByAccount[account]!);
+      update(_allByAccount[account.id]!);
       return;
     }
 
@@ -91,7 +91,8 @@ class ExpenseStore extends Store<List<ExpenseModel>> {
     );
 
     expensesResult.fold((expenses) {
-      _allByAccount.update(account, (_) => expenses, ifAbsent: () => expenses);
+      _allByAccount.update(account.id, (_) => expenses,
+          ifAbsent: () => expenses);
       update(expenses);
     }, (fail) {
       setError(fail);

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/account.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/common/my_drawer.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/my_drawer.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/list_scoped_builder.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/umbrella_sizes.dart';
 import '../../domain/entities/credit_card.dart';
 import '../../domain/models/expense_model.dart';
 import '../../domain/models/income_model.dart';
@@ -11,14 +10,16 @@ import '../controllers/account_controller.dart';
 import '../controllers/credit_card_store.dart';
 import '../controllers/expense_store.dart';
 import '../controllers/income_store.dart';
-import '../widgets/credit_card_widget.dart';
-import '../widgets/expense_card.dart';
-import '../widgets/lists/horizontal_listview.dart';
-import '../widgets/common/horizontal_infinity_container.dart';
-import '../widgets/income_card.dart';
+import '../widgets/cards/credit_card_widget.dart';
+import '../widgets/cards/expense_card.dart';
+import '../widgets/layout/horizontal_listview.dart';
+import '../widgets/layout/horizontal_infinity_container.dart';
+import '../widgets/cards/income_card.dart';
 import '../widgets/shimmer/shimmer_container.dart';
-import '../widgets/app_bar/custom_app_bar.dart';
-import '../widgets/lists/horizontal_animated_list.dart';
+import '../widgets/appbar/custom_app_bar.dart';
+import '../widgets/layout/horizontal_animated_list.dart';
+import '../widgets/texts/big_text.dart';
+import '../widgets/texts/title_text.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -87,13 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   const Padding(
                     padding: EdgeInsets.all(30.0),
-                    child: Text(
-                      'Olá! Obrigado por Voltar',
-                      style: TextStyle(
-                        fontSize: UmbrellaSizes.big,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                    child: BigText('Olá! Obrigado por Voltar'),
                   ),
                   _makeSection(
                     title: 'Receitas',
@@ -230,13 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 20.0),
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontSize: UmbrellaSizes.title,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+            child: TitleText.bold(title),
           ),
           child,
         ],

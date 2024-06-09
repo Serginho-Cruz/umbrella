@@ -10,7 +10,7 @@ import '../../errors/errors.dart';
 
 class IncomeStore extends Store<List<IncomeModel>> {
   final ManageIncome _manageIncome;
-  final Map<Account, List<IncomeModel>> _allByAccount = {};
+  final Map<int, List<IncomeModel>> _allByAccount = {};
 
   Date _lastDateRequested = Date.today();
   bool _hasAll = false;
@@ -60,7 +60,7 @@ class IncomeStore extends Store<List<IncomeModel>> {
 
       var account = accounts[i];
 
-      _allByAccount.update(account, (value) => result.getOrDefault([]),
+      _allByAccount.update(account.id, (value) => result.getOrDefault([]),
           ifAbsent: () => result.getOrDefault([]));
     }
 
@@ -77,9 +77,12 @@ class IncomeStore extends Store<List<IncomeModel>> {
   }) async {
     setLoading(true);
 
-    if (!_needToFetch(month, year) && _allByAccount.containsKey(account)) {
+    if (!_needToFetch(month, year) && _allByAccount.containsKey(account.id)) {
       _lastDateRequested = Date(day: 1, month: month, year: year);
-      update(_allByAccount[account]!);
+
+      update(_allByAccount[account.id]!);
+
+      setLoading(false);
       return;
     }
 
@@ -90,7 +93,7 @@ class IncomeStore extends Store<List<IncomeModel>> {
     );
 
     incomesResult.fold((incomes) {
-      _allByAccount.update(account, (_) => incomes, ifAbsent: () => incomes);
+      _allByAccount.update(account.id, (_) => incomes, ifAbsent: () => incomes);
       update(incomes);
     }, (fail) {
       setError(fail);

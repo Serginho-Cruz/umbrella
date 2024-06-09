@@ -8,23 +8,26 @@ import '../../domain/entities/income_type.dart';
 import '../../errors/errors.dart';
 import '../../utils/currency_input_formatter.dart';
 import '../../utils/umbrella_palette.dart';
-import '../../utils/umbrella_sizes.dart';
 import '../controllers/account_controller.dart';
 import '../controllers/income_store.dart';
 import '../controllers/income_type_store.dart';
-import '../widgets/app_bar/custom_app_bar.dart';
-import '../widgets/common/button_with_icon.dart';
-import '../widgets/forms/date_picker.dart';
-import '../widgets/common/my_drawer.dart';
+import '../widgets/appbar/custom_app_bar.dart';
+import '../widgets/buttons/primary_button.dart';
+import '../widgets/buttons/reset_button.dart';
+import '../widgets/selectors/date_selector.dart';
+import '../widgets/my_drawer.dart';
 import '../widgets/selectors/base_selectors.dart';
-import '../widgets/common/spaced_widgets.dart';
-import '../widgets/common/umbrella_dialogs.dart';
-import '../widgets/forms/account_selector.dart';
+import '../widgets/layout/spaced.dart';
+import '../widgets/texts/big_text.dart';
+import '../widgets/texts/small_text.dart';
+import '../widgets/umbrella_dialogs.dart';
+import '../widgets/selectors/account_selector.dart';
 import '../widgets/forms/default_text_field.dart';
 import '../widgets/selectors/frequency_selector.dart';
 import '../widgets/forms/my_form.dart';
 import '../widgets/forms/number_text_field.dart';
 import '../widgets/list_scoped_builder.dart';
+import '../widgets/texts/medium_text.dart';
 
 class CreateIncomeScreen extends StatefulWidget {
   const CreateIncomeScreen({
@@ -97,7 +100,7 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
               MyForm(
                 formKey: _formKey,
                 padding: const EdgeInsets.only(top: 12.0),
-                width: MediaQuery.of(context).size.width * 0.9,
+                width: MediaQuery.sizeOf(context).width * 0.9,
                 children: [
                   ListScopedBuilder<AccountStore, List<Account>>(
                     store: widget._accountStore,
@@ -166,7 +169,7 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
-                    child: DatePicker(
+                    child: DateSelector(
                       initialDate: date,
                       onDateSelected: (newDate) {
                         setState(() {
@@ -222,13 +225,10 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
                                 ),
                               ),
                               const SizedBox(height: 8.0),
-                              Text(
+                              SmallText(
                                 type.name,
                                 maxLines: 1,
-                                style: const TextStyle(
-                                  fontSize: UmbrellaSizes.small,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ],
                           ),
@@ -245,21 +245,13 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SpacedWidgets(
+                          Spaced(
                             padding:
                                 const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                            first: const Text(
-                              "Tipo",
-                              style: TextStyle(fontSize: UmbrellaSizes.big),
-                            ),
+                            first: const BigText("Tipo"),
                             second: Row(
                               children: [
-                                Text(
-                                  type?.name ?? 'Indefinido',
-                                  style: const TextStyle(
-                                    fontSize: UmbrellaSizes.medium,
-                                  ),
-                                ),
+                                MediumText(type?.name ?? 'Indefinido'),
                                 Container(
                                   margin: const EdgeInsets.only(left: 12.0),
                                   height: 36.0,
@@ -282,12 +274,9 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
                           ),
                           Visibility(
                             visible: logicalTypeError != null,
-                            child: Text(
+                            child: SmallText(
                               logicalTypeError.toString(),
-                              style: const TextStyle(
-                                fontSize: UmbrellaSizes.small,
-                                color: UmbrellaPalette.errorColor,
-                              ),
+                              color: UmbrellaPalette.errorColor,
                             ),
                           ),
                         ],
@@ -305,28 +294,20 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
                   ),
                 ],
               ),
-              SpacedWidgets(
+              Spaced(
                 padding: EdgeInsets.symmetric(
                   horizontal: MediaQuery.sizeOf(context).width * 0.05,
                   vertical: 20.0,
                 ),
-                first: ButtonWithIcon(
-                  onPressed: _resetForm,
-                  icon: const Icon(Icons.refresh_rounded, size: 24.0),
-                  color: Colors.yellow,
-                  text: 'Limpar',
-                ),
-                second: ButtonWithIcon(
+                first: ResetButton(reset: _resetForm),
+                second: PrimaryButton(
                   icon: const Icon(
                     Icons.add_circle_rounded,
                     color: Colors.black,
                     size: 24.0,
                   ),
-                  color: const Color(0xFFCD8CFF),
-                  text: 'Adicionar',
-                  onPressed: () {
-                    _onFormSubmitted(context);
-                  },
+                  label: const MediumText.bold('Adicionar'),
+                  onPressed: _onFormSubmitted,
                 ),
               ),
             ],
@@ -336,7 +317,7 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
     );
   }
 
-  void _onFormSubmitted(BuildContext context) {
+  void _onFormSubmitted() {
     var (isFormValid, message) = _validateForm();
 
     if (!isFormValid) {

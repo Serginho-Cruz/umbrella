@@ -4,14 +4,13 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entit
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/credit_card_store.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/expense_type_store.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/app_bar/custom_app_bar.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/common/button_with_icon.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/common/my_drawer.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/appbar/custom_app_bar.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/my_drawer.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/selectors/base_selectors.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/common/umbrella_dialogs.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/forms/account_selector.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/umbrella_dialogs.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/selectors/account_selector.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/forms/my_form.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/common/spaced_widgets.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/layout/spaced.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/list_scoped_builder.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/shimmer/shimmer_container.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/currency_input_formatter.dart';
@@ -23,15 +22,19 @@ import '../../domain/entities/date.dart';
 import '../../domain/entities/expense.dart';
 import '../../domain/entities/frequency.dart';
 import '../../utils/umbrella_palette.dart';
-import '../../utils/umbrella_sizes.dart';
 import '../controllers/account_controller.dart';
 import '../controllers/expense_store.dart';
+import '../widgets/buttons/primary_button.dart';
+import '../widgets/buttons/reset_button.dart';
 import '../widgets/selectors/card_selector.dart';
-import '../widgets/forms/date_picker.dart';
-import '../widgets/common/text_link.dart';
+import '../widgets/selectors/date_selector.dart';
+import '../widgets/texts/big_text.dart';
+import '../widgets/texts/small_text.dart';
+import '../widgets/texts/text_link.dart';
 import '../widgets/forms/default_text_field.dart';
 import '../widgets/selectors/frequency_selector.dart';
 import '../widgets/forms/number_text_field.dart';
+import '../widgets/texts/medium_text.dart';
 
 class CreateExpenseScreen extends StatefulWidget {
   const CreateExpenseScreen({
@@ -120,7 +123,7 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
               MyForm(
                 formKey: _formKey,
                 padding: const EdgeInsets.only(top: 12.0),
-                width: MediaQuery.of(context).size.width * 0.9,
+                width: MediaQuery.sizeOf(context).width * 0.9,
                 children: [
                   ListScopedBuilder<AccountStore, List<Account>>(
                     store: widget._accountStore,
@@ -207,7 +210,7 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
-                    child: DatePicker(
+                    child: DateSelector(
                       initialDate: date,
                       onDateSelected: (newDate) {
                         setState(() {
@@ -245,13 +248,10 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                                 ),
                               ),
                               const SizedBox(height: 8.0),
-                              Text(
+                              SmallText(
                                 type.name,
                                 maxLines: 1,
-                                style: const TextStyle(
-                                  fontSize: UmbrellaSizes.small,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ],
                           ),
@@ -268,21 +268,15 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SpacedWidgets(
-                            padding:
-                                const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                            first: const Text(
-                              "Tipo",
-                              style: TextStyle(fontSize: UmbrellaSizes.big),
+                          Spaced(
+                            padding: const EdgeInsets.only(
+                              top: 8.0,
+                              bottom: 8.0,
                             ),
+                            first: const BigText("Tipo"),
                             second: Row(
                               children: [
-                                Text(
-                                  expenseType?.name ?? 'Indefinido',
-                                  style: const TextStyle(
-                                    fontSize: UmbrellaSizes.medium,
-                                  ),
-                                ),
+                                MediumText(expenseType?.name ?? 'Indefinido'),
                                 Container(
                                   margin: const EdgeInsets.only(left: 12.0),
                                   height: 36.0,
@@ -305,12 +299,9 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                           ),
                           Visibility(
                             visible: logicalTypeError != null,
-                            child: Text(
+                            child: SmallText(
                               logicalTypeError.toString(),
-                              style: const TextStyle(
-                                fontSize: UmbrellaSizes.small,
-                                color: UmbrellaPalette.errorColor,
-                              ),
+                              color: UmbrellaPalette.errorColor,
                             ),
                           ),
                         ],
@@ -328,20 +319,11 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                     maintainState: true,
                     title: const Align(
                       alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Configurações Adicionais',
-                        style: TextStyle(
-                          fontSize: UmbrellaSizes.medium,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      child: MediumText.bold('Configurações Adicionais'),
                     ),
                     children: [
                       ExpansionTile(
-                        title: const Text(
-                          'Despesa no Crédito',
-                          style: TextStyle(fontSize: UmbrellaSizes.medium),
-                        ),
+                        title: const MediumText('Despesa no Crédito'),
                         trailing: IgnorePointer(
                           child: Switch.adaptive(
                             value: willBePaidWithCredit,
@@ -361,9 +343,7 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                           });
                         },
                         children: [
-                          const SizedBox(
-                            height: 30.0,
-                          ),
+                          const SizedBox(height: 30.0),
                           ListScopedBuilder<CreditCardStore, List<CreditCard>>(
                             store: widget._cardStore,
                             loadingWidget: const Stack(
@@ -393,12 +373,9 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                                   ),
                                   Visibility(
                                     visible: logicalCardError != null,
-                                    child: Text(
+                                    child: SmallText(
                                       logicalCardError.toString(),
-                                      style: const TextStyle(
-                                        fontSize: UmbrellaSizes.small,
-                                        color: UmbrellaPalette.errorColor,
-                                      ),
+                                      color: UmbrellaPalette.errorColor,
                                     ),
                                   ),
                                 ],
@@ -408,12 +385,9 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                               width: 275,
                               height: 150,
                               color: Colors.grey,
-                              child: const Text(
+                              child: const MediumText(
                                 'Erro ao Obter os Cartões',
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: UmbrellaSizes.medium,
-                                ),
                               ),
                             ),
                             onEmptyState: () => Container(
@@ -422,10 +396,9 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                               color: Colors.grey,
                               child: const Column(
                                 children: [
-                                  Text(
+                                  MediumText(
                                     'Nenhum Cartão Cadastrado',
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 16.0),
                                   ),
                                   TextLink(
                                     route: '/finance_manager/home',
@@ -436,12 +409,7 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                             ),
                           ),
                           ExpansionTile(
-                            title: const Text(
-                              'Despesa Parcelada',
-                              style: TextStyle(
-                                fontSize: UmbrellaSizes.medium,
-                              ),
-                            ),
+                            title: const MediumText('Despesa Parcelada'),
                             trailing: Transform.scale(
                               scale: 1.2,
                               child: IgnorePointer(
@@ -495,11 +463,8 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                                 focusNode: _parcelsNumberFieldFocusNode,
                               ),
                               const SizedBox(height: 20.0),
-                              Text(
+                              MediumText(
                                 'Valor das Parcelas: ${parcelsValue != null ? 'R\$$parcelsValue' : 'Nenhum'}.',
-                                style: const TextStyle(
-                                  fontSize: UmbrellaSizes.medium,
-                                ),
                               ),
                               const SizedBox(height: 20.0),
                             ],
@@ -519,26 +484,20 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                   ),
                 ],
               ),
-              SpacedWidgets(
+              Spaced(
                 padding: EdgeInsets.symmetric(
                   horizontal: MediaQuery.sizeOf(context).width * 0.05,
                   vertical: 20.0,
                 ),
-                first: ButtonWithIcon(
-                  onPressed: _resetForm,
-                  icon: const Icon(Icons.refresh_rounded, size: 24.0),
-                  color: Colors.yellow,
-                  text: 'Limpar',
-                ),
-                second: ButtonWithIcon(
+                first: ResetButton(reset: _resetForm),
+                second: PrimaryButton(
+                  label: const MediumText.bold('Adicionar'),
+                  onPressed: _onFormSubmitted,
                   icon: const Icon(
                     Icons.add_circle_rounded,
                     color: Colors.black,
                     size: 24.0,
                   ),
-                  color: const Color(0xFFCD8CFF),
-                  text: 'Adicionar',
-                  onPressed: _onFormSubmitted,
                 ),
               ),
             ],

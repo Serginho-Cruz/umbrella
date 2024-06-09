@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/umbrella_sizes.dart';
 
 import '../../domain/entities/account.dart';
 import '../../domain/entities/credit_card.dart';
@@ -8,19 +7,22 @@ import '../../utils/hex_color.dart';
 import '../../utils/umbrella_palette.dart';
 import '../controllers/account_controller.dart';
 import '../controllers/credit_card_store.dart';
-import '../widgets/app_bar/custom_app_bar.dart';
-import '../widgets/common/button_with_icon.dart';
-import '../widgets/common/my_drawer.dart';
-import '../widgets/common/spaced_widgets.dart';
-import '../widgets/common/umbrella_dialogs.dart';
-import '../widgets/credit_card_widget.dart';
-import '../widgets/forms/account_selector.dart';
+import '../widgets/appbar/custom_app_bar.dart';
+import '../widgets/buttons/primary_button.dart';
+import '../widgets/buttons/reset_button.dart';
+import '../widgets/my_drawer.dart';
+import '../widgets/layout/spaced.dart';
+import '../widgets/texts/big_text.dart';
+import '../widgets/umbrella_dialogs.dart';
+import '../widgets/cards/credit_card_widget.dart';
+import '../widgets/selectors/account_selector.dart';
 import '../widgets/forms/default_text_field.dart';
 import '../widgets/forms/my_form.dart';
 import '../widgets/forms/number_text_field.dart';
 import '../widgets/list_scoped_builder.dart';
 import '../widgets/selectors/color_selector.dart';
 import '../widgets/selectors/day_selector.dart';
+import '../widgets/texts/medium_text.dart';
 
 class CreateCreditCardScreen extends StatefulWidget {
   const CreateCreditCardScreen({
@@ -152,18 +154,10 @@ class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
                     onDaySelected: (day) {
                       setState(() => invoiceCloseDay = day);
                     },
-                    child: SpacedWidgets(
+                    child: Spaced(
                       padding: const EdgeInsets.symmetric(vertical: 10.0),
-                      first: const Text(
-                        'Fecham. da Fatura',
-                        style: TextStyle(
-                          fontSize: UmbrellaSizes.big,
-                        ),
-                      ),
-                      second: Text(
-                        'Dia $invoiceCloseDay',
-                        style: const TextStyle(fontSize: UmbrellaSizes.big),
-                      ),
+                      first: const BigText('Fecham. da Fatura'),
+                      second: BigText('Dia $invoiceCloseDay'),
                     ),
                   ),
                   DaySelector(
@@ -172,18 +166,10 @@ class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
                     onDaySelected: (day) {
                       setState(() => invoiceDueDate = day);
                     },
-                    child: SpacedWidgets(
+                    child: Spaced(
                       padding: const EdgeInsets.symmetric(vertical: 10.0),
-                      first: const Text(
-                        'Vencim. da Fatura',
-                        style: TextStyle(
-                          fontSize: UmbrellaSizes.big,
-                        ),
-                      ),
-                      second: Text(
-                        'Dia $invoiceDueDate',
-                        style: const TextStyle(fontSize: UmbrellaSizes.big),
-                      ),
+                      first: const BigText('Vencim. da Fatura'),
+                      second: BigText('Dia $invoiceDueDate'),
                     ),
                   ),
                   ColorSelector(
@@ -193,21 +179,13 @@ class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
                         colorName = hexAndName.$2;
                       });
                     },
-                    child: SpacedWidgets(
+                    child: Spaced(
                       padding: const EdgeInsets.symmetric(vertical: 10.0),
-                      first: const Text(
-                        'Cor do Cartão',
-                        style: TextStyle(fontSize: UmbrellaSizes.big),
-                      ),
+                      first: const BigText('Cor do Cartão'),
                       second: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            colorName,
-                            style: const TextStyle(
-                              fontSize: UmbrellaSizes.medium,
-                            ),
-                          ),
+                          MediumText(colorName),
                           Container(
                             width: 45.0,
                             height: 45.0,
@@ -223,22 +201,16 @@ class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
                     ),
                   ),
                   _makePreviewSection(),
-                  SpacedWidgets(
+                  Spaced(
                     padding: const EdgeInsets.symmetric(vertical: 20.0),
-                    first: ButtonWithIcon(
-                      onPressed: _resetForm,
-                      icon: const Icon(Icons.refresh_rounded, size: 24.0),
-                      color: Colors.yellow,
-                      text: 'Limpar',
-                    ),
-                    second: ButtonWithIcon(
+                    first: ResetButton(reset: _resetForm),
+                    second: PrimaryButton(
                       icon: const Icon(
                         Icons.add_circle_rounded,
                         color: Colors.black,
                         size: 24.0,
                       ),
-                      color: const Color(0xFFCD8CFF),
-                      text: 'Adicionar',
+                      label: const MediumText.bold('Adicionar'),
                       onPressed: _onFormSubmitted,
                     ),
                   ),
@@ -263,12 +235,7 @@ class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
       children: [
         const Padding(
           padding: EdgeInsets.only(top: 20.0),
-          child: Text(
-            'Pré-visualização',
-            style: TextStyle(
-              fontSize: UmbrellaSizes.big,
-            ),
-          ),
+          child: BigText('Pré-visualização'),
         ),
         CreditCardWidget(
           margin: const EdgeInsets.symmetric(vertical: 25.0),

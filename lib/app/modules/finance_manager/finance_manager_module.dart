@@ -1,5 +1,7 @@
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:umbrella_echonomics/app/modules/auth/auth_module.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/screens/create_credit_card_screen.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/screens/incomes_screen.dart';
 
 import 'datasources.dart';
 import 'repositories.dart';
@@ -34,6 +36,15 @@ class FinanceManagerModule extends Module {
     );
     r.add(
       ChildRoute(
+        '/income',
+        child: (context) => IncomesScreen(
+          incomeStore: Modular.get(),
+          accountStore: Modular.get(),
+        ),
+      ),
+    );
+    r.add(
+      ChildRoute(
         '/expense/add',
         child: (context) => CreateExpenseScreen(
           accountStore: Modular.get(),
@@ -53,6 +64,15 @@ class FinanceManagerModule extends Module {
         ),
       ),
     );
+    r.add(
+      ChildRoute(
+        '/card/add',
+        child: (context) => CreateCreditCardScreen(
+          accountStore: Modular.get(),
+          cardStore: Modular.get(),
+        ),
+      ),
+    );
   }
 
   void _addDatasources(Injector i) {
@@ -61,6 +81,8 @@ class FinanceManagerModule extends Module {
     i.addLazySingleton<BalanceDatasource>(TemporaryBalanceDatasource.new);
 
     i.addLazySingleton<CreditCardDatasource>(TemporaryCreditCardDatasource.new);
+
+    i.addLazySingleton<InvoiceDatasource>(TemporaryInvoiceDatasource.new);
 
     i.addLazySingleton<ExpenseTypeDatasource>(
       TemporaryExpenseTypeDatasource.new,
@@ -85,7 +107,7 @@ class FinanceManagerModule extends Module {
       () => CreditCardRepositoryImpl(i()),
     );
 
-    i.addLazySingleton<InvoiceRepository>(() => InvoiceRepositoryImpl());
+    i.addLazySingleton<InvoiceRepository>(() => InvoiceRepositoryImpl(i()));
 
     i.addLazySingleton<ExpenseRepository>(() => ExpenseRepositoryImpl(i()));
 
@@ -143,6 +165,8 @@ class FinanceManagerModule extends Module {
   void _addControllers(Injector i) {
     i.addLazySingleton<AccountStore>(
         () => AccountStore(authController: i(), manageAccount: i()));
+
+    i.addLazySingleton<BalanceStore>(() => BalanceStore(i()));
 
     i.addLazySingleton<CreditCardStore>(
       () => CreditCardStore(manageCreditCard: i(), authController: i()),
