@@ -17,9 +17,7 @@ class HorizontallyInfinityContainer extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 50.0),
       child: Container(
-        padding: const EdgeInsets.only(
-          top: 20.0,
-        ),
+        padding: const EdgeInsets.only(top: 20.0),
         decoration: BoxDecoration(
           color: color,
           boxShadow: noShadow
