@@ -3,13 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../../domain/entities/date.dart';
+import '../texts/big_text.dart';
 
 class MonthChanger extends StatefulWidget {
-  MonthChanger({
-    super.key,
-    required this.onMonthChange,
-    Date? monthAndYear,
-  }) {
+  MonthChanger({super.key, required this.onMonthChange, Date? monthAndYear}) {
     if (monthAndYear != null) {
       MonthChanger.currentMonthAndYear = monthAndYear;
     }
@@ -114,14 +111,7 @@ class _MonthChangerState extends State<MonthChanger>
           opacity: fadeController,
           child: SlideTransition(
             position: slideAnimation,
-            child: Text(
-              '${date.monthName} ${date.year}',
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 20.0,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+            child: BigText('${date.monthName} ${date.year}'),
           ),
         ),
         IconButton(

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../../utils/umbrella_palette.dart';
 import '../../../utils/umbrella_sizes.dart';
-import '../common/price.dart';
-import '../common/spaced_widgets.dart';
+import '../texts/big_text.dart';
+import '../texts/medium_text.dart';
+import '../texts/price.dart';
+import '../layout/spaced.dart';
 
 import '../../../domain/entities/date.dart';
+import '../texts/title_text.dart';
 import 'month_changer.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
@@ -45,7 +48,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery.sizeOf(context).width,
       padding: const EdgeInsets.only(top: 10.0, bottom: 15.0),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
@@ -71,20 +74,9 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   Navigator.of(context).pushNamedAndRemoveUntil(
                       '/finance_manager/', (_) => false);
                 },
-                icon: const Icon(
-                  Icons.home,
-                  color: Colors.black,
-                  size: 35.0,
-                ),
+                icon: const Icon(Icons.home, color: Colors.black, size: 35.0),
               ),
-              if (widget.title != null)
-                Text(
-                  widget.title!,
-                  style: const TextStyle(
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+              if (widget.title != null) TitleText.bold(widget.title!),
               IconButton(
                 onPressed: () {
                   Scaffold.maybeOf(context)?.openDrawer();
@@ -106,23 +98,15 @@ class _CustomAppBarState extends State<CustomAppBar> {
             Padding(
               padding: EdgeInsets.only(
                 top: 15.0,
-                left: MediaQuery.of(context).size.width * 0.05,
-                right: MediaQuery.of(context).size.width * 0.05,
+                left: MediaQuery.sizeOf(context).width * 0.05,
+                right: MediaQuery.sizeOf(context).width * 0.05,
               ),
-              child: const SpacedWidgets(
-                first: Text(
-                  'Saldo Atual',
-                  style: TextStyle(
-                    fontSize: UmbrellaSizes.big,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+              child: const Spaced(
+                first: BigText.bold('Saldo Atual'),
                 second: Price(
                   value: 200.85,
-                  style: TextStyle(
-                    fontSize: UmbrellaSizes.big,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  fontSize: UmbrellaSizes.big,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
@@ -130,23 +114,15 @@ class _CustomAppBarState extends State<CustomAppBar> {
             Padding(
               padding: EdgeInsets.only(
                 top: 12.0,
-                left: MediaQuery.of(context).size.width * 0.05,
-                right: MediaQuery.of(context).size.width * 0.05,
+                left: MediaQuery.sizeOf(context).width * 0.05,
+                right: MediaQuery.sizeOf(context).width * 0.05,
               ),
-              child: const SpacedWidgets(
-                first: Text(
-                  'Saldo Esperado',
-                  style: TextStyle(
-                    fontSize: UmbrellaSizes.medium,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+              child: const Spaced(
+                first: MediumText('Saldo Esperado'),
                 second: Price(
                   value: 200.85,
-                  style: TextStyle(
-                    fontSize: UmbrellaSizes.medium,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  fontSize: UmbrellaSizes.medium,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
