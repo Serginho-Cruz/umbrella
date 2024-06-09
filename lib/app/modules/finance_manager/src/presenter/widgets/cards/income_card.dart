@@ -1,10 +1,10 @@
-import '../../domain/models/expense_model.dart';
+import '../../../domain/models/income_model.dart';
 import 'finance_card.dart';
 
-class ExpenseCard extends FinanceCard {
-  ExpenseCard({
+class IncomeCard extends FinanceCard {
+  IncomeCard({
     super.key,
-    required ExpenseModel model,
+    required IncomeModel model,
   }) : super(
           name: model.name,
           overdueDate: model.overdueDate,

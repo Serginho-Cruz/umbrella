@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/umbrella_sizes.dart';
-import 'common/price.dart';
-import 'common/spaced_widgets.dart';
+import '../texts/price.dart';
+import '../layout/spaced.dart';
 
-import '../../domain/entities/date.dart';
-import '../../domain/models/finance_model.dart';
+import '../../../domain/entities/date.dart';
+import '../../../domain/models/finance_model.dart';
+import '../texts/big_text.dart';
+import '../texts/medium_text.dart';
 
 abstract class FinanceCard extends StatelessWidget {
   final String name;
@@ -25,7 +27,6 @@ abstract class FinanceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color iconBackgroundColor;
-    Color iconColor = Colors.white;
     IconData icon;
 
     switch (status) {
@@ -48,9 +49,7 @@ abstract class FinanceCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 20.0),
       padding: const EdgeInsets.all(10.0),
       decoration: BoxDecoration(
-        boxShadow: const [
-          BoxShadow(blurRadius: 4.0, offset: Offset(2, 2)),
-        ],
+        boxShadow: kElevationToShadow[4],
         border: Border.all(width: 1.2),
         borderRadius: BorderRadius.circular(25.0),
         gradient: const LinearGradient(
@@ -78,81 +77,42 @@ abstract class FinanceCard extends StatelessWidget {
                     strokeAlign: BorderSide.strokeAlignOutside,
                   ),
                 ),
-                child: Icon(
-                  icon,
-                  color: iconColor,
-                  size: 50.0,
-                ),
+                child: Icon(icon, color: Colors.white, size: 50.0),
               ),
               Price(
                 value: totalValue,
-                style: const TextStyle(
-                  fontSize: UmbrellaSizes.big,
-                  fontWeight: FontWeight.bold,
-                ),
+                fontSize: UmbrellaSizes.big,
+                fontWeight: FontWeight.bold,
               )
             ],
           ),
           const SizedBox(height: 20.0),
-          Text(
-            name,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: UmbrellaSizes.big,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
+          BigText.bold(name, textAlign: TextAlign.center),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                SpacedWidgets(
-                  first: const Text(
-                    'Vencimento',
-                    style: TextStyle(
-                      fontSize: UmbrellaSizes.medium,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  second: Text(
+                Spaced(
+                  first: const MediumText('Vencimento'),
+                  second: MediumText(
                     overdueDate.toString(format: DateFormat.ddmmyyyy),
-                    style: const TextStyle(
-                      fontSize: UmbrellaSizes.medium,
-                      fontWeight: FontWeight.w500,
-                    ),
                   ),
                 ),
-                SpacedWidgets(
-                  first: const Text(
-                    'Pago',
-                    style: TextStyle(
-                      fontSize: UmbrellaSizes.medium,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                Spaced(
+                  first: const MediumText('Pago'),
                   second: Price(
                     value: totalValue - remainingValue,
-                    style: const TextStyle(
-                      fontSize: UmbrellaSizes.medium,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    fontSize: UmbrellaSizes.medium,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                SpacedWidgets(
-                  first: const Text(
-                    'Restante',
-                    style: TextStyle(
-                      fontSize: UmbrellaSizes.medium,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                Spaced(
+                  first: const MediumText('Restante'),
                   second: Price(
                     value: remainingValue,
-                    style: const TextStyle(
-                      fontSize: UmbrellaSizes.medium,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    fontSize: UmbrellaSizes.medium,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
