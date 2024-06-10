@@ -1,14 +1,14 @@
 import 'package:equatable/equatable.dart';
+import 'category.dart';
 import 'paiyable.dart';
 import 'date.dart';
 import 'frequency.dart';
-import 'income_type.dart';
 
 class Income extends Paiyable with EquatableMixin {
   final String name;
   final Frequency frequency;
   final String? personName;
-  final IncomeType type;
+  final Category category;
 
   const Income({
     required super.id,
@@ -20,7 +20,7 @@ class Income extends Paiyable with EquatableMixin {
     super.paymentDate,
     required this.frequency,
     this.personName,
-    required this.type,
+    required this.category,
   });
 
   Income copyWith({
@@ -33,7 +33,7 @@ class Income extends Paiyable with EquatableMixin {
     Date? paymentDate,
     Frequency? frequency,
     String? personName,
-    IncomeType? type,
+    Category? category,
   }) {
     return Income(
       id: id ?? this.id,
@@ -45,7 +45,7 @@ class Income extends Paiyable with EquatableMixin {
       paymentDate: paymentDate ?? this.paymentDate,
       frequency: frequency ?? this.frequency,
       personName: personName ?? this.personName,
-      type: type ?? this.type,
+      category: category ?? this.category,
     );
   }
 
@@ -59,7 +59,7 @@ class Income extends Paiyable with EquatableMixin {
         dueDate,
         paymentDate,
         frequency,
-        type,
+        category,
         personName,
       ];
 }

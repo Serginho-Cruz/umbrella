@@ -1,8 +1,8 @@
 import '../../domain/entities/account.dart';
+import '../../domain/entities/category.dart';
 import '../../domain/entities/date.dart';
 import '../../domain/entities/frequency.dart';
 import '../../domain/entities/income.dart';
-import '../../domain/entities/income_type.dart';
 import '../../errors/errors.dart';
 import '../../infra/datasources/income_datasource.dart';
 
@@ -17,7 +17,8 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         remainingValue: 1250.00,
         dueDate: Date(day: 12, month: 5, year: 2024),
         paymentDate: null,
-        type: const IncomeType(id: 1, icon: 'icons/outros.png', name: 'Outros'),
+        category:
+            const Category(id: 1, icon: 'icons/outros.png', name: 'Outros'),
         frequency: Frequency.monthly,
       ),
       Income(
@@ -28,7 +29,8 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         remainingValue: 0.00,
         dueDate: Date(day: 10, month: 5, year: 2024),
         paymentDate: Date(day: 10, month: 5, year: 2024),
-        type: const IncomeType(id: 1, icon: 'icons/outros.png', name: 'Outros'),
+        category:
+            const Category(id: 1, icon: 'icons/outros.png', name: 'Outros'),
         frequency: Frequency.none,
       ),
       Income(
@@ -38,7 +40,8 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         paidValue: 0.00,
         remainingValue: 1200.00,
         dueDate: Date(day: 20, month: 12, year: 2024),
-        type: const IncomeType(id: 1, icon: 'icons/outros.png', name: 'Outros'),
+        category:
+            const Category(id: 1, icon: 'icons/outros.png', name: 'Outros'),
         frequency: Frequency.yearly,
       ),
       Income(
@@ -48,7 +51,8 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         paidValue: 0.00,
         remainingValue: 2000.00,
         dueDate: Date(day: 6, month: 6, year: 2024),
-        type: const IncomeType(id: 1, icon: 'icons/outros.png', name: 'Outros'),
+        category:
+            const Category(id: 1, icon: 'icons/outros.png', name: 'Outros'),
         frequency: Frequency.yearly,
       ),
     ],
@@ -61,7 +65,8 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         remainingValue: 0.00,
         dueDate: Date.today(),
         paymentDate: Date.today(),
-        type: const IncomeType(id: 1, name: "Outros", icon: 'icons/outros.png'),
+        category:
+            const Category(id: 1, name: "Outros", icon: 'icons/outros.png'),
         frequency: Frequency.none,
       ),
       Income(
@@ -71,7 +76,8 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         paidValue: 0.00,
         remainingValue: 900.00,
         dueDate: Date(day: 20, month: 5, year: 2024),
-        type: const IncomeType(id: 1, name: "Outros", icon: 'icons/outros.png'),
+        category:
+            const Category(id: 1, name: "Outros", icon: 'icons/outros.png'),
         frequency: Frequency.none,
       ),
     ],
@@ -84,7 +90,7 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         remainingValue: 2000.00,
         frequency: Frequency.yearly,
         dueDate: Date(day: 12, month: 1, year: 2025),
-        type: const IncomeType(
+        category: const Category(
           id: 2,
           name: 'Outros',
           icon: 'icons/outros.png',

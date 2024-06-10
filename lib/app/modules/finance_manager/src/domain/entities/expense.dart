@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
 
-import 'expense_type.dart';
+import 'category.dart';
 import 'frequency.dart';
 import 'paiyable.dart';
 
@@ -9,7 +9,7 @@ class Expense extends Paiyable with EquatableMixin {
   final String name;
   final String? personName;
   final Frequency frequency;
-  final ExpenseType type;
+  final Category category;
 
   const Expense({
     required super.id,
@@ -20,7 +20,7 @@ class Expense extends Paiyable with EquatableMixin {
     required super.dueDate,
     super.paymentDate,
     this.personName,
-    required this.type,
+    required this.category,
     required this.frequency,
   });
 
@@ -34,7 +34,7 @@ class Expense extends Paiyable with EquatableMixin {
         paymentDate,
         dueDate,
         personName,
-        type,
+        category,
         frequency,
       ];
 
@@ -47,7 +47,7 @@ class Expense extends Paiyable with EquatableMixin {
     Date? dueDate,
     Date? paymentDate,
     String? personName,
-    ExpenseType? type,
+    Category? category,
     Frequency? frequency,
   }) {
     return Expense(
@@ -59,7 +59,7 @@ class Expense extends Paiyable with EquatableMixin {
       dueDate: dueDate ?? this.dueDate,
       paymentDate: paymentDate ?? this.paymentDate,
       personName: personName ?? this.personName,
-      type: type ?? this.type,
+      category: category ?? this.category,
       frequency: frequency ?? this.frequency,
     );
   }

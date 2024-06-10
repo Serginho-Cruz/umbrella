@@ -1,6 +1,6 @@
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/filters/filter_paiyable.dart';
+import '../../../domain/entities/category.dart';
 import '../../../domain/entities/expense.dart';
-import '../../../domain/entities/expense_type.dart';
 import '../../../domain/usecases/filters/filter_expenses.dart';
 
 class FilterExpensesImpl extends FilterPaiyable<Expense>
@@ -15,9 +15,9 @@ class FilterExpensesImpl extends FilterPaiyable<Expense>
           .toList();
 
   @override
-  List<Expense> byType({
+  List<Expense> byCategory({
     required List<Expense> expenses,
-    required ExpenseType type,
+    required Category category,
   }) =>
-      expenses.where((e) => e.type == type).toList();
+      expenses.where((e) => e.category == category).toList();
 }

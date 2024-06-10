@@ -1,7 +1,7 @@
 import '../../domain/entities/account.dart';
+import '../../domain/entities/category.dart';
 import '../../domain/entities/date.dart';
 import '../../domain/entities/expense.dart';
-import '../../domain/entities/expense_type.dart';
 import '../../domain/entities/frequency.dart';
 import '../../errors/errors.dart';
 import '../../infra/datasources/expense_datasource.dart';
@@ -17,7 +17,7 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         remainingValue: 250.00,
         dueDate: Date(day: 12, month: 6, year: 2024),
         paymentDate: null,
-        type: const ExpenseType(id: 1, icon: 'icons/conta.png', name: 'Conta'),
+        category: const Category(id: 1, icon: 'icons/conta.png', name: 'Conta'),
         frequency: Frequency.monthly,
       ),
       Expense(
@@ -28,7 +28,7 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         remainingValue: 0.00,
         dueDate: Date(day: 10, month: 6, year: 2024),
         paymentDate: Date(day: 10, month: 6, year: 2024),
-        type: const ExpenseType(
+        category: const Category(
           id: 2,
           icon: 'icons/alimentacao.png',
           name: 'Alimentação',
@@ -43,8 +43,8 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         remainingValue: 20.00,
         dueDate: Date(day: 9, month: 6, year: 2024),
         paymentDate: null,
-        type:
-            const ExpenseType(id: 5, icon: 'icons/outros.png', name: 'Outros'),
+        category:
+            const Category(id: 5, icon: 'icons/outros.png', name: 'Outros'),
         frequency: Frequency.monthly,
       ),
     ],
@@ -57,7 +57,7 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         remainingValue: 0.00,
         dueDate: Date.today(),
         paymentDate: Date.today(),
-        type: const ExpenseType(
+        category: const Category(
             id: 1, name: "Vestimenta", icon: 'icons/vestimenta.png'),
         frequency: Frequency.none,
       ),
@@ -68,8 +68,8 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         paidValue: 0.00,
         remainingValue: 900.00,
         dueDate: Date(day: 20, month: 6, year: 2024),
-        type: const ExpenseType(
-            id: 4, name: "Moradia", icon: 'icons/moradia.png'),
+        category:
+            const Category(id: 4, name: "Moradia", icon: 'icons/moradia.png'),
         frequency: Frequency.monthly,
       ),
     ],
@@ -82,7 +82,7 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         remainingValue: 2000.00,
         frequency: Frequency.yearly,
         dueDate: Date(day: 12, month: 1, year: 2025),
-        type: const ExpenseType(
+        category: const Category(
           id: 2,
           name: 'Outros',
           icon: 'icons/outros.png',

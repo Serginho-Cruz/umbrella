@@ -1,16 +1,16 @@
 import 'package:flutter_triple/flutter_triple.dart';
 
-import '../../domain/entities/income_type.dart';
-import '../../domain/usecases/gets/get_income_types.dart';
+import '../../domain/entities/category.dart';
+import '../../domain/usecases/gets/get_income_categories.dart';
 
-class IncomeTypeStore extends Store<List<IncomeType>> {
-  IncomeTypeStore(GetIncomeTypes usecase)
+class IncomeCategoryStore extends Store<List<Category>> {
+  IncomeCategoryStore(GetIncomeCategories usecase)
       : _usecase = usecase,
         super([]) {
     getAll();
   }
 
-  final GetIncomeTypes _usecase;
+  final GetIncomeCategories _usecase;
 
   Future<void> getAll() async {
     setLoading(true);

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 import '../../domain/entities/account.dart';
+import '../../domain/entities/category.dart';
 import '../../domain/entities/date.dart';
 import '../../domain/entities/frequency.dart';
 import '../../domain/entities/income.dart';
-import '../../domain/entities/income_type.dart';
 import '../../errors/errors.dart';
 import '../../utils/currency_input_formatter.dart';
 import '../../utils/umbrella_palette.dart';
 import '../controllers/account_controller.dart';
 import '../controllers/income_store.dart';
-import '../controllers/income_type_store.dart';
+import '../controllers/income_category_store.dart';
 import '../widgets/appbar/custom_app_bar.dart';
 import '../widgets/buttons/primary_button.dart';
 import '../widgets/buttons/reset_button.dart';
@@ -34,14 +34,14 @@ class CreateIncomeScreen extends StatefulWidget {
     super.key,
     required AccountStore accountStore,
     required IncomeStore incomeStore,
-    required IncomeTypeStore typeStore,
+    required IncomeCategoryStore categoryStore,
   })  : _accountStore = accountStore,
         _incomeStore = incomeStore,
-        _typeStore = typeStore;
+        _categoryStore = categoryStore;
 
   final AccountStore _accountStore;
   final IncomeStore _incomeStore;
-  final IncomeTypeStore _typeStore;
+  final IncomeCategoryStore _categoryStore;
 
   @override
   State<CreateIncomeScreen> createState() => _CreateIncomeScreenState();
@@ -59,9 +59,9 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
 
   Account? account;
   Frequency frequency = Frequency.none;
-  IncomeType? type;
+  Category? category;
   Date date = Date.today();
-  String? logicalTypeError;
+  String? logicalCategoryError;
 
   @override
   void initState() {
@@ -178,33 +178,33 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
                       },
                     ),
                   ),
-                  ListScopedBuilder<IncomeTypeStore, List<IncomeType>>(
-                    store: widget._typeStore,
+                  ListScopedBuilder<IncomeCategoryStore, List<Category>>(
+                    store: widget._categoryStore,
                     loadingWidget: const CircularProgressIndicator.adaptive(),
                     onEmptyState: () {
                       UmbrellaDialogs.showError(
                         context,
                         "Não foi possível obter as Categorias. Por favor, aperte em 'Tentar novamente'",
-                        onRetry: () => widget._typeStore.getAll(),
+                        onRetry: () => widget._categoryStore.getAll(),
                       );
                       return const SizedBox.shrink();
                     },
                     onError: (ctx, fail) {
                       fail is NetworkFail
                           ? UmbrellaDialogs.showNetworkProblem(context,
-                              onRetry: () => widget._typeStore.getAll())
+                              onRetry: () => widget._categoryStore.getAll())
                           : UmbrellaDialogs.showError(context, fail.message,
-                              onRetry: () => widget._typeStore.getAll());
+                              onRetry: () => widget._categoryStore.getAll());
 
                       /*TODO Create a Widget that substitutes the category selector on fetch error and empty state */
                       return const SizedBox.shrink();
                     },
-                    onState: (ctx, types) => GridSelector<IncomeType>(
-                      items: types,
+                    onState: (ctx, categories) => GridSelector<Category>(
+                      items: categories,
                       itemsPerLine: 3,
                       linesGap: 20.0,
                       itemSize: 80.0,
-                      itemBuilder: (type) {
+                      itemBuilder: (category) {
                         return LimitedBox(
                           maxWidth: 80.0,
                           child: Column(
@@ -220,13 +220,14 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
                                   image: DecorationImage(
                                     fit: BoxFit.cover,
                                     alignment: Alignment.center,
-                                    image: AssetImage('assets/${type.icon}'),
+                                    image:
+                                        AssetImage('assets/${category.icon}'),
                                   ),
                                 ),
                               ),
                               const SizedBox(height: 8.0),
                               SmallText(
-                                type.name,
+                                category.name,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -234,11 +235,11 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
                           ),
                         );
                       },
-                      onItemTap: (newType) {
+                      onItemTap: (newCategory) {
                         setState(() {
-                          type = newType;
-                          if (logicalTypeError != null) {
-                            logicalTypeError = null;
+                          category = newCategory;
+                          if (logicalCategoryError != null) {
+                            logicalCategoryError = null;
                           }
                         });
                       },
@@ -248,10 +249,10 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
                           Spaced(
                             padding:
                                 const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                            first: const BigText("Tipo"),
+                            first: const BigText("Categoria"),
                             second: Row(
                               children: [
-                                MediumText(type?.name ?? 'Indefinido'),
+                                MediumText(category?.name ?? 'Indefinido'),
                                 Container(
                                   margin: const EdgeInsets.only(left: 12.0),
                                   height: 36.0,
@@ -262,9 +263,9 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
                                     image: DecorationImage(
                                       fit: BoxFit.cover,
                                       image: AssetImage(
-                                        type == null
+                                        category == null
                                             ? 'assets/icons/undefined.png'
-                                            : 'assets/${type!.icon}',
+                                            : 'assets/${category!.icon}',
                                       ),
                                     ),
                                   ),
@@ -273,9 +274,9 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
                             ),
                           ),
                           Visibility(
-                            visible: logicalTypeError != null,
+                            visible: logicalCategoryError != null,
                             child: SmallText(
-                              logicalTypeError.toString(),
+                              logicalCategoryError.toString(),
                               color: UmbrellaPalette.errorColor,
                             ),
                           ),
@@ -338,7 +339,7 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
         paidValue: 0.00,
         remainingValue: double.parse(totalValueStr),
         dueDate: date,
-        type: type!,
+        category: category!,
         frequency: frequency,
         personName: _personNameFieldController.text.trim().isEmpty
             ? null
@@ -366,8 +367,8 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
       _personNameFieldController.clear();
       frequency = Frequency.none;
       date = Date.today();
-      type = null;
-      logicalTypeError = null;
+      category = null;
+      logicalCategoryError = null;
     });
   }
 
@@ -383,9 +384,9 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
       );
     }
 
-    if (type == null) {
+    if (category == null) {
       setState(() {
-        logicalTypeError = 'Um Tipo de Despesa deve ser selecionado';
+        logicalCategoryError = 'Uma categoria deve ser selecionado';
       });
       return (false, null);
     }

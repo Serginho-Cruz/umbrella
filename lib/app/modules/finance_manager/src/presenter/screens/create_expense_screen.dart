@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/expense_type.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/credit_card_store.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/expense_type_store.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/expense_category_store.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/appbar/custom_app_bar.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/my_drawer.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/selectors/base_selectors.dart';
@@ -17,6 +16,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/curren
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/extensions.dart';
 
 import '../../domain/entities/account.dart';
+import '../../domain/entities/category.dart';
 import '../../domain/entities/credit_card.dart';
 import '../../domain/entities/date.dart';
 import '../../domain/entities/expense.dart';
@@ -41,17 +41,17 @@ class CreateExpenseScreen extends StatefulWidget {
     super.key,
     required CreditCardStore cardStore,
     required ExpenseStore expenseStore,
-    required ExpenseTypeStore typeStore,
+    required ExpenseCategoryStore categoryStore,
     required AccountStore accountStore,
   })  : _cardStore = cardStore,
         _expenseStore = expenseStore,
-        _typeStore = typeStore,
+        _categoryStore = categoryStore,
         _accountStore = accountStore;
 
   final AccountStore _accountStore;
   final CreditCardStore _cardStore;
   final ExpenseStore _expenseStore;
-  final ExpenseTypeStore _typeStore;
+  final ExpenseCategoryStore _categoryStore;
 
   @override
   State<CreateExpenseScreen> createState() => _CreateExpenseScreenState();
@@ -73,13 +73,13 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
   Account? account;
   Frequency frequency = Frequency.none;
   Date date = Date.today();
-  ExpenseType? expenseType;
+  Category? category;
   bool willBePaidWithCredit = false;
   CreditCard? cardSelected;
   bool willBeTurntIntoInstallment = false;
 
   String? logicalCardError;
-  String? logicalTypeError;
+  String? logicalCategoryError;
   double? parcelsValue;
 
   @override
@@ -219,14 +219,14 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                       },
                     ),
                   ),
-                  ScopedBuilder<ExpenseTypeStore, List<ExpenseType>>(
-                    store: widget._typeStore,
-                    onState: (ctx, types) => GridSelector<ExpenseType>(
-                      items: types,
+                  ScopedBuilder<ExpenseCategoryStore, List<Category>>(
+                    store: widget._categoryStore,
+                    onState: (ctx, categories) => GridSelector<Category>(
+                      items: categories,
                       itemsPerLine: 3,
                       linesGap: 20.0,
                       itemSize: 80.0,
-                      itemBuilder: (type) {
+                      itemBuilder: (category) {
                         return LimitedBox(
                           maxWidth: 80.0,
                           child: Column(
@@ -242,14 +242,14 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                                   image: DecorationImage(
                                     fit: BoxFit.cover,
                                     image: AssetImage(
-                                      'assets/${type.icon}',
+                                      'assets/${category.icon}',
                                     ),
                                   ),
                                 ),
                               ),
                               const SizedBox(height: 8.0),
                               SmallText(
-                                type.name,
+                                category.name,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -257,11 +257,11 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                           ),
                         );
                       },
-                      onItemTap: (type) {
+                      onItemTap: (category) {
                         setState(() {
-                          expenseType = type;
-                          if (logicalTypeError != null) {
-                            logicalTypeError = null;
+                          category = category;
+                          if (logicalCategoryError != null) {
+                            logicalCategoryError = null;
                           }
                         });
                       },
@@ -273,10 +273,10 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                               top: 8.0,
                               bottom: 8.0,
                             ),
-                            first: const BigText("Tipo"),
+                            first: const BigText("Categoria"),
                             second: Row(
                               children: [
-                                MediumText(expenseType?.name ?? 'Indefinido'),
+                                MediumText(category?.name ?? 'Indefinido'),
                                 Container(
                                   margin: const EdgeInsets.only(left: 12.0),
                                   height: 36.0,
@@ -287,9 +287,9 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                                     image: DecorationImage(
                                       fit: BoxFit.cover,
                                       image: AssetImage(
-                                        expenseType == null
+                                        category == null
                                             ? 'assets/icons/undefined.png'
-                                            : 'assets/${expenseType!.icon}',
+                                            : 'assets/${category!.icon}',
                                       ),
                                     ),
                                   ),
@@ -298,9 +298,9 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                             ),
                           ),
                           Visibility(
-                            visible: logicalTypeError != null,
+                            visible: logicalCategoryError != null,
                             child: SmallText(
-                              logicalTypeError.toString(),
+                              logicalCategoryError.toString(),
                               color: UmbrellaPalette.errorColor,
                             ),
                           ),
@@ -528,7 +528,7 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
         paidValue: 0.00,
         remainingValue: double.parse(totalValueStr),
         dueDate: date,
-        type: expenseType!,
+        category: category!,
         frequency: frequency,
         personName: _personNameFieldController.text.trim().isEmpty
             ? null
@@ -558,9 +558,9 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
       _personNameFieldController.clear();
       frequency = Frequency.none;
       date = Date.today();
-      expenseType = null;
+      category = null;
       logicalCardError = null;
-      logicalTypeError = null;
+      logicalCategoryError = null;
       willBePaidWithCredit = false;
       cardSelected = null;
       willBeTurntIntoInstallment = false;
@@ -579,9 +579,9 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
       );
     }
 
-    if (expenseType == null) {
+    if (category == null) {
       setState(() {
-        logicalTypeError = 'Um Tipo de Despesa deve ser selecionado';
+        logicalCategoryError = 'Uma Categoria deve ser selecionado';
       });
       return (false, null);
     }

@@ -50,7 +50,7 @@ class FinanceManagerModule extends Module {
           accountStore: Modular.get(),
           cardStore: Modular.get(),
           expenseStore: Modular.get(),
-          typeStore: Modular.get(),
+          categoryStore: Modular.get(),
         ),
       ),
     );
@@ -60,7 +60,7 @@ class FinanceManagerModule extends Module {
         child: (context) => CreateIncomeScreen(
           accountStore: Modular.get(),
           incomeStore: Modular.get(),
-          typeStore: Modular.get(),
+          categoryStore: Modular.get(),
         ),
       ),
     );
@@ -84,11 +84,12 @@ class FinanceManagerModule extends Module {
 
     i.addLazySingleton<InvoiceDatasource>(TemporaryInvoiceDatasource.new);
 
-    i.addLazySingleton<ExpenseTypeDatasource>(
-      TemporaryExpenseTypeDatasource.new,
+    i.addLazySingleton<ExpenseCategoryDatasource>(
+      TemporaryExpenseCategoryDatasource.new,
     );
 
-    i.addLazySingleton<IncomeTypeDatasource>(TemporaryIncomeTypeDatasource.new);
+    i.addLazySingleton<IncomeCategoryDatasource>(
+        TemporaryIncomeCategoryDatasource.new);
     i.addLazySingleton<ExpenseDatasource>(TemporaryExpenseDatasource.new);
 
     i.addLazySingleton<IncomeDatasource>(TemporaryIncomeDatasource.new);
@@ -111,14 +112,14 @@ class FinanceManagerModule extends Module {
 
     i.addLazySingleton<ExpenseRepository>(() => ExpenseRepositoryImpl(i()));
 
-    i.addLazySingleton<ExpenseTypeRepository>(
-      () => ExpenseTypeRepositoryImpl(i()),
+    i.addLazySingleton<ExpenseCategoryRepository>(
+      () => ExpenseCategoryRepositoryImpl(i()),
     );
 
     i.addLazySingleton<IncomeRepository>(() => IncomeRepositoryImpl(i()));
 
-    i.addLazySingleton<IncomeTypeRepository>(
-        () => IncomeTypeRepositoryImpl(i()));
+    i.addLazySingleton<IncomeCategoryRepository>(
+        () => IncomeCategoryRepositoryImpl(i()));
 
     i.addLazySingleton<InstallmentRepository>(
         () => InstallmentRepositoryImpl());
@@ -140,8 +141,10 @@ class FinanceManagerModule extends Module {
       ),
     );
 
-    i.addLazySingleton<GetExpenseTypes>(() => RemoteGetExpenseTypes(i()));
-    i.addLazySingleton<GetIncomeTypes>(() => RemoteGetIncomeTypes(i()));
+    i.addLazySingleton<GetExpenseCategories>(
+        () => RemoteGetExpenseCategories(i()));
+    i.addLazySingleton<GetIncomeCategories>(
+        () => RemoteGetIncomeCategories(i()));
 
     i.addLazySingleton<ManageExpense>(() => ManageExpenseImpl(
           expenseRepository: i(),
@@ -166,18 +169,16 @@ class FinanceManagerModule extends Module {
     i.addLazySingleton<AccountStore>(
         () => AccountStore(authController: i(), manageAccount: i()));
 
-    i.addLazySingleton<BalanceStore>(() => BalanceStore(i()));
-
     i.addLazySingleton<CreditCardStore>(
       () => CreditCardStore(manageCreditCard: i(), authController: i()),
     );
 
-    i.addLazySingleton<ExpenseTypeStore>(() => ExpenseTypeStore(i()));
+    i.addLazySingleton<ExpenseCategoryStore>(() => ExpenseCategoryStore(i()));
 
     i.addLazySingleton<ExpenseStore>(() => ExpenseStore(i()));
 
     i.addLazySingleton<IncomeStore>(() => IncomeStore(i()));
 
-    i.addLazySingleton<IncomeTypeStore>(() => IncomeTypeStore(i()));
+    i.addLazySingleton<IncomeCategoryStore>(() => IncomeCategoryStore(i()));
   }
 }

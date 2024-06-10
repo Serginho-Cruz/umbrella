@@ -1,5 +1,5 @@
+import '../../entities/category.dart';
 import '../../entities/expense.dart';
-import '../../entities/expense_type.dart';
 
 abstract interface class FilterExpenses {
   List<Expense> byName({
@@ -9,8 +9,8 @@ abstract interface class FilterExpenses {
   List<Expense> byPaid(List<Expense> expenses);
   List<Expense> byUnpaid(List<Expense> expenses);
   List<Expense> byOverdue(List<Expense> expenses);
-  List<Expense> byType({
+  List<Expense> byCategory({
     required List<Expense> expenses,
-    required ExpenseType type,
+    required Category category,
   });
 }

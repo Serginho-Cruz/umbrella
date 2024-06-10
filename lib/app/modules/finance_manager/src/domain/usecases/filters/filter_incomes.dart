@@ -1,5 +1,5 @@
+import '../../entities/category.dart';
 import '../../entities/income.dart';
-import '../../entities/income_type.dart';
 
 abstract interface class FilterIncomes {
   List<Income> byName({
@@ -9,8 +9,8 @@ abstract interface class FilterIncomes {
   List<Income> byPaid(List<Income> incomes);
   List<Income> byUnpaid(List<Income> incomes);
   List<Income> byOverdue(List<Income> incomes);
-  List<Income> byType({
+  List<Income> byCategory({
     required List<Income> incomes,
-    required IncomeType type,
+    required Category category,
   });
 }
