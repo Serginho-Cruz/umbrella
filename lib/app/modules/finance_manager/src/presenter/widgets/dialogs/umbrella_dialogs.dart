@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-
-import 'buttons/primary_button.dart';
-import 'buttons/secondary_button.dart';
-import 'texts/medium_text.dart';
-import 'texts/title_text.dart';
+import '../buttons/primary_button.dart';
+import '../buttons/secondary_button.dart';
+import '../texts/medium_text.dart';
+import '../texts/title_text.dart';
+import 'dialog_layout.dart';
 
 sealed class UmbrellaDialogs {
   static void showError(
@@ -73,9 +73,7 @@ sealed class UmbrellaDialogs {
       context: context,
       transitionDuration: const Duration(milliseconds: 500),
       pageBuilder: (context, animation, secondaryAnimation) {
-        return Dialog(
-          elevation: 8.0,
-          backgroundColor: Colors.white,
+        return DialogLayout(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20.0, 40.0, 20.0, 10.0),
             child: Column(

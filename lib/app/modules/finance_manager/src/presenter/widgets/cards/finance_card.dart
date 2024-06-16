@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/umbrella_sizes.dart';
+import '../../../utils/umbrella_palette.dart';
+import '../icons/status_icon.dart';
 import '../texts/price.dart';
 import '../layout/spaced.dart';
 
@@ -26,24 +27,6 @@ abstract class FinanceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color iconBackgroundColor;
-    IconData icon;
-
-    switch (status) {
-      case Status.okay:
-        iconBackgroundColor = Colors.green.shade800;
-        icon = Icons.check_rounded;
-        break;
-      case Status.inTime:
-        iconBackgroundColor = Colors.orange.shade400;
-        icon = Icons.access_time_rounded;
-        break;
-      case Status.overdue:
-        iconBackgroundColor = Colors.red.shade400;
-        icon = Icons.close_rounded;
-        break;
-    }
-
     return Container(
       width: 250,
       margin: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -55,10 +38,7 @@ abstract class FinanceCard extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Color.fromRGBO(129, 219, 251, 1),
-            Color.fromRGBO(200, 136, 251, 1)
-          ],
+          colors: UmbrellaPalette.gradientColors,
         ),
       ),
       child: Column(
@@ -69,21 +49,8 @@ abstract class FinanceCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Material(
-                color: iconBackgroundColor,
-                shape: const CircleBorder(
-                  side: BorderSide(
-                    width: 1.5,
-                    strokeAlign: BorderSide.strokeAlignOutside,
-                  ),
-                ),
-                child: Icon(icon, color: Colors.white, size: 50.0),
-              ),
-              Price(
-                value: totalValue,
-                fontSize: UmbrellaSizes.big,
-                fontWeight: FontWeight.bold,
-              )
+              StatusIcon(status: status, size: 50.0),
+              Price.big(totalValue, fontWeight: FontWeight.bold)
             ],
           ),
           const SizedBox(height: 20.0),
@@ -101,19 +68,11 @@ abstract class FinanceCard extends StatelessWidget {
                 ),
                 Spaced(
                   first: const MediumText('Pago'),
-                  second: Price(
-                    value: totalValue - remainingValue,
-                    fontSize: UmbrellaSizes.medium,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  second: Price.medium(totalValue - remainingValue),
                 ),
                 Spaced(
                   first: const MediumText('Restante'),
-                  second: Price(
-                    value: remainingValue,
-                    fontSize: UmbrellaSizes.medium,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  second: Price.medium(remainingValue),
                 ),
               ],
             ),

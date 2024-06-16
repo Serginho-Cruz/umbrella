@@ -14,5 +14,24 @@ class IncomeModel extends FinanceModel {
           paidValue: income.paidValue,
           remainingValue: income.remainingValue,
           totalValue: income.totalValue,
+          category: income.category,
+          frequency: income.frequency,
+          paymentDate: income.paymentDate,
+          personName: income.personName,
         );
+
+  Income toEntity() {
+    return Income(
+      id: id,
+      name: name,
+      totalValue: totalValue,
+      paidValue: paidValue,
+      remainingValue: remainingValue,
+      dueDate: overdueDate,
+      frequency: frequency,
+      category: category,
+      paymentDate: paymentDate,
+      personName: personName,
+    );
+  }
 }

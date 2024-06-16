@@ -5,6 +5,7 @@ import '../../domain/entities/account.dart';
 import '../../domain/entities/date.dart';
 import '../../domain/entities/expense.dart';
 import '../../domain/models/expense_model.dart';
+import '../../domain/models/finance_model.dart';
 import '../../domain/usecases/manage_expense.dart';
 import '../../errors/errors.dart';
 
@@ -12,15 +13,10 @@ class ExpenseStore extends Store<List<ExpenseModel>> {
   ExpenseStore(this._manageExpense) : super([]);
 
   final ManageExpense _manageExpense;
-  final Map<int, List<ExpenseModel>> _allByAccount = {};
-
-  Date _lastDateRequested = Date.today();
-  bool _hasAll = false;
 
   AsyncResult<int, Fail> register(Expense expense, Account account) async {
     var result = await _manageExpense.register(expense, account);
 
-    if (result.isSuccess()) _hasAll = false;
     return result;
   }
 
@@ -33,21 +29,14 @@ class ExpenseStore extends Store<List<ExpenseModel>> {
 
     setLoading(true);
 
-    if (!_needToFetch(month, year)) {
-      update(_allByAccount.values
-          .reduce((value, element) => value..addAll(element)));
-
-      setLoading(false);
-
-      return;
-    }
-
     var list = List.generate(
         accounts.length,
         (i) => _manageExpense.getAllOf(
             month: month, year: year, account: accounts[i]));
 
     var results = await Future.wait(list);
+
+    var models = <ExpenseModel>[];
 
     for (int i = 0; i < accounts.length; i++) {
       var result = results[i];
@@ -59,15 +48,12 @@ class ExpenseStore extends Store<List<ExpenseModel>> {
         return;
       }
 
-      var account = accounts[i];
+      var expenses = result.getOrDefault([]);
 
-      _allByAccount.update(account.id, (value) => result.getOrDefault([]),
-          ifAbsent: () => result.getOrDefault([]));
+      models.addAll(expenses.map((e) => _toModel(e)));
     }
 
-    _lastDateRequested = Date(day: 1, month: month, year: year);
-    _hasAll = true;
-    update(_allByAccount.values.reduce((all, list) => all..addAll(list)));
+    update(models);
     setLoading(false);
   }
 
@@ -78,12 +64,6 @@ class ExpenseStore extends Store<List<ExpenseModel>> {
   }) async {
     setLoading(true);
 
-    if (!_needToFetch(month, year) && _allByAccount.containsKey(account.id)) {
-      _lastDateRequested = Date(day: 1, month: month, year: year);
-      update(_allByAccount[account.id]!);
-      return;
-    }
-
     var expensesResult = await _manageExpense.getAllOf(
       month: month,
       year: year,
@@ -91,30 +71,27 @@ class ExpenseStore extends Store<List<ExpenseModel>> {
     );
 
     expensesResult.fold((expenses) {
-      _allByAccount.update(account.id, (_) => expenses,
-          ifAbsent: () => expenses);
-      update(expenses);
+      var models = expenses.map((e) => _toModel(e));
+
+      update(models.toList());
     }, (fail) {
       setError(fail);
     });
 
-    _hasAll = false;
-    _lastDateRequested = Date(day: 1, month: month, year: year);
-
     setLoading(false);
   }
 
-  bool _needToFetch(int requestedMonth, int requestedYear) {
-    Date requestedDate = Date(
-      day: 1,
-      month: requestedMonth,
-      year: requestedYear,
-    );
+  ExpenseModel _toModel(Expense e) {
+    return ExpenseModel.fromExpense(e, status: _determineExpenseStatus(e));
+  }
 
-    if (_lastDateRequested.isAtTheSameMonthAs(requestedDate) && _hasAll) {
-      return false;
+  Status _determineExpenseStatus(Expense e) {
+    if (e.remainingValue == 0.00) return Status.okay;
+
+    if (e.dueDate.isBefore(Date.today())) {
+      return Status.overdue;
     }
 
-    return true;
+    return Status.inTime;
   }
 }

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../domain/entities/date.dart';
-import 'texts/big_text.dart';
-import 'texts/small_text.dart';
+import '../../../domain/entities/date.dart';
+import '../texts/big_text.dart';
+import '../texts/small_text.dart';
+import 'dialog_layout.dart';
 
 sealed class CustomDatePickerDialog {
   static Future<Date?> show(
@@ -12,8 +13,7 @@ sealed class CustomDatePickerDialog {
     Date? date = await showDialog(
       context: context,
       builder: (ctx) {
-        return Dialog(
-          elevation: 8.0,
+        return DialogLayout(
           child: _CustomDatePicker(initialDate: initialDate),
         );
       },

@@ -5,9 +5,11 @@ class HorizontalListView extends StatelessWidget {
     super.key,
     required this.itemCallback,
     required this.itemCount,
+    this.padding = EdgeInsets.zero,
   });
 
   final Widget Function(int) itemCallback;
+  final EdgeInsetsGeometry padding;
   final int itemCount;
 
   @override
@@ -15,9 +17,7 @@ class HorizontalListView extends StatelessWidget {
     return ListView.builder(
       itemCount: itemCount,
       physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.symmetric(
-        vertical: 40.0,
-      ),
+      padding: padding,
       scrollDirection: Axis.horizontal,
       itemBuilder: (context, index) => itemCallback(index),
     );

@@ -1,5 +1,4 @@
 import 'package:result_dart/result_dart.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/expense_model.dart';
 
 import '../../errors/errors.dart';
 import '../entities/account.dart';
@@ -12,7 +11,7 @@ abstract interface class ManageExpense {
     required Expense newExpense,
     required Account account,
   });
-  AsyncResult<List<ExpenseModel>, Fail> getAllOf({
+  AsyncResult<List<Expense>, Fail> getAllOf({
     required int month,
     required int year,
     required Account account,

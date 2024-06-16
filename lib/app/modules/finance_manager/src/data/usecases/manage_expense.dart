@@ -1,8 +1,6 @@
 import 'package:result_dart/result_dart.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/installment_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/invoice_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/expense_model.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/finance_model.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/manage_installment.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/manage_invoice.dart';
 import '../../domain/entities/account.dart';
@@ -67,7 +65,7 @@ class ManageExpenseImpl implements ManageExpense {
   }
 
   @override
-  Future<Result<List<ExpenseModel>, Fail>> getAllOf({
+  Future<Result<List<Expense>, Fail>> getAllOf({
     required int month,
     required int year,
     required Account account,
@@ -113,10 +111,7 @@ class ManageExpenseImpl implements ManageExpense {
 
     expenses.addAll(requiredMonthExpenses.getOrDefault([]));
 
-    return Success(List.generate(
-        expenses.length,
-        (i) => ExpenseModel.fromExpense(expenses[i],
-            status: _determineExpenseStatus(expenses[i]))));
+    return Success(expenses);
   }
 
   @override
@@ -140,15 +135,5 @@ class ManageExpenseImpl implements ManageExpense {
     }
 
     return updateExpectedBalance;
-  }
-
-  Status _determineExpenseStatus(Expense e) {
-    if (e.remainingValue == 0.00) return Status.okay;
-
-    if (e.dueDate.isBefore(Date.today())) {
-      return Status.overdue;
-    }
-
-    return Status.inTime;
   }
 }

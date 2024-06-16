@@ -7,16 +7,16 @@ import '../my_drawer.dart';
 class UmbrellaScaffold extends StatelessWidget {
   const UmbrellaScaffold({
     super.key,
-    required this.body,
     this.onMonthChange,
     this.appBarTitle,
     this.monthAndYear,
     this.showBalances = true,
     this.showMonthChanger = false,
     this.floatingActionButton,
+    required this.child,
   });
 
-  final Widget body;
+  final Widget child;
 
   ///AppBar's onMonthChange method
   final void Function(int, int)? onMonthChange;
@@ -34,6 +34,8 @@ class UmbrellaScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        drawer: MyDrawer(),
+        backgroundColor: Colors.white,
         appBar: CustomAppBar(
           title: appBarTitle,
           showBalances: showBalances,
@@ -41,9 +43,10 @@ class UmbrellaScaffold extends StatelessWidget {
           onMonthChange: onMonthChange,
           monthAndYear: monthAndYear,
         ),
-        drawer: MyDrawer(),
-        backgroundColor: Colors.white,
-        body: body,
+        body: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: child,
+        ),
         floatingActionButton: floatingActionButton,
       ),
     );

@@ -11,14 +11,17 @@ sealed class UmbrellaPalette {
   static const Color activePrimaryButton = Color(0xFFD7A3FF);
   static const Color activeSecondaryButton = Color(0xFFA8D8E8);
   static const Color activeResetButton = Color(0xFFC9B81A);
-
+  static const List<Color> gradientColors = [
+    Color(0xFF9BE4FF),
+    Color(0xFFDAADFF),
+  ];
   static const Color gray = Color(0xFFFAFAFA);
-  static const List<(String, String)> cardColorsHexAndNames = [
-    ('FFFFFF', 'Branco'),
-    ('BF6DFF', 'Roxo'), //Primary
-    ('B2FF59', 'Verde Claro'),
-    ('6FDBFF', 'Azul Claro'), //Secondary
-    ('FFFF00', 'Amarelo'),
-    ('FF5252', 'Vermelho'),
+  static const List<(String, String)> cardHexAndNames = [
+    ('FFFFFFFF', 'Branco'),
+    ('FFBF6DFF', 'Roxo'),
+    ('FFB2FF59', 'Verde Claro'),
+    ('FF6FDBFF', 'Azul Claro'),
+    ('FFFFFF00', 'Amarelo'),
+    ('FFFF5252', 'Vermelho'),
   ];
 }

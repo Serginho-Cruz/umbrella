@@ -6,8 +6,6 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/error
 
 import '../../domain/entities/date.dart';
 import '../../domain/entities/frequency.dart';
-import '../../domain/models/finance_model.dart';
-import '../../domain/models/income_model.dart';
 import '../../domain/usecases/manage_income.dart';
 import '../repositories/balance_repository.dart';
 
@@ -49,7 +47,7 @@ class ManageIncomeImpl implements ManageIncome {
   }
 
   @override
-  AsyncResult<List<IncomeModel>, Fail> getAllOf({
+  AsyncResult<List<Income>, Fail> getAllOf({
     required int month,
     required int year,
     required Account account,
@@ -95,25 +93,12 @@ class ManageIncomeImpl implements ManageIncome {
 
     incomes.addAll(requiredMonthIncomes.getOrDefault([]));
 
-    var models = incomes
-        .map((i) => IncomeModel.fromIncome(i, status: _determineStatus(i)));
-
-    return Success(models.toList());
+    return Success(incomes);
   }
 
   @override
   AsyncResult<Unit, Fail> delete(Income income) {
     // TODO: implement delete
     throw UnimplementedError();
-  }
-
-  Status _determineStatus(Income i) {
-    if (i.remainingValue == 0.00) return Status.okay;
-
-    if (i.dueDate.isBefore(Date.today())) {
-      return Status.overdue;
-    }
-
-    return Status.inTime;
   }
 }

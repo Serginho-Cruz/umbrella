@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/entities/account.dart';
-import '../../../utils/umbrella_sizes.dart';
 import '../layout/spaced.dart';
 import '../texts/big_text.dart';
 import '../texts/medium_text.dart';
@@ -50,10 +49,7 @@ class AccountSelector extends StatelessWidget {
           children: [
             MediumText(accounts[index].name),
             const SizedBox(width: 25.0),
-            Price(
-              value: (accounts[index].actualBalance),
-              fontSize: UmbrellaSizes.medium,
-            ),
+            Price.medium(accounts[index].actualBalance),
           ],
         ),
       ),

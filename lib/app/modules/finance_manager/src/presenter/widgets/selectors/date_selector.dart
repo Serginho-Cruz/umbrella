@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/entities/date.dart';
-import '../date_picker_dialog.dart';
+import '../dialogs/date_picker_dialog.dart';
 
 class DateSelector extends StatefulWidget {
   const DateSelector({
@@ -26,6 +26,12 @@ class _DateSelectorState extends State<DateSelector> {
     super.initState();
     selectedDate = widget.initialDate;
     _controller.text = selectedDate.toString(format: DateFormat.ddmmyyyy);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override

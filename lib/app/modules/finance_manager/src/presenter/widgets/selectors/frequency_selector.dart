@@ -30,9 +30,7 @@ class FrequencySelector extends StatelessWidget {
       itemBuilder: (frequency) => Container(
         height: 50,
         padding: const EdgeInsets.fromLTRB(20.0, 10.0, 0, 10.0),
-        child: Row(
-          children: [MediumText(frequency.name)],
-        ),
+        child: Row(children: [MediumText(frequency.name)]),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),

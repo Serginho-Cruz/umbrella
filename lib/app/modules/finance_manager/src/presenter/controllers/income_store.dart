@@ -5,22 +5,27 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/useca
 import '../../domain/entities/account.dart';
 import '../../domain/entities/date.dart';
 import '../../domain/entities/income.dart';
+import '../../domain/models/finance_model.dart';
 import '../../domain/models/income_model.dart';
+import '../../domain/usecases/filters/filter_incomes.dart';
 import '../../errors/errors.dart';
 
 class IncomeStore extends Store<List<IncomeModel>> {
   final ManageIncome _manageIncome;
-  final Map<int, List<IncomeModel>> _allByAccount = {};
+  final FilterIncomes _filterIncomes;
 
-  Date _lastDateRequested = Date.today();
-  bool _hasAll = false;
+  List<IncomeModel> all = [];
 
-  IncomeStore(this._manageIncome) : super([]);
+  IncomeStore({
+    required ManageIncome manageIncome,
+    required FilterIncomes filterIncomes,
+  })  : _manageIncome = manageIncome,
+        _filterIncomes = filterIncomes,
+        super([]);
 
   AsyncResult<int, Fail> register(Income expense, Account account) async {
     var result = await _manageIncome.register(expense, account);
 
-    if (result.isSuccess()) _hasAll = false;
     return result;
   }
 
@@ -33,13 +38,7 @@ class IncomeStore extends Store<List<IncomeModel>> {
 
     setLoading(true);
 
-    if (!_needToFetch(month, year)) {
-      update(_allByAccount.values
-          .reduce((allIncomes, incomes) => allIncomes..addAll(incomes)));
-
-      setLoading(false);
-      return;
-    }
+    List<IncomeModel> models = [];
 
     var list = List.generate(
         accounts.length,
@@ -58,15 +57,13 @@ class IncomeStore extends Store<List<IncomeModel>> {
         return;
       }
 
-      var account = accounts[i];
+      var incomes = result.getOrDefault([]);
 
-      _allByAccount.update(account.id, (value) => result.getOrDefault([]),
-          ifAbsent: () => result.getOrDefault([]));
+      models.addAll(incomes.map((i) => _toModel(i)));
     }
 
-    _lastDateRequested = Date(day: 1, month: month, year: year);
-    _hasAll = true;
-    update(_allByAccount.values.reduce((all, list) => all..addAll(list)));
+    all = models;
+    update(models);
     setLoading(false);
   }
 
@@ -77,15 +74,6 @@ class IncomeStore extends Store<List<IncomeModel>> {
   }) async {
     setLoading(true);
 
-    if (!_needToFetch(month, year) && _allByAccount.containsKey(account.id)) {
-      _lastDateRequested = Date(day: 1, month: month, year: year);
-
-      update(_allByAccount[account.id]!);
-
-      setLoading(false);
-      return;
-    }
-
     var incomesResult = await _manageIncome.getAllOf(
       month: month,
       year: year,
@@ -93,29 +81,35 @@ class IncomeStore extends Store<List<IncomeModel>> {
     );
 
     incomesResult.fold((incomes) {
-      _allByAccount.update(account.id, (_) => incomes, ifAbsent: () => incomes);
-      update(incomes);
+      var models = incomes.map((i) => _toModel(i)).toList();
+      all = models;
+      update(models);
     }, (fail) {
       setError(fail);
     });
 
-    _hasAll = false;
-    _lastDateRequested = Date(day: 1, month: month, year: year);
-
     setLoading(false);
   }
 
-  bool _needToFetch(int requestedMonth, int requestedYear) {
-    Date requestedDate = Date(
-      day: 1,
-      month: requestedMonth,
-      year: requestedYear,
-    );
+  void filterByName(String name) {
+    var incomes = state.map((e) => e.toEntity()).toList();
 
-    if (_lastDateRequested.isAtTheSameMonthAs(requestedDate) && _hasAll) {
-      return false;
+    var filtered = _filterIncomes.byName(incomes: incomes, searchName: name);
+
+    update(filtered.map((i) => _toModel(i)).toList());
+  }
+
+  IncomeModel _toModel(Income i) {
+    return IncomeModel.fromIncome(i, status: _determineStatus(i));
+  }
+
+  Status _determineStatus(Income i) {
+    if (i.remainingValue == 0.00) return Status.okay;
+
+    if (i.dueDate.isBefore(Date.today())) {
+      return Status.overdue;
     }
 
-    return true;
+    return Status.inTime;
   }
 }

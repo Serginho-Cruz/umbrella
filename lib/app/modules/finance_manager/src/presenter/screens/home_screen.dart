@@ -216,19 +216,23 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _makeSection({required String title, required Widget child}) {
-    return HorizontallyInfinityContainer(
-      color: UmbrellaPalette.gray,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 20.0),
-            child: TitleText.bold(title),
-          ),
-          child,
-        ],
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 50.0),
+      child: HorizontallyInfinityContainer(
+        padding: const EdgeInsets.only(top: 20.0),
+        color: UmbrellaPalette.gray,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 20.0),
+              child: TitleText.bold(title),
+            ),
+            child,
+          ],
+        ),
       ),
     );
   }
@@ -236,6 +240,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _makeShimmerList({double width = 250, double height = 300}) {
     return HorizontalListView(
       itemCount: 4,
+      padding: const EdgeInsets.symmetric(vertical: 40.0),
       itemCallback: (i) => ShimmerContainer(
         height: height,
         width: width,

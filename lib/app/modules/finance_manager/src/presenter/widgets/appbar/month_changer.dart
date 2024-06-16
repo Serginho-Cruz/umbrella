@@ -111,7 +111,7 @@ class _MonthChangerState extends State<MonthChanger>
           opacity: fadeController,
           child: SlideTransition(
             position: slideAnimation,
-            child: BigText('${date.monthName} ${date.year}'),
+            child: BigText.bold('${date.monthName} ${date.year}'),
           ),
         ),
         IconButton(

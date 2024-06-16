@@ -9,6 +9,8 @@ class ResetButton extends UmbrellaButton {
     super.key,
     Widget? label,
     required VoidCallback reset,
+    super.width,
+    super.height,
     Icon? icon,
   }) : super(
           onPressed: reset,

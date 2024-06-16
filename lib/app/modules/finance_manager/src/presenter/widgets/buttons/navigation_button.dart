@@ -10,13 +10,15 @@ class NavigationButton extends UmbrellaButton {
     required BuildContext context,
     required String route,
     required super.label,
-    bool primary = true,
+    super.width,
+    super.height,
+    bool isPrimaryColor = true,
     super.icon,
   }) : super(
-          backgroundColor: primary
+          backgroundColor: isPrimaryColor
               ? UmbrellaPalette.actionButtonColor
               : UmbrellaPalette.secondaryButtonColor,
-          hoverColor: primary
+          hoverColor: isPrimaryColor
               ? UmbrellaPalette.activePrimaryButton
               : UmbrellaPalette.activeSecondaryButton,
           onPressed: () {
@@ -30,7 +32,7 @@ class NavigationButton extends UmbrellaButton {
   }) {
     return NavigationButton(
       context: context,
-      primary: false,
+      isPrimaryColor: false,
       route: '/finance_manager/expense',
       label: const MediumText.bold('Ver Despesas'),
       icon: const Icon(Icons.money_off_rounded, color: Colors.black),
@@ -43,7 +45,7 @@ class NavigationButton extends UmbrellaButton {
   }) {
     return NavigationButton(
       context: context,
-      primary: false,
+      isPrimaryColor: false,
       route: '/finance_manager/income',
       label: const MediumText.bold('Ver Receitas'),
       icon: const Icon(Icons.attach_money, color: Colors.black),
@@ -56,7 +58,7 @@ class NavigationButton extends UmbrellaButton {
   }) {
     return NavigationButton(
       context: context,
-      primary: false,
+      isPrimaryColor: false,
       route: '/finance_manager/card',
       label: const MediumText.bold('Ver Cartões'),
       icon: const Icon(Icons.credit_card, color: Colors.black),

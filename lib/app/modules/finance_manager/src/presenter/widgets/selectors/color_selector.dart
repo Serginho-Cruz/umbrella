@@ -20,7 +20,7 @@ class ColorSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridSelector<(String, String)>(
-      items: UmbrellaPalette.cardColorsHexAndNames,
+      items: UmbrellaPalette.cardHexAndNames,
       itemSize: 75.0,
       linesGap: 20.0,
       onItemTap: onSelected,

@@ -8,8 +8,12 @@ abstract class UmbrellaButton extends StatelessWidget {
     required this.onPressed,
     required this.backgroundColor,
     required this.hoverColor,
+    this.width,
+    this.height,
   });
 
+  final double? width;
+  final double? height;
   final Widget label;
   final Widget? icon;
   final VoidCallback onPressed;
@@ -18,15 +22,15 @@ abstract class UmbrellaButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double width = this.width ?? MediaQuery.sizeOf(context).width * 0.4;
+    double height = this.height ?? 50.0;
     return ElevatedButton.icon(
       label: label,
       icon: icon,
       onPressed: onPressed,
       style: ButtonStyle(
         animationDuration: const Duration(milliseconds: 400),
-        fixedSize: MaterialStatePropertyAll(
-          Size(MediaQuery.sizeOf(context).width * 0.4, 50.0),
-        ),
+        fixedSize: MaterialStatePropertyAll(Size(width, height)),
         padding: const MaterialStatePropertyAll(
           EdgeInsets.symmetric(vertical: 10.0),
         ),

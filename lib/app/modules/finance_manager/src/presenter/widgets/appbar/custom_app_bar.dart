@@ -103,11 +103,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
               ),
               child: const Spaced(
                 first: BigText.bold('Saldo Atual'),
-                second: Price(
-                  value: 200.85,
-                  fontSize: UmbrellaSizes.big,
-                  fontWeight: FontWeight.bold,
-                ),
+                second: Price.big(200.85, fontWeight: FontWeight.bold),
               ),
             ),
           if (widget.showBalances)
@@ -120,7 +116,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
               child: const Spaced(
                 first: MediumText('Saldo Esperado'),
                 second: Price(
-                  value: 200.85,
+                  200.85,
                   fontSize: UmbrellaSizes.medium,
                   fontWeight: FontWeight.w500,
                 ),

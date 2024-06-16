@@ -2,28 +2,34 @@ import '../entities/expense.dart';
 import 'finance_model.dart';
 
 class ExpenseModel extends FinanceModel {
-  ExpenseModel({
-    required super.id,
-    required super.name,
-    required super.totalValue,
-    required super.paidValue,
-    required super.remainingValue,
-    required super.status,
-    required super.overdueDate,
-  });
-
-  static ExpenseModel fromExpense(
+  ExpenseModel.fromExpense(
     Expense expense, {
-    required Status status,
-  }) {
-    return ExpenseModel(
-      id: expense.id,
-      name: expense.name,
-      totalValue: expense.totalValue,
-      paidValue: expense.paidValue,
-      remainingValue: expense.remainingValue,
-      status: status,
-      overdueDate: expense.dueDate,
+    required super.status,
+  }) : super(
+          id: expense.id,
+          name: expense.name,
+          totalValue: expense.totalValue,
+          paidValue: expense.paidValue,
+          remainingValue: expense.remainingValue,
+          category: expense.category,
+          frequency: expense.frequency,
+          personName: expense.personName,
+          overdueDate: expense.dueDate,
+          paymentDate: expense.paymentDate,
+        );
+
+  Expense toEntity() {
+    return Expense(
+      id: id,
+      name: name,
+      totalValue: totalValue,
+      paidValue: paidValue,
+      remainingValue: remainingValue,
+      dueDate: overdueDate,
+      category: category,
+      frequency: frequency,
+      paymentDate: paymentDate,
+      personName: personName,
     );
   }
 }

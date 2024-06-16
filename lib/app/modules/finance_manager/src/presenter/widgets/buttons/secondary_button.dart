@@ -6,6 +6,8 @@ class SecondaryButton extends UmbrellaButton {
     super.key,
     required super.label,
     required super.onPressed,
+    super.width,
+    super.height,
     super.icon,
   }) : super(
           backgroundColor: UmbrellaPalette.secondaryButtonColor,
