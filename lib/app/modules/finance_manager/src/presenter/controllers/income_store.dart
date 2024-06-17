@@ -3,24 +3,30 @@ import 'package:result_dart/result_dart.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/manage_income.dart';
 
 import '../../domain/entities/account.dart';
+import '../../domain/entities/category.dart';
 import '../../domain/entities/date.dart';
 import '../../domain/entities/income.dart';
 import '../../domain/models/finance_model.dart';
 import '../../domain/models/income_model.dart';
 import '../../domain/usecases/filters/filter_incomes.dart';
+import '../../domain/usecases/orders/order_incomes.dart';
 import '../../errors/errors.dart';
+import '../widgets/dialogs/paiyable_filter_dialog.dart';
 
 class IncomeStore extends Store<List<IncomeModel>> {
   final ManageIncome _manageIncome;
   final FilterIncomes _filterIncomes;
+  final OrderIncomes _sortIncomes;
 
   List<IncomeModel> all = [];
 
   IncomeStore({
     required ManageIncome manageIncome,
     required FilterIncomes filterIncomes,
+    required OrderIncomes orderIncomes,
   })  : _manageIncome = manageIncome,
         _filterIncomes = filterIncomes,
+        _sortIncomes = orderIncomes,
         super([]);
 
   AsyncResult<int, Fail> register(Income expense, Account account) async {
@@ -92,11 +98,56 @@ class IncomeStore extends Store<List<IncomeModel>> {
   }
 
   void filterByName(String name) {
-    var incomes = state.map((e) => e.toEntity()).toList();
+    var filtered = _filterIncomes.byName(models: all, searchName: name);
 
-    var filtered = _filterIncomes.byName(incomes: incomes, searchName: name);
+    update(filtered);
+  }
 
-    update(filtered.map((i) => _toModel(i)).toList());
+  List<IncomeModel> filterByCategory(
+    List<IncomeModel> models,
+    List<Category> categories,
+  ) {
+    return _filterIncomes.byCategory(models: models, categories: categories);
+  }
+
+  List<IncomeModel> filterByStatus(
+    List<IncomeModel> models,
+    List<Status> status,
+  ) {
+    return _filterIncomes.byStatus(models: models, status: status);
+  }
+
+  List<IncomeModel> filterByRangeValue(
+    List<IncomeModel> models,
+    double min,
+    double max,
+  ) {
+    return _filterIncomes.byRangeValue(models: models, min: min, max: max);
+  }
+
+  List<IncomeModel> sort(
+    List<IncomeModel> models,
+    PaiyableSortOption option, {
+    isCrescent = true,
+  }) {
+    return switch (option) {
+      PaiyableSortOption.byValue => _sortIncomes.byValue(
+          models,
+          isCrescent: isCrescent,
+        ),
+      PaiyableSortOption.byName => _sortIncomes.byName(
+          models,
+          isCrescent: isCrescent,
+        ),
+      PaiyableSortOption.byDueDate => _sortIncomes.byDueDate(
+          models,
+          isCrescent: isCrescent,
+        ),
+    };
+  }
+
+  void updateState(List<IncomeModel> newState) {
+    update(newState);
   }
 
   IncomeModel _toModel(Income i) {

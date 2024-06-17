@@ -1,17 +1,7 @@
-import '../../entities/income.dart';
+import '../../models/income_model.dart';
 
 abstract interface class OrderIncomes {
-  List<Income> byValue({
-    required List<Income> incomes,
-    required bool isCrescent,
-  });
-  List<Income> byName({
-    required List<Income> incomes,
-    required bool isAlphabetic,
-  });
-  List<Income> byDueDate({
-    required List<Income> incomes,
-    required bool isCrescent,
-  });
-  List<Income> revertOrder(List<Income> incomes);
+  List<IncomeModel> byValue(List<IncomeModel> incomes, {bool isCrescent});
+  List<IncomeModel> byName(List<IncomeModel> incomes, {bool isCrescent});
+  List<IncomeModel> byDueDate(List<IncomeModel> incomes, {bool isCrescent});
 }

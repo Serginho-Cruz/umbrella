@@ -1,20 +1,42 @@
 import 'package:flutter/material.dart';
 
 import '../../domain/entities/category.dart';
+import '../../domain/models/finance_model.dart';
 import 'buttons/filter_button.dart';
 import 'dialogs/paiyable_filter_dialog.dart';
 import 'umbrella_search_bar.dart';
 
-class PaiyableFilter extends StatelessWidget {
+class PaiyableFilter<T extends FinanceModel> extends StatelessWidget {
   const PaiyableFilter({
     super.key,
     required this.filterName,
     required this.categories,
-    required this.filteredCategories,
+    this.filteredCategories = const [],
     required this.minValue,
     required this.maxValue,
     required this.filteredValues,
+    required this.filterByCategory,
+    required this.filterByValue,
+    required this.filterByStatus,
+    required this.sort,
+    this.filteredStatus = const [],
+    this.sortOption,
+    required this.onFiltersApplied,
+    required this.models,
   });
+
+  final List<T> models;
+
+  final List<T> Function(
+    List<T> list,
+    List<Category> categories,
+  ) filterByCategory;
+
+  final List<T> Function(List<T> list, double min, double max) filterByValue;
+  final List<T> Function(List<T> list, List<Status> status) filterByStatus;
+  final List<T> Function(List<T> list, PaiyableSortOption option) sort;
+
+  final void Function(List<T> list) onFiltersApplied;
 
   final void Function(String) filterName;
 
@@ -25,6 +47,8 @@ class PaiyableFilter extends StatelessWidget {
   final double maxValue;
 
   final (double, double) filteredValues;
+  final List<Status> filteredStatus;
+  final PaiyableSortOption? sortOption;
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +65,7 @@ class PaiyableFilter extends StatelessWidget {
             showDialog(
               context: context,
               builder: (ctx) => PaiyableFilterDialog(
+                onFiltersApplied: _filter,
                 categories: categories,
                 filteredCategories: filteredCategories,
                 selectedValues: RangeValues(
@@ -48,11 +73,37 @@ class PaiyableFilter extends StatelessWidget {
                   filteredValues.$2,
                 ),
                 minAndMaxValues: RangeValues(minValue, maxValue),
+                statusFiltered: filteredStatus,
+                sortOption: sortOption,
               ),
             );
           },
         ),
       ],
     );
+  }
+
+  void _filter({
+    required List<Category> categories,
+    required RangeValues range,
+    required List<Status> filteredStatus,
+    required PaiyableSortOption? sortOption,
+    required bool crescentSort,
+  }) {
+    var list = List.of(models);
+
+    if (categories.isNotEmpty) {
+      list = filterByCategory(list, categories);
+    }
+
+    list = filterByValue(list, range.start, range.end);
+
+    if (filteredStatus.isNotEmpty) {
+      list = filterByStatus(list, filteredStatus);
+    }
+
+    list = sort(list, sortOption ?? PaiyableSortOption.byDueDate);
+
+    onFiltersApplied(list);
   }
 }

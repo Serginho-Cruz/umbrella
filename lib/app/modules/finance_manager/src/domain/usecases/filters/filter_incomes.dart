@@ -1,16 +1,23 @@
 import '../../entities/category.dart';
-import '../../entities/income.dart';
+import '../../models/finance_model.dart';
+import '../../models/income_model.dart';
 
 abstract interface class FilterIncomes {
-  List<Income> byName({
-    required List<Income> incomes,
+  List<IncomeModel> byName({
+    required List<IncomeModel> models,
     required String searchName,
   });
-  List<Income> byPaid(List<Income> incomes);
-  List<Income> byUnpaid(List<Income> incomes);
-  List<Income> byOverdue(List<Income> incomes);
-  List<Income> byCategory({
-    required List<Income> incomes,
-    required Category category,
+  List<IncomeModel> byRangeValue({
+    required List<IncomeModel> models,
+    required double min,
+    required double max,
+  });
+  List<IncomeModel> byStatus({
+    required List<IncomeModel> models,
+    required List<Status> status,
+  });
+  List<IncomeModel> byCategory({
+    required List<IncomeModel> models,
+    required List<Category> categories,
   });
 }

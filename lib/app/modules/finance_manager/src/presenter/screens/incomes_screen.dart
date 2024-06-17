@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/dialogs/paiyable_filter_dialog.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/tiles/finance_tile.dart';
 import '../../domain/entities/category.dart';
+import '../../domain/models/finance_model.dart';
 import '../../domain/models/income_model.dart';
 import '../controllers/account_controller.dart';
 import '../controllers/income_category_store.dart';
@@ -31,9 +33,11 @@ class IncomesScreen extends StatefulWidget {
 
 class _IncomesScreenState extends State<IncomesScreen> {
   final List<Category> filteredCategories = [];
+  final List<Status> filteredStatus = [];
   double minValue = 0.0;
   double maxValue = 1.0;
   bool wasFiltered = false;
+  PaiyableSortOption? sortOption;
 
   @override
   void initState() {
@@ -79,37 +83,63 @@ class _IncomesScreenState extends State<IncomesScreen> {
                   ListScopedBuilder<IncomeCategoryStore, List<Category>>(
                     store: widget.categoryStore,
                     loadingWidget: const CircularProgressIndicator.adaptive(),
-                    onError: (ctx, fail) => PaiyableFilter(
-                      filterName: (name) {},
-                      filteredValues: (minValue, maxValue),
-                      categories: const [],
-                      filteredCategories: const [],
-                      minValue: minValue,
-                      maxValue: maxValue,
-                    ),
-                    onEmptyState: () => PaiyableFilter(
-                      filterName: (name) {},
-                      filteredValues: (minValue, maxValue),
-                      categories: const [],
-                      filteredCategories: const [],
-                      minValue: minValue,
-                      maxValue: maxValue,
-                    ),
+                    onError: (ctx, fail) =>
+                        const CircularProgressIndicator.adaptive(),
+                    onEmptyState: () =>
+                        const CircularProgressIndicator.adaptive(),
                     onState: (ctx, categories) {
-                      var (min, max) = _getMinAndMaxValues(incomes);
+                      var (min, max) =
+                          _getMinAndMaxValues(widget.incomeStore.all);
 
                       if (!wasFiltered) {
                         minValue = min;
                         maxValue = max;
                       }
 
-                      return PaiyableFilter(
-                        filterName: (name) {},
+                      return PaiyableFilter<IncomeModel>(
+                        models: widget.incomeStore.all,
+                        filterName: widget.incomeStore.filterByName,
+                        filterByCategory: (models, cats) {
+                          filteredCategories
+                            ..clear()
+                            ..addAll(cats);
+
+                          return widget.incomeStore
+                              .filterByCategory(models, cats);
+                        },
+                        filterByStatus: (models, status) {
+                          filteredStatus
+                            ..clear()
+                            ..addAll(status);
+
+                          return widget.incomeStore
+                              .filterByStatus(models, status);
+                        },
+                        filterByValue: (models, minimal, maximum) {
+                          wasFiltered = true;
+                          minValue = minimal;
+                          maxValue = maximum;
+
+                          return widget.incomeStore.filterByRangeValue(
+                            models,
+                            minimal,
+                            maximum,
+                          );
+                        },
+                        sort: (models, option) {
+                          sortOption = option;
+                          return widget.incomeStore.sort(models, option);
+                        },
+                        onFiltersApplied: (models) {
+                          widget.incomeStore.updateState(models);
+                        },
+                        filteredStatus: filteredStatus,
                         filteredValues: (minValue, maxValue),
                         categories: categories,
                         filteredCategories: filteredCategories,
                         minValue: min,
                         maxValue: max,
+                        sortOption: sortOption,
                       );
                     },
                   ),

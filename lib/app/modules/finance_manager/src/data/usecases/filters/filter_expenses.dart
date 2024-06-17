@@ -1,23 +1,23 @@
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/filters/filter_paiyable.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/filters/filter_finance_model.dart';
 import '../../../domain/entities/category.dart';
-import '../../../domain/entities/expense.dart';
+import '../../../domain/models/expense_model.dart';
 import '../../../domain/usecases/filters/filter_expenses.dart';
 
-class FilterExpensesImpl extends FilterPaiyable<Expense>
+class FilterExpensesImpl extends FilterFinanceModel<ExpenseModel>
     implements FilterExpenses {
   @override
-  List<Expense> byName({
-    required List<Expense> expenses,
+  List<ExpenseModel> byName({
+    required List<ExpenseModel> models,
     required String searchName,
   }) =>
-      expenses
+      models
           .where((e) => e.name.toLowerCase().contains(searchName.toLowerCase()))
           .toList();
 
   @override
-  List<Expense> byCategory({
-    required List<Expense> expenses,
-    required Category category,
+  List<ExpenseModel> byCategory({
+    required List<ExpenseModel> models,
+    required List<Category> categories,
   }) =>
-      expenses.where((e) => e.category == category).toList();
+      models.where((e) => categories.contains(e.category)).toList();
 }

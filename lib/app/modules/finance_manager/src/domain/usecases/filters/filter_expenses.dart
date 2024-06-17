@@ -1,16 +1,23 @@
 import '../../entities/category.dart';
-import '../../entities/expense.dart';
+import '../../models/expense_model.dart';
+import '../../models/finance_model.dart';
 
 abstract interface class FilterExpenses {
-  List<Expense> byName({
-    required List<Expense> expenses,
+  List<ExpenseModel> byName({
+    required List<ExpenseModel> models,
     required String searchName,
   });
-  List<Expense> byPaid(List<Expense> expenses);
-  List<Expense> byUnpaid(List<Expense> expenses);
-  List<Expense> byOverdue(List<Expense> expenses);
-  List<Expense> byCategory({
-    required List<Expense> expenses,
-    required Category category,
+  List<ExpenseModel> byRangeValue({
+    required List<ExpenseModel> models,
+    required double min,
+    required double max,
+  });
+  List<ExpenseModel> byStatus({
+    required List<ExpenseModel> models,
+    required List<Status> status,
+  });
+  List<ExpenseModel> byCategory({
+    required List<ExpenseModel> models,
+    required List<Category> categories,
   });
 }

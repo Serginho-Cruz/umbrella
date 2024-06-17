@@ -1,24 +1,23 @@
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/filters/filter_paiyable.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/income.dart';
-
 import '../../../domain/entities/category.dart';
+import '../../../domain/models/income_model.dart';
 import '../../../domain/usecases/filters/filter_incomes.dart';
+import 'filter_finance_model.dart';
 
-class FilterIncomesImpl extends FilterPaiyable<Income>
+class FilterIncomesImpl extends FilterFinanceModel<IncomeModel>
     implements FilterIncomes {
   @override
-  List<Income> byCategory({
-    required List<Income> incomes,
-    required Category category,
+  List<IncomeModel> byCategory({
+    required List<IncomeModel> models,
+    required List<Category> categories,
   }) =>
-      incomes.where((i) => i.category == category).toList();
+      models.where((i) => categories.contains(i.category)).toList();
 
   @override
-  List<Income> byName({
-    required List<Income> incomes,
+  List<IncomeModel> byName({
+    required List<IncomeModel> models,
     required String searchName,
   }) =>
-      incomes
+      models
           .where((i) => i.name.toLowerCase().contains(searchName.toLowerCase()))
           .toList();
 }

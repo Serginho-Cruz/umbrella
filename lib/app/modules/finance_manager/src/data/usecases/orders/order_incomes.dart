@@ -1,23 +1,22 @@
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/income.dart';
-
+import '../../../domain/models/income_model.dart';
 import '../../../domain/usecases/orders/order_incomes.dart';
 
 class OrderIncomesImpl implements OrderIncomes {
   @override
-  List<Income> byName({
-    required List<Income> incomes,
-    required bool isAlphabetic,
+  List<IncomeModel> byName(
+    List<IncomeModel> incomes, {
+    bool isCrescent = true,
   }) =>
       _sortList(
         sortFunction: (a, b) => a.name.compareTo(b.name),
         incomes: incomes,
-        isCrescent: isAlphabetic,
+        isCrescent: isCrescent,
       );
 
   @override
-  List<Income> byValue({
-    required List<Income> incomes,
-    required bool isCrescent,
+  List<IncomeModel> byValue(
+    List<IncomeModel> incomes, {
+    bool isCrescent = true,
   }) =>
       _sortList(
         sortFunction: (a, b) => a.totalValue.compareTo(b.totalValue),
@@ -26,22 +25,19 @@ class OrderIncomesImpl implements OrderIncomes {
       );
 
   @override
-  List<Income> byDueDate({
-    required List<Income> incomes,
-    required bool isCrescent,
+  List<IncomeModel> byDueDate(
+    List<IncomeModel> incomes, {
+    bool isCrescent = true,
   }) =>
       _sortList(
-        sortFunction: (a, b) => a.dueDate.compareTo(b.dueDate),
+        sortFunction: (a, b) => a.overdueDate.compareTo(b.overdueDate),
         incomes: incomes,
         isCrescent: isCrescent,
       );
 
-  @override
-  List<Income> revertOrder(List<Income> incomes) => incomes.reversed.toList();
-
-  List<Income> _sortList({
-    required int Function(Income, Income) sortFunction,
-    required List<Income> incomes,
+  List<IncomeModel> _sortList({
+    required int Function(IncomeModel, IncomeModel) sortFunction,
+    required List<IncomeModel> incomes,
     required bool isCrescent,
   }) {
     //Multiplier Number in compare will order the list in crescent or decrescent

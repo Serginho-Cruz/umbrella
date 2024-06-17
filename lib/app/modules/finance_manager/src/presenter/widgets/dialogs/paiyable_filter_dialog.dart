@@ -1,5 +1,7 @@
 import 'dart:math' show pow;
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/icons/flippable_category_icon.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/layout/horizontal_infinity_container.dart';
 
 import '../../../domain/entities/category.dart';
@@ -7,26 +9,38 @@ import '../../../domain/models/finance_model.dart';
 import '../../../utils/currency_format.dart';
 import '../../../utils/umbrella_sizes.dart';
 import '../buttons/primary_button.dart';
-import '../icons/category_icon.dart';
 import '../layout/horizontal_listview.dart';
 import '../layout/spaced.dart';
 import '../texts/big_text.dart';
 import '../texts/medium_text.dart';
 import 'dialog_layout.dart';
 
-class PaiyableFilterDialog extends StatefulWidget {
+class PaiyableFilterDialog<T extends FinanceModel> extends StatefulWidget {
   const PaiyableFilterDialog({
     super.key,
     required this.categories,
     required this.selectedValues,
     required this.minAndMaxValues,
-    required this.filteredCategories,
+    this.filteredCategories = const [],
+    this.statusFiltered = const [],
+    this.sortOption,
+    this.onFiltersApplied,
   });
+
+  final void Function({
+    required List<Category> categories,
+    required RangeValues range,
+    required List<Status> filteredStatus,
+    required PaiyableSortOption? sortOption,
+    required bool crescentSort,
+  })? onFiltersApplied;
 
   final List<Category> categories;
   final List<Category> filteredCategories;
   final RangeValues selectedValues;
   final RangeValues minAndMaxValues;
+  final PaiyableSortOption? sortOption;
+  final List<Status> statusFiltered;
 
   @override
   State<PaiyableFilterDialog> createState() => _PaiyableFilterDialogState();
@@ -36,7 +50,8 @@ class _PaiyableFilterDialogState extends State<PaiyableFilterDialog> {
   late RangeValues values;
   late double minValue, maxValue;
 
-  final List<Status> filteredStatus = [];
+  final List<Category> selectedCategories = [];
+  final List<Status> selectedStatus = [];
   PaiyableSortOption? sortOption;
 
   @override
@@ -47,11 +62,15 @@ class _PaiyableFilterDialogState extends State<PaiyableFilterDialog> {
 
     minValue = rounded.start;
     maxValue = rounded.end;
+
+    selectedCategories.addAll(widget.filteredCategories);
+    selectedStatus.addAll(widget.statusFiltered);
   }
 
   @override
   Widget build(BuildContext context) {
     return DialogLayout(
+      fullscreen: true,
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Padding(
@@ -91,16 +110,17 @@ class _PaiyableFilterDialogState extends State<PaiyableFilterDialog> {
                     itemCount: widget.categories.length,
                     itemCallback: (index) => Padding(
                       padding: const EdgeInsets.only(right: 20.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CategoryIcon(
-                              iconName: widget.categories[index].icon,
-                              radius: 70.0),
-                          const SizedBox(height: 10.0),
-                          MediumText(widget.categories[index].name),
-                        ],
+                      child: FlippableCategoryIcon(
+                        category: widget.categories[index],
+                        initiallyFlipped: selectedCategories
+                            .contains(widget.categories[index]),
+                        onFlip: () {
+                          selectedCategories.contains(widget.categories[index])
+                              ? selectedCategories
+                                  .remove(widget.categories[index])
+                              : selectedCategories
+                                  .add(widget.categories[index]);
+                        },
                       ),
                     ),
                   ),
@@ -149,11 +169,11 @@ class _PaiyableFilterDialogState extends State<PaiyableFilterDialog> {
                 (s) => Row(
                   children: [
                     Checkbox.adaptive(
-                      value: filteredStatus.contains(s),
+                      value: selectedStatus.contains(s),
                       onChanged: (newValue) {
-                        filteredStatus.contains(s)
-                            ? filteredStatus.remove(s)
-                            : filteredStatus.add(s);
+                        selectedStatus.contains(s)
+                            ? selectedStatus.remove(s)
+                            : selectedStatus.add(s);
 
                         setState(() {});
                       },
@@ -184,8 +204,15 @@ class _PaiyableFilterDialogState extends State<PaiyableFilterDialog> {
               PrimaryButton(
                 label: const BigText.bold('Aplicar'),
                 width: MediaQuery.sizeOf(context).width,
-                height: 70.0,
+                height: 60.0,
                 onPressed: () {
+                  widget.onFiltersApplied?.call(
+                    categories: selectedCategories,
+                    filteredStatus: selectedStatus,
+                    range: values,
+                    sortOption: sortOption,
+                    crescentSort: true,
+                  );
                   Navigator.pop(context);
                 },
               ),
