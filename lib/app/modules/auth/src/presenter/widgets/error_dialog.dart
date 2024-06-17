@@ -28,7 +28,7 @@ sealed class ErrorDialog {
           actions: [
             FilledButton(
               style: ButtonStyle(
-                shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+                shape: WidgetStatePropertyAll(RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0))),
               ),
               onPressed: () {

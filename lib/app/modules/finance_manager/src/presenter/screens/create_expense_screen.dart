@@ -273,7 +273,7 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                         value: willBePaidWithCredit,
                         inactiveThumbColor: Colors.black,
                         trackOutlineColor:
-                            const MaterialStatePropertyAll(Colors.black),
+                            const WidgetStatePropertyAll(Colors.black),
                         inactiveTrackColor: UmbrellaPalette.gray,
                         activeColor: Colors.white,
                         activeTrackColor: UmbrellaPalette.secondaryColor,

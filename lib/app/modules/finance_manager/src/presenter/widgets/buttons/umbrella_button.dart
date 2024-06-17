@@ -30,21 +30,20 @@ abstract class UmbrellaButton extends StatelessWidget {
       onPressed: onPressed,
       style: ButtonStyle(
         animationDuration: const Duration(milliseconds: 400),
-        fixedSize: MaterialStatePropertyAll(Size(width, height)),
-        padding: const MaterialStatePropertyAll(
+        fixedSize: WidgetStatePropertyAll(Size(width, height)),
+        padding: const WidgetStatePropertyAll(
           EdgeInsets.symmetric(vertical: 10.0),
         ),
-        shape: MaterialStatePropertyAll(
+        shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
           ),
         ),
-        elevation: const MaterialStatePropertyAll(4.0),
-        side: const MaterialStatePropertyAll(BorderSide(width: 1.0)),
-        backgroundColor: MaterialStateColor.resolveWith((states) {
+        elevation: const WidgetStatePropertyAll(4.0),
+        side: const WidgetStatePropertyAll(BorderSide(width: 1.0)),
+        backgroundColor: WidgetStateColor.resolveWith((states) {
           if (states.any((state) =>
-              state == MaterialState.hovered ||
-              state == MaterialState.pressed)) {
+              state == WidgetState.hovered || state == WidgetState.pressed)) {
             return hoverColor;
           }
 

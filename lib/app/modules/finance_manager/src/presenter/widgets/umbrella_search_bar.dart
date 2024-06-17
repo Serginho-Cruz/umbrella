@@ -21,10 +21,10 @@ class UmbrellaSearchBar extends StatelessWidget {
         maxWidth: width ?? MediaQuery.sizeOf(context).width * 0.9,
         minHeight: height ?? 60.0,
       ),
-      backgroundColor: const MaterialStatePropertyAll(UmbrellaPalette.gray),
+      backgroundColor: const WidgetStatePropertyAll(UmbrellaPalette.gray),
       onSubmitted: searchFunction,
       hintText: 'Pesquisar por Nome',
-      shape: MaterialStatePropertyAll(
+      shape: WidgetStatePropertyAll(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
       ),
       textInputAction: TextInputAction.search,

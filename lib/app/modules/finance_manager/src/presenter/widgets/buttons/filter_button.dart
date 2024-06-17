@@ -14,17 +14,17 @@ class FilterButton extends StatelessWidget {
       icon: const Icon(Icons.filter_alt_outlined, color: Colors.white),
       iconSize: 30.0,
       style: ButtonStyle(
-        fixedSize: const MaterialStatePropertyAll<Size>(Size(50, 50)),
-        shape: MaterialStatePropertyAll(
+        fixedSize: const WidgetStatePropertyAll<Size>(Size(50, 50)),
+        shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
             side: const BorderSide(),
           ),
         ),
-        backgroundColor: MaterialStateProperty.resolveWith(
+        backgroundColor: WidgetStateProperty.resolveWith(
           (st) {
-            if (st.any((s) =>
-                s == MaterialState.pressed || s == MaterialState.hovered)) {
+            if (st.any(
+                (s) => s == WidgetState.pressed || s == WidgetState.hovered)) {
               return UmbrellaPalette.activePrimaryButton;
             }
 
