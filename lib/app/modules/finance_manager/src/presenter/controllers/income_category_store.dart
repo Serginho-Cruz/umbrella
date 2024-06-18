@@ -13,6 +13,7 @@ class IncomeCategoryStore extends Store<List<Category>> {
   final GetIncomeCategories _usecase;
 
   Future<void> getAll() async {
+    if (state.isNotEmpty) return;
     setLoading(true);
     var result = await _usecase();
 

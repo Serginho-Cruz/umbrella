@@ -19,5 +19,7 @@ class FilterExpensesImpl extends FilterFinanceModel<ExpenseModel>
     required List<ExpenseModel> models,
     required List<Category> categories,
   }) =>
-      models.where((e) => categories.contains(e.category)).toList();
+      categories.isEmpty
+          ? models
+          : models.where((e) => categories.contains(e.category)).toList();
 }

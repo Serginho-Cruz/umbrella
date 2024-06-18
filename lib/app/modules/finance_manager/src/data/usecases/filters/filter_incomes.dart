@@ -10,7 +10,9 @@ class FilterIncomesImpl extends FilterFinanceModel<IncomeModel>
     required List<IncomeModel> models,
     required List<Category> categories,
   }) =>
-      models.where((i) => categories.contains(i.category)).toList();
+      categories.isEmpty
+          ? models
+          : models.where((i) => categories.contains(i.category)).toList();
 
   @override
   List<IncomeModel> byName({

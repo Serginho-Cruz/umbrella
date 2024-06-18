@@ -70,19 +70,18 @@ class _FlippableCategoryIconState extends State<FlippableCategoryIcon>
               ..rotateY(_controller.value * pi),
             child: _controller.value <= 0.5
                 ? CategoryIcon(iconName: widget.category.icon, radius: 70.0)
-                : DecoratedBox(
+                : Container(
+                    width: 70.0,
+                    height: 70.0,
                     decoration: const ShapeDecoration(
                       shape: CircleBorder(),
                       gradient: RadialGradient(
-                          colors: UmbrellaPalette.gradientColors),
-                    ),
-                    child: SizedBox(
-                      height: 70.0,
-                      width: 70.0,
-                      child: Transform.flip(
-                        flipX: true,
-                        child: const Icon(Icons.check_rounded, size: 50.0),
+                        colors: UmbrellaPalette.gradientColors,
                       ),
+                    ),
+                    child: Transform.flip(
+                      flipX: true,
+                      child: const Icon(Icons.check_rounded, size: 50.0),
                     ),
                   ),
           ),

@@ -18,7 +18,7 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         dueDate: Date(day: 12, month: 5, year: 2024),
         paymentDate: null,
         category:
-            const Category(id: 1, icon: 'icons/outros.png', name: 'Outros'),
+            const Category(id: 11, name: 'Outros', icon: 'icons/outros.png'),
         frequency: Frequency.monthly,
       ),
       Income(
@@ -30,7 +30,7 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         dueDate: Date(day: 10, month: 5, year: 2024),
         paymentDate: Date(day: 10, month: 5, year: 2024),
         category:
-            const Category(id: 1, icon: 'icons/outros.png', name: 'Outros'),
+            const Category(id: 11, name: 'Outros', icon: 'icons/outros.png'),
         frequency: Frequency.none,
       ),
       Income(
@@ -41,7 +41,7 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         remainingValue: 1200.00,
         dueDate: Date(day: 20, month: 12, year: 2024),
         category:
-            const Category(id: 1, icon: 'icons/outros.png', name: 'Outros'),
+            const Category(id: 11, name: 'Outros', icon: 'icons/outros.png'),
         frequency: Frequency.yearly,
       ),
       Income(
@@ -52,7 +52,7 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         remainingValue: 2000.00,
         dueDate: Date(day: 6, month: 6, year: 2024),
         category:
-            const Category(id: 1, icon: 'icons/outros.png', name: 'Outros'),
+            const Category(id: 11, name: 'Outros', icon: 'icons/outros.png'),
         frequency: Frequency.yearly,
       ),
     ],
@@ -66,7 +66,7 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         dueDate: Date.today(),
         paymentDate: Date.today(),
         category:
-            const Category(id: 1, name: "Outros", icon: 'icons/outros.png'),
+            const Category(id: 11, name: 'Outros', icon: 'icons/outros.png'),
         frequency: Frequency.none,
       ),
       Income(
@@ -77,25 +77,21 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         remainingValue: 900.00,
         dueDate: Date(day: 20, month: 5, year: 2024),
         category:
-            const Category(id: 1, name: "Outros", icon: 'icons/outros.png'),
+            const Category(id: 11, name: 'Outros', icon: 'icons/outros.png'),
         frequency: Frequency.none,
       ),
     ],
     3: [
       Income(
-        id: 7,
-        name: 'Transferência',
-        totalValue: 2000.00,
-        paidValue: 0.00,
-        remainingValue: 2000.00,
-        frequency: Frequency.yearly,
-        dueDate: Date(day: 12, month: 1, year: 2025),
-        category: const Category(
-          id: 2,
-          name: 'Outros',
-          icon: 'icons/outros.png',
-        ),
-      ),
+          id: 7,
+          name: 'Transferência',
+          totalValue: 2000.00,
+          paidValue: 0.00,
+          remainingValue: 2000.00,
+          frequency: Frequency.yearly,
+          dueDate: Date(day: 12, month: 1, year: 2025),
+          category:
+              const Category(id: 11, name: 'Outros', icon: 'icons/outros.png')),
     ],
   };
 

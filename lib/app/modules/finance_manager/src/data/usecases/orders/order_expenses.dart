@@ -1,22 +1,22 @@
-import '../../../domain/entities/expense.dart';
+import '../../../domain/models/expense_model.dart';
 import '../../../domain/usecases/orders/order_expenses.dart';
 
 class OrderExpensesImpl implements OrderExpenses {
   @override
-  List<Expense> byName({
-    required List<Expense> expenses,
-    required bool isAlphabetic,
+  List<ExpenseModel> byName(
+    List<ExpenseModel> expenses, {
+    bool isCrescent = true,
   }) =>
       _sortList(
         sortFunction: (a, b) => a.name.compareTo(b.name),
         expenses: expenses,
-        isCrescent: isAlphabetic,
+        isCrescent: isCrescent,
       );
 
   @override
-  List<Expense> byValue({
-    required List<Expense> expenses,
-    required bool isCrescent,
+  List<ExpenseModel> byValue(
+    List<ExpenseModel> expenses, {
+    bool isCrescent = true,
   }) =>
       _sortList(
         sortFunction: (a, b) => a.totalValue.compareTo(b.totalValue),
@@ -25,23 +25,19 @@ class OrderExpensesImpl implements OrderExpenses {
       );
 
   @override
-  List<Expense> byDueDate({
-    required List<Expense> expenses,
-    required bool isCrescent,
+  List<ExpenseModel> byDueDate(
+    List<ExpenseModel> expenses, {
+    bool isCrescent = true,
   }) =>
       _sortList(
-        sortFunction: (a, b) => a.dueDate.compareTo(b.dueDate),
+        sortFunction: (a, b) => a.overdueDate.compareTo(b.overdueDate),
         isCrescent: isCrescent,
         expenses: expenses,
       );
 
-  @override
-  List<Expense> revertOrder(List<Expense> expenses) =>
-      expenses.reversed.toList();
-
-  List<Expense> _sortList({
-    required int Function(Expense, Expense) sortFunction,
-    required List<Expense> expenses,
+  List<ExpenseModel> _sortList({
+    required int Function(ExpenseModel, ExpenseModel) sortFunction,
+    required List<ExpenseModel> expenses,
     required bool isCrescent,
   }) {
     //Multiplier Number in compare will order the list in crescent or decrescent

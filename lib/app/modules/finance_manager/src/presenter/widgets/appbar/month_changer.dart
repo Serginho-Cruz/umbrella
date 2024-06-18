@@ -27,8 +27,6 @@ class _MonthChangerState extends State<MonthChanger>
 
   late final AnimationController fadeController;
 
-  Date date = MonthChanger.currentMonthAndYear;
-
   Timer timer = Timer(Duration.zero, () {});
 
   @override
@@ -55,7 +53,8 @@ class _MonthChangerState extends State<MonthChanger>
     ]);
 
     setState(() {
-      date = date.copyWith(month: date.month + 1);
+      MonthChanger.currentMonthAndYear = MonthChanger.currentMonthAndYear
+          .copyWith(month: MonthChanger.currentMonthAndYear.month + 1);
     });
 
     slideController
@@ -74,7 +73,8 @@ class _MonthChangerState extends State<MonthChanger>
     ]);
 
     setState(() {
-      date = date.copyWith(month: date.month - 1);
+      MonthChanger.currentMonthAndYear = MonthChanger.currentMonthAndYear
+          .copyWith(month: MonthChanger.currentMonthAndYear.month - 1);
     });
 
     slideController
@@ -102,7 +102,10 @@ class _MonthChangerState extends State<MonthChanger>
               toPreviousMonth();
               timer.cancel();
               timer = Timer(const Duration(milliseconds: 2000), () {
-                widget.onMonthChange(date.month, date.year);
+                widget.onMonthChange(
+                  MonthChanger.currentMonthAndYear.month,
+                  MonthChanger.currentMonthAndYear.year,
+                );
               });
             }
           },
@@ -111,7 +114,9 @@ class _MonthChangerState extends State<MonthChanger>
           opacity: fadeController,
           child: SlideTransition(
             position: slideAnimation,
-            child: BigText.bold('${date.monthName} ${date.year}'),
+            child: BigText.bold(
+              '${MonthChanger.currentMonthAndYear.monthName} ${MonthChanger.currentMonthAndYear.year}',
+            ),
           ),
         ),
         IconButton(
@@ -125,7 +130,10 @@ class _MonthChangerState extends State<MonthChanger>
               toNextMonth();
               timer.cancel();
               timer = Timer(const Duration(seconds: 2), () {
-                widget.onMonthChange(date.month, date.year);
+                widget.onMonthChange(
+                  MonthChanger.currentMonthAndYear.month,
+                  MonthChanger.currentMonthAndYear.year,
+                );
               });
             }
           },
@@ -137,7 +145,10 @@ class _MonthChangerState extends State<MonthChanger>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    widget.onMonthChange(date.month, date.year);
+    widget.onMonthChange(
+      MonthChanger.currentMonthAndYear.month,
+      MonthChanger.currentMonthAndYear.year,
+    );
   }
 
   @override

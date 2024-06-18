@@ -18,7 +18,11 @@ abstract class ControllersBindings {
 
     i.addLazySingleton<ExpenseCategoryStore>(() => ExpenseCategoryStore(i()));
 
-    i.addLazySingleton<ExpenseStore>(() => ExpenseStore(i()));
+    i.addLazySingleton<ExpenseStore>(() => ExpenseStore(
+          filterExpenses: i(),
+          manageExpense: i(),
+          orderExpenses: i(),
+        ));
 
     i.addLazySingleton<IncomeStore>(() => IncomeStore(
           filterIncomes: i(),

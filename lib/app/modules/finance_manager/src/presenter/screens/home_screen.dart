@@ -10,11 +10,13 @@ import '../controllers/account_controller.dart';
 import '../controllers/credit_card_store.dart';
 import '../controllers/expense_store.dart';
 import '../controllers/income_store.dart';
+import '../widgets/appbar/month_changer.dart';
 import '../widgets/cards/credit_card_widget.dart';
 import '../widgets/cards/expense_card.dart';
 import '../widgets/layout/horizontal_listview.dart';
 import '../widgets/layout/horizontal_infinity_container.dart';
 import '../widgets/cards/income_card.dart';
+import '../widgets/selectors/account_selector.dart';
 import '../widgets/shimmer/shimmer_container.dart';
 import '../widgets/appbar/custom_app_bar.dart';
 import '../widgets/layout/horizontal_animated_list.dart';
@@ -40,11 +42,17 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  Account? selectedAccount;
+
   @override
   void initState() {
     super.initState();
-    widget.creditCardStore.getAll();
-    widget.accountStore.getAll();
+
+    selectedAccount = widget.accountStore.selectedAccount;
+    Future.delayed(Duration.zero, () {
+      widget.creditCardStore.getAll();
+      widget.accountStore.getAll();
+    });
   }
 
   @override
@@ -77,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
               title: 'Home',
               showMonthChanger: true,
               onMonthChange: (month, year) {
-                _onMonthChange(month, year, accounts);
+                _fetch(month, year, accounts);
               },
             ),
             body: SingleChildScrollView(
@@ -86,8 +94,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Padding(
+                    padding: const EdgeInsets.all(30.0),
+                    child: AccountSelector(
+                      label: 'Conta Atual',
+                      accounts: accounts,
+                      selectedAccount: selectedAccount,
+                      onSelected: (selected) {
+                        setState(() => selectedAccount = selected);
+
+                        var current = MonthChanger.currentMonthAndYear;
+
+                        _fetch(current.month, current.year, accounts);
+                      },
+                    ),
+                  ),
                   const Padding(
-                    padding: EdgeInsets.all(30.0),
+                    padding: EdgeInsets.only(left: 30.0, bottom: 30.0),
                     child: BigText('Olá! Obrigado por Voltar'),
                   ),
                   _makeSection(
@@ -168,51 +191,36 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _onMonthChange(int month, int year, List<Account> accounts) {
-    _fetchData(
-      month: month,
-      year: year,
-      accounts: accounts,
-      fetchAll: widget.expenseStore.getForAll,
-      fetchOne: widget.expenseStore.getAllOf,
-    );
-
-    _fetchData(
-      month: month,
-      year: year,
-      accounts: accounts,
-      fetchAll: widget.incomeStore.getForAll,
-      fetchOne: widget.incomeStore.getAllOf,
-    );
-  }
-
-  void _fetchData({
-    required int month,
-    required int year,
-    required List<Account> accounts,
-    required void Function({
-      required int month,
-      required int year,
-      required List<Account> accounts,
-    }) fetchAll,
-    required void Function({
-      required int month,
-      required int year,
-      required Account account,
-    }) fetchOne,
-  }) {
-    var selectedAccount = widget.accountStore.selectedAccount;
+  void _fetch(int month, int year, List<Account> accounts) {
     if (selectedAccount != null) {
       Future(() {
-        fetchOne(month: month, year: year, account: selectedAccount);
+        widget.expenseStore.getAllOf(
+          account: selectedAccount!,
+          month: month,
+          year: year,
+        );
+
+        widget.incomeStore.getAllOf(
+          account: selectedAccount!,
+          month: month,
+          year: year,
+        );
       });
+    } else {
+      Future(() {
+        widget.expenseStore.getForAll(
+          accounts: accounts,
+          month: month,
+          year: year,
+        );
 
-      return;
+        widget.incomeStore.getForAll(
+          accounts: accounts,
+          month: month,
+          year: year,
+        );
+      });
     }
-
-    Future<void>(() {
-      fetchAll(month: month, year: year, accounts: accounts);
-    });
   }
 
   Widget _makeSection({required String title, required Widget child}) {

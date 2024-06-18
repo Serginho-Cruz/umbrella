@@ -10,15 +10,15 @@ class AccountSelector extends StatelessWidget {
   const AccountSelector({
     super.key,
     required this.accounts,
-    required this.selectedAccount,
+    this.selectedAccount,
     required this.onSelected,
     this.label = 'Conta',
   });
 
   final String label;
   final List<Account> accounts;
-  final Account selectedAccount;
-  final void Function(Account) onSelected;
+  final Account? selectedAccount;
+  final void Function(Account?) onSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class AccountSelector extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         first: BigText(label),
         second: Row(children: [
-          BigText.bold(selectedAccount.name),
+          BigText.bold(selectedAccount?.name ?? 'Nenhuma'),
           const Icon(Icons.arrow_drop_down_rounded, size: 32.0)
         ]),
       ),
@@ -38,21 +38,29 @@ class AccountSelector extends StatelessWidget {
   }
 
   List<PopupMenuEntry<Account>> _buildMenuItems(BuildContext context) {
-    return List.generate(
-      accounts.length,
-      (index) => PopupMenuItem(
+    return [
+      PopupMenuItem(
         onTap: () {
-          onSelected(accounts[index]);
+          onSelected(null);
         },
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            MediumText(accounts[index].name),
-            const SizedBox(width: 25.0),
-            Price.medium(accounts[index].actualBalance),
-          ],
+        child: const MediumText('Nenhuma'),
+      ),
+      ...List.generate(
+        accounts.length,
+        (index) => PopupMenuItem(
+          onTap: () {
+            onSelected(accounts[index]);
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              MediumText(accounts[index].name),
+              const SizedBox(width: 25.0),
+              Price.medium(accounts[index].actualBalance),
+            ],
+          ),
         ),
       ),
-    );
+    ];
   }
 }

@@ -9,16 +9,16 @@ import '../../domain/entities/income.dart';
 import '../../domain/models/finance_model.dart';
 import '../../domain/models/income_model.dart';
 import '../../domain/usecases/filters/filter_incomes.dart';
+import '../../domain/usecases/orders/order_expenses.dart';
 import '../../domain/usecases/orders/order_incomes.dart';
 import '../../errors/errors.dart';
-import '../widgets/dialogs/paiyable_filter_dialog.dart';
 
 class IncomeStore extends Store<List<IncomeModel>> {
   final ManageIncome _manageIncome;
   final FilterIncomes _filterIncomes;
   final OrderIncomes _sortIncomes;
 
-  List<IncomeModel> all = [];
+  final List<IncomeModel> all = [];
 
   IncomeStore({
     required ManageIncome manageIncome,
@@ -57,6 +57,7 @@ class IncomeStore extends Store<List<IncomeModel>> {
       var result = results[i];
 
       if (result.isError()) {
+        all.clear();
         setError(result.exceptionOrNull()!);
         setLoading(false);
 
@@ -68,7 +69,12 @@ class IncomeStore extends Store<List<IncomeModel>> {
       models.addAll(incomes.map((i) => _toModel(i)));
     }
 
-    all = models;
+    models = sort(models, PaiyableSortOption.byDueDate, isCrescent: true);
+
+    all
+      ..clear()
+      ..addAll(models);
+
     update(models);
     setLoading(false);
   }
@@ -88,9 +94,16 @@ class IncomeStore extends Store<List<IncomeModel>> {
 
     incomesResult.fold((incomes) {
       var models = incomes.map((i) => _toModel(i)).toList();
-      all = models;
+
+      models = sort(models, PaiyableSortOption.byDueDate, isCrescent: true);
+
+      all
+        ..clear()
+        ..addAll(models);
+
       update(models);
     }, (fail) {
+      all.clear();
       setError(fail);
     });
 
@@ -128,7 +141,7 @@ class IncomeStore extends Store<List<IncomeModel>> {
   List<IncomeModel> sort(
     List<IncomeModel> models,
     PaiyableSortOption option, {
-    isCrescent = true,
+    bool isCrescent = true,
   }) {
     return switch (option) {
       PaiyableSortOption.byValue => _sortIncomes.byValue(

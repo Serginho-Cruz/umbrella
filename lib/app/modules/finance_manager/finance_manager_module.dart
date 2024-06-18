@@ -7,6 +7,7 @@ import 'controllers_bindings.dart';
 import 'datasources_bindings.dart';
 import 'repositories_bindings.dart';
 import 'routes.dart';
+import 'src/presenter/screens/expenses_screen.dart';
 import 'usecases_bindings.dart';
 
 class FinanceManagerModule extends Module {
@@ -41,6 +42,16 @@ class FinanceManagerModule extends Module {
           incomeStore: Modular.get(),
           accountStore: Modular.get(),
           categoryStore: Modular.get(),
+        ),
+      ),
+    );
+    r.add(
+      ChildRoute(
+        '/expense',
+        child: (context) => ExpensesScreen(
+          accountStore: Modular.get(),
+          categoryStore: Modular.get(),
+          expenseStore: Modular.get(),
         ),
       ),
     );

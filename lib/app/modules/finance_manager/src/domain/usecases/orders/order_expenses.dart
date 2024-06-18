@@ -1,17 +1,9 @@
-import '../../entities/expense.dart';
+import '../../models/expense_model.dart';
+
+enum PaiyableSortOption { byName, byValue, byDueDate }
 
 abstract interface class OrderExpenses {
-  List<Expense> byValue({
-    required List<Expense> expenses,
-    required bool isCrescent,
-  });
-  List<Expense> byName({
-    required List<Expense> expenses,
-    required bool isAlphabetic,
-  });
-  List<Expense> byDueDate({
-    required List<Expense> expenses,
-    required bool isCrescent,
-  });
-  List<Expense> revertOrder(List<Expense> expenses);
+  List<ExpenseModel> byValue(List<ExpenseModel> expenses, {bool isCrescent});
+  List<ExpenseModel> byName(List<ExpenseModel> expenses, {bool isCrescent});
+  List<ExpenseModel> byDueDate(List<ExpenseModel> expenses, {bool isCrescent});
 }

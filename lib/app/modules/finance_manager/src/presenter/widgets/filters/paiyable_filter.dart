@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../domain/entities/category.dart';
-import '../../domain/models/finance_model.dart';
-import 'buttons/filter_button.dart';
-import 'dialogs/paiyable_filter_dialog.dart';
+import '../../../domain/entities/category.dart';
+import '../../../domain/models/finance_model.dart';
+import '../../../domain/usecases/orders/order_expenses.dart';
+import '../buttons/filter_button.dart';
+import '../dialogs/paiyable_filter_dialog.dart';
 import 'umbrella_search_bar.dart';
 
 class PaiyableFilter<T extends FinanceModel> extends StatelessWidget {
@@ -34,7 +35,11 @@ class PaiyableFilter<T extends FinanceModel> extends StatelessWidget {
 
   final List<T> Function(List<T> list, double min, double max) filterByValue;
   final List<T> Function(List<T> list, List<Status> status) filterByStatus;
-  final List<T> Function(List<T> list, PaiyableSortOption option) sort;
+  final List<T> Function(
+    List<T> list,
+    PaiyableSortOption option,
+    bool isCrescent,
+  ) sort;
 
   final void Function(List<T> list) onFiltersApplied;
 
@@ -92,17 +97,13 @@ class PaiyableFilter<T extends FinanceModel> extends StatelessWidget {
   }) {
     var list = List.of(models);
 
-    if (categories.isNotEmpty) {
-      list = filterByCategory(list, categories);
-    }
+    list = filterByCategory(list, categories);
 
     list = filterByValue(list, range.start, range.end);
 
-    if (filteredStatus.isNotEmpty) {
-      list = filterByStatus(list, filteredStatus);
-    }
+    list = filterByStatus(list, filteredStatus);
 
-    list = sort(list, sortOption ?? PaiyableSortOption.byDueDate);
+    list = sort(list, sortOption ?? PaiyableSortOption.byDueDate, crescentSort);
 
     onFiltersApplied(list);
   }

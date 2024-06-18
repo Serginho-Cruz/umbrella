@@ -36,7 +36,7 @@ abstract class UmbrellaButton extends StatelessWidget {
         ),
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
+            borderRadius: BorderRadius.circular(20.0),
           ),
         ),
         elevation: const WidgetStatePropertyAll(4.0),

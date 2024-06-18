@@ -7,6 +7,7 @@ import 'src/data/usecases/manage_account.dart';
 import 'src/data/usecases/manage_credit_card.dart';
 import 'src/data/usecases/manage_income.dart';
 import 'src/data/usecases/manage_installment.dart';
+import 'src/data/usecases/orders/order_expenses.dart';
 import 'src/data/usecases/orders/order_incomes.dart';
 import 'src/domain/usecases/filters/filter_expenses.dart';
 import 'src/domain/usecases/filters/filter_incomes.dart';
@@ -21,6 +22,7 @@ import 'src/data/usecases/manage_invoice.dart';
 import 'src/domain/usecases/manage_expense.dart';
 import 'src/domain/usecases/manage_income.dart';
 import 'src/domain/usecases/manage_invoice.dart';
+import 'src/domain/usecases/orders/order_expenses.dart';
 import 'src/domain/usecases/orders/order_incomes.dart';
 
 abstract class UsecasesBindings {
@@ -61,5 +63,6 @@ abstract class UsecasesBindings {
     i.addLazySingleton<FilterIncomes>(FilterIncomesImpl.new);
 
     i.addLazySingleton<OrderIncomes>(OrderIncomesImpl.new);
+    i.addLazySingleton<OrderExpenses>(OrderExpensesImpl.new);
   }
 }

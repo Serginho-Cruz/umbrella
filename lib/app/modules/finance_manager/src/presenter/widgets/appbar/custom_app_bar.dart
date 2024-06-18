@@ -52,10 +52,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
       padding: const EdgeInsets.only(top: 10.0, bottom: 15.0),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [
-            UmbrellaPalette.secondaryColor,
-            UmbrellaPalette.primaryColor,
-          ],
+          colors: UmbrellaPalette.appBarGradientColors,
         ),
         border: Border.all(width: 1.5),
         borderRadius: const BorderRadius.only(

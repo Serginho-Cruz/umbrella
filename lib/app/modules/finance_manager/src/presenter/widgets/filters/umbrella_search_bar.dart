@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../utils/umbrella_palette.dart';
+import '../../../utils/umbrella_palette.dart';
 
 class UmbrellaSearchBar extends StatelessWidget {
   const UmbrellaSearchBar({
@@ -25,7 +25,10 @@ class UmbrellaSearchBar extends StatelessWidget {
       onSubmitted: searchFunction,
       hintText: 'Pesquisar por Nome',
       shape: WidgetStatePropertyAll(
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+        RoundedRectangleBorder(
+          side: const BorderSide(),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
       ),
       textInputAction: TextInputAction.search,
       trailing: const [Icon(Icons.search_rounded)],

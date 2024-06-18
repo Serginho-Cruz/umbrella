@@ -28,40 +28,64 @@ class NavigationButton extends UmbrellaButton {
 
   factory NavigationButton.toExpenses(
     BuildContext context, {
+    bool isPrimaryColor = false,
+    Widget label = const MediumText.bold('Ver Despesas'),
+    Icon icon = const Icon(Icons.money_off_rounded, color: Colors.black),
+    double? height,
+    double? width,
     Key? key,
   }) {
     return NavigationButton(
+      key: key,
       context: context,
-      isPrimaryColor: false,
       route: '/finance_manager/expense',
-      label: const MediumText.bold('Ver Despesas'),
-      icon: const Icon(Icons.money_off_rounded, color: Colors.black),
+      isPrimaryColor: isPrimaryColor,
+      label: label,
+      icon: icon,
+      height: height,
+      width: width,
     );
   }
 
   factory NavigationButton.toIncomes(
     BuildContext context, {
     Key? key,
+    bool isPrimaryColor = false,
+    Widget label = const MediumText.bold('Ver Receitas'),
+    Icon icon = const Icon(Icons.attach_money, color: Colors.black),
+    double? height,
+    double? width,
   }) {
     return NavigationButton(
+      key: key,
       context: context,
-      isPrimaryColor: false,
+      isPrimaryColor: isPrimaryColor,
       route: '/finance_manager/income',
-      label: const MediumText.bold('Ver Receitas'),
-      icon: const Icon(Icons.attach_money, color: Colors.black),
+      label: label,
+      icon: icon,
+      height: height,
+      width: width,
     );
   }
 
   factory NavigationButton.toCards(
     BuildContext context, {
     Key? key,
+    bool isPrimaryColor = false,
+    Widget label = const MediumText.bold('Ver Cartões'),
+    Icon icon = const Icon(Icons.credit_card, color: Colors.black),
+    double? height,
+    double? width,
   }) {
     return NavigationButton(
+      key: key,
       context: context,
-      isPrimaryColor: false,
       route: '/finance_manager/card',
-      label: const MediumText.bold('Ver Cartões'),
-      icon: const Icon(Icons.credit_card, color: Colors.black),
+      isPrimaryColor: isPrimaryColor,
+      label: label,
+      icon: icon,
+      height: height,
+      width: width,
     );
   }
 }

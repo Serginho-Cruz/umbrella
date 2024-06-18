@@ -1,15 +1,13 @@
 import 'dart:math' show pow;
-import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/icons/flippable_category_icon.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/layout/horizontal_infinity_container.dart';
 
 import '../../../domain/entities/category.dart';
 import '../../../domain/models/finance_model.dart';
-import '../../../utils/currency_format.dart';
-import '../../../utils/umbrella_sizes.dart';
+import '../../../domain/usecases/orders/order_expenses.dart';
 import '../buttons/primary_button.dart';
-import '../layout/horizontal_listview.dart';
+import '../filters/category_filter.dart';
+import '../filters/paiyable_status_filter.dart';
+import '../filters/range_value_filter.dart';
 import '../layout/spaced.dart';
 import '../texts/big_text.dart';
 import '../texts/medium_text.dart';
@@ -54,6 +52,8 @@ class _PaiyableFilterDialogState extends State<PaiyableFilterDialog> {
   final List<Status> selectedStatus = [];
   PaiyableSortOption? sortOption;
 
+  bool crescentSort = true;
+
   @override
   void initState() {
     super.initState();
@@ -65,6 +65,8 @@ class _PaiyableFilterDialogState extends State<PaiyableFilterDialog> {
 
     selectedCategories.addAll(widget.filteredCategories);
     selectedStatus.addAll(widget.statusFiltered);
+
+    sortOption = widget.sortOption;
   }
 
   @override
@@ -101,86 +103,44 @@ class _PaiyableFilterDialogState extends State<PaiyableFilterDialog> {
                   ),
                 ),
               ),
-              const BigText.bold('Categorias'),
-              HorizontallyInfinityContainer(
-                noShadow: true,
-                child: SizedBox(
-                  height: 200.0,
-                  child: HorizontalListView(
-                    itemCount: widget.categories.length,
-                    itemCallback: (index) => Padding(
-                      padding: const EdgeInsets.only(right: 20.0),
-                      child: FlippableCategoryIcon(
-                        category: widget.categories[index],
-                        initiallyFlipped: selectedCategories
-                            .contains(widget.categories[index]),
-                        onFlip: () {
-                          selectedCategories.contains(widget.categories[index])
-                              ? selectedCategories
-                                  .remove(widget.categories[index])
-                              : selectedCategories
-                                  .add(widget.categories[index]);
+              ...widget.categories.isNotEmpty
+                  ? [
+                      const BigText.bold('Categorias'),
+                      CategoryFilter(
+                        categories: widget.categories,
+                        initiallySelected: widget.filteredCategories,
+                        onSelected: (cat) {
+                          selectedCategories.contains(cat)
+                              ? selectedCategories.remove(cat)
+                              : selectedCategories.add(cat);
                         },
                       ),
-                    ),
-                  ),
-                ),
-              ),
+                    ]
+                  : [],
               const BigText.bold('Valor'),
               const SizedBox(height: 20.0),
-              Align(
-                alignment: Alignment.center,
-                child: Text.rich(
-                  TextSpan(
-                    style: const TextStyle(fontSize: UmbrellaSizes.medium),
-                    children: [
-                      const TextSpan(text: 'De '),
-                      TextSpan(
-                        text: CurrencyFormat.format(values.start),
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const TextSpan(text: ' até '),
-                      TextSpan(
-                        text: CurrencyFormat.format(values.end),
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                  maxLines: 1,
-                ),
-              ),
-              RangeSlider(
-                values: values,
+              RangeValueFilter(
+                range: values,
                 min: minValue,
                 max: maxValue,
-                labels: RangeLabels(
-                  'De ${CurrencyFormat.format(values.start)}',
-                  'Até ${CurrencyFormat.format(values.end)}',
-                ),
-                onChanged: (newValues) {
-                  setState(() => values = _roundTo10Divisor(newValues));
+                onNewRange: (newValues) {
+                  setState(() => values = newValues);
                 },
               ),
               const Padding(
                 padding: EdgeInsets.only(top: 18.0, bottom: 12.0),
                 child: BigText.bold('Status'),
               ),
-              ...Status.values.map(
-                (s) => Row(
-                  children: [
-                    Checkbox.adaptive(
-                      value: selectedStatus.contains(s),
-                      onChanged: (newValue) {
-                        selectedStatus.contains(s)
-                            ? selectedStatus.remove(s)
-                            : selectedStatus.add(s);
+              PaiyableStatusFilter(
+                status: Status.values,
+                selectedStatus: selectedStatus,
+                onStatusChanged: (status) {
+                  selectedStatus.contains(status)
+                      ? selectedStatus.remove(status)
+                      : selectedStatus.add(status);
 
-                        setState(() {});
-                      },
-                    ),
-                    MediumText(s.adaptedName),
-                  ],
-                ),
+                  setState(() {});
+                },
               ),
               const Padding(
                 padding: EdgeInsets.only(top: 18.0, bottom: 12.0),
@@ -200,6 +160,29 @@ class _PaiyableFilterDialogState extends State<PaiyableFilterDialog> {
                   ],
                 ),
               ),
+              const SizedBox(height: 20),
+              GestureDetector(
+                onTap: () {
+                  setState(() => crescentSort = !crescentSort);
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const MediumText.bold('Ordenamento Crescente'),
+                    Transform.scale(
+                      scale: 1.2,
+                      child: Checkbox.adaptive(
+                        value: crescentSort,
+                        onChanged: (newValue) {
+                          setState(() {
+                            crescentSort = newValue!;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 40.0),
               PrimaryButton(
                 label: const BigText.bold('Aplicar'),
@@ -211,7 +194,7 @@ class _PaiyableFilterDialogState extends State<PaiyableFilterDialog> {
                     filteredStatus: selectedStatus,
                     range: values,
                     sortOption: sortOption,
-                    crescentSort: true,
+                    crescentSort: crescentSort,
                   );
                   Navigator.pop(context);
                 },
@@ -221,16 +204,6 @@ class _PaiyableFilterDialogState extends State<PaiyableFilterDialog> {
         ),
       ),
     );
-  }
-
-  RangeValues _roundTo10Divisor(RangeValues range) {
-    double min = range.start;
-    double max = range.end;
-
-    min = (min / 10).roundToDouble() * 10;
-    max = (max / 10).roundToDouble() * 10;
-
-    return RangeValues(min, max);
   }
 
   RangeValues _roundTo10Exponent(RangeValues range) {
@@ -255,8 +228,6 @@ class _PaiyableFilterDialogState extends State<PaiyableFilterDialog> {
     return RangeValues(min, max);
   }
 }
-
-enum PaiyableSortOption { byValue, byName, byDueDate }
 
 extension on PaiyableSortOption {
   String get adaptedName => switch (this) {

@@ -2,17 +2,31 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:result_dart/result_dart.dart';
 
 import '../../domain/entities/account.dart';
+import '../../domain/entities/category.dart';
 import '../../domain/entities/date.dart';
 import '../../domain/entities/expense.dart';
 import '../../domain/models/expense_model.dart';
 import '../../domain/models/finance_model.dart';
+import '../../domain/usecases/filters/filter_expenses.dart';
 import '../../domain/usecases/manage_expense.dart';
+import '../../domain/usecases/orders/order_expenses.dart';
 import '../../errors/errors.dart';
 
 class ExpenseStore extends Store<List<ExpenseModel>> {
-  ExpenseStore(this._manageExpense) : super([]);
+  ExpenseStore({
+    required ManageExpense manageExpense,
+    required FilterExpenses filterExpenses,
+    required OrderExpenses orderExpenses,
+  })  : _manageExpense = manageExpense,
+        _filterExpenses = filterExpenses,
+        _orderExpenses = orderExpenses,
+        super([]);
 
   final ManageExpense _manageExpense;
+  final FilterExpenses _filterExpenses;
+  final OrderExpenses _orderExpenses;
+
+  final List<ExpenseModel> all = [];
 
   AsyncResult<int, Fail> register(Expense expense, Account account) async {
     var result = await _manageExpense.register(expense, account);
@@ -42,6 +56,7 @@ class ExpenseStore extends Store<List<ExpenseModel>> {
       var result = results[i];
 
       if (result.isError()) {
+        all.clear();
         setError(result.exceptionOrNull()!);
         setLoading(false);
 
@@ -52,6 +67,12 @@ class ExpenseStore extends Store<List<ExpenseModel>> {
 
       models.addAll(expenses.map((e) => _toModel(e)));
     }
+
+    models = sort(models, PaiyableSortOption.byDueDate, isCrescent: true);
+
+    all
+      ..clear()
+      ..addAll(models);
 
     update(models);
     setLoading(false);
@@ -71,14 +92,74 @@ class ExpenseStore extends Store<List<ExpenseModel>> {
     );
 
     expensesResult.fold((expenses) {
-      var models = expenses.map((e) => _toModel(e));
+      var models = expenses.map((e) => _toModel(e)).toList();
 
-      update(models.toList());
+      models = sort(models, PaiyableSortOption.byDueDate, isCrescent: true);
+
+      all
+        ..clear()
+        ..addAll(models);
+
+      update(models);
     }, (fail) {
+      all.clear();
       setError(fail);
     });
 
     setLoading(false);
+  }
+
+  void filterByName(String name) {
+    var filtered = _filterExpenses.byName(models: all, searchName: name);
+
+    update(filtered);
+  }
+
+  List<ExpenseModel> filterByCategory(
+    List<ExpenseModel> models,
+    List<Category> categories,
+  ) {
+    return _filterExpenses.byCategory(models: models, categories: categories);
+  }
+
+  List<ExpenseModel> filterByStatus(
+    List<ExpenseModel> models,
+    List<Status> status,
+  ) {
+    return _filterExpenses.byStatus(models: models, status: status);
+  }
+
+  List<ExpenseModel> filterByRangeValue(
+    List<ExpenseModel> models,
+    double min,
+    double max,
+  ) {
+    return _filterExpenses.byRangeValue(models: models, min: min, max: max);
+  }
+
+  List<ExpenseModel> sort(
+    List<ExpenseModel> models,
+    PaiyableSortOption option, {
+    bool isCrescent = true,
+  }) {
+    return switch (option) {
+      PaiyableSortOption.byValue => _orderExpenses.byValue(
+          models,
+          isCrescent: isCrescent,
+        ),
+      PaiyableSortOption.byName => _orderExpenses.byName(
+          models,
+          isCrescent: isCrescent,
+        ),
+      PaiyableSortOption.byDueDate => _orderExpenses.byDueDate(
+          models,
+          isCrescent: isCrescent,
+        ),
+    };
+  }
+
+  void updateState(List<ExpenseModel> newState) {
+    update(newState);
   }
 
   ExpenseModel _toModel(Expense e) {

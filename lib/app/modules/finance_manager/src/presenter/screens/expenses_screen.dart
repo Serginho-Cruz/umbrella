@@ -1,52 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/tiles/finance_tile.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/extensions.dart';
+
 import '../../domain/entities/account.dart';
 import '../../domain/entities/category.dart';
+import '../../domain/models/expense_model.dart';
 import '../../domain/models/finance_model.dart';
-import '../../domain/models/income_model.dart';
 import '../../domain/usecases/orders/order_expenses.dart';
 import '../../utils/currency_format.dart';
 import '../controllers/account_controller.dart';
-import '../controllers/income_category_store.dart';
-import '../controllers/income_store.dart';
+import '../controllers/expense_category_store.dart';
+import '../controllers/expense_store.dart';
 import '../widgets/appbar/custom_app_bar.dart';
 import '../widgets/appbar/month_changer.dart';
 import '../widgets/buttons/navigation_button.dart';
-import '../widgets/layout/spaced.dart';
+import '../widgets/dialogs/umbrella_dialogs.dart';
 import '../widgets/filters/paiyable_filter.dart';
+import '../widgets/layout/spaced.dart';
+import '../widgets/layout/umbrella_scaffold.dart';
+import '../widgets/list_scoped_builder.dart';
 import '../widgets/others/value_container.dart';
 import '../widgets/selectors/account_selector.dart';
 import '../widgets/shimmer/shimmer_list_tile.dart';
 import '../widgets/texts/big_text.dart';
+import '../widgets/texts/medium_text.dart';
 import '../widgets/texts/small_disclaimer.dart';
 import '../widgets/texts/small_text.dart';
 import '../widgets/tiles/finance_status_tile.dart';
-import '../widgets/layout/umbrella_scaffold.dart';
-import '../widgets/list_scoped_builder.dart';
-import '../widgets/texts/medium_text.dart';
-import '../widgets/dialogs/umbrella_dialogs.dart';
+import '../widgets/tiles/finance_tile.dart';
 
-class IncomesScreen extends StatefulWidget {
-  const IncomesScreen({
+class ExpensesScreen extends StatefulWidget {
+  const ExpensesScreen({
     super.key,
-    required IncomeStore incomeStore,
     required AccountStore accountStore,
-    required IncomeCategoryStore categoryStore,
-  })  : _incomeStore = incomeStore,
-        _accountStore = accountStore,
+    required ExpenseStore expenseStore,
+    required ExpenseCategoryStore categoryStore,
+  })  : _accountStore = accountStore,
+        _expenseStore = expenseStore,
         _categoryStore = categoryStore;
 
-  final IncomeStore _incomeStore;
-  final IncomeCategoryStore _categoryStore;
   final AccountStore _accountStore;
+  final ExpenseStore _expenseStore;
+  final ExpenseCategoryStore _categoryStore;
 
   @override
-  State<IncomesScreen> createState() => _IncomesScreenState();
+  State<ExpensesScreen> createState() => _ExpensesScreenState();
 }
 
-class _IncomesScreenState extends State<IncomesScreen> {
+class _ExpensesScreenState extends State<ExpensesScreen> {
   final List<Category> filteredCategories = [];
   final List<Status> filteredStatus = [];
   double minValue = 0.0;
@@ -59,7 +60,7 @@ class _IncomesScreenState extends State<IncomesScreen> {
     super.initState();
     Future.delayed(Duration.zero, () {
       widget._categoryStore.getAll();
-      widget._incomeStore.when<void>(onState: (_) {
+      widget._expenseStore.when<void>(onState: (_) {
         setState(() {});
       });
     });
@@ -71,7 +72,7 @@ class _IncomesScreenState extends State<IncomesScreen> {
       store: widget._accountStore,
       loadingWidget: SafeArea(
         child: Scaffold(
-          appBar: CustomAppBar(title: 'Receitas', showBalances: false),
+          appBar: CustomAppBar(title: 'Despesas', showBalances: false),
           backgroundColor: Colors.white,
           body: const Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -116,11 +117,11 @@ class _IncomesScreenState extends State<IncomesScreen> {
       },
       onState: (ctx, accounts) {
         return UmbrellaScaffold(
-          appBarTitle: 'Receitas',
+          appBarTitle: 'Despesas',
           showMonthChanger: true,
           onMonthChange: (_, __) {
             Future.delayed(Duration.zero, () {
-              _fetchIncomes();
+              _fetchExpenses();
             });
           },
           child: Padding(
@@ -139,12 +140,12 @@ class _IncomesScreenState extends State<IncomesScreen> {
                       setState(
                         () => widget._accountStore.selectedAccount = selected,
                       );
-                      _fetchIncomes();
+                      _fetchExpenses();
                     }
                   },
                 ),
                 const SizedBox(height: 20.0),
-                ScopedBuilder<IncomeCategoryStore, List<Category>>(
+                ScopedBuilder<ExpenseCategoryStore, List<Category>>(
                   store: widget._categoryStore,
                   onLoading: (ctx) =>
                       const CircularProgressIndicator.adaptive(),
@@ -152,8 +153,8 @@ class _IncomesScreenState extends State<IncomesScreen> {
                   onState: (ctx, categories) => _mountFilter(categories),
                 ),
                 const SizedBox(height: 30.0),
-                ListScopedBuilder<IncomeStore, List<IncomeModel>>(
-                  store: widget._incomeStore,
+                ListScopedBuilder<ExpenseStore, List<ExpenseModel>>(
+                  store: widget._expenseStore,
                   onError: (ctx, fail) {
                     UmbrellaDialogs.showError(
                       context,
@@ -162,7 +163,7 @@ class _IncomesScreenState extends State<IncomesScreen> {
                     var month = MonthChanger.currentMonthAndYear.monthName;
                     return Center(
                       child: MediumText(
-                          'Erro ao obter as Receitas do Mês de $month'),
+                          'Erro ao obter as Despesas do Mês de $month'),
                     );
                   },
                   loadingWidget: Column(
@@ -181,10 +182,10 @@ class _IncomesScreenState extends State<IncomesScreen> {
                         MonthChanger.currentMonthAndYear.monthName;
                     if (wasFiltered) {
                       text =
-                          'Nenhuma Receita com os filtros atuais para o mês de $monthName';
+                          'Nenhuma Despesa com os filtros atuais para o mês de $monthName';
                     } else {
                       text =
-                          'Nenhuma Receita encontrada para o mês de $monthName';
+                          'Nenhuma Despesa encontrada para o mês de $monthName';
                     }
 
                     return SizedBox(
@@ -193,26 +194,26 @@ class _IncomesScreenState extends State<IncomesScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.attach_money_rounded, size: 60.0),
+                          const Icon(Icons.money_off_rounded, size: 60.0),
                           const SizedBox(height: 20.0),
                           MediumText.bold(text, textAlign: TextAlign.center),
                         ],
                       ),
                     );
                   },
-                  onState: (ctx, incomes) => Column(
+                  onState: (ctx, expenses) => Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       ...List.generate(
-                        incomes.length,
+                        expenses.length,
                         (i) => FinanceTile(
-                          model: incomes[i],
+                          model: expenses[i],
                           roundedOnTop: i == 0,
                         ),
                       ),
                       const FinanceStatusTile(),
                       const SmallDisclaimer(
-                        'Aperte duas vezes em uma receita para abrir o menu de opções',
+                        'Aperte duas vezes em uma despesa para abrir o menu de opções',
                         textAlign: TextAlign.center,
                         maxLines: 2,
                       ),
@@ -224,8 +225,8 @@ class _IncomesScreenState extends State<IncomesScreen> {
                   first: ValueContainer(
                     text: 'Total',
                     valueWidget:
-                        ListScopedBuilder<IncomeStore, List<IncomeModel>>(
-                      store: widget._incomeStore,
+                        ListScopedBuilder<ExpenseStore, List<ExpenseModel>>(
+                      store: widget._expenseStore,
                       loadingWidget: const SmallText.bold('Carregando...'),
                       onError: (ctx, _) => const MediumText.bold('Erro'),
                       onEmptyState: () =>
@@ -243,8 +244,8 @@ class _IncomesScreenState extends State<IncomesScreen> {
                   second: ValueContainer(
                     text: 'Pago',
                     valueWidget:
-                        ListScopedBuilder<IncomeStore, List<IncomeModel>>(
-                      store: widget._incomeStore,
+                        ListScopedBuilder<ExpenseStore, List<ExpenseModel>>(
+                      store: widget._expenseStore,
                       loadingWidget: const SmallText.bold('Carregando...'),
                       onError: (ctx, _) => const MediumText.bold('Erro'),
                       onEmptyState: () =>
@@ -266,8 +267,8 @@ class _IncomesScreenState extends State<IncomesScreen> {
                     context: context,
                     height: 60.0,
                     width: 180.0,
-                    label: const MediumText.bold('Nova Receita'),
-                    route: '/finance_manager/income/add',
+                    label: const MediumText.bold('Nova Despesa'),
+                    route: '/finance_manager/expense/add',
                     isPrimaryColor: true,
                     icon: const Icon(
                       Icons.add,
@@ -278,7 +279,7 @@ class _IncomesScreenState extends State<IncomesScreen> {
                 ),
                 Spaced(
                   padding: const EdgeInsets.only(bottom: 25.0),
-                  first: NavigationButton.toExpenses(context, height: 60.0),
+                  first: NavigationButton.toIncomes(context, height: 60.0),
                   second: NavigationButton.toCards(context, height: 60.0),
                 ),
               ],
@@ -289,7 +290,7 @@ class _IncomesScreenState extends State<IncomesScreen> {
     );
   }
 
-  void _fetchIncomes() {
+  void _fetchExpenses() {
     if (widget._accountStore.state.isEmpty) {
       Navigator.pushReplacementNamed(context, '/finance_manager/');
       return;
@@ -302,12 +303,12 @@ class _IncomesScreenState extends State<IncomesScreen> {
     wasFiltered = false;
 
     selectedAccount != null
-        ? widget._incomeStore.getAllOf(
+        ? widget._expenseStore.getAllOf(
             month: current.month,
             year: current.year,
             account: selectedAccount,
           )
-        : widget._incomeStore.getForAll(
+        : widget._expenseStore.getForAll(
             accounts: widget._accountStore.state,
             month: current.month,
             year: current.year,
@@ -315,29 +316,29 @@ class _IncomesScreenState extends State<IncomesScreen> {
   }
 
   Widget _mountFilter([List<Category> categories = const []]) {
-    var (min, max) = _getMinAndMaxValues(widget._incomeStore.all);
+    var (min, max) = _getMinAndMaxValues(widget._expenseStore.all);
 
     if (!wasFiltered) {
       minValue = min;
       maxValue = max;
     }
 
-    return PaiyableFilter<IncomeModel>(
-      models: widget._incomeStore.all,
-      filterName: widget._incomeStore.filterByName,
+    return PaiyableFilter<ExpenseModel>(
+      models: widget._expenseStore.all,
+      filterName: widget._expenseStore.filterByName,
       filterByCategory: (models, cats) {
         setState(() => filteredCategories
           ..clear()
           ..addAll(cats));
 
-        return widget._incomeStore.filterByCategory(models, cats);
+        return widget._expenseStore.filterByCategory(models, cats);
       },
       filterByStatus: (models, status) {
         setState(() => filteredStatus
           ..clear()
           ..addAll(status));
 
-        return widget._incomeStore.filterByStatus(models, status);
+        return widget._expenseStore.filterByStatus(models, status);
       },
       filterByValue: (models, minimal, maximum) {
         setState(() {
@@ -346,7 +347,7 @@ class _IncomesScreenState extends State<IncomesScreen> {
           maxValue = maximum;
         });
 
-        return widget._incomeStore.filterByRangeValue(
+        return widget._expenseStore.filterByRangeValue(
           models,
           minimal,
           maximum,
@@ -354,15 +355,14 @@ class _IncomesScreenState extends State<IncomesScreen> {
       },
       sort: (models, option, isCrescent) {
         setState(() => sortOption = option);
-        sortOption = option;
-        return widget._incomeStore.sort(
+        return widget._expenseStore.sort(
           models,
           option,
           isCrescent: isCrescent,
         );
       },
       onFiltersApplied: (models) {
-        widget._incomeStore.updateState(models);
+        widget._expenseStore.updateState(models);
       },
       filteredStatus: filteredStatus,
       filteredValues: (minValue, maxValue),
@@ -374,7 +374,7 @@ class _IncomesScreenState extends State<IncomesScreen> {
     );
   }
 
-  (double, double) _getMinAndMaxValues(List<IncomeModel> models) {
+  (double, double) _getMinAndMaxValues(List<ExpenseModel> models) {
     var copy = models.getRange(0, models.length).toList();
     copy.sort((a, b) => a.totalValue.compareTo(b.totalValue));
 

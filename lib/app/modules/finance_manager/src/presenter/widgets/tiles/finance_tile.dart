@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../domain/entities/date.dart';
 import '../../../domain/entities/payment_method.dart';
+import '../../../domain/models/expense_model.dart';
 import '../../../domain/models/finance_model.dart';
 import '../../../utils/umbrella_palette.dart';
 import '../texts/big_text.dart';
@@ -11,6 +12,7 @@ import 'category_row.dart';
 import '../layout/spaced.dart';
 import '../icons/status_icon.dart';
 
+//TODO: Implement double tap detector. This action will open a menu with options. Like 'update', 'see in details'
 class FinanceTile extends StatefulWidget {
   const FinanceTile({
     super.key,
@@ -44,7 +46,7 @@ class _FinanceTileState extends State<FinanceTile> {
         ),
       ),
       child: ExpansionTile(
-        leading: StatusIcon(status: widget.model.status, size: 50.0),
+        leading: StatusIcon(status: widget.model.status, size: 40.0),
         title: BigText.bold(
           widget.model.name,
           maxLines: 1,
@@ -58,7 +60,7 @@ class _FinanceTileState extends State<FinanceTile> {
         ),
         tilePadding: const EdgeInsets.symmetric(
           horizontal: 10.0,
-          vertical: 12.0,
+          vertical: 4.0,
         ),
         childrenPadding: const EdgeInsets.all(10.0),
         shape: const Border(),
@@ -93,6 +95,13 @@ class _FinanceTileState extends State<FinanceTile> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              if (widget.model.personName != null)
+                Spaced(
+                  first: MediumText(
+                    widget.model is ExpenseModel ? 'Devedor' : 'Devo isso a',
+                  ),
+                  second: MediumText.bold(widget.model.personName!),
+                ),
             ],
           ),
           CategoryRow(category: widget.model.category),
