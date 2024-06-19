@@ -19,7 +19,10 @@ class FilterIncomesImpl extends FilterFinanceModel<IncomeModel>
     required List<IncomeModel> models,
     required String searchName,
   }) =>
-      models
-          .where((i) => i.name.toLowerCase().contains(searchName.toLowerCase()))
-          .toList();
+      searchName.isEmpty
+          ? models
+          : models
+              .where((i) =>
+                  i.name.toLowerCase().contains(searchName.toLowerCase()))
+              .toList();
 }

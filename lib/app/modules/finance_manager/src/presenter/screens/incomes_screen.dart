@@ -4,8 +4,8 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/wi
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/extensions.dart';
 import '../../domain/entities/account.dart';
 import '../../domain/entities/category.dart';
-import '../../domain/models/finance_model.dart';
 import '../../domain/models/income_model.dart';
+import '../../domain/models/status.dart';
 import '../../domain/usecases/orders/order_expenses.dart';
 import '../../utils/currency_format.dart';
 import '../controllers/account_controller.dart';
@@ -14,9 +14,9 @@ import '../controllers/income_store.dart';
 import '../widgets/appbar/custom_app_bar.dart';
 import '../widgets/appbar/month_changer.dart';
 import '../widgets/buttons/navigation_button.dart';
+import '../widgets/buttons/navigation_icon_button.dart';
 import '../widgets/layout/spaced.dart';
 import '../widgets/filters/paiyable_filter.dart';
-import '../widgets/others/value_container.dart';
 import '../widgets/selectors/account_selector.dart';
 import '../widgets/shimmer/shimmer_list_tile.dart';
 import '../widgets/texts/big_text.dart';
@@ -123,6 +123,9 @@ class _IncomesScreenState extends State<IncomesScreen> {
               _fetchIncomes();
             });
           },
+          floatingActionButton: const NavigationIconButton(
+            route: '/finance_manager/income/add',
+          ),
           child: Padding(
             padding: EdgeInsets.symmetric(
               horizontal: MediaQuery.sizeOf(context).width * 0.05,
@@ -144,6 +147,32 @@ class _IncomesScreenState extends State<IncomesScreen> {
                   },
                 ),
                 const SizedBox(height: 20.0),
+                _mountTotalText(
+                  text: 'Total em Receitas: ',
+                  calcTotal: (models) {
+                    double value = 0.00;
+
+                    for (var element in models) {
+                      value = (value + element.totalValue).roundToDecimal();
+                    }
+
+                    return value;
+                  },
+                ),
+                const SizedBox(height: 10.0),
+                _mountTotalText(
+                  text: 'Total Pago: ',
+                  calcTotal: (models) {
+                    double value = 0.00;
+
+                    for (var element in models) {
+                      value = (value + element.paidValue).roundToDecimal();
+                    }
+
+                    return value;
+                  },
+                ),
+                const SizedBox(height: 30.0),
                 ScopedBuilder<IncomeCategoryStore, List<Category>>(
                   store: widget._categoryStore,
                   onLoading: (ctx) =>
@@ -219,67 +248,10 @@ class _IncomesScreenState extends State<IncomesScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 40.0),
                 Spaced(
-                  first: ValueContainer(
-                    text: 'Total',
-                    valueWidget:
-                        ListScopedBuilder<IncomeStore, List<IncomeModel>>(
-                      store: widget._incomeStore,
-                      loadingWidget: const SmallText.bold('Carregando...'),
-                      onError: (ctx, _) => const MediumText.bold('Erro'),
-                      onEmptyState: () =>
-                          MediumText.bold(CurrencyFormat.format(0.00)),
-                      onState: (ctx, incomes) {
-                        double value = 0.00;
-                        for (var element in incomes) {
-                          value = (value + element.totalValue).roundToDecimal();
-                        }
-
-                        return MediumText.bold(CurrencyFormat.format(value));
-                      },
-                    ),
-                  ),
-                  second: ValueContainer(
-                    text: 'Pago',
-                    valueWidget:
-                        ListScopedBuilder<IncomeStore, List<IncomeModel>>(
-                      store: widget._incomeStore,
-                      loadingWidget: const SmallText.bold('Carregando...'),
-                      onError: (ctx, _) => const MediumText.bold('Erro'),
-                      onEmptyState: () =>
-                          MediumText.bold(CurrencyFormat.format(0.00)),
-                      onState: (ctx, incomes) {
-                        double value = 0.00;
-                        for (var element in incomes) {
-                          value = (value + element.paidValue).roundToDecimal();
-                        }
-
-                        return MediumText.bold(CurrencyFormat.format(value));
-                      },
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 60.0, bottom: 30.0),
-                  child: NavigationButton(
-                    context: context,
-                    height: 60.0,
-                    width: 180.0,
-                    label: const MediumText.bold('Nova Receita'),
-                    route: '/finance_manager/income/add',
-                    isPrimaryColor: true,
-                    icon: const Icon(
-                      Icons.add,
-                      color: Colors.white,
-                      size: 28.0,
-                    ),
-                  ),
-                ),
-                Spaced(
-                  padding: const EdgeInsets.only(bottom: 25.0),
-                  first: NavigationButton.toExpenses(context, height: 60.0),
-                  second: NavigationButton.toCards(context, height: 60.0),
+                  padding: const EdgeInsets.only(top: 40.0, bottom: 25.0),
+                  first: NavigationButton.toExpenses(context, height: 50.0),
+                  second: NavigationButton.toCards(context, height: 50.0),
                 ),
               ],
             ),
@@ -312,6 +284,29 @@ class _IncomesScreenState extends State<IncomesScreen> {
             month: current.month,
             year: current.year,
           );
+  }
+
+  Widget _mountTotalText({
+    required String text,
+    required double Function(List<IncomeModel>) calcTotal,
+  }) {
+    return Row(
+      children: [
+        MediumText(text),
+        const SizedBox(width: 10.0),
+        ListScopedBuilder<IncomeStore, List<IncomeModel>>(
+          store: widget._incomeStore,
+          loadingWidget: const SmallText.bold('Carregando...'),
+          onError: (ctx, _) => const MediumText.bold('Erro'),
+          onEmptyState: () => MediumText.bold(CurrencyFormat.format(0.00)),
+          onState: (ctx, incomes) {
+            double value = calcTotal(incomes);
+
+            return MediumText.bold(CurrencyFormat.format(value));
+          },
+        ),
+      ],
+    );
   }
 
   Widget _mountFilter([List<Category> categories = const []]) {

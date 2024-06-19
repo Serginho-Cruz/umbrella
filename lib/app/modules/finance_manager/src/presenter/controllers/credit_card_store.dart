@@ -4,19 +4,25 @@ import 'package:umbrella_echonomics/app/modules/auth/src/presenter/controllers/a
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/manage_credit_card.dart';
 
 import '../../domain/entities/credit_card.dart';
+import '../../domain/usecases/filters/filter_credit_card.dart';
 import '../../errors/errors.dart';
 
 class CreditCardStore extends Store<List<CreditCard>> {
   CreditCardStore({
     required ManageCreditCard manageCreditCard,
     required AuthController authController,
+    required FilterCreditCard filterCards,
   })  : _manageCreditCard = manageCreditCard,
         _authController = authController,
+        _filterCards = filterCards,
         super([]);
 
   final ManageCreditCard _manageCreditCard;
   final AuthController _authController;
+  final FilterCreditCard _filterCards;
+
   bool _hasAll = false;
+  List<CreditCard> all = [];
 
   AsyncResult<int, Fail> register(CreditCard card) async {
     var result = await _manageCreditCard.register(card, _authController.user!);
@@ -39,10 +45,18 @@ class CreditCardStore extends Store<List<CreditCard>> {
     result.fold((cards) {
       update(cards, force: true);
       _hasAll = true;
+      all
+        ..clear()
+        ..addAll(cards);
     }, (error) {
+      all.clear();
       setError(error);
     });
 
     setLoading(false);
+  }
+
+  void filterByName(String name) {
+    update(_filterCards.byName(all, name));
   }
 }

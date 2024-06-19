@@ -1,6 +1,7 @@
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/filters/filter_expenses.dart';
 
+import 'src/data/usecases/filters/filter_credit_cards.dart';
 import 'src/data/usecases/filters/filter_incomes.dart';
 import 'src/data/usecases/gets/get_expense_categories.dart';
 import 'src/data/usecases/manage_account.dart';
@@ -9,6 +10,7 @@ import 'src/data/usecases/manage_income.dart';
 import 'src/data/usecases/manage_installment.dart';
 import 'src/data/usecases/orders/order_expenses.dart';
 import 'src/data/usecases/orders/order_incomes.dart';
+import 'src/domain/usecases/filters/filter_credit_card.dart';
 import 'src/domain/usecases/filters/filter_expenses.dart';
 import 'src/domain/usecases/filters/filter_incomes.dart';
 import 'src/domain/usecases/gets/get_expense_categories.dart';
@@ -61,6 +63,7 @@ abstract class UsecasesBindings {
 
     i.addLazySingleton<FilterExpenses>(FilterExpensesImpl.new);
     i.addLazySingleton<FilterIncomes>(FilterIncomesImpl.new);
+    i.addLazySingleton<FilterCreditCard>(FilterCreditCardsImpl.new);
 
     i.addLazySingleton<OrderIncomes>(OrderIncomesImpl.new);
     i.addLazySingleton<OrderExpenses>(OrderExpensesImpl.new);

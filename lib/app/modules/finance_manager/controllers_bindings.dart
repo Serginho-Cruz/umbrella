@@ -13,7 +13,11 @@ abstract class ControllersBindings {
         () => AccountStore(authController: i(), manageAccount: i()));
 
     i.addLazySingleton<CreditCardStore>(
-      () => CreditCardStore(manageCreditCard: i(), authController: i()),
+      () => CreditCardStore(
+        manageCreditCard: i(),
+        authController: i(),
+        filterCards: i(),
+      ),
     );
 
     i.addLazySingleton<ExpenseCategoryStore>(() => ExpenseCategoryStore(i()));

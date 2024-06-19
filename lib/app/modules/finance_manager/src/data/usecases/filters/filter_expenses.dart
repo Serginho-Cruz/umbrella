@@ -10,9 +10,12 @@ class FilterExpensesImpl extends FilterFinanceModel<ExpenseModel>
     required List<ExpenseModel> models,
     required String searchName,
   }) =>
-      models
-          .where((e) => e.name.toLowerCase().contains(searchName.toLowerCase()))
-          .toList();
+      searchName.isEmpty
+          ? models
+          : models
+              .where((e) =>
+                  e.name.toLowerCase().contains(searchName.toLowerCase()))
+              .toList();
 
   @override
   List<ExpenseModel> byCategory({

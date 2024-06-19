@@ -1,16 +1,7 @@
 import '../entities/category.dart';
 import '../entities/date.dart';
 import '../entities/frequency.dart';
-
-enum Status { okay, inTime, overdue }
-
-extension StatusName on Status {
-  String get adaptedName => switch (this) {
-        Status.okay => 'Paga',
-        Status.inTime => 'Em Tempo',
-        Status.overdue => 'Vencida',
-      };
-}
+import 'status.dart';
 
 abstract class FinanceModel {
   final int id;

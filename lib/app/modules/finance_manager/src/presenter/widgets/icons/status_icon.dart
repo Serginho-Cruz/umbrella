@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../domain/models/finance_model.dart';
+import '../../../domain/models/status.dart';
 
 class StatusIcon extends StatelessWidget {
   const StatusIcon({super.key, required this.status, this.size = 30.0});

@@ -1,4 +1,5 @@
 import '../../../domain/models/finance_model.dart';
+import '../../../domain/models/status.dart';
 
 abstract class FilterFinanceModel<T extends FinanceModel> {
   List<T> byStatus({required List<T> models, required List<Status> status}) {

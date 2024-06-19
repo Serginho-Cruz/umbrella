@@ -5,7 +5,7 @@ import '../texts/medium_text.dart';
 import 'umbrella_button.dart';
 
 class NavigationButton extends UmbrellaButton {
-  NavigationButton({
+  NavigationButton._({
     super.key,
     required BuildContext context,
     required String route,
@@ -35,7 +35,7 @@ class NavigationButton extends UmbrellaButton {
     double? width,
     Key? key,
   }) {
-    return NavigationButton(
+    return NavigationButton._(
       key: key,
       context: context,
       route: '/finance_manager/expense',
@@ -56,7 +56,7 @@ class NavigationButton extends UmbrellaButton {
     double? height,
     double? width,
   }) {
-    return NavigationButton(
+    return NavigationButton._(
       key: key,
       context: context,
       isPrimaryColor: isPrimaryColor,
@@ -77,7 +77,7 @@ class NavigationButton extends UmbrellaButton {
     double? height,
     double? width,
   }) {
-    return NavigationButton(
+    return NavigationButton._(
       key: key,
       context: context,
       route: '/finance_manager/card',

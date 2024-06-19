@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../domain/entities/category.dart';
 import '../../../domain/models/finance_model.dart';
+import '../../../domain/models/status.dart';
 import '../../../domain/usecases/orders/order_expenses.dart';
 import '../buttons/primary_button.dart';
 import '../filters/category_filter.dart';

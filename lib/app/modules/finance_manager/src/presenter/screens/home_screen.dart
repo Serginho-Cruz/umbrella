@@ -25,17 +25,20 @@ import '../widgets/texts/title_text.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
-    required this.incomeStore,
-    required this.expenseStore,
-    required this.creditCardStore,
-    required this.accountStore,
     super.key,
-  });
+    required IncomeStore incomeStore,
+    required ExpenseStore expenseStore,
+    required CreditCardStore creditCardStore,
+    required AccountStore accountStore,
+  })  : _accountStore = accountStore,
+        _incomeStore = incomeStore,
+        _expenseStore = expenseStore,
+        _creditCardStore = creditCardStore;
 
-  final AccountStore accountStore;
-  final IncomeStore incomeStore;
-  final ExpenseStore expenseStore;
-  final CreditCardStore creditCardStore;
+  final AccountStore _accountStore;
+  final IncomeStore _incomeStore;
+  final ExpenseStore _expenseStore;
+  final CreditCardStore _creditCardStore;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -48,10 +51,10 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
-    selectedAccount = widget.accountStore.selectedAccount;
+    selectedAccount = widget._accountStore.selectedAccount;
     Future.delayed(Duration.zero, () {
-      widget.creditCardStore.getAll();
-      widget.accountStore.getAll();
+      widget._creditCardStore.getAll();
+      widget._accountStore.getAll();
     });
   }
 
@@ -59,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: ListScopedBuilder<AccountStore, List<Account>>(
-        store: widget.accountStore,
+        store: widget._accountStore,
         loadingWidget: Scaffold(
           appBar: CustomAppBar(title: 'Home', showBalances: false),
           body: Center(
@@ -116,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   _makeSection(
                     title: 'Receitas',
                     child: ListScopedBuilder<IncomeStore, List<IncomeModel>>(
-                      store: widget.incomeStore,
+                      store: widget._incomeStore,
                       loadingWidget: SizedBox(
                         height: 325,
                         child: _makeShimmerList(),
@@ -137,7 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   _makeSection(
                     title: 'Despesas',
                     child: ListScopedBuilder<ExpenseStore, List<ExpenseModel>>(
-                      store: widget.expenseStore,
+                      store: widget._expenseStore,
                       loadingWidget: SizedBox(
                         height: 325,
                         child: _makeShimmerList(),
@@ -158,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   _makeSection(
                     title: 'Cartões de Crédito',
                     child: ListScopedBuilder<CreditCardStore, List<CreditCard>>(
-                      store: widget.creditCardStore,
+                      store: widget._creditCardStore,
                       loadingWidget: SizedBox(
                         height: 240,
                         child: _makeShimmerList(width: 275, height: 150),
@@ -194,13 +197,13 @@ class _HomeScreenState extends State<HomeScreen> {
   void _fetch(int month, int year, List<Account> accounts) {
     if (selectedAccount != null) {
       Future(() {
-        widget.expenseStore.getAllOf(
+        widget._expenseStore.getAllOf(
           account: selectedAccount!,
           month: month,
           year: year,
         );
 
-        widget.incomeStore.getAllOf(
+        widget._incomeStore.getAllOf(
           account: selectedAccount!,
           month: month,
           year: year,
@@ -208,13 +211,13 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     } else {
       Future(() {
-        widget.expenseStore.getForAll(
+        widget._expenseStore.getForAll(
           accounts: accounts,
           month: month,
           year: year,
         );
 
-        widget.incomeStore.getForAll(
+        widget._incomeStore.getForAll(
           accounts: accounts,
           month: month,
           year: year,

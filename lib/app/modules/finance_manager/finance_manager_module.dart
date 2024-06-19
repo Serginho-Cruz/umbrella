@@ -7,6 +7,7 @@ import 'controllers_bindings.dart';
 import 'datasources_bindings.dart';
 import 'repositories_bindings.dart';
 import 'routes.dart';
+import 'src/presenter/screens/credit_cards_screen.dart';
 import 'src/presenter/screens/expenses_screen.dart';
 import 'usecases_bindings.dart';
 
@@ -52,6 +53,14 @@ class FinanceManagerModule extends Module {
           accountStore: Modular.get(),
           categoryStore: Modular.get(),
           expenseStore: Modular.get(),
+        ),
+      ),
+    );
+    r.add(
+      ChildRoute(
+        '/card',
+        child: (context) => CreditCardsScreen(
+          cardStore: Modular.get(),
         ),
       ),
     );

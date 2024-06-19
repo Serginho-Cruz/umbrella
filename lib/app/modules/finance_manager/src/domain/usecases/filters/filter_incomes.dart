@@ -1,6 +1,6 @@
 import '../../entities/category.dart';
-import '../../models/finance_model.dart';
 import '../../models/income_model.dart';
+import '../../models/status.dart';
 
 abstract interface class FilterIncomes {
   List<IncomeModel> byName({

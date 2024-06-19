@@ -1,6 +1,6 @@
 import '../../entities/category.dart';
 import '../../models/expense_model.dart';
-import '../../models/finance_model.dart';
+import '../../models/status.dart';
 
 abstract interface class FilterExpenses {
   List<ExpenseModel> byName({

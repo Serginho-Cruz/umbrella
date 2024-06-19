@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../domain/models/finance_model.dart';
+import '../../../domain/models/status.dart';
 import '../texts/medium_text.dart';
 
 class PaiyableStatusFilter extends StatelessWidget {
