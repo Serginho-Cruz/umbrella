@@ -2,8 +2,8 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/dataso
 import 'package:umbrella_echonomics/app/modules/auth/src/domain/entities/user.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/credit_card.dart';
 
-import '../../domain/entities/account.dart';
-import '../../errors/errors.dart';
+import '../../../domain/entities/account.dart';
+import '../../../errors/errors.dart';
 
 class TemporaryCreditCardDatasource implements CreditCardDatasource {
   final List<CreditCard> _cards = [
@@ -11,31 +11,31 @@ class TemporaryCreditCardDatasource implements CreditCardDatasource {
       id: 1,
       name: 'Marisa',
       annuity: 0.00,
-      color: '45ACFF',
+      color: 'FFBF6DFF',
       cardInvoiceClosingDay: 9,
       cardInvoiceDueDay: 18,
       accountToDiscountInvoice:
-          Account(id: 50, actualBalance: 200.00, name: 'Banco do Brasil'),
+          Account(id: 2, actualBalance: 200.00, name: 'Banco do Brasil'),
     ),
     const CreditCard(
       id: 2,
       name: 'Banco do Brasil',
       annuity: 0.00,
-      color: '12601A',
+      color: 'FF6FDBFF',
       cardInvoiceClosingDay: 27,
       cardInvoiceDueDay: 7,
       accountToDiscountInvoice:
-          Account(id: 50, actualBalance: 200.00, name: 'Banco do Brasil'),
+          Account(id: 2, actualBalance: 200.00, name: 'Banco do Brasil'),
     ),
     const CreditCard(
       id: 3,
       name: 'Daju',
       annuity: 10.00,
-      color: '45ACFF',
+      color: 'FFFF5252',
       cardInvoiceClosingDay: 2,
       cardInvoiceDueDay: 12,
       accountToDiscountInvoice:
-          Account(id: 49, actualBalance: 200.00, name: 'Conta Padrão'),
+          Account(id: 1, actualBalance: 200.00, name: 'Conta Padrão'),
     ),
   ];
   @override

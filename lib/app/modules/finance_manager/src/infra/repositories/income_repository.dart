@@ -17,9 +17,9 @@ class IncomeRepositoryImpl implements IncomeRepository {
   IncomeRepositoryImpl(this._datasource);
 
   @override
-  AsyncResult<int, Fail> create(Income income, Account account) async {
+  AsyncResult<int, Fail> create(Income income) async {
     try {
-      var newid = await _datasource.create(income, account);
+      var newid = await _datasource.create(income);
       return Success(newid);
     } on Fail catch (f) {
       return Failure(f);

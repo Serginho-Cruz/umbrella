@@ -5,16 +5,20 @@ import '../entities/account.dart';
 import '../entities/expense.dart';
 
 abstract interface class ManageExpense {
-  AsyncResult<int, Fail> register(Expense expense, Account account);
+  AsyncResult<int, Fail> register(Expense expense);
   AsyncResult<Unit, Fail> update({
     required Expense oldExpense,
     required Expense newExpense,
-    required Account account,
   });
+  AsyncResult<Unit, Fail> updateValue(Expense expense, double newValue);
+  AsyncResult<Unit, Fail> switchAccount(
+    Expense expense,
+    Account destinyAccount,
+  );
   AsyncResult<List<Expense>, Fail> getAllOf({
     required int month,
     required int year,
     required Account account,
   });
-  AsyncResult<Unit, Fail> delete(Expense expense, Account account);
+  AsyncResult<Unit, Fail> delete(Expense expense);
 }

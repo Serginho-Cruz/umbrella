@@ -14,7 +14,7 @@ class InvoiceRepositoryImpl implements InvoiceRepository {
   InvoiceRepositoryImpl(this._invoiceDatasource);
 
   @override
-  Future<Result<int, Fail>> generateOfCard(CreditCard card) async {
+  AsyncResult<int, Fail> generateOfCard(CreditCard card) async {
     try {
       var id = await _invoiceDatasource.generateOfCard(card);
       return Success(id);
@@ -26,13 +26,19 @@ class InvoiceRepositoryImpl implements InvoiceRepository {
   }
 
   @override
-  Future<Result<Unit, Fail>> update(Invoice newInvoice) {
-    // TODO: implement update
-    throw UnimplementedError();
+  AsyncResult<Unit, Fail> update(Invoice newInvoice) async {
+    try {
+      await _invoiceDatasource.update(newInvoice);
+      return const Success(unit);
+    } on Fail catch (f) {
+      return Failure(f);
+    } catch (e) {
+      return Failure(GenericError());
+    }
   }
 
   @override
-  Future<Result<Unit, Fail>> changeInvoicesFromCard({
+  AsyncResult<Unit, Fail> changeInvoicesFromCard({
     required CreditCard originCard,
     required CreditCard destinyCard,
   }) {
@@ -41,29 +47,46 @@ class InvoiceRepositoryImpl implements InvoiceRepository {
   }
 
   @override
-  Future<Result<Invoice, Fail>> getActualOfCard(CreditCard card) {
+  AsyncResult<Invoice, Fail> getActualOfCard(CreditCard card) {
     // TODO: implement getActualOfCard
     throw UnimplementedError();
   }
 
   @override
-  Future<Result<List<Invoice>, Fail>> getAllOf({
+  AsyncResult<List<Invoice>, Fail> getAllOf({
     required int month,
     required int year,
     required Account account,
-  }) {
-    // TODO: implement getAllOf
-    throw UnimplementedError();
+  }) async {
+    try {
+      var invoices = await _invoiceDatasource.getAllOf(
+        month: month,
+        year: year,
+        account: account,
+      );
+
+      return Success(invoices);
+    } on Fail catch (f) {
+      return Failure(f);
+    } catch (e) {
+      return Failure(GenericError());
+    }
   }
 
   @override
-  Future<Result<List<Invoice>, Fail>> getAllOfCard(CreditCard card) {
-    // TODO: implement getAllOfCard
-    throw UnimplementedError();
+  AsyncResult<List<Invoice>, Fail> getAllOfCard(CreditCard card) async {
+    try {
+      var invoices = await _invoiceDatasource.getAllOfCard(card);
+      return Success(invoices);
+    } on Fail catch (fail) {
+      return Failure(fail);
+    } catch (e) {
+      return GenericError().toFailure();
+    }
   }
 
   @override
-  Future<Result<Invoice, Fail>> getFirstOpenInDateOfCard({
+  AsyncResult<Invoice, Fail> getFirstOpenInDateOfCard({
     required Date date,
     required CreditCard card,
   }) {

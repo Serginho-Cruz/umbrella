@@ -1,5 +1,5 @@
-import '../../domain/entities/category.dart';
-import '../../infra/datasources/expense_category_datasource.dart';
+import '../../../domain/entities/category.dart';
+import '../../../infra/datasources/expense_category_datasource.dart';
 
 class TemporaryExpenseCategoryDatasource implements ExpenseCategoryDatasource {
   @override

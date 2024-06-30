@@ -3,10 +3,10 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entit
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/datasources/payment_method_datasource.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/extensions.dart';
 
-import '../../domain/entities/expense.dart';
-import '../../domain/entities/income.dart';
-import '../../domain/entities/invoice.dart';
-import '../../errors/errors.dart';
+import '../../../domain/entities/expense.dart';
+import '../../../domain/entities/income.dart';
+import '../../../domain/entities/invoice.dart';
+import '../../../errors/errors.dart';
 
 enum PaiyableType { income, expense, invoice }
 

@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
 
+import 'account.dart';
 import 'category.dart';
 import 'frequency.dart';
 import 'paiyable.dart';
@@ -18,6 +19,7 @@ class Expense extends Paiyable with EquatableMixin {
     required super.paidValue,
     required super.remainingValue,
     required super.dueDate,
+    required super.account,
     super.paymentDate,
     this.personName,
     required this.category,
@@ -35,6 +37,7 @@ class Expense extends Paiyable with EquatableMixin {
         dueDate,
         personName,
         category,
+        account,
         frequency,
       ];
 
@@ -49,6 +52,7 @@ class Expense extends Paiyable with EquatableMixin {
     String? personName,
     Category? category,
     Frequency? frequency,
+    Account? account,
   }) {
     return Expense(
       id: id ?? this.id,
@@ -60,6 +64,7 @@ class Expense extends Paiyable with EquatableMixin {
       paymentDate: paymentDate ?? this.paymentDate,
       personName: personName ?? this.personName,
       category: category ?? this.category,
+      account: account ?? this.account,
       frequency: frequency ?? this.frequency,
     );
   }

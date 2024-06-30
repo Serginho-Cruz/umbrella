@@ -3,6 +3,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/reposit
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/account.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/income.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/extensions.dart';
 
 import '../../domain/entities/date.dart';
 import '../../domain/entities/frequency.dart';
@@ -20,15 +21,15 @@ class ManageIncomeImpl implements ManageIncome {
         _balanceRepository = balanceRepository;
 
   @override
-  AsyncResult<int, Fail> register(Income income, Account account) async {
-    final result = await _incomeRepository.create(income, account);
+  AsyncResult<int, Fail> register(Income income) async {
+    final result = await _incomeRepository.create(income);
 
     if (result.isError()) return result;
 
     if (income.dueDate.isOfActualMonth) {
       var incrementResult = await _balanceRepository.addToExpected(
         income.totalValue,
-        account,
+        income.account,
       );
 
       if (incrementResult.isError()) return incrementResult.pure(0);
@@ -41,9 +42,32 @@ class ManageIncomeImpl implements ManageIncome {
   AsyncResult<Unit, Fail> update({
     required Income oldIncome,
     required Income newIncome,
-  }) {
-    // TODO: implement update
-    throw UnimplementedError();
+  }) async {
+    if (oldIncome == newIncome) return const Success(unit);
+
+    var updateRes = await _incomeRepository.update(newIncome);
+
+    if (updateRes.isError()) return updateRes;
+
+    if (newIncome.dueDate.isOfActualMonth &&
+        !oldIncome.dueDate.isOfActualMonth) {
+      var res = await _balanceRepository.addToExpected(
+        newIncome.remainingValue,
+        newIncome.account,
+      );
+
+      if (res.isError()) return res;
+    } else if (!newIncome.dueDate.isOfActualMonth &&
+        oldIncome.dueDate.isOfActualMonth) {
+      var res = await _balanceRepository.subtractFromExpected(
+        newIncome.remainingValue,
+        newIncome.account,
+      );
+
+      if (res.isError()) return res;
+    }
+
+    return updateRes;
   }
 
   @override
@@ -100,5 +124,77 @@ class ManageIncomeImpl implements ManageIncome {
   AsyncResult<Unit, Fail> delete(Income income) {
     // TODO: implement delete
     throw UnimplementedError();
+  }
+
+  @override
+  AsyncResult<Unit, Fail> switchAccount(
+    Income income,
+    Account destinyAccount,
+  ) async {
+    if (income.account.id == destinyAccount.id) return const Success(unit);
+
+    var updatedIncome = income.copyWith(account: destinyAccount);
+
+    var updateRes = await _incomeRepository.update(updatedIncome);
+
+    if (updateRes.isError()) return updateRes;
+
+    var updates = await Future.wait([
+      _balanceRepository.subtractFromExpected(
+        income.remainingValue,
+        income.account,
+      ),
+      _balanceRepository.addToExpected(
+        income.remainingValue,
+        destinyAccount,
+      ),
+    ]);
+
+    for (var update in updates) {
+      if (update.isError()) return update;
+    }
+
+    return updateRes;
+  }
+
+  @override
+  AsyncResult<Unit, Fail> updateValue(Income income, double newValue) async {
+    if (income.totalValue == newValue) return const Success(unit);
+
+    double difference = (newValue - income.totalValue).roundToDecimal();
+
+    var updatedIncome = income.copyWith(
+      totalValue: newValue,
+      remainingValue: (income.remainingValue + difference).roundToDecimal(),
+      paidValue: income.paidValue > newValue ? newValue : income.paidValue,
+    );
+
+    var updateRes = await _incomeRepository.update(updatedIncome);
+
+    if (updateRes.isError()) return updateRes;
+
+    if (income.paidValue > newValue) {
+      double paidDifference = (income.paidValue - newValue).roundToDecimal();
+
+      var res = await _balanceRepository.subtractFromActual(
+        paidDifference,
+        income.account,
+      );
+
+      if (res.isError()) return res;
+
+      //TODO: Call Refund usecase
+    }
+
+    if (income.dueDate.isOfActualMonth) {
+      var res = await _balanceRepository.addToExpected(
+        difference,
+        income.account,
+      );
+
+      if (res.isError()) return res;
+    }
+
+    return updateRes;
   }
 }

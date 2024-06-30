@@ -7,7 +7,7 @@ import '../../domain/entities/income.dart';
 import '../../errors/errors.dart';
 
 abstract interface class IncomeRepository {
-  AsyncResult<int, Fail> create(Income income, Account account);
+  AsyncResult<int, Fail> create(Income income);
   AsyncResult<Unit, Fail> update(Income newIncome);
   AsyncResult<List<Income>, Fail> getAllOf({
     required int month,

@@ -1,7 +1,7 @@
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/account.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/datasources/balance_datasource.dart';
 
-import '../../domain/entities/date.dart';
+import '../../../domain/entities/date.dart';
 
 class TemporaryBalanceDatasource implements BalanceDatasource {
   final Map<

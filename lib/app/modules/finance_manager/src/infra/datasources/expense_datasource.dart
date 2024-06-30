@@ -4,7 +4,7 @@ import '../../domain/entities/expense.dart';
 import '../../domain/entities/frequency.dart';
 
 abstract interface class ExpenseDatasource {
-  Future<int> create(Expense expense, Account account);
+  Future<int> create(Expense expense);
   Future<void> update(Expense newExpense);
   Future<List<Expense>> getAllOf({
     required int month,

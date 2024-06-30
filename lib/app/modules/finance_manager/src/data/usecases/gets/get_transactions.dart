@@ -12,7 +12,7 @@ class GetTransactionsOfImpl implements GetTransactionsOf {
   GetTransactionsOfImpl(this.repository);
 
   @override
-  Future<Result<List<Transaction>, Fail>> call({
+  AsyncResult<List<Transaction>, Fail> call({
     required int month,
     required int year,
     required Account account,

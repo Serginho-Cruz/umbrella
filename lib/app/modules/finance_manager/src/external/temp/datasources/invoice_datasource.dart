@@ -4,6 +4,8 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entit
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/invoice.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/datasources/invoice_datasource.dart';
 
+import '../../../errors/errors.dart';
+
 class TemporaryInvoiceDatasource implements InvoiceDatasource {
   //Card's id and its invoices
   final Map<int, List<Invoice>> _invoices = {
@@ -16,9 +18,7 @@ class TemporaryInvoiceDatasource implements InvoiceDatasource {
         itens: const [],
         closingDate: Date(day: 9, month: 6, year: 2024),
         dueDate: Date(day: 18, month: 6, year: 2024),
-        isClosed: false,
-        accountToDiscount: const Account(
-            id: 50, actualBalance: 200.00, name: 'Banco do Brasil'),
+        isClosed: true,
         card: const CreditCard(
           id: 1,
           name: 'Marisa',
@@ -27,8 +27,10 @@ class TemporaryInvoiceDatasource implements InvoiceDatasource {
           cardInvoiceClosingDay: 9,
           cardInvoiceDueDay: 18,
           accountToDiscountInvoice:
-              Account(id: 50, actualBalance: 200.00, name: 'Banco do Brasil'),
+              Account(id: 2, actualBalance: 200.00, name: 'Banco do Brasil'),
         ),
+        account: const Account(
+            id: 2, name: 'Banco do Brasil', actualBalance: 200.00),
       )
     ],
     2: [
@@ -41,8 +43,6 @@ class TemporaryInvoiceDatasource implements InvoiceDatasource {
         closingDate: Date(day: 27, month: 6, year: 2024),
         dueDate: Date(day: 7, month: 7, year: 2024),
         isClosed: false,
-        accountToDiscount: const Account(
-            id: 50, actualBalance: 200.00, name: 'Banco do Brasil'),
         card: const CreditCard(
           id: 2,
           name: 'Banco do Brasil',
@@ -51,8 +51,10 @@ class TemporaryInvoiceDatasource implements InvoiceDatasource {
           cardInvoiceClosingDay: 27,
           cardInvoiceDueDay: 7,
           accountToDiscountInvoice:
-              Account(id: 50, actualBalance: 200.00, name: 'Banco do Brasil'),
+              Account(id: 2, actualBalance: 200.00, name: 'Banco do Brasil'),
         ),
+        account: const Account(
+            id: 2, name: 'Banco do Brasil', actualBalance: 200.00),
       )
     ],
     3: [
@@ -65,8 +67,6 @@ class TemporaryInvoiceDatasource implements InvoiceDatasource {
         closingDate: Date(day: 2, month: 6, year: 2024),
         dueDate: Date(day: 12, month: 6, year: 2024),
         isClosed: true,
-        accountToDiscount:
-            const Account(id: 49, actualBalance: 200.00, name: 'Conta Padrão'),
         card: const CreditCard(
           id: 3,
           name: 'Daju',
@@ -75,8 +75,10 @@ class TemporaryInvoiceDatasource implements InvoiceDatasource {
           cardInvoiceClosingDay: 2,
           cardInvoiceDueDay: 12,
           accountToDiscountInvoice:
-              Account(id: 49, actualBalance: 200.00, name: 'Conta Padrão'),
+              Account(id: 1, actualBalance: 200.00, name: 'Conta Padrão'),
         ),
+        account:
+            const Account(id: 1, actualBalance: 200.00, name: 'Conta Padrão'),
       )
     ],
   };
@@ -135,7 +137,7 @@ class TemporaryInvoiceDatasource implements InvoiceDatasource {
       isClosed: false,
       closingDate: closeDate,
       dueDate: dueDate,
-      accountToDiscount: card.accountToDiscountInvoice,
+      account: card.accountToDiscountInvoice,
     );
 
     _invoices.update(card.id, (value) => value..add(invoice),
@@ -156,14 +158,30 @@ class TemporaryInvoiceDatasource implements InvoiceDatasource {
     required int year,
     required Account account,
   }) {
-    // TODO: implement getAllOf
-    throw UnimplementedError();
+    var invoicesToReturn = <Invoice>[];
+
+    var requiredMonth = Date(day: 1, month: month, year: year);
+
+    for (var key in _invoices.keys) {
+      List<Invoice> invoices = _invoices[key]!;
+
+      for (var invoice in invoices) {
+        bool isTheSameMonth = invoice.dueDate.isAtTheSameMonthAs(requiredMonth);
+
+        if (invoice.account.id == account.id && isTheSameMonth) {
+          invoicesToReturn.add(invoice);
+        }
+      }
+    }
+
+    return Future.delayed(const Duration(seconds: 1), () => invoicesToReturn);
   }
 
   @override
   Future<List<Invoice>> getAllOfCard(CreditCard card) {
-    // TODO: implement getAllOfCard
-    throw UnimplementedError();
+    var invoices = _invoices.putIfAbsent(card.id, () => []);
+
+    return Future.delayed(const Duration(seconds: 1), () => invoices);
   }
 
   @override
@@ -198,7 +216,34 @@ class TemporaryInvoiceDatasource implements InvoiceDatasource {
 
   @override
   Future<void> update(Invoice invoice) {
-    // TODO: implement update
-    throw UnimplementedError();
+    final cardId = invoice.card.id;
+
+    bool isAbsent = false;
+
+    var invoices = _invoices.putIfAbsent(cardId, () {
+      isAbsent = true;
+      return [invoice];
+    });
+
+    if (isAbsent == true) return Future.value();
+
+    int index = -1;
+
+    for (var record in invoices.indexed) {
+      if (record.$2.id == invoice.id) {
+        index = record.$1;
+        break;
+      }
+    }
+
+    if (index == -1) throw GenericError();
+
+    _invoices.update(invoice.card.id, (invoices) {
+      return invoices
+        ..removeAt(index)
+        ..insert(index, invoice);
+    });
+
+    return Future.value();
   }
 }

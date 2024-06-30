@@ -7,7 +7,7 @@ import '../../domain/entities/frequency.dart';
 import '../../errors/errors.dart';
 
 abstract interface class ExpenseRepository {
-  AsyncResult<int, Fail> create(Expense expense, Account account);
+  AsyncResult<int, Fail> create(Expense expense);
   AsyncResult<Unit, Fail> update(Expense newExpense);
   AsyncResult<List<Expense>, Fail> getAllOf({
     required int year,

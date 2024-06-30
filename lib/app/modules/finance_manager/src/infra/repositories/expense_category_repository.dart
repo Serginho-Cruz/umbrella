@@ -11,7 +11,7 @@ class ExpenseCategoryRepositoryImpl implements ExpenseCategoryRepository {
   ExpenseCategoryRepositoryImpl(this._datasource);
 
   @override
-  Future<Result<List<Category>, Fail>> getAll() async {
+  AsyncResult<List<Category>, Fail> getAll() async {
     try {
       var categories = await _datasource.getAll();
       return Success(categories);

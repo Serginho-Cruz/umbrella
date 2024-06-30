@@ -12,7 +12,7 @@ class CreditCardRepositoryImpl implements CreditCardRepository {
   CreditCardRepositoryImpl(this._creditCardDatasource);
 
   @override
-  Future<Result<int, Fail>> create(CreditCard card, User user) async {
+  AsyncResult<int, Fail> create(CreditCard card, User user) async {
     try {
       var id = await _creditCardDatasource.create(card, user);
       return Success(id);
@@ -24,7 +24,7 @@ class CreditCardRepositoryImpl implements CreditCardRepository {
   }
 
   @override
-  Future<Result<Unit, Fail>> update(CreditCard newCard) async {
+  AsyncResult<Unit, Fail> update(CreditCard newCard) async {
     try {
       await _creditCardDatasource.update(newCard);
       return const Success(unit);
@@ -36,7 +36,7 @@ class CreditCardRepositoryImpl implements CreditCardRepository {
   }
 
   @override
-  Future<Result<List<CreditCard>, Fail>> getAll(User user) async {
+  AsyncResult<List<CreditCard>, Fail> getAll(User user) async {
     try {
       var cards = await _creditCardDatasource.getAll(user);
       return Success(cards);
@@ -48,7 +48,7 @@ class CreditCardRepositoryImpl implements CreditCardRepository {
   }
 
   @override
-  Future<Result<Unit, Fail>> delete(CreditCard card) async {
+  AsyncResult<Unit, Fail> delete(CreditCard card) async {
     try {
       await _creditCardDatasource.delete(card);
       return const Success(unit);

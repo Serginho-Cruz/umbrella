@@ -1,12 +1,7 @@
 import 'package:result_dart/result_dart.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/installment_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/invoice_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/manage_installment.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/manage_invoice.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/extensions.dart';
 import '../../domain/entities/account.dart';
 import '../repositories/balance_repository.dart';
-import '../repositories/payment_method_repository.dart';
-import '../repositories/transaction_repository.dart';
 import '../../domain/entities/date.dart';
 import '../../domain/entities/expense.dart';
 
@@ -17,36 +12,25 @@ import '../../domain/usecases/manage_expense.dart';
 import '../repositories/expense_repository.dart';
 
 class ManageExpenseImpl implements ManageExpense {
-  final ExpenseRepository expenseRepository;
-  final ManageInstallment manageInstallment;
-  final InvoiceRepository invoiceRepository;
-  final InstallmentRepository installmentRepository;
-  final ManageInvoice manageInvoice;
-  final BalanceRepository balanceRepository;
-  final TransactionRepository transactionRepository;
-  final PaymentMethodRepository paymentMethodRepository;
+  final ExpenseRepository _expenseRepository;
+  final BalanceRepository _balanceRepository;
 
   ManageExpenseImpl({
-    required this.expenseRepository,
-    required this.installmentRepository,
-    required this.manageInstallment,
-    required this.invoiceRepository,
-    required this.manageInvoice,
-    required this.balanceRepository,
-    required this.transactionRepository,
-    required this.paymentMethodRepository,
-  });
+    required ExpenseRepository expenseRepository,
+    required BalanceRepository balanceRepository,
+  })  : _expenseRepository = expenseRepository,
+        _balanceRepository = balanceRepository;
 
   @override
-  Future<Result<int, Fail>> register(Expense expense, Account account) async {
-    final result = await expenseRepository.create(expense, account);
+  AsyncResult<int, Fail> register(Expense expense) async {
+    final result = await _expenseRepository.create(expense);
 
     if (result.isError()) return result;
 
     if (expense.dueDate.isOfActualMonth) {
-      var decrementResult = await balanceRepository.subtractFromExpected(
+      var decrementResult = await _balanceRepository.subtractFromExpected(
         expense.totalValue,
-        account,
+        expense.account,
       );
 
       if (decrementResult.isError()) return decrementResult.pure(0);
@@ -56,16 +40,39 @@ class ManageExpenseImpl implements ManageExpense {
   }
 
   @override
-  Future<Result<Unit, Fail>> update({
+  AsyncResult<Unit, Fail> update({
     required Expense oldExpense,
     required Expense newExpense,
-    required Account account,
   }) async {
-    throw UnimplementedError();
+    if (oldExpense == newExpense) return const Success(unit);
+
+    var updateRes = await _expenseRepository.update(newExpense);
+
+    if (updateRes.isError()) return updateRes;
+
+    if (newExpense.dueDate.isOfActualMonth &&
+        !oldExpense.dueDate.isOfActualMonth) {
+      var res = await _balanceRepository.subtractFromExpected(
+        newExpense.remainingValue,
+        newExpense.account,
+      );
+
+      if (res.isError()) return res;
+    } else if (!newExpense.dueDate.isOfActualMonth &&
+        oldExpense.dueDate.isOfActualMonth) {
+      var res = await _balanceRepository.addToExpected(
+        newExpense.remainingValue,
+        newExpense.account,
+      );
+
+      if (res.isError()) return res;
+    }
+
+    return updateRes;
   }
 
   @override
-  Future<Result<List<Expense>, Fail>> getAllOf({
+  AsyncResult<List<Expense>, Fail> getAllOf({
     required int month,
     required int year,
     required Account account,
@@ -76,7 +83,7 @@ class ManageExpenseImpl implements ManageExpense {
 
     if (requiredDate.isMonthAfter(Date.today())) {
       var monthlyExpenses =
-          await expenseRepository.getByFrequency(Frequency.monthly, account);
+          await _expenseRepository.getByFrequency(Frequency.monthly, account);
 
       if (monthlyExpenses.isError()) {
         return Failure(monthlyExpenses.exceptionOrNull()!);
@@ -99,7 +106,7 @@ class ManageExpenseImpl implements ManageExpense {
       }
     }
 
-    var requiredMonthExpenses = await expenseRepository.getAllOf(
+    var requiredMonthExpenses = await _expenseRepository.getAllOf(
       month: month,
       year: year,
       account: account,
@@ -115,25 +122,80 @@ class ManageExpenseImpl implements ManageExpense {
   }
 
   @override
-  Future<Result<Unit, Fail>> delete(Expense expense, Account account) async {
-    final deleteResult = await expenseRepository.delete(expense);
+  AsyncResult<Unit, Fail> delete(Expense expense) {
+    // TODO: implement delete
+    throw UnimplementedError();
+  }
 
-    if (deleteResult.isError()) return deleteResult;
+  @override
+  AsyncResult<Unit, Fail> switchAccount(
+    Expense expense,
+    Account destinyAccount,
+  ) async {
+    if (expense.account.id == destinyAccount.id) return const Success(unit);
 
-    final updateExpectedBalance = await balanceRepository.addToExpected(
-      expense.totalValue,
-      account,
-    );
+    var updatedExpense = expense.copyWith(account: destinyAccount);
 
-    if (updateExpectedBalance.isError()) return updateExpectedBalance;
+    var updateRes = await _expenseRepository.update(updatedExpense);
 
-    if (expense.paidValue > 0.00) {
-      return balanceRepository.addToActual(
-        expense.paidValue,
-        account,
-      );
+    if (updateRes.isError()) return updateRes;
+
+    var updates = await Future.wait([
+      _balanceRepository.addToExpected(
+        expense.remainingValue,
+        expense.account,
+      ),
+      _balanceRepository.subtractFromExpected(
+        expense.remainingValue,
+        destinyAccount,
+      ),
+    ]);
+
+    for (var update in updates) {
+      if (update.isError()) return update;
     }
 
-    return updateExpectedBalance;
+    return updateRes;
+  }
+
+  @override
+  AsyncResult<Unit, Fail> updateValue(Expense expense, double newValue) async {
+    if (expense.totalValue == newValue) return const Success(unit);
+
+    double difference = (newValue - expense.totalValue).roundToDecimal();
+
+    var updatedExpense = expense.copyWith(
+      totalValue: newValue,
+      remainingValue: (expense.remainingValue + difference).roundToDecimal(),
+      paidValue: expense.paidValue > newValue ? newValue : expense.paidValue,
+    );
+
+    var updateRes = await _expenseRepository.update(updatedExpense);
+
+    if (updateRes.isError()) return updateRes;
+
+    if (expense.paidValue > newValue) {
+      double paidDifference = (expense.paidValue - newValue).roundToDecimal();
+
+      var res = await _balanceRepository.addToActual(
+        paidDifference,
+        expense.account,
+      );
+
+      if (res.isError()) return res;
+
+      //TODO: Call Refund usecase
+    }
+
+    if (expense.dueDate.isOfActualMonth) {
+      var res = await _balanceRepository.subtractFromExpected(
+        difference,
+        expense.account,
+      );
+
+      if (res.isError()) return res;
+    }
+
+    return updateRes;
   }
 }

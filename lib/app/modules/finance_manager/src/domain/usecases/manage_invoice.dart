@@ -9,9 +9,14 @@ import '../entities/invoice.dart';
 
 abstract interface class ManageInvoice {
   AsyncResult<Unit, Fail> update({
-    required Invoice newInvoice,
     required Invoice oldInvoice,
+    required Invoice newInvoice,
   });
+  AsyncResult<Unit, Fail> updateValue(Invoice invoice, double newValue);
+  AsyncResult<Unit, Fail> switchAccount(
+    Invoice invoice,
+    Account destinyAccount,
+  );
   AsyncResult<List<Invoice>, Fail> getAllOf({
     required int month,
     required int year,

@@ -4,7 +4,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entit
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/datasources/account_datasource.dart';
 
-import '../../errors/account_error_messages.dart';
+import '../../../errors/account_error_messages.dart';
 
 class TemporaryAccountDatasource implements AccountDatasource {
   final List<Account> _accounts = [

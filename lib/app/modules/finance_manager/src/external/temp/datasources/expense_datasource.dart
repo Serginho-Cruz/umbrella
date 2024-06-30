@@ -1,10 +1,10 @@
-import '../../domain/entities/account.dart';
-import '../../domain/entities/category.dart';
-import '../../domain/entities/date.dart';
-import '../../domain/entities/expense.dart';
-import '../../domain/entities/frequency.dart';
-import '../../errors/errors.dart';
-import '../../infra/datasources/expense_datasource.dart';
+import '../../../domain/entities/account.dart';
+import '../../../domain/entities/category.dart';
+import '../../../domain/entities/date.dart';
+import '../../../domain/entities/expense.dart';
+import '../../../domain/entities/frequency.dart';
+import '../../../errors/errors.dart';
+import '../../../infra/datasources/expense_datasource.dart';
 
 class TemporaryExpenseDatasource implements ExpenseDatasource {
   final Map<int, List<Expense>> _expenses = {
@@ -19,6 +19,12 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         paymentDate: null,
         category: const Category(id: 1, icon: 'icons/conta.png', name: 'Conta'),
         frequency: Frequency.monthly,
+        account: const Account(
+          id: 1,
+          isDefault: true,
+          actualBalance: 200.0,
+          name: 'Conta Padrão',
+        ),
       ),
       Expense(
         id: 2,
@@ -34,6 +40,12 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
           name: 'Alimentação',
         ),
         frequency: Frequency.none,
+        account: const Account(
+          id: 1,
+          isDefault: true,
+          actualBalance: 200.0,
+          name: 'Conta Padrão',
+        ),
       ),
       Expense(
         id: 3,
@@ -46,6 +58,12 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         category:
             const Category(id: 5, icon: 'icons/outros.png', name: 'Outros'),
         frequency: Frequency.monthly,
+        account: const Account(
+          id: 1,
+          isDefault: true,
+          actualBalance: 200.0,
+          name: 'Conta Padrão',
+        ),
       ),
     ],
     2: [
@@ -60,6 +78,8 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         category: const Category(
             id: 1, name: "Vestimenta", icon: 'icons/vestimenta.png'),
         frequency: Frequency.none,
+        account: const Account(
+            id: 2, name: 'Banco do Brasil', actualBalance: 200.00),
       ),
       Expense(
         id: 5,
@@ -71,6 +91,8 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         category:
             const Category(id: 4, name: "Moradia", icon: 'icons/moradia.png'),
         frequency: Frequency.monthly,
+        account: const Account(
+            id: 2, name: 'Banco do Brasil', actualBalance: 200.00),
       ),
     ],
     3: [
@@ -87,12 +109,13 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
           name: 'Outros',
           icon: 'icons/outros.png',
         ),
+        account: const Account(id: 3, name: 'Itaú', actualBalance: 156.32),
       ),
     ],
   };
 
   @override
-  Future<int> create(Expense expense, Account account) {
+  Future<int> create(Expense expense) {
     List<Expense> all = [];
 
     for (var list in _expenses.values) {
@@ -105,7 +128,7 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
     int newId = all.last.id + 1;
 
     _expenses
-        .putIfAbsent(account.id, () => [])
+        .putIfAbsent(expense.account.id, () => [])
         .add(expense.copyWith(id: newId));
     return Future.value(newId);
   }

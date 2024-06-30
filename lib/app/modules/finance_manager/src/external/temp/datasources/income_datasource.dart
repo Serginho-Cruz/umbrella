@@ -1,10 +1,10 @@
-import '../../domain/entities/account.dart';
-import '../../domain/entities/category.dart';
-import '../../domain/entities/date.dart';
-import '../../domain/entities/frequency.dart';
-import '../../domain/entities/income.dart';
-import '../../errors/errors.dart';
-import '../../infra/datasources/income_datasource.dart';
+import '../../../domain/entities/account.dart';
+import '../../../domain/entities/category.dart';
+import '../../../domain/entities/date.dart';
+import '../../../domain/entities/frequency.dart';
+import '../../../domain/entities/income.dart';
+import '../../../errors/errors.dart';
+import '../../../infra/datasources/income_datasource.dart';
 
 class TemporaryIncomeDatasource implements IncomeDatasource {
   final Map<int, List<Income>> _incomes = {
@@ -20,6 +20,12 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         category:
             const Category(id: 11, name: 'Outros', icon: 'icons/outros.png'),
         frequency: Frequency.monthly,
+        account: const Account(
+          id: 1,
+          name: 'Conta Padrão',
+          actualBalance: 0.00,
+          isDefault: true,
+        ),
       ),
       Income(
         id: 2,
@@ -32,6 +38,12 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         category:
             const Category(id: 11, name: 'Outros', icon: 'icons/outros.png'),
         frequency: Frequency.none,
+        account: const Account(
+          id: 1,
+          name: 'Conta Padrão',
+          actualBalance: 0.00,
+          isDefault: true,
+        ),
       ),
       Income(
         id: 3,
@@ -43,6 +55,12 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         category:
             const Category(id: 11, name: 'Outros', icon: 'icons/outros.png'),
         frequency: Frequency.yearly,
+        account: const Account(
+          id: 1,
+          name: 'Conta Padrão',
+          actualBalance: 0.00,
+          isDefault: true,
+        ),
       ),
       Income(
         id: 6,
@@ -54,6 +72,12 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         category:
             const Category(id: 11, name: 'Outros', icon: 'icons/outros.png'),
         frequency: Frequency.yearly,
+        account: const Account(
+          id: 1,
+          name: 'Conta Padrão',
+          actualBalance: 0.00,
+          isDefault: true,
+        ),
       ),
     ],
     2: [
@@ -68,6 +92,8 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         category:
             const Category(id: 11, name: 'Outros', icon: 'icons/outros.png'),
         frequency: Frequency.none,
+        account: const Account(
+            id: 2, name: 'Banco do Brasil', actualBalance: 200.00),
       ),
       Income(
         id: 5,
@@ -79,24 +105,28 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         category:
             const Category(id: 11, name: 'Outros', icon: 'icons/outros.png'),
         frequency: Frequency.none,
+        account: const Account(
+            id: 2, name: 'Banco do Brasil', actualBalance: 200.00),
       ),
     ],
     3: [
       Income(
-          id: 7,
-          name: 'Transferência',
-          totalValue: 2000.00,
-          paidValue: 0.00,
-          remainingValue: 2000.00,
-          frequency: Frequency.yearly,
-          dueDate: Date(day: 12, month: 1, year: 2025),
-          category:
-              const Category(id: 11, name: 'Outros', icon: 'icons/outros.png')),
+        id: 7,
+        name: 'Transferência',
+        totalValue: 2000.00,
+        paidValue: 0.00,
+        remainingValue: 2000.00,
+        frequency: Frequency.yearly,
+        dueDate: Date(day: 12, month: 1, year: 2025),
+        category:
+            const Category(id: 11, name: 'Outros', icon: 'icons/outros.png'),
+        account: const Account(id: 3, name: 'Itaú', actualBalance: 156.32),
+      ),
     ],
   };
 
   @override
-  Future<int> create(Income income, Account account) {
+  Future<int> create(Income income) {
     List<Income> all = [];
 
     for (var list in _incomes.values) {
@@ -110,7 +140,7 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
 
     Income newIncome = income.copyWith(id: newId);
 
-    _incomes.update(account.id, (value) => value..add(newIncome),
+    _incomes.update(income.account.id, (value) => value..add(newIncome),
         ifAbsent: () => [newIncome]);
 
     return Future.value(newId);

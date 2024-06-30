@@ -1,5 +1,5 @@
-import '../../domain/entities/category.dart';
-import '../../infra/datasources/income_category_datasource.dart';
+import '../../../domain/entities/category.dart';
+import '../../../infra/datasources/income_category_datasource.dart';
 
 class TemporaryIncomeCategoryDatasource implements IncomeCategoryDatasource {
   @override

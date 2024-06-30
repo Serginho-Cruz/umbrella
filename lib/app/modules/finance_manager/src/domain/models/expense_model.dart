@@ -16,6 +16,7 @@ class ExpenseModel extends FinanceModel {
           personName: expense.personName,
           overdueDate: expense.dueDate,
           paymentDate: expense.paymentDate,
+          account: expense.account,
         );
 
   Expense toEntity() {
@@ -29,6 +30,7 @@ class ExpenseModel extends FinanceModel {
       category: category,
       frequency: frequency,
       paymentDate: paymentDate,
+      account: account,
       personName: personName,
     );
   }

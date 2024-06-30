@@ -18,9 +18,9 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   ExpenseRepositoryImpl(this._datasource);
 
   @override
-  AsyncResult<int, Fail> create(Expense expense, Account account) async {
+  AsyncResult<int, Fail> create(Expense expense) async {
     try {
-      var newid = await _datasource.create(expense, account);
+      var newid = await _datasource.create(expense);
       return Success(newid);
     } on Fail catch (f) {
       return Failure(f);
