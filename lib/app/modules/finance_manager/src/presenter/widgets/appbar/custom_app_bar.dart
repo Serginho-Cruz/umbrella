@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../utils/umbrella_palette.dart';
-import '../../../utils/umbrella_sizes.dart';
+import '../../utils/umbrella_palette.dart';
+import '../../utils/umbrella_sizes.dart';
 import '../texts/big_text.dart';
 import '../texts/medium_text.dart';
 import '../texts/price.dart';

@@ -6,6 +6,7 @@ class MyForm extends StatelessWidget {
     this.formKey,
     this.padding,
     this.width,
+    this.verticalSize = MainAxisSize.max,
     required this.children,
   });
 
@@ -13,6 +14,7 @@ class MyForm extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final double? width;
   final List<Widget> children;
+  final MainAxisSize verticalSize;
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +25,7 @@ class MyForm extends StatelessWidget {
         child: Form(
           key: formKey,
           child: Column(
+            mainAxisSize: verticalSize,
             children: children,
           ),
         ),

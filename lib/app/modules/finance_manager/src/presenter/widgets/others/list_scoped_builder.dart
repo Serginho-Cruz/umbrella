@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 
-import '../../errors/errors.dart';
+import '../../../errors/errors.dart';
 
 class ListScopedBuilder<St extends Store<S>, S extends List<Object>>
     extends StatelessWidget {

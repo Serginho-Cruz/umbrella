@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../domain/entities/date.dart';
 import '../texts/big_text.dart';
 import '../texts/small_text.dart';
-import 'dialog_layout.dart';
+import '../layout/dialog_layout.dart';
 
 sealed class CustomDatePickerDialog {
   static Future<Date?> show(

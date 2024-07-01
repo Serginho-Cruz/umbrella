@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/account.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/my_drawer.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/list_scoped_builder.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/drawer/my_drawer.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/list_scoped_builder.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/tappable_options.dart';
 import '../../domain/entities/credit_card.dart';
 import '../../domain/models/expense_model.dart';
 import '../../domain/models/income_model.dart';
-import '../../utils/umbrella_palette.dart';
+import '../utils/umbrella_palette.dart';
 import '../controllers/account_controller.dart';
 import '../controllers/credit_card_store.dart';
 import '../controllers/expense_store.dart';
@@ -20,6 +21,7 @@ import '../widgets/selectors/account_selector.dart';
 import '../widgets/shimmer/shimmer_container.dart';
 import '../widgets/appbar/custom_app_bar.dart';
 import '../widgets/layout/horizontal_animated_list.dart';
+import '../widgets/others/tappable.dart';
 import '../widgets/texts/big_text.dart';
 import '../widgets/texts/title_text.dart';
 
@@ -59,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext screenContext) {
     return SafeArea(
       child: ListScopedBuilder<AccountStore, List<Account>>(
         store: widget._accountStore,
@@ -67,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
           appBar: CustomAppBar(title: 'Home', showBalances: false),
           body: Center(
             child: SizedBox.fromSize(
-              size: MediaQuery.sizeOf(context),
+              size: MediaQuery.sizeOf(screenContext),
               child: const CircularProgressIndicator(),
             ),
           ),
@@ -87,105 +89,124 @@ class _HomeScreenState extends State<HomeScreen> {
             appBar: CustomAppBar(
               title: 'Home',
               showMonthChanger: true,
-              onMonthChange: (month, year) {
-                _fetch(month, year, accounts);
+              onMonthChange: (_, __) {
+                _fetchAll(accounts);
               },
             ),
-            body: SingleChildScrollView(
-              physics: const ClampingScrollPhysics(),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(30.0),
-                    child: AccountSelector(
-                      label: 'Conta Atual',
-                      accounts: accounts,
-                      selectedAccount: selectedAccount,
-                      onSelected: (selected) {
-                        setState(() => selectedAccount = selected);
+            body: RefreshIndicator(
+              onRefresh: widget._accountStore.getAll,
+              child: SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding:
+                          const EdgeInsets.fromLTRB(30.0, 20.0, 30.0, 10.0),
+                      child: AccountSelector(
+                        label: 'Conta Atual',
+                        accounts: accounts,
+                        selectedAccount: selectedAccount,
+                        onSelected: (selected) {
+                          setState(() => selectedAccount = selected);
 
-                        var current = MonthChanger.currentMonthAndYear;
-
-                        _fetch(current.month, current.year, accounts);
-                      },
-                    ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 30.0, bottom: 30.0),
-                    child: BigText('Olá! Obrigado por Voltar'),
-                  ),
-                  _makeSection(
-                    title: 'Receitas',
-                    child: ListScopedBuilder<IncomeStore, List<IncomeModel>>(
-                      store: widget._incomeStore,
-                      loadingWidget: SizedBox(
-                        height: 325,
-                        child: _makeShimmerList(),
+                          _fetchAll(accounts);
+                        },
                       ),
-                      onError: (ctx, f) => Text(f.message),
-                      onState: (ctx, state) => SizedBox(
-                        height: 325,
-                        child: HorizontalAnimatedList(
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.only(left: 30.0, bottom: 30.0),
+                      child: BigText('Olá! Obrigado por Voltar'),
+                    ),
+                    _makeSection(
+                      title: 'Receitas',
+                      child: ListScopedBuilder<IncomeStore, List<IncomeModel>>(
+                        store: widget._incomeStore,
+                        loadingWidget: _makeShimmerList(),
+                        onError: (ctx, f) => Text(f.message),
+                        onState: (ctx, state) => HorizontalAnimatedList(
+                          height: 325,
                           length: state.length,
                           itemBuilderFunction: (context, index) {
-                            return IncomeCard(model: state[index]);
+                            return Tappable(
+                              options: TappableOptions.incomes(
+                                context: screenContext,
+                                model: state[index],
+                                store: widget._incomeStore,
+                                onPop: () {
+                                  _fetchIncomes(accounts);
+                                },
+                              ),
+                              child: IncomeCard(model: state[index]),
+                            );
                           },
                         ),
+                        onEmptyState: () => const SizedBox(height: 300),
                       ),
-                      onEmptyState: () => const SizedBox(height: 300),
                     ),
-                  ),
-                  _makeSection(
-                    title: 'Despesas',
-                    child: ListScopedBuilder<ExpenseStore, List<ExpenseModel>>(
-                      store: widget._expenseStore,
-                      loadingWidget: SizedBox(
-                        height: 325,
-                        child: _makeShimmerList(),
-                      ),
-                      onError: (ctx, f) => Text(f.message),
-                      onState: (ctx, state) => SizedBox(
-                        height: 325,
-                        child: HorizontalAnimatedList(
+                    _makeSection(
+                      title: 'Despesas',
+                      child:
+                          ListScopedBuilder<ExpenseStore, List<ExpenseModel>>(
+                        store: widget._expenseStore,
+                        loadingWidget: _makeShimmerList(),
+                        onError: (ctx, f) => Text(f.message),
+                        onState: (ctx, state) => HorizontalAnimatedList(
+                          height: 325,
                           length: state.length,
                           itemBuilderFunction: (context, index) {
-                            return ExpenseCard(model: state[index]);
+                            return Tappable(
+                              options: TappableOptions.expenses(
+                                context: screenContext,
+                                model: state[index],
+                                store: widget._expenseStore,
+                                onPop: () => _fetchExpenses(accounts),
+                              ),
+                              child: ExpenseCard(model: state[index]),
+                            );
                           },
                         ),
+                        onEmptyState: () => const SizedBox(height: 300),
                       ),
-                      onEmptyState: () => const SizedBox(height: 300),
                     ),
-                  ),
-                  _makeSection(
-                    title: 'Cartões de Crédito',
-                    child: ListScopedBuilder<CreditCardStore, List<CreditCard>>(
-                      store: widget._creditCardStore,
-                      loadingWidget: SizedBox(
-                        height: 240,
-                        child: _makeShimmerList(width: 275, height: 150),
-                      ),
-                      onError: (ctx, f) => Text(f.message),
-                      onState: (ctx, state) {
-                        return SizedBox(
+                    _makeSection(
+                      title: 'Cartões de Crédito',
+                      child:
+                          ListScopedBuilder<CreditCardStore, List<CreditCard>>(
+                        store: widget._creditCardStore,
+                        loadingWidget: _makeShimmerList(
                           height: 240,
-                          child: HorizontalAnimatedList(
+                          shimmerWidth: 275,
+                          shimmerHeight: 150,
+                        ),
+                        onError: (ctx, f) => Text(f.message),
+                        onState: (ctx, state) {
+                          return HorizontalAnimatedList(
+                            height: 240,
                             length: state.length,
                             itemBuilderFunction: (context, index) {
-                              return CreditCardWidget(
-                                creditCard: state[index],
-                                margin: const EdgeInsets.symmetric(
-                                    horizontal: 20.0),
+                              return Tappable(
+                                options: TappableOptions.cards(
+                                  context: screenContext,
+                                  card: state[index],
+                                  onPop: widget._creditCardStore.getAll,
+                                ),
+                                child: CreditCardWidget(
+                                  creditCard: state[index],
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 20.0,
+                                  ),
+                                ),
                               );
                             },
-                          ),
-                        );
-                      },
-                      onEmptyState: () => const SizedBox(height: 300),
+                          );
+                        },
+                        onEmptyState: () => const SizedBox(height: 300),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );
@@ -194,36 +215,53 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _fetch(int month, int year, List<Account> accounts) {
+  void _fetchAll(List<Account> accounts) {
+    Future(() {
+      _fetchIncomes(accounts);
+      _fetchExpenses(accounts);
+    });
+  }
+
+  void _fetchIncomes(List<Account> accounts) {
+    var (month, year) = _getMonthAndYear();
+
     if (selectedAccount != null) {
-      Future(() {
-        widget._expenseStore.getAllOf(
-          account: selectedAccount!,
-          month: month,
-          year: year,
-        );
-
-        widget._incomeStore.getAllOf(
-          account: selectedAccount!,
-          month: month,
-          year: year,
-        );
-      });
+      widget._incomeStore.getAllOf(
+        account: selectedAccount!,
+        month: month,
+        year: year,
+      );
     } else {
-      Future(() {
-        widget._expenseStore.getForAll(
-          accounts: accounts,
-          month: month,
-          year: year,
-        );
-
-        widget._incomeStore.getForAll(
-          accounts: accounts,
-          month: month,
-          year: year,
-        );
-      });
+      widget._incomeStore.getForAll(
+        accounts: accounts,
+        month: month,
+        year: year,
+      );
     }
+  }
+
+  void _fetchExpenses(List<Account> accounts) {
+    var (month, year) = _getMonthAndYear();
+
+    if (selectedAccount != null) {
+      widget._expenseStore.getAllOf(
+        account: selectedAccount!,
+        month: month,
+        year: year,
+      );
+    } else {
+      widget._expenseStore.getForAll(
+        accounts: accounts,
+        month: month,
+        year: year,
+      );
+    }
+  }
+
+  (int month, int year) _getMonthAndYear() {
+    var date = MonthChanger.currentMonthAndYear;
+
+    return (date.month, date.year);
   }
 
   Widget _makeSection({required String title, required Widget child}) {
@@ -248,13 +286,19 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _makeShimmerList({double width = 250, double height = 300}) {
-    return HorizontalListView(
-      itemCount: 4,
-      padding: const EdgeInsets.symmetric(vertical: 40.0),
-      itemCallback: (i) => ShimmerContainer(
-        height: height,
-        width: width,
+  Widget _makeShimmerList(
+      {double height = 325,
+      double shimmerWidth = 250,
+      double shimmerHeight = 300}) {
+    return SizedBox(
+      height: height,
+      child: HorizontalListView(
+        itemCount: 4,
+        padding: const EdgeInsets.symmetric(vertical: 40.0),
+        itemCallback: (i) => ShimmerContainer(
+          height: shimmerHeight,
+          width: shimmerWidth,
+        ),
       ),
     );
   }

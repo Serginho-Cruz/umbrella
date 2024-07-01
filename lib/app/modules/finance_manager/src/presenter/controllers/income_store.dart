@@ -29,11 +29,26 @@ class IncomeStore extends Store<List<IncomeModel>> {
         _sortIncomes = orderIncomes,
         super([]);
 
-  AsyncResult<int, Fail> register(Income expense, Account account) async {
-    var result = await _manageIncome.register(expense, account);
+  AsyncResult<int, Fail> register(Income expense) async {
+    var result = await _manageIncome.register(expense);
 
     return result;
   }
+
+  AsyncResult<void, Fail> updateValue(
+    Income income,
+    double newValue,
+  ) =>
+      _manageIncome.updateValue(income, newValue);
+
+  AsyncResult<void, Fail> updateIncome({
+    required Income oldIncome,
+    required Income newIncome,
+  }) =>
+      _manageIncome.update(
+        oldIncome: oldIncome,
+        newIncome: newIncome,
+      );
 
   Future<void> getForAll({
     required List<Account> accounts,

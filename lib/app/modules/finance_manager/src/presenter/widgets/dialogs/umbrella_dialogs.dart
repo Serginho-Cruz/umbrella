@@ -3,16 +3,16 @@ import '../buttons/primary_button.dart';
 import '../buttons/secondary_button.dart';
 import '../texts/medium_text.dart';
 import '../texts/title_text.dart';
-import 'dialog_layout.dart';
+import '../layout/dialog_layout.dart';
 
 sealed class UmbrellaDialogs {
-  static void showError(
+  static Future<void> showError(
     BuildContext context,
     String fail, {
     VoidCallback? onRetry,
     VoidCallback? onConfirmPressed,
   }) {
-    _show(
+    return _show(
       context,
       title: 'Oops! Algo aconteceu',
       titleColor: Colors.red,
@@ -24,13 +24,13 @@ sealed class UmbrellaDialogs {
     );
   }
 
-  static void showSuccess(
+  static Future<void> showSuccess(
     BuildContext context, {
     required String title,
     required String message,
     VoidCallback? onConfirmPressed,
   }) {
-    _show(
+    return _show(
       context,
       title: title,
       titleColor: Colors.green,
@@ -41,12 +41,12 @@ sealed class UmbrellaDialogs {
     );
   }
 
-  static void showNetworkProblem(
+  static Future<void> showNetworkProblem(
     BuildContext context, {
     VoidCallback? onRetry,
     VoidCallback? onConfirmPressed,
   }) {
-    _show(
+    return _show(
       context,
       title: 'Sem Conexão',
       titleColor: Colors.black,
@@ -59,7 +59,7 @@ sealed class UmbrellaDialogs {
     );
   }
 
-  static void _show(
+  static Future<void> _show(
     BuildContext context, {
     required String title,
     required Color titleColor,
@@ -68,8 +68,8 @@ sealed class UmbrellaDialogs {
     required Color iconColor,
     final VoidCallback? onRetry,
     final VoidCallback? onConfirmPressed,
-  }) {
-    showGeneralDialog(
+  }) async {
+    return await showGeneralDialog<void>(
       context: context,
       transitionDuration: const Duration(milliseconds: 500),
       pageBuilder: (context, animation, secondaryAnimation) {
@@ -101,23 +101,27 @@ sealed class UmbrellaDialogs {
                   mainAxisAlignment: onRetry == null
                       ? MainAxisAlignment.end
                       : MainAxisAlignment.spaceBetween,
-                  children: [
-                    if (onRetry != null)
-                      SecondaryButton(
-                        label: const MediumText('Tentar Novamente'),
-                        onPressed: () {
-                          Navigator.pop(context);
-                          onRetry();
-                        },
-                      ),
-                    PrimaryButton(
-                      label: const MediumText('OK'),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        onConfirmPressed?.call();
-                      },
-                    ),
-                  ],
+                  children: onRetry == null
+                      ? [
+                          Expanded(
+                            child: _makeOkButton(context, onConfirmPressed),
+                          ),
+                        ]
+                      : [
+                          SecondaryButton(
+                            width: MediaQuery.sizeOf(context).width * 0.3,
+                            label: const MediumText('Repetir'),
+                            onPressed: () {
+                              Navigator.pop(context);
+                              onRetry();
+                            },
+                          ),
+                          _makeOkButton(
+                            context,
+                            onConfirmPressed,
+                            width: MediaQuery.sizeOf(context).width * 0.3,
+                          ),
+                        ],
                 ),
               ],
             ),
@@ -132,4 +136,18 @@ sealed class UmbrellaDialogs {
       },
     );
   }
+
+  static Widget _makeOkButton(
+    BuildContext context,
+    VoidCallback? onConfirmPressed, {
+    double? width,
+  }) =>
+      PrimaryButton(
+        width: width,
+        label: const MediumText('OK'),
+        onPressed: () {
+          Navigator.pop(context);
+          onConfirmPressed?.call();
+        },
+      );
 }

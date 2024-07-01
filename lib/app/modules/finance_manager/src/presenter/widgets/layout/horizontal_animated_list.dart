@@ -5,10 +5,12 @@ class HorizontalAnimatedList extends StatefulWidget {
     super.key,
     required this.itemBuilderFunction,
     required this.length,
+    required this.height,
   });
 
   final Widget Function(BuildContext, int) itemBuilderFunction;
   final int length;
+  final double height;
 
   @override
   State<HorizontalAnimatedList> createState() => _HorizontalAnimatedListState();
@@ -31,19 +33,22 @@ class _HorizontalAnimatedListState extends State<HorizontalAnimatedList> {
       _key.currentState!.insertAllItems(0, widget.length,
           duration: const Duration(milliseconds: 1200));
     });
-    return AnimatedList(
-      key: _key,
-      initialItemCount: 0,
-      padding: const EdgeInsets.symmetric(vertical: 40.0),
-      physics: const BouncingScrollPhysics(),
-      scrollDirection: Axis.horizontal,
-      itemBuilder: (context, index, animation) {
-        return ScaleTransition(
-          scale:
-              CurvedAnimation(parent: animation, curve: Curves.linearToEaseOut),
-          child: widget.itemBuilderFunction(context, index),
-        );
-      },
+    return SizedBox(
+      height: widget.height,
+      child: AnimatedList(
+        key: _key,
+        initialItemCount: 0,
+        padding: const EdgeInsets.symmetric(vertical: 40.0),
+        physics: const BouncingScrollPhysics(),
+        scrollDirection: Axis.horizontal,
+        itemBuilder: (context, index, animation) {
+          return ScaleTransition(
+            scale: CurvedAnimation(
+                parent: animation, curve: Curves.linearToEaseOut),
+            child: widget.itemBuilderFunction(context, index),
+          );
+        },
+      ),
     );
   }
 }

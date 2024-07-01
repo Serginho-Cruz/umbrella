@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../utils/umbrella_sizes.dart';
+import '../../utils/umbrella_sizes.dart';
 
 class TitleText extends StatelessWidget {
   final String data;

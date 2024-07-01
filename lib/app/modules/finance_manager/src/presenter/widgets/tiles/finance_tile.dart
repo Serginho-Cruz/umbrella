@@ -4,7 +4,7 @@ import '../../../domain/entities/date.dart';
 import '../../../domain/entities/payment_method.dart';
 import '../../../domain/models/expense_model.dart';
 import '../../../domain/models/finance_model.dart';
-import '../../../utils/umbrella_palette.dart';
+import '../../utils/umbrella_palette.dart';
 import '../texts/big_text.dart';
 import '../texts/medium_text.dart';
 import '../texts/price.dart';
@@ -33,7 +33,6 @@ class _FinanceTileState extends State<FinanceTile> {
   @override
   Widget build(BuildContext context) {
     var radius = const Radius.circular(8.0);
-
     var onTop = widget.roundedOnTop;
 
     return DecoratedBox(

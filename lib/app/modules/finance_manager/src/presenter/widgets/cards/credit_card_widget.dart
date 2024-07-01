@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/layout/spaced.dart';
 import '../../../domain/entities/credit_card.dart';
-import '../../../utils/hex_color.dart';
+import '../../utils/hex_color.dart';
 import '../texts/big_text.dart';
 import '../texts/medium_text.dart';
 

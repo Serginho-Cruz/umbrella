@@ -1,32 +1,32 @@
 import 'package:flutter/material.dart';
 
-import '../../domain/entities/account.dart';
-import '../../domain/entities/category.dart';
-import '../../domain/entities/date.dart';
-import '../../domain/entities/frequency.dart';
-import '../../domain/entities/income.dart';
-import '../../errors/errors.dart';
+import '../../../domain/entities/account.dart';
+import '../../../domain/entities/category.dart';
+import '../../../domain/entities/date.dart';
+import '../../../domain/entities/frequency.dart';
+import '../../../domain/entities/income.dart';
+import '../../../errors/errors.dart';
 import '../../utils/currency_input_formatter.dart';
 import '../../utils/umbrella_palette.dart';
-import '../controllers/account_controller.dart';
-import '../controllers/income_store.dart';
-import '../controllers/income_category_store.dart';
-import '../widgets/buttons/primary_button.dart';
-import '../widgets/buttons/reset_button.dart';
-import '../widgets/tiles/category_row.dart';
-import '../widgets/layout/umbrella_scaffold.dart';
-import '../widgets/selectors/category_selector.dart';
-import '../widgets/selectors/date_selector.dart';
-import '../widgets/layout/spaced.dart';
-import '../widgets/texts/small_text.dart';
-import '../widgets/dialogs/umbrella_dialogs.dart';
-import '../widgets/selectors/account_selector.dart';
-import '../widgets/forms/default_text_field.dart';
-import '../widgets/selectors/frequency_selector.dart';
-import '../widgets/forms/my_form.dart';
-import '../widgets/forms/number_text_field.dart';
-import '../widgets/list_scoped_builder.dart';
-import '../widgets/texts/medium_text.dart';
+import '../../controllers/account_controller.dart';
+import '../../controllers/income_store.dart';
+import '../../controllers/income_category_store.dart';
+import '../../widgets/buttons/primary_button.dart';
+import '../../widgets/buttons/reset_button.dart';
+import '../../widgets/tiles/category_row.dart';
+import '../../widgets/layout/umbrella_scaffold.dart';
+import '../../widgets/selectors/category_selector.dart';
+import '../../widgets/selectors/date_selector.dart';
+import '../../widgets/layout/spaced.dart';
+import '../../widgets/texts/small_text.dart';
+import '../../widgets/dialogs/umbrella_dialogs.dart';
+import '../../widgets/selectors/account_selector.dart';
+import '../../widgets/forms/default_text_field.dart';
+import '../../widgets/selectors/frequency_selector.dart';
+import '../../widgets/forms/my_form.dart';
+import '../../widgets/forms/number_text_field.dart';
+import '../../widgets/others/list_scoped_builder.dart';
+import '../../widgets/texts/medium_text.dart';
 
 class CreateIncomeScreen extends StatefulWidget {
   const CreateIncomeScreen({
@@ -48,13 +48,13 @@ class CreateIncomeScreen extends StatefulWidget {
 
 class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
   late final GlobalKey<FormState> _formKey;
-  late final TextEditingController _nameFieldController;
-  late final TextEditingController _valueFieldController;
-  late final TextEditingController _personNameFieldController;
+  late final TextEditingController nameFieldController;
+  late final TextEditingController valueFieldController;
+  late final TextEditingController personNameFieldController;
 
-  late final FocusNode _nameFieldFocusNode;
-  late final FocusNode _valueFieldFocusNode;
-  late final FocusNode _personNameFocusNode;
+  late final FocusNode nameFieldFocusNode;
+  late final FocusNode valueFieldFocusNode;
+  late final FocusNode personNameFocusNode;
 
   Account? account;
   Frequency frequency = Frequency.none;
@@ -66,24 +66,24 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
   void initState() {
     super.initState();
     _formKey = GlobalKey();
-    _nameFieldController = TextEditingController();
-    _valueFieldController = TextEditingController(text: 'R\$0,00');
-    _personNameFieldController = TextEditingController();
+    nameFieldController = TextEditingController();
+    valueFieldController = TextEditingController(text: 'R\$0,00');
+    personNameFieldController = TextEditingController();
 
-    _nameFieldFocusNode = FocusNode();
-    _valueFieldFocusNode = FocusNode();
-    _personNameFocusNode = FocusNode();
+    nameFieldFocusNode = FocusNode();
+    valueFieldFocusNode = FocusNode();
+    personNameFocusNode = FocusNode();
   }
 
   @override
   void dispose() {
-    _nameFieldController.dispose();
-    _valueFieldController.dispose();
-    _personNameFieldController.dispose();
+    nameFieldController.dispose();
+    valueFieldController.dispose();
+    personNameFieldController.dispose();
 
-    _nameFieldFocusNode.dispose();
-    _valueFieldFocusNode.dispose();
-    _personNameFocusNode.dispose();
+    nameFieldFocusNode.dispose();
+    valueFieldFocusNode.dispose();
+    personNameFocusNode.dispose();
     super.dispose();
   }
 
@@ -138,18 +138,18 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
 
                   return null;
                 },
-                controller: _nameFieldController,
-                focusNode: _nameFieldFocusNode,
+                controller: nameFieldController,
+                focusNode: nameFieldFocusNode,
                 maxLength: 30,
                 labelText: 'Nome',
               ),
               NumberTextField(
-                controller: _valueFieldController,
+                controller: valueFieldController,
                 padding: const EdgeInsets.symmetric(vertical: 20.0),
                 isCurrency: true,
                 label: 'Valor',
                 initialValue: 0.00,
-                focusNode: _valueFieldFocusNode,
+                focusNode: valueFieldFocusNode,
                 validate: (number) {
                   if (number == 0.00) {
                     return 'O Valor deve ser maior que 0';
@@ -170,7 +170,7 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
                 child: DateSelector(
-                  initialDate: date,
+                  date: date,
                   onDateSelected: (newDate) {
                     setState(() {
                       date = newDate;
@@ -229,8 +229,8 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
               ),
               DefaultTextField(
                 height: 70.0,
-                controller: _personNameFieldController,
-                focusNode: _personNameFocusNode,
+                controller: personNameFieldController,
+                focusNode: personNameFocusNode,
                 labelText: 'Quem deve isso a você? (Opcional)',
                 maxLength: 20,
                 validator: (_) => null,
@@ -243,7 +243,7 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
               horizontal: MediaQuery.sizeOf(context).width * 0.05,
               vertical: 20.0,
             ),
-            first: ResetButton(reset: _resetForm),
+            first: ResetButton(reset: resetForm),
             second: PrimaryButton(
               icon: const Icon(
                 Icons.add_circle_rounded,
@@ -260,7 +260,7 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
   }
 
   void _onFormSubmitted() {
-    var (isFormValid, message) = _validateForm();
+    var (isFormValid, message) = validateForm();
 
     if (!isFormValid) {
       UmbrellaDialogs.showError(
@@ -271,22 +271,23 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
     }
 
     String totalValueStr =
-        CurrencyInputFormatter.unformat(_valueFieldController.text);
+        CurrencyInputFormatter.unformat(valueFieldController.text);
 
     Income newIncome = Income(
         id: 0,
-        name: _nameFieldController.text,
+        name: nameFieldController.text,
         totalValue: double.parse(totalValueStr),
         paidValue: 0.00,
         remainingValue: double.parse(totalValueStr),
         dueDate: date,
         category: category!,
         frequency: frequency,
-        personName: _personNameFieldController.text.trim().isEmpty
+        account: account!,
+        personName: personNameFieldController.text.trim().isEmpty
             ? null
-            : _personNameFieldController.text.trim());
+            : personNameFieldController.text.trim());
 
-    widget._incomeStore.register(newIncome, account!).then((result) {
+    widget._incomeStore.register(newIncome).then((result) {
       result.fold((success) {
         UmbrellaDialogs.showSuccess(
           context,
@@ -301,11 +302,11 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
     });
   }
 
-  void _resetForm() {
+  void resetForm() {
     setState(() {
-      _nameFieldController.clear();
-      _valueFieldController.clear();
-      _personNameFieldController.clear();
+      nameFieldController.clear();
+      valueFieldController.text = 'R\$ 0,00';
+      personNameFieldController.clear();
       frequency = Frequency.none;
       date = Date.today();
       category = null;
@@ -313,7 +314,7 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
     });
   }
 
-  (bool, String? message) _validateForm() {
+  (bool, String? message) validateForm() {
     bool areFieldsValid = _formKey.currentState!.validate();
 
     if (!areFieldsValid) return (false, null);

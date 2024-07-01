@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../utils/umbrella_palette.dart';
+import '../../utils/umbrella_palette.dart';
 
 class NavigationIconButton extends StatelessWidget {
   const NavigationIconButton({

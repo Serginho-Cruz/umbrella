@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../../utils/umbrella_palette.dart';
+import '../../utils/umbrella_palette.dart';
 
 class ShimmerListTile extends StatelessWidget {
   const ShimmerListTile({

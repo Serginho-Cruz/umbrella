@@ -28,11 +28,26 @@ class ExpenseStore extends Store<List<ExpenseModel>> {
 
   final List<ExpenseModel> all = [];
 
-  AsyncResult<int, Fail> register(Expense expense, Account account) async {
-    var result = await _manageExpense.register(expense, account);
+  AsyncResult<int, Fail> register(Expense expense) async {
+    var result = await _manageExpense.register(expense);
 
     return result;
   }
+
+  AsyncResult<void, Fail> updateValue(
+    Expense expense,
+    double newValue,
+  ) =>
+      _manageExpense.updateValue(expense, newValue);
+
+  AsyncResult<void, Fail> updateExpense({
+    required Expense oldExpense,
+    required Expense newExpense,
+  }) =>
+      _manageExpense.update(
+        oldExpense: oldExpense,
+        newExpense: newExpense,
+      );
 
   Future<void> getForAll({
     required List<Account> accounts,
@@ -44,9 +59,13 @@ class ExpenseStore extends Store<List<ExpenseModel>> {
     setLoading(true);
 
     var list = List.generate(
-        accounts.length,
-        (i) => _manageExpense.getAllOf(
-            month: month, year: year, account: accounts[i]));
+      accounts.length,
+      (i) => _manageExpense.getAllOf(
+        month: month,
+        year: year,
+        account: accounts[i],
+      ),
+    );
 
     var results = await Future.wait(list);
 

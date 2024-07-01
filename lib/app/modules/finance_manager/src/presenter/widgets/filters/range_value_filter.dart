@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../utils/currency_format.dart';
-import '../../../utils/umbrella_sizes.dart';
+import '../../utils/currency_format.dart';
+import '../../utils/umbrella_sizes.dart';
 
 class RangeValueFilter extends StatelessWidget {
   const RangeValueFilter({

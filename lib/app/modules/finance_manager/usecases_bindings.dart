@@ -31,35 +31,29 @@ abstract class UsecasesBindings {
   static void bind(Injector i) {
     i.addLazySingleton<ManageAccount>(() => ManageAccountImpl(i()));
 
-    i.addLazySingleton<ManageCreditCard>(
-      () => ManageCreditCardImpl(
-        cardRepository: i(),
-        invoiceRepository: i(),
-      ),
-    );
-
     i.addLazySingleton<GetExpenseCategories>(
         () => RemoteGetExpenseCategories(i()));
     i.addLazySingleton<GetIncomeCategories>(
         () => RemoteGetIncomeCategories(i()));
 
-    i.addLazySingleton<ManageExpense>(() => ManageExpenseImpl(
-          expenseRepository: i(),
-          balanceRepository: i(),
-          installmentRepository: i(),
-          invoiceRepository: i(),
-          manageInstallment: i(),
-          manageInvoice: i(),
-          paymentMethodRepository: i(),
-          transactionRepository: i(),
-        ));
+    i.addLazySingleton<ManageExpense>(
+      () => ManageExpenseImpl(
+        expenseRepository: i(),
+        balanceRepository: i(),
+      ),
+    );
 
     i.addLazySingleton<ManageIncome>(
         () => ManageIncomeImpl(incomeRepository: i(), balanceRepository: i()));
 
     i.addLazySingleton<ManageInstallment>(() => ManageInstallmentImpl());
 
-    i.addLazySingleton<ManageInvoice>(() => ManageInvoiceImpl());
+    i.addLazySingleton<ManageInvoice>(
+      () => ManageInvoiceImpl(
+        balanceRepository: i(),
+        repository: i(),
+      ),
+    );
 
     i.addLazySingleton<FilterExpenses>(FilterExpensesImpl.new);
     i.addLazySingleton<FilterIncomes>(FilterIncomesImpl.new);
@@ -67,5 +61,13 @@ abstract class UsecasesBindings {
 
     i.addLazySingleton<OrderIncomes>(OrderIncomesImpl.new);
     i.addLazySingleton<OrderExpenses>(OrderExpensesImpl.new);
+
+    i.addLazySingleton<ManageCreditCard>(
+      () => ManageCreditCardImpl(
+        cardRepository: i(),
+        invoiceRepository: i(),
+        manageInvoice: i(),
+      ),
+    );
   }
 }

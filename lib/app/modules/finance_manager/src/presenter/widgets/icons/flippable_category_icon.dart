@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/umbrella_palette.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/utils/umbrella_palette.dart';
 import 'dart:math' show pi;
 
 import '../../../domain/entities/category.dart';

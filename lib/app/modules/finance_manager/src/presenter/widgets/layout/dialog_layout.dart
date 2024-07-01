@@ -27,7 +27,7 @@ class DialogLayout extends StatelessWidget {
             ),
             child: Padding(
               padding:
-                  const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
+                  const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0,),
               child: child,
             ),
           );

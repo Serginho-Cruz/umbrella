@@ -22,12 +22,12 @@ sealed class UmbrellaPalette {
     Color(0xFF9BE4FF),
     Color(0xFFDAADFF),
   ];
-  static const List<(String, String)> cardHexAndNames = [
-    ('FFFFFFFF', 'Branco'),
-    ('FFBF6DFF', 'Roxo'),
-    ('FFB2FF59', 'Verde Claro'),
-    ('FF6FDBFF', 'Azul Claro'),
-    ('FFFFFF00', 'Amarelo'),
-    ('FFFF5252', 'Vermelho'),
-  ];
+  static const Map<String, String> cardHexAndNames = {
+    'FFFFFFFF': 'Branco',
+    'FFBF6DFF': 'Roxo',
+    'FFB2FF59': 'Verde Claro',
+    'FF6FDBFF': 'Azul Claro',
+    'FFFFFF00': 'Amarelo',
+    'FFFF5252': 'Vermelho',
+  };
 }

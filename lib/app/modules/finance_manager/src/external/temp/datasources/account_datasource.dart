@@ -34,7 +34,7 @@ class TemporaryAccountDatasource implements AccountDatasource {
 
     for (int i = 0; i < _accounts.length; i++) {
       var acc = _accounts.elementAt(i);
-      if (acc == newAccount) {
+      if (acc.id == newAccount.id) {
         Future.delayed(const Duration(seconds: 2), () {
           _accounts.removeAt(i);
           _accounts.insert(i, newAccount);
@@ -70,7 +70,7 @@ class TemporaryAccountDatasource implements AccountDatasource {
 
     for (int i = 0; i < _accounts.length; i++) {
       var acc = _accounts.elementAt(i);
-      if (acc == account) {
+      if (acc.id == account.id) {
         Future.delayed(const Duration(seconds: 2), () {
           _accounts.removeAt(i);
         });

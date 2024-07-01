@@ -6,32 +6,31 @@ import '../dialogs/date_picker_dialog.dart';
 class DateSelector extends StatefulWidget {
   const DateSelector({
     super.key,
-    required this.initialDate,
+    required this.date,
     required this.onDateSelected,
+    this.label = 'Data de Vencimento',
   });
 
-  final Date initialDate;
+  final Date date;
   final void Function(Date) onDateSelected;
+  final String label;
 
   @override
   State<DateSelector> createState() => _DateSelectorState();
 }
 
 class _DateSelectorState extends State<DateSelector> {
-  late Date selectedDate;
-  final TextEditingController _controller = TextEditingController();
+  late final TextEditingController controller;
 
   @override
   void initState() {
+    controller = TextEditingController();
+    setDate();
     super.initState();
-    selectedDate = widget.initialDate;
-    _controller.text = selectedDate.toString(format: DateFormat.ddmmyyyy);
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  void setDate() {
+    controller.text = widget.date.toString(format: DateFormat.ddmmyyyy);
   }
 
   @override
@@ -39,9 +38,9 @@ class _DateSelectorState extends State<DateSelector> {
     return SizedBox(
       height: 60.0,
       child: TextField(
-        controller: _controller,
+        controller: controller,
         decoration: InputDecoration(
-          labelText: 'Data de Vencimento',
+          labelText: widget.label,
           prefixIcon: const Icon(Icons.calendar_today),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12.0),
@@ -49,19 +48,26 @@ class _DateSelectorState extends State<DateSelector> {
         ),
         readOnly: true,
         onTap: () {
-          CustomDatePickerDialog.show(context, initialDate: selectedDate)
-              .then((date) {
-            if (date != null) {
-              setState(() {
-                selectedDate = date;
-                _controller.text =
-                    selectedDate.toString(format: DateFormat.ddmmyyyy);
-              });
-              widget.onDateSelected(date);
+          CustomDatePickerDialog.show(context, initialDate: widget.date)
+              .then((newDate) {
+            if (newDate != null) {
+              widget.onDateSelected(newDate);
             }
           });
         },
       ),
     );
+  }
+
+  @override
+  void didUpdateWidget(covariant DateSelector oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    setDate();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 }

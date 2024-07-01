@@ -7,33 +7,33 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/wi
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/selectors/account_selector.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/forms/my_form.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/layout/spaced.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/list_scoped_builder.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/list_scoped_builder.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/shimmer/shimmer_container.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/currency_input_formatter.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/utils/currency_input_formatter.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/extensions.dart';
 
-import '../../domain/entities/account.dart';
-import '../../domain/entities/category.dart';
-import '../../domain/entities/credit_card.dart';
-import '../../domain/entities/date.dart';
-import '../../domain/entities/expense.dart';
-import '../../domain/entities/frequency.dart';
+import '../../../domain/entities/account.dart';
+import '../../../domain/entities/category.dart';
+import '../../../domain/entities/credit_card.dart';
+import '../../../domain/entities/date.dart';
+import '../../../domain/entities/expense.dart';
+import '../../../domain/entities/frequency.dart';
 import '../../utils/umbrella_palette.dart';
-import '../controllers/account_controller.dart';
-import '../controllers/expense_store.dart';
-import '../widgets/buttons/primary_button.dart';
-import '../widgets/buttons/reset_button.dart';
-import '../widgets/tiles/category_row.dart';
-import '../widgets/layout/umbrella_scaffold.dart';
-import '../widgets/selectors/card_selector.dart';
-import '../widgets/selectors/category_selector.dart';
-import '../widgets/selectors/date_selector.dart';
-import '../widgets/texts/small_text.dart';
-import '../widgets/texts/text_link.dart';
-import '../widgets/forms/default_text_field.dart';
-import '../widgets/selectors/frequency_selector.dart';
-import '../widgets/forms/number_text_field.dart';
-import '../widgets/texts/medium_text.dart';
+import '../../controllers/account_controller.dart';
+import '../../controllers/expense_store.dart';
+import '../../widgets/buttons/primary_button.dart';
+import '../../widgets/buttons/reset_button.dart';
+import '../../widgets/tiles/category_row.dart';
+import '../../widgets/layout/umbrella_scaffold.dart';
+import '../../widgets/selectors/card_selector.dart';
+import '../../widgets/selectors/category_selector.dart';
+import '../../widgets/selectors/date_selector.dart';
+import '../../widgets/texts/small_text.dart';
+import '../../widgets/texts/text_link.dart';
+import '../../widgets/forms/default_text_field.dart';
+import '../../widgets/selectors/frequency_selector.dart';
+import '../../widgets/forms/number_text_field.dart';
+import '../../widgets/texts/medium_text.dart';
 
 class CreateExpenseScreen extends StatefulWidget {
   const CreateExpenseScreen({
@@ -211,7 +211,7 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
                 child: DateSelector(
-                  initialDate: date,
+                  date: date,
                   onDateSelected: (newDate) {
                     setState(() {
                       date = newDate;
@@ -223,9 +223,9 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                 store: widget._categoryStore,
                 onState: (ctx, categories) => CategorySelector(
                   categories: categories,
-                  onSelected: (category) {
+                  onSelected: (cat) {
                     setState(() {
-                      category = category;
+                      category = cat;
                       if (logicalCategoryError != null) {
                         logicalCategoryError = null;
                       }
@@ -471,12 +471,13 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
         dueDate: date,
         category: category!,
         frequency: frequency,
+        account: account!,
         personName: _personNameFieldController.text.trim().isEmpty
             ? null
             : _personNameFieldController.text.trim());
 
     //TODO: Put logic to pay in credit or in installments
-    widget._expenseStore.register(newExpense, account!).then((result) {
+    widget._expenseStore.register(newExpense).then((result) {
       result.fold((success) {
         UmbrellaDialogs.showSuccess(
           context,
@@ -494,7 +495,7 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
   void _resetForm() {
     setState(() {
       _nameFieldController.clear();
-      _valueFieldController.clear();
+      _valueFieldController.text = 'R\$ 0,00';
       _parcelsNumberFieldController.clear();
       _personNameFieldController.clear();
       frequency = Frequency.none;
@@ -505,6 +506,7 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
       willBePaidWithCredit = false;
       cardSelected = null;
       willBeTurntIntoInstallment = false;
+      parcelsValue = 0.00;
     });
   }
 

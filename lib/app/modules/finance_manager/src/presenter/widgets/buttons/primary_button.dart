@@ -1,4 +1,4 @@
-import '../../../utils/umbrella_palette.dart';
+import '../../utils/umbrella_palette.dart';
 import 'umbrella_button.dart';
 
 class PrimaryButton extends UmbrellaButton {

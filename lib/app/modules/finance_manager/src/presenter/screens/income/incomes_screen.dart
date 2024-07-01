@@ -2,31 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/tiles/finance_tile.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/extensions.dart';
-import '../../domain/entities/account.dart';
-import '../../domain/entities/category.dart';
-import '../../domain/models/income_model.dart';
-import '../../domain/models/status.dart';
-import '../../domain/usecases/orders/order_expenses.dart';
+import '../../../domain/entities/account.dart';
+import '../../../domain/entities/category.dart';
+import '../../../domain/models/income_model.dart';
+import '../../../domain/models/status.dart';
+import '../../../domain/usecases/orders/order_expenses.dart';
 import '../../utils/currency_format.dart';
-import '../controllers/account_controller.dart';
-import '../controllers/income_category_store.dart';
-import '../controllers/income_store.dart';
-import '../widgets/appbar/custom_app_bar.dart';
-import '../widgets/appbar/month_changer.dart';
-import '../widgets/buttons/navigation_button.dart';
-import '../widgets/buttons/navigation_icon_button.dart';
-import '../widgets/layout/spaced.dart';
-import '../widgets/filters/paiyable_filter.dart';
-import '../widgets/selectors/account_selector.dart';
-import '../widgets/shimmer/shimmer_list_tile.dart';
-import '../widgets/texts/big_text.dart';
-import '../widgets/texts/small_disclaimer.dart';
-import '../widgets/texts/small_text.dart';
-import '../widgets/tiles/finance_status_tile.dart';
-import '../widgets/layout/umbrella_scaffold.dart';
-import '../widgets/list_scoped_builder.dart';
-import '../widgets/texts/medium_text.dart';
-import '../widgets/dialogs/umbrella_dialogs.dart';
+import '../../widgets/others/tappable_options.dart';
+import '../../controllers/account_controller.dart';
+import '../../controllers/income_category_store.dart';
+import '../../controllers/income_store.dart';
+import '../../widgets/appbar/custom_app_bar.dart';
+import '../../widgets/appbar/month_changer.dart';
+import '../../widgets/buttons/navigation_button.dart';
+import '../../widgets/buttons/navigation_icon_button.dart';
+import '../../widgets/layout/spaced.dart';
+import '../../widgets/filters/paiyable_filter.dart';
+import '../../widgets/selectors/account_selector.dart';
+import '../../widgets/shimmer/shimmer_list_tile.dart';
+import '../../widgets/others/tappable.dart';
+import '../../widgets/texts/big_text.dart';
+import '../../widgets/texts/small_disclaimer.dart';
+import '../../widgets/texts/small_text.dart';
+import '../../widgets/tiles/finance_status_tile.dart';
+import '../../widgets/layout/umbrella_scaffold.dart';
+import '../../widgets/others/list_scoped_builder.dart';
+import '../../widgets/texts/medium_text.dart';
+import '../../widgets/dialogs/umbrella_dialogs.dart';
 
 class IncomesScreen extends StatefulWidget {
   const IncomesScreen({
@@ -234,9 +236,18 @@ class _IncomesScreenState extends State<IncomesScreen> {
                     children: [
                       ...List.generate(
                         incomes.length,
-                        (i) => FinanceTile(
-                          model: incomes[i],
-                          roundedOnTop: i == 0,
+                        (i) => Tappable(
+                          options: TappableOptions.incomes(
+                            context: context,
+                            model: incomes[i],
+                            store: widget._incomeStore,
+                            onPop: _fetchIncomes,
+                          ),
+                          openMenuDispatcher: TappableDispatcher.doubleTap,
+                          child: FinanceTile(
+                            model: incomes[i],
+                            roundedOnTop: i == 0,
+                          ),
                         ),
                       ),
                       const FinanceStatusTile(),
@@ -310,63 +321,67 @@ class _IncomesScreenState extends State<IncomesScreen> {
   }
 
   Widget _mountFilter([List<Category> categories = const []]) {
-    var (min, max) = _getMinAndMaxValues(widget._incomeStore.all);
+    return ScopedBuilder<IncomeStore, List<IncomeModel>>(
+        store: widget._incomeStore,
+        onState: (ctx, models) {
+          var (min, max) = _getMinAndMaxValues(widget._incomeStore.all);
 
-    if (!wasFiltered) {
-      minValue = min;
-      maxValue = max;
-    }
+          if (!wasFiltered) {
+            minValue = min;
+            maxValue = max;
+          }
 
-    return PaiyableFilter<IncomeModel>(
-      models: widget._incomeStore.all,
-      filterName: widget._incomeStore.filterByName,
-      filterByCategory: (models, cats) {
-        setState(() => filteredCategories
-          ..clear()
-          ..addAll(cats));
+          return PaiyableFilter<IncomeModel>(
+            models: widget._incomeStore.all,
+            filterName: widget._incomeStore.filterByName,
+            filterByCategory: (models, cats) {
+              setState(() => filteredCategories
+                ..clear()
+                ..addAll(cats));
 
-        return widget._incomeStore.filterByCategory(models, cats);
-      },
-      filterByStatus: (models, status) {
-        setState(() => filteredStatus
-          ..clear()
-          ..addAll(status));
+              return widget._incomeStore.filterByCategory(models, cats);
+            },
+            filterByStatus: (models, status) {
+              setState(() => filteredStatus
+                ..clear()
+                ..addAll(status));
 
-        return widget._incomeStore.filterByStatus(models, status);
-      },
-      filterByValue: (models, minimal, maximum) {
-        setState(() {
-          wasFiltered = true;
-          minValue = minimal;
-          maxValue = maximum;
+              return widget._incomeStore.filterByStatus(models, status);
+            },
+            filterByValue: (models, minimal, maximum) {
+              setState(() {
+                wasFiltered = true;
+                minValue = minimal;
+                maxValue = maximum;
+              });
+
+              return widget._incomeStore.filterByRangeValue(
+                models,
+                minimal,
+                maximum,
+              );
+            },
+            sort: (models, option, isCrescent) {
+              setState(() => sortOption = option);
+              sortOption = option;
+              return widget._incomeStore.sort(
+                models,
+                option,
+                isCrescent: isCrescent,
+              );
+            },
+            onFiltersApplied: (models) {
+              widget._incomeStore.updateState(models);
+            },
+            filteredStatus: filteredStatus,
+            filteredValues: (minValue, maxValue),
+            categories: categories,
+            filteredCategories: filteredCategories,
+            minValue: min,
+            maxValue: max,
+            sortOption: sortOption,
+          );
         });
-
-        return widget._incomeStore.filterByRangeValue(
-          models,
-          minimal,
-          maximum,
-        );
-      },
-      sort: (models, option, isCrescent) {
-        setState(() => sortOption = option);
-        sortOption = option;
-        return widget._incomeStore.sort(
-          models,
-          option,
-          isCrescent: isCrescent,
-        );
-      },
-      onFiltersApplied: (models) {
-        widget._incomeStore.updateState(models);
-      },
-      filteredStatus: filteredStatus,
-      filteredValues: (minValue, maxValue),
-      categories: categories,
-      filteredCategories: filteredCategories,
-      minValue: min,
-      maxValue: max,
-      sortOption: sortOption,
-    );
   }
 
   (double, double) _getMinAndMaxValues(List<IncomeModel> models) {

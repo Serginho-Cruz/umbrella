@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/models/status.dart';
-import '../../../utils/umbrella_palette.dart';
+import '../../utils/umbrella_palette.dart';
 import '../icons/status_icon.dart';
 import '../texts/small_text.dart';
 

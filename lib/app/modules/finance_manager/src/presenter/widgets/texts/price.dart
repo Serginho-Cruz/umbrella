@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../utils/currency_format.dart';
-import '../../../utils/umbrella_sizes.dart';
+import '../../utils/currency_format.dart';
+import '../../utils/umbrella_sizes.dart';
 
 class Price extends StatelessWidget {
   final double value;

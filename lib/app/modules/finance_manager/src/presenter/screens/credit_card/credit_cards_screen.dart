@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/credit_card.dart';
 
-import '../controllers/credit_card_store.dart';
-import '../widgets/buttons/navigation_button.dart';
-import '../widgets/cards/credit_card_widget.dart';
-import '../widgets/dialogs/umbrella_dialogs.dart';
-import '../widgets/filters/umbrella_search_bar.dart';
-import '../widgets/layout/umbrella_scaffold.dart';
-import '../widgets/list_scoped_builder.dart';
-import '../widgets/shimmer/shimmer_card.dart';
-import '../widgets/texts/medium_text.dart';
+import '../../widgets/others/tappable_options.dart';
+import '../../controllers/credit_card_store.dart';
+import '../../widgets/buttons/navigation_button.dart';
+import '../../widgets/cards/credit_card_widget.dart';
+import '../../widgets/dialogs/umbrella_dialogs.dart';
+import '../../widgets/filters/umbrella_search_bar.dart';
+import '../../widgets/layout/umbrella_scaffold.dart';
+import '../../widgets/others/list_scoped_builder.dart';
+import '../../widgets/shimmer/shimmer_card.dart';
+import '../../widgets/others/tappable.dart';
+import '../../widgets/texts/medium_text.dart';
 
 class CreditCardsScreen extends StatefulWidget {
   const CreditCardsScreen({
@@ -100,9 +102,16 @@ class _CreditCardsScreenState extends State<CreditCardsScreen> {
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: List.generate(cards.length, (i) {
-                    return CreditCardWidget(
-                      creditCard: cards[i],
-                      margin: const EdgeInsets.symmetric(vertical: 20.0),
+                    return Tappable(
+                      options: TappableOptions.cards(
+                        context: context,
+                        card: cards[i],
+                        onPop: _fetchCards,
+                      ),
+                      child: CreditCardWidget(
+                        creditCard: cards[i],
+                        margin: const EdgeInsets.symmetric(vertical: 20.0),
+                      ),
                     );
                   }),
                 );

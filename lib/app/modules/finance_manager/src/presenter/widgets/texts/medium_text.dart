@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../utils/umbrella_sizes.dart';
+import '../../utils/umbrella_sizes.dart';
 
 class MediumText extends StatelessWidget {
   final String data;

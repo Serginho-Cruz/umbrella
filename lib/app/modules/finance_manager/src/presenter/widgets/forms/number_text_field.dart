@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/currency_input_formatter.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/utils/currency_input_formatter.dart';
 
 class NumberTextField extends StatelessWidget {
   const NumberTextField({

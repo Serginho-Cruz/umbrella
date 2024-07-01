@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
-import 'modules/finance_manager/src/utils/umbrella_palette.dart';
+import 'modules/finance_manager/src/presenter/utils/umbrella_palette.dart';
 
 class AppWidget extends StatelessWidget {
   const AppWidget({super.key});

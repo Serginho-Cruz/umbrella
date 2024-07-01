@@ -31,6 +31,17 @@ class CreditCardStore extends Store<List<CreditCard>> {
     return result;
   }
 
+  AsyncResult<Unit, Fail> updateCard(
+    CreditCard oldCard,
+    CreditCard newCard,
+  ) async {
+    var result = await _manageCreditCard.update(oldCard, newCard);
+
+    if (result.isSuccess()) _hasAll = false;
+
+    return result;
+  }
+
   Future<void> getAll() async {
     if (_hasAll) return;
 

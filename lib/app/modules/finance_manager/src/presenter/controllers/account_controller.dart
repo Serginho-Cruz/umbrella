@@ -16,14 +16,12 @@ class AccountStore extends Store<List<Account>> {
   final AuthController _authController;
   Account? selectedAccount;
 
-  bool _hasAll = false;
-
   Future<void> create(Account account) async {}
 
   Future<void> updateAccount(Account oldAccount, Account newAccount) async {}
 
   Future<void> getAll() async {
-    if (!_authController.isLogged || _hasAll) return;
+    if (!_authController.isLogged) return;
 
     setLoading(true);
     var user = _authController.user!;
@@ -31,8 +29,7 @@ class AccountStore extends Store<List<Account>> {
     var result = await _manageAccount.getAll(user);
 
     result.fold((success) {
-      _hasAll = true;
-      update(success);
+      update(success, force: true);
     }, (failure) {
       setError(failure);
     });
