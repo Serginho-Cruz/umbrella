@@ -1,14 +1,14 @@
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:umbrella_echonomics/app/modules/auth/auth_module.dart';
 
-import 'controllers_bindings.dart';
-import 'datasources_bindings.dart';
-import 'repositories_bindings.dart';
+import 'bindings/controllers_bindings.dart';
+import 'bindings/datasources_bindings.dart';
+import 'bindings/repositories_bindings.dart';
 import 'routes.dart';
 import 'src/domain/entities/credit_card.dart';
 import 'src/domain/entities/expense.dart';
 import 'src/domain/entities/income.dart';
-import 'usecases_bindings.dart';
+import 'bindings/usecases_bindings.dart';
 
 class FinanceManagerModule extends Module {
   @override
