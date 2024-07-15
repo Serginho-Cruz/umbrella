@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/appbar/custom_app_bar.dart';
 
 import '../../../domain/entities/account.dart';
 import '../../../domain/entities/credit_card.dart';
+import '../../controllers/balance_store.dart';
 import '../../utils/currency_input_formatter.dart';
 import '../../utils/umbrella_palette.dart';
 import '../../controllers/account_controller.dart';
@@ -27,11 +29,14 @@ class CreateCreditCardScreen extends StatefulWidget {
   const CreateCreditCardScreen({
     super.key,
     required AccountStore accountStore,
+    required BalanceStore balanceStore,
     required CreditCardStore cardStore,
   })  : _accountStore = accountStore,
+        _balanceStore = balanceStore,
         _cardStore = cardStore;
 
   final AccountStore _accountStore;
+  final BalanceStore _balanceStore;
   final CreditCardStore _cardStore;
 
   @override
@@ -80,128 +85,129 @@ class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
   @override
   Widget build(BuildContext context) {
     return UmbrellaScaffold(
-      appBarTitle: 'Novo Cartão',
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          MyForm(
-            formKey: formKey,
-            padding: EdgeInsets.only(
-              top: 12.0,
-              left: MediaQuery.sizeOf(context).width * 0.05,
-              right: MediaQuery.sizeOf(context).width * 0.05,
-            ),
-            children: [
-              ListScopedBuilder<AccountStore, List<Account>>(
-                store: widget._accountStore,
-                loadingWidget: const CircularProgressIndicator.adaptive(),
-                onError: (ctx, fail) => Text(fail.message),
-                onEmptyState: () => Container(),
-                onState: (ctx, accounts) {
-                  account =
-                      account ?? accounts.singleWhere((acc) => acc.isDefault);
-
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 15.0),
-                    child: AccountSelector(
-                      accounts: accounts,
-                      selectedAccount: account!,
-                      label: 'Conta a debitar',
-                      onSelected: (acc) {
-                        setState(() {
-                          account = acc;
-                        });
-                      },
-                    ),
-                  );
-                },
-              ),
-              DefaultTextField(
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Preencha o campo Nome';
-                  }
-
-                  if (value.length < 5) {
-                    return 'O Nome deve conter pelo menos 5 letras';
-                  }
-
-                  return null;
-                },
-                controller: nameFieldController,
-                focusNode: nameFieldFocusNode,
-                maxLength: 30,
-                labelText: 'Nome',
-                onEditingComplete: () {
-                  nameFieldFocusNode.unfocus();
-                },
-              ),
-              NumberTextField(
-                controller: annuityFieldController,
-                padding: const EdgeInsets.symmetric(vertical: 20.0),
-                isCurrency: true,
-                label: 'Anuidade do Cartão',
-                focusNode: annuityFocusNode,
-                validate: (number) => null,
-              ),
-              DaySelector(
-                bottomSheetText:
-                    'Selecione o Dia do Fechamento da fatura desse cartão',
-                onDaySelected: (day) {
-                  setState(() => invoiceCloseDay = day);
-                },
-                child: Spaced(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  first: const BigText('Fecham. da Fatura'),
-                  second: BigText('Dia $invoiceCloseDay'),
-                ),
-              ),
-              DaySelector(
-                bottomSheetText:
-                    'Selecione o Dia do Vencimento da fatura desse cartão',
-                onDaySelected: (day) {
-                  setState(() => invoiceDueDate = day);
-                },
-                child: Spaced(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  first: const BigText('Vencim. da Fatura'),
-                  second: BigText('Dia $invoiceDueDate'),
-                ),
-              ),
-              ColorSelector(
-                onSelected: (hex) {
-                  setState(() {
-                    hexColor = hex;
-                    colorName = UmbrellaPalette.cardHexAndNames[hex]!;
-                  });
-                },
-                child: ColorRow(
-                  colorHex: hexColor,
-                  colorName: colorName,
-                  label: 'Cor do Cartão',
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
-                ),
-              ),
-              CardPreviewSection(
-                card: mountCard(),
-                isToShow: nameFieldController.text.trim().isNotEmpty,
-              ),
-              Spaced(
-                padding: const EdgeInsets.symmetric(vertical: 20.0),
-                first: ResetButton(reset: resetForm),
-                second: PrimaryButton(
-                  icon: const Icon(
-                    Icons.add_circle_rounded,
-                    color: Colors.black,
-                    size: 24.0,
-                  ),
-                  label: const MediumText.bold('Adicionar'),
-                  onPressed: onFormSubmitted,
-                ),
-              ),
-            ],
+      appBar: CustomAppBar(
+        title: 'Novo Cartão',
+        accountStore: widget._accountStore,
+        balanceStore: widget._balanceStore,
+      ),
+      child: SingleChildScrollView(
+        child: MyForm(
+          formKey: formKey,
+          padding: EdgeInsets.only(
+            top: 12.0,
+            left: MediaQuery.sizeOf(context).width * 0.05,
+            right: MediaQuery.sizeOf(context).width * 0.05,
           ),
-        ],
+          children: [
+            ListScopedBuilder<AccountStore, List<Account>>(
+              store: widget._accountStore,
+              loadingWidget: const CircularProgressIndicator.adaptive(),
+              onError: (ctx, fail) => Text(fail.message),
+              onEmptyState: () => Container(),
+              onState: (ctx, accounts) {
+                account =
+                    account ?? accounts.singleWhere((acc) => acc.isDefault);
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 15.0),
+                  child: AccountSelector(
+                    accounts: accounts,
+                    selectedAccount: account!,
+                    label: 'Conta a debitar',
+                    onSelected: (acc) {
+                      setState(() {
+                        account = acc;
+                      });
+                    },
+                  ),
+                );
+              },
+            ),
+            DefaultTextField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Preencha o campo Nome';
+                }
+
+                if (value.length < 5) {
+                  return 'O Nome deve conter pelo menos 5 letras';
+                }
+
+                return null;
+              },
+              controller: nameFieldController,
+              focusNode: nameFieldFocusNode,
+              maxLength: 30,
+              labelText: 'Nome',
+              onEditingComplete: () {
+                nameFieldFocusNode.unfocus();
+              },
+            ),
+            NumberTextField(
+              controller: annuityFieldController,
+              padding: const EdgeInsets.symmetric(vertical: 20.0),
+              isCurrency: true,
+              label: 'Anuidade do Cartão',
+              focusNode: annuityFocusNode,
+              validate: (number) => null,
+            ),
+            DaySelector(
+              bottomSheetText:
+                  'Selecione o Dia do Fechamento da fatura desse cartão',
+              onDaySelected: (day) {
+                setState(() => invoiceCloseDay = day);
+              },
+              child: Spaced(
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                first: const BigText('Fecham. da Fatura'),
+                second: BigText('Dia $invoiceCloseDay'),
+              ),
+            ),
+            DaySelector(
+              bottomSheetText:
+                  'Selecione o Dia do Vencimento da fatura desse cartão',
+              onDaySelected: (day) {
+                setState(() => invoiceDueDate = day);
+              },
+              child: Spaced(
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                first: const BigText('Vencim. da Fatura'),
+                second: BigText('Dia $invoiceDueDate'),
+              ),
+            ),
+            ColorSelector(
+              onSelected: (hex) {
+                setState(() {
+                  hexColor = hex;
+                  colorName = UmbrellaPalette.cardHexAndNames[hex]!;
+                });
+              },
+              child: ColorRow(
+                colorHex: hexColor,
+                colorName: colorName,
+                label: 'Cor do Cartão',
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+              ),
+            ),
+            CardPreviewSection(
+              card: mountCard(),
+              isToShow: nameFieldController.text.trim().isNotEmpty,
+            ),
+            Spaced(
+              padding: const EdgeInsets.symmetric(vertical: 20.0),
+              first: ResetButton(reset: resetForm),
+              second: PrimaryButton(
+                icon: const Icon(
+                  Icons.add_circle_rounded,
+                  color: Colors.black,
+                  size: 24.0,
+                ),
+                label: const MediumText.bold('Adicionar'),
+                onPressed: onFormSubmitted,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

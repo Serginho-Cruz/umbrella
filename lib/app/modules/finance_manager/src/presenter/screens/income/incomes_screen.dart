@@ -7,6 +7,7 @@ import '../../../domain/entities/category.dart';
 import '../../../domain/models/income_model.dart';
 import '../../../domain/models/status.dart';
 import '../../../domain/usecases/orders/order_expenses.dart';
+import '../../controllers/balance_store.dart';
 import '../../utils/currency_format.dart';
 import '../../widgets/others/tappable_options.dart';
 import '../../controllers/account_controller.dart';
@@ -36,13 +37,16 @@ class IncomesScreen extends StatefulWidget {
     required IncomeStore incomeStore,
     required AccountStore accountStore,
     required IncomeCategoryStore categoryStore,
+    required BalanceStore balanceStore,
   })  : _incomeStore = incomeStore,
+        _categoryStore = categoryStore,
         _accountStore = accountStore,
-        _categoryStore = categoryStore;
+        _balanceStore = balanceStore;
 
   final IncomeStore _incomeStore;
   final IncomeCategoryStore _categoryStore;
   final AccountStore _accountStore;
+  final BalanceStore _balanceStore;
 
   @override
   State<IncomesScreen> createState() => _IncomesScreenState();
@@ -61,9 +65,6 @@ class _IncomesScreenState extends State<IncomesScreen> {
     super.initState();
     Future.delayed(Duration.zero, () {
       widget._categoryStore.getAll();
-      widget._incomeStore.when<void>(onState: (_) {
-        setState(() {});
-      });
     });
   }
 
@@ -71,21 +72,18 @@ class _IncomesScreenState extends State<IncomesScreen> {
   Widget build(BuildContext context) {
     return ListScopedBuilder<AccountStore, List<Account>>(
       store: widget._accountStore,
-      loadingWidget: SafeArea(
-        child: Scaffold(
-          appBar: CustomAppBar(title: 'Receitas', showBalances: false),
-          backgroundColor: Colors.white,
-          body: const Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: 100,
-                height: 100,
-                child: CircularProgressIndicator.adaptive(),
-              ),
-              BigText.bold('Carregando Contas...')
-            ],
-          ),
+      loadingWidget: const UmbrellaScaffold(
+        appBar: CustomAppBar(title: 'Receitas', showBalances: false),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 100,
+              height: 100,
+              child: CircularProgressIndicator.adaptive(),
+            ),
+            BigText.bold('Carregando Contas...')
+          ],
         ),
       ),
       onError: (ctx, fail) {
@@ -118,153 +116,157 @@ class _IncomesScreenState extends State<IncomesScreen> {
       },
       onState: (ctx, accounts) {
         return UmbrellaScaffold(
-          appBarTitle: 'Receitas',
-          showMonthChanger: true,
-          onMonthChange: (_, __) {
-            Future.delayed(Duration.zero, () {
-              _fetchIncomes();
-            });
-          },
+          appBar: CustomAppBar(
+            title: 'Receitas',
+            accountStore: widget._accountStore,
+            balanceStore: widget._balanceStore,
+            showMonthChanger: true,
+            onMonthChange: (_, __) => _fetchIncomes(),
+          ),
           floatingActionButton: const NavigationIconButton(
             route: '/finance_manager/income/add',
           ),
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: MediaQuery.sizeOf(context).width * 0.05,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(height: 20.0),
-                AccountSelector(
-                  accounts: accounts,
-                  selectedAccount: widget._accountStore.selectedAccount,
-                  onSelected: (selected) {
-                    if (selected != widget._accountStore.selectedAccount) {
-                      setState(
-                        () => widget._accountStore.selectedAccount = selected,
-                      );
-                      _fetchIncomes();
-                    }
-                  },
-                ),
-                const SizedBox(height: 20.0),
-                _mountTotalText(
-                  text: 'Total em Receitas: ',
-                  calcTotal: (models) {
-                    double value = 0.00;
-
-                    for (var element in models) {
-                      value = (value + element.totalValue).roundToDecimal();
-                    }
-
-                    return value;
-                  },
-                ),
-                const SizedBox(height: 10.0),
-                _mountTotalText(
-                  text: 'Total Pago: ',
-                  calcTotal: (models) {
-                    double value = 0.00;
-
-                    for (var element in models) {
-                      value = (value + element.paidValue).roundToDecimal();
-                    }
-
-                    return value;
-                  },
-                ),
-                const SizedBox(height: 30.0),
-                ScopedBuilder<IncomeCategoryStore, List<Category>>(
-                  store: widget._categoryStore,
-                  onLoading: (ctx) =>
-                      const CircularProgressIndicator.adaptive(),
-                  onError: (ctx, fail) => _mountFilter(),
-                  onState: (ctx, categories) => _mountFilter(categories),
-                ),
-                const SizedBox(height: 30.0),
-                ListScopedBuilder<IncomeStore, List<IncomeModel>>(
-                  store: widget._incomeStore,
-                  onError: (ctx, fail) {
-                    UmbrellaDialogs.showError(
-                      context,
-                      fail.message,
-                    );
-                    var month = MonthChanger.currentMonthAndYear.monthName;
-                    return Center(
-                      child: MediumText(
-                          'Erro ao obter as Receitas do Mês de $month'),
-                    );
-                  },
-                  loadingWidget: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: List.generate(
-                      5,
-                      (i) => ShimmerListTile(
-                        roundedOnTop: i == 0,
-                        roundedOnBottom: i == 4,
-                      ),
-                    ),
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.sizeOf(context).width * 0.05,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 20.0),
+                  AccountSelector(
+                    accounts: accounts,
+                    selectedAccount: widget._accountStore.selectedAccount,
+                    onSelected: (selected) {
+                      if (selected != widget._accountStore.selectedAccount) {
+                        setState(
+                          () => widget._accountStore.selectedAccount = selected,
+                        );
+                        _fetchIncomes();
+                      }
+                    },
                   ),
-                  onEmptyState: () {
-                    String text;
-                    String monthName =
-                        MonthChanger.currentMonthAndYear.monthName;
-                    if (wasFiltered) {
-                      text =
-                          'Nenhuma Receita com os filtros atuais para o mês de $monthName';
-                    } else {
-                      text =
-                          'Nenhuma Receita encontrada para o mês de $monthName';
-                    }
+                  const SizedBox(height: 20.0),
+                  _mountTotalText(
+                    text: 'Total em Receitas: ',
+                    calcTotal: (models) {
+                      double value = 0.00;
 
-                    return SizedBox(
-                      height: 200.0,
-                      width: MediaQuery.sizeOf(context).width * 0.8,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.attach_money_rounded, size: 60.0),
-                          const SizedBox(height: 20.0),
-                          MediumText.bold(text, textAlign: TextAlign.center),
-                        ],
-                      ),
-                    );
-                  },
-                  onState: (ctx, incomes) => Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ...List.generate(
-                        incomes.length,
-                        (i) => Tappable(
-                          options: TappableOptions.incomes(
-                            context: context,
-                            model: incomes[i],
-                            store: widget._incomeStore,
-                            onPop: _fetchIncomes,
-                          ),
-                          openMenuDispatcher: TappableDispatcher.doubleTap,
-                          child: FinanceTile(
-                            model: incomes[i],
-                            roundedOnTop: i == 0,
-                          ),
+                      for (var element in models) {
+                        value = (value + element.totalValue).roundToDecimal();
+                      }
+
+                      return value;
+                    },
+                  ),
+                  const SizedBox(height: 10.0),
+                  _mountTotalText(
+                    text: 'Total Pago: ',
+                    calcTotal: (models) {
+                      double value = 0.00;
+
+                      for (var element in models) {
+                        value = (value + element.paidValue).roundToDecimal();
+                      }
+
+                      return value;
+                    },
+                  ),
+                  const SizedBox(height: 30.0),
+                  ScopedBuilder<IncomeCategoryStore, List<Category>>(
+                    store: widget._categoryStore,
+                    onLoading: (ctx) =>
+                        const CircularProgressIndicator.adaptive(),
+                    onError: (ctx, fail) => _mountFilter(),
+                    onState: (ctx, categories) => _mountFilter(categories),
+                  ),
+                  const SizedBox(height: 30.0),
+                  ListScopedBuilder<IncomeStore, List<IncomeModel>>(
+                    store: widget._incomeStore,
+                    onError: (ctx, fail) {
+                      UmbrellaDialogs.showError(
+                        context,
+                        fail.message,
+                      );
+                      var month = MonthChanger.currentMonthAndYear.monthName;
+                      return Center(
+                        child: MediumText(
+                            'Erro ao obter as Receitas do Mês de $month'),
+                      );
+                    },
+                    loadingWidget: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: List.generate(
+                        5,
+                        (i) => ShimmerListTile(
+                          roundedOnTop: i == 0,
+                          roundedOnBottom: i == 4,
                         ),
                       ),
-                      const FinanceStatusTile(),
-                      const SmallDisclaimer(
-                        'Aperte duas vezes em uma receita para abrir o menu de opções',
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                      ),
-                    ],
+                    ),
+                    onEmptyState: () {
+                      String text;
+                      String monthName =
+                          MonthChanger.currentMonthAndYear.monthName;
+                      if (wasFiltered) {
+                        text =
+                            'Nenhuma Receita com os filtros atuais para o mês de $monthName';
+                      } else {
+                        text =
+                            'Nenhuma Receita encontrada para o mês de $monthName';
+                      }
+
+                      return SizedBox(
+                        height: 200.0,
+                        width: MediaQuery.sizeOf(context).width * 0.8,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.attach_money_rounded, size: 60.0),
+                            const SizedBox(height: 20.0),
+                            MediumText.bold(text, textAlign: TextAlign.center),
+                          ],
+                        ),
+                      );
+                    },
+                    onState: (ctx, incomes) => Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ...List.generate(
+                          incomes.length,
+                          (i) => Tappable(
+                            options: TappableOptions.incomes(
+                              context: context,
+                              model: incomes[i],
+                              store: widget._incomeStore,
+                              accountStore: widget._accountStore,
+                              onPop: _fetchIncomes,
+                            ),
+                            openMenuDispatcher: TappableDispatcher.doubleTap,
+                            child: FinanceTile(
+                              model: incomes[i],
+                              roundedOnTop: i == 0,
+                            ),
+                          ),
+                        ),
+                        const FinanceStatusTile(),
+                        const SmallDisclaimer(
+                          'Aperte duas vezes em uma receita para abrir o menu de opções',
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                Spaced(
-                  padding: const EdgeInsets.only(top: 40.0, bottom: 25.0),
-                  first: NavigationButton.toExpenses(context, height: 50.0),
-                  second: NavigationButton.toCards(context, height: 50.0),
-                ),
-              ],
+                  Spaced(
+                    padding: const EdgeInsets.only(top: 40.0, bottom: 25.0),
+                    first: NavigationButton.toExpenses(context, height: 50.0),
+                    second: NavigationButton.toCards(context, height: 50.0),
+                  ),
+                ],
+              ),
             ),
           ),
         );

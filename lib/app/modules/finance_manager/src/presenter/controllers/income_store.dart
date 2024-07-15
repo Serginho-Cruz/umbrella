@@ -41,6 +41,12 @@ class IncomeStore extends Store<List<IncomeModel>> {
   ) =>
       _manageIncome.updateValue(income, newValue);
 
+  AsyncResult<void, Fail> switchAccount(
+    Income income,
+    Account newAccount,
+  ) =>
+      _manageIncome.switchAccount(income, newAccount);
+
   AsyncResult<void, Fail> updateIncome({
     required Income oldIncome,
     required Income newIncome,

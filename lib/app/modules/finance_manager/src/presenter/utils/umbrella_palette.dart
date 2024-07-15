@@ -13,6 +13,7 @@ sealed class UmbrellaPalette {
   static const Color activeResetButton = Color(0xFFC9B81A);
   static const Color shimmerBaseColor = Color(0xFFBDBDBD);
   static const Color shimmerHighlightColor = Color(0xFFEEEEEE);
+  static const Color negativeBalanceColor = Color(0xFFB80000);
   static const Color gray = Color(0xFFFAFAFA);
   static const List<Color> appBarGradientColors = [
     secondaryColor,

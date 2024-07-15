@@ -22,9 +22,11 @@ abstract interface class InvoiceDatasource {
     required CreditCard card,
   });
   Future<Invoice> getById(int id);
+
   Future<List<Invoice>> getInRange({
     required Date inferiorLimit,
     required Date upperLimit,
+    required Account account,
   });
   Future<void> reset(Invoice invoice);
 }

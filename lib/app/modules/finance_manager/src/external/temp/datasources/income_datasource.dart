@@ -68,7 +68,7 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         totalValue: 2000.00,
         paidValue: 0.00,
         remainingValue: 2000.00,
-        dueDate: Date(day: 6, month: 6, year: 2024),
+        dueDate: Date(day: 6, month: 9, year: 2024),
         category:
             const Category(id: 11, name: 'Outros', icon: 'icons/outros.png'),
         frequency: Frequency.yearly,
@@ -166,7 +166,13 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
     if (index == null || accountId == null) throw GenericError();
 
     _incomes[accountId]!.removeAt(index);
-    _incomes[accountId]!.insert(index, newIncome);
+
+    if (!_incomes.containsKey(newIncome.account.id)) {
+      _incomes.putIfAbsent(newIncome.account.id, () => [newIncome]);
+      return;
+    }
+
+    _incomes.update(newIncome.account.id, (incs) => incs..add(newIncome));
   }
 
   @override
@@ -175,12 +181,31 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
     required int year,
     required Account account,
   }) {
-    var incomes = _incomes
-        .putIfAbsent(account.id, () => [])
-        .where((e) => e.dueDate.month == month && e.dueDate.year == year);
+    var allFromAccount = _incomes.putIfAbsent(account.id, () => []);
+
+    var fromMonth = allFromAccount
+        .where((i) =>
+            i.dueDate.month == month &&
+            i.dueDate.year == year &&
+            i.frequency != Frequency.monthly)
+        .toList();
+
+    var monthly = allFromAccount.where((e) => e.frequency == Frequency.monthly);
+
+    var monthlyCorrectedDates = <Income>[];
+
+    for (var element in monthly) {
+      monthlyCorrectedDates.add(
+        element.copyWith(
+          dueDate: element.dueDate.copyWith(month: month, year: year),
+        ),
+      );
+    }
+
+    var incomes = fromMonth..addAll(monthlyCorrectedDates);
 
     return Future.delayed(const Duration(seconds: 2), () {
-      return incomes.toList();
+      return incomes;
     });
   }
 
@@ -212,7 +237,7 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         .putIfAbsent(account.id, () => [])
         .where((e) => e.frequency == frequency);
 
-    return Future.delayed(const Duration(seconds: 4), () {
+    return Future.delayed(const Duration(seconds: 1), () {
       return incomes.toList();
     });
   }

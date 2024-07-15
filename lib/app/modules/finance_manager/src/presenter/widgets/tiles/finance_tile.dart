@@ -12,8 +12,7 @@ import 'category_row.dart';
 import '../layout/spaced.dart';
 import '../icons/status_icon.dart';
 
-//TODO: Implement double tap detector. This action will open a menu with options. Like 'update', 'see in details'
-class FinanceTile extends StatefulWidget {
+class FinanceTile extends StatelessWidget {
   const FinanceTile({
     super.key,
     required this.model,
@@ -26,14 +25,9 @@ class FinanceTile extends StatefulWidget {
   final bool roundedOnTop;
 
   @override
-  State<FinanceTile> createState() => _FinanceTileState();
-}
-
-class _FinanceTileState extends State<FinanceTile> {
-  @override
   Widget build(BuildContext context) {
     var radius = const Radius.circular(8.0);
-    var onTop = widget.roundedOnTop;
+    var onTop = roundedOnTop;
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -45,16 +39,16 @@ class _FinanceTileState extends State<FinanceTile> {
         ),
       ),
       child: ExpansionTile(
-        leading: StatusIcon(status: widget.model.status, size: 40.0),
+        leading: StatusIcon(status: model.status, size: 40.0),
         title: BigText.bold(
-          widget.model.name,
+          model.name,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
         iconColor: Colors.black,
         collapsedIconColor: Colors.black,
         subtitle: Price.medium(
-          widget.model.totalValue,
+          model.totalValue,
           fontWeight: FontWeight.bold,
         ),
         tilePadding: const EdgeInsets.symmetric(
@@ -76,34 +70,33 @@ class _FinanceTileState extends State<FinanceTile> {
               Spaced(
                 first: const MediumText('Vencimento'),
                 second: MediumText.bold(
-                  widget.model.overdueDate
-                      .toString(format: DateFormat.ddmmyyyy),
+                  model.overdueDate.toString(format: DateFormat.ddmmyyyy),
                 ),
               ),
               Spaced(
                 first: const MediumText('Valor Pago'),
                 second: Price.medium(
-                  widget.model.paidValue,
+                  model.paidValue,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               Spaced(
                 first: const MediumText('Valor Restante'),
                 second: Price.medium(
-                  widget.model.remainingValue,
+                  model.remainingValue,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              if (widget.model.personName != null)
+              if (model.personName != null)
                 Spaced(
                   first: MediumText(
-                    widget.model is ExpenseModel ? 'Devedor' : 'Devo isso a',
+                    model is ExpenseModel ? 'Devedor' : 'Devo isso a',
                   ),
-                  second: MediumText.bold(widget.model.personName!),
+                  second: MediumText.bold(model.personName!),
                 ),
             ],
           ),
-          CategoryRow(category: widget.model.category),
+          CategoryRow(category: model.category),
         ],
       ),
     );

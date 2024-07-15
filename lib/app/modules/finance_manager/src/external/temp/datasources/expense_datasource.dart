@@ -153,7 +153,13 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
     if (index == null || accountId == null) throw GenericError();
 
     _expenses[accountId]!.removeAt(index);
-    _expenses[accountId]!.insert(index, newExpense);
+
+    if (!_expenses.containsKey(newExpense.account.id)) {
+      _expenses.putIfAbsent(newExpense.account.id, () => [newExpense]);
+      return;
+    }
+
+    _expenses.update(newExpense.account.id, (exps) => exps..add(newExpense));
   }
 
   @override
@@ -162,12 +168,31 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
     required int year,
     required Account account,
   }) {
-    var expenses = _expenses
-        .putIfAbsent(account.id, () => [])
-        .where((e) => e.dueDate.month == month && e.dueDate.year == year);
+    var allFromAccount = _expenses.putIfAbsent(account.id, () => []);
+
+    var fromMonth = allFromAccount
+        .where((e) =>
+            e.dueDate.month == month &&
+            e.dueDate.year == year &&
+            e.frequency != Frequency.monthly)
+        .toList();
+
+    var monthly = allFromAccount.where((e) => e.frequency == Frequency.monthly);
+
+    var monthlyCorrectedDates = <Expense>[];
+
+    for (var element in monthly) {
+      monthlyCorrectedDates.add(
+        element.copyWith(
+          dueDate: element.dueDate.copyWith(month: month, year: year),
+        ),
+      );
+    }
+
+    var expenses = fromMonth..addAll(monthlyCorrectedDates);
 
     return Future.delayed(const Duration(seconds: 2), () {
-      return expenses.toList();
+      return expenses;
     });
   }
 
@@ -199,7 +224,7 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         .putIfAbsent(account.id, () => [])
         .where((e) => e.frequency == frequency);
 
-    return Future.delayed(const Duration(seconds: 4), () {
+    return Future.delayed(const Duration(seconds: 1), () {
       return expenses.toList();
     });
   }

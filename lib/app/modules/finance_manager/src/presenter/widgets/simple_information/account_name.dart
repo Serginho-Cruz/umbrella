@@ -9,11 +9,13 @@ class AccountName extends StatelessWidget {
     required this.account,
     required this.trailingText,
     this.alignment = MainAxisAlignment.spaceBetween,
+    this.minimalSpace = 20.0,
   });
 
   final Account account;
   final String trailingText;
   final MainAxisAlignment alignment;
+  final double minimalSpace;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +23,7 @@ class AccountName extends StatelessWidget {
       mainAxisAlignment: alignment,
       children: [
         MediumText(trailingText),
-        const SizedBox(width: 20.0),
+        SizedBox(width: minimalSpace),
         MediumText.bold(account.name),
       ],
     );

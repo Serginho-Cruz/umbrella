@@ -1,33 +1,46 @@
 import 'package:flutter/material.dart';
+import '../../../domain/entities/account.dart';
+import '../../controllers/account_controller.dart';
+import '../../controllers/balance_store.dart';
 import '../../utils/umbrella_palette.dart';
-import '../../utils/umbrella_sizes.dart';
-import '../texts/big_text.dart';
-import '../texts/medium_text.dart';
-import '../texts/price.dart';
-import '../layout/spaced.dart';
-
 import '../../../domain/entities/date.dart';
+import '../icons/drawer_icon.dart';
+import '../icons/home_icon.dart';
 import '../texts/title_text.dart';
+import 'balances_section.dart';
 import 'month_changer.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
-  CustomAppBar({
+  const CustomAppBar({
     super.key,
     this.title,
     this.onMonthChange,
     this.monthAndYear,
     this.showBalances = true,
     this.showMonthChanger = false,
-  }) {
-    assert((showMonthChanger && onMonthChange != null) || !showMonthChanger,
-        'onMonthChange must be provided if showMonthChanger is true');
-  }
+    this.balanceStore,
+    this.accountStore,
+  })  : assert(
+          (showMonthChanger && onMonthChange != null) || !showMonthChanger,
+          'onMonthChange must be provided if showMonthChanger is true',
+        ),
+        assert(
+          (showBalances && balanceStore != null && accountStore != null) ||
+              !showBalances,
+          'balance and account store must be provided if the balances will be shown',
+        );
 
   final Date? monthAndYear;
   final String? title;
+
+  ///A function to be run when user changes the month usign the [MonthChanger] widget.
+  ///There's no need to wrap the function in a Future, because the function will be called inside one.
   final void Function(int, int)? onMonthChange;
   final bool showBalances;
   final bool showMonthChanger;
+
+  final BalanceStore? balanceStore;
+  final AccountStore? accountStore;
 
   @override
   State<CustomAppBar> createState() => _CustomAppBarState();
@@ -45,6 +58,24 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _CustomAppBarState extends State<CustomAppBar> {
+  late Date balanceVisualisationDate;
+  late Account? selectedAccount;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.accountStore?.addSelectedAccountListener(_onSelectedAccountChanged);
+    balanceVisualisationDate = MonthChanger.currentMonthAndYear;
+    selectedAccount = widget.accountStore?.selectedAccount;
+  }
+
+  @override
+  void dispose() {
+    widget.accountStore
+        ?.removeSelectedAccountListener(_onSelectedAccountChanged);
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -66,61 +97,70 @@ class _CustomAppBarState extends State<CustomAppBar> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              IconButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                      '/finance_manager/', (_) => false);
-                },
-                icon: const Icon(Icons.home, color: Colors.black, size: 35.0),
-              ),
+              const HomeIcon(),
               if (widget.title != null) TitleText.bold(widget.title!),
-              IconButton(
-                onPressed: () {
-                  Scaffold.maybeOf(context)?.openDrawer();
-                },
-                icon: const Icon(
-                  Icons.menu_rounded,
-                  color: Colors.black,
-                  size: 35.0,
-                ),
-              ),
+              const DrawerIcon(),
             ],
           ),
           if (widget.showMonthChanger)
             MonthChanger(
-              onMonthChange: widget.onMonthChange!,
+              onMonthChange: _onMonthChange,
               monthAndYear: widget.monthAndYear,
             ),
           if (widget.showBalances)
             Padding(
-              padding: EdgeInsets.only(
-                top: 15.0,
-                left: MediaQuery.sizeOf(context).width * 0.05,
-                right: MediaQuery.sizeOf(context).width * 0.05,
-              ),
-              child: const Spaced(
-                first: BigText.bold('Saldo Atual'),
-                second: Price.big(200.85, fontWeight: FontWeight.bold),
-              ),
-            ),
-          if (widget.showBalances)
-            Padding(
-              padding: EdgeInsets.only(
-                top: 12.0,
-                left: MediaQuery.sizeOf(context).width * 0.05,
-                right: MediaQuery.sizeOf(context).width * 0.05,
-              ),
-              child: const Spaced(
-                first: MediumText('Saldo Esperado'),
-                second: Price(
-                  200.85,
-                  fontSize: UmbrellaSizes.medium,
-                  fontWeight: FontWeight.w500,
-                ),
+              padding: const EdgeInsets.only(top: 15.0),
+              child: BalancesSection(
+                accountStore: widget.accountStore!,
+                balanceStore: widget.balanceStore!,
+                visualisationDate: balanceVisualisationDate,
+                selectedAccount: selectedAccount,
               ),
             ),
         ],
       ),
+    );
+  }
+
+  void _onSelectedAccountChanged(Account? selected) {
+    _fetchBalance(selected);
+    setState(() {
+      selectedAccount = selected;
+    });
+  }
+
+  void _onMonthChange(int month, int year) {
+    Future(() {
+      widget.onMonthChange!.call(month, year);
+      _fetchBalance(widget.accountStore?.selectedAccount);
+
+      setState(() {
+        balanceVisualisationDate = Date(day: 1, month: month, year: year);
+      });
+    });
+  }
+
+  void _fetchBalance(Account? selected) {
+    if (widget.accountStore == null) return;
+
+    var date = MonthChanger.currentMonthAndYear;
+
+    int month = date.month, year = date.year;
+
+    if (selected != null) {
+      widget.balanceStore?.get(
+        month: month,
+        year: year,
+        account: selected,
+      );
+
+      return;
+    }
+
+    widget.balanceStore?.getForAll(
+      month: month,
+      year: year,
+      accounts: widget.accountStore!.state,
     );
   }
 }

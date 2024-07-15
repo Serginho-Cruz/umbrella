@@ -14,7 +14,10 @@ class AccountStore extends Store<List<Account>> {
 
   final ManageAccount _manageAccount;
   final AuthController _authController;
-  Account? selectedAccount;
+
+  Account? _selectedAccount;
+
+  final List<void Function(Account?)> _selectedAccountListeners = [];
 
   Future<void> create(Account account) async {}
 
@@ -38,4 +41,24 @@ class AccountStore extends Store<List<Account>> {
   }
 
   Future<void> delete() async {}
+
+  void addSelectedAccountListener(void Function(Account?) listener) {
+    _selectedAccountListeners.add(listener);
+  }
+
+  void removeSelectedAccountListener(void Function(Account?) listener) {
+    _selectedAccountListeners.remove(listener);
+  }
+
+  Account? get selectedAccount => _selectedAccount;
+
+  set selectedAccount(Account? account) {
+    if (_selectedAccount == account) return;
+
+    _selectedAccount = account;
+
+    for (var listener in _selectedAccountListeners) {
+      listener(account);
+    }
+  }
 }

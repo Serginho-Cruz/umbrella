@@ -40,6 +40,12 @@ class ExpenseStore extends Store<List<ExpenseModel>> {
   ) =>
       _manageExpense.updateValue(expense, newValue);
 
+  AsyncResult<void, Fail> switchAccount(
+    Expense expense,
+    Account newAccount,
+  ) =>
+      _manageExpense.switchAccount(expense, newAccount);
+
   AsyncResult<void, Fail> updateExpense({
     required Expense oldExpense,
     required Expense newExpense,

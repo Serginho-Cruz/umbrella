@@ -30,9 +30,8 @@ class InstallmentRepositoryImpl implements InstallmentRepository {
   AsyncResult<double, Fail> getInstallmentParcelsInRange(
       {required Date inferiorLimit,
       required Date upperLimit,
-      required Account account}) {
-    // TODO: implement getInstallmentParcelsInRange
-    throw UnimplementedError();
+      required Account account,}) async {
+    return const Success(0.00);
   }
 
   @override

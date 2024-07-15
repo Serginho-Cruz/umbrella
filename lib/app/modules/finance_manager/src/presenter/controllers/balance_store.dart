@@ -24,15 +24,16 @@ class BalanceStore
 
     if (balances.any((result) => result.isError())) {
       setError(balances.firstWhere((r) => r.isError()).exceptionOrNull()!);
-    } else {
-      var [initialResult, expectedResult, finalResult] = balances;
-
-      var initial = initialResult.getOrDefault(0.00);
-      var expected = expectedResult.getOrDefault(0.00);
-      var last = finalResult.getOrDefault(0.00);
-
-      update((initial, expected, last));
+      return;
     }
+
+    var [initialResult, expectedResult, finalResult] = balances;
+
+    var initial = initialResult.getOrDefault(0.00);
+    var expected = expectedResult.getOrDefault(0.00);
+    var last = finalResult.getOrDefault(0.00);
+
+    update((initial, expected, last), force: true);
 
     setLoading(false);
   }
@@ -57,16 +58,16 @@ class BalanceStore
         setError(balances.firstWhere((r) => r.isError()).exceptionOrNull());
         setLoading(false);
         return;
-      } else {
-        var [initialResult, expectedResult, finalResult] = balances;
-
-        initial += initialResult.getOrDefault(0.00);
-        expected += expectedResult.getOrDefault(0.00);
-        last += finalResult.getOrDefault(0.00);
       }
+
+      var [initialResult, expectedResult, finalResult] = balances;
+
+      initial += initialResult.getOrDefault(0.00);
+      expected += expectedResult.getOrDefault(0.00);
+      last += finalResult.getOrDefault(0.00);
     }
 
-    update((initial, expected, last));
+    update((initial, expected, last), force: true);
 
     setLoading(false);
   }

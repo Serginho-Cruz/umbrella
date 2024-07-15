@@ -21,14 +21,15 @@ abstract interface class InvoiceRepository {
     required Date date,
     required CreditCard card,
   });
-  AsyncResult<List<Invoice>, Fail> getInvoicesInRange({
+  AsyncResult<List<Invoice>, Fail> getInRange({
     required Date inferiorLimit,
     required Date upperLimit,
+    required Account account,
   });
   //AsyncResult<List<Invoice>, Fail> getWhereHas(Paiyable paiyable);
   AsyncResult<Unit, Fail> changeInvoicesFromCard({
     required CreditCard originCard,
     required CreditCard destinyCard,
   });
-  AsyncResult<Unit, Fail> resetInvoice(Invoice invoice);
+  AsyncResult<Unit, Fail> reset(Invoice invoice);
 }

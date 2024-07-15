@@ -6,11 +6,13 @@ import '../../../domain/entities/date.dart';
 import '../../../domain/entities/frequency.dart';
 import '../../../domain/entities/income.dart';
 import '../../../errors/errors.dart';
+import '../../controllers/balance_store.dart';
 import '../../utils/currency_input_formatter.dart';
 import '../../utils/umbrella_palette.dart';
 import '../../controllers/account_controller.dart';
 import '../../controllers/income_store.dart';
 import '../../controllers/income_category_store.dart';
+import '../../widgets/appbar/custom_app_bar.dart';
 import '../../widgets/buttons/primary_button.dart';
 import '../../widgets/buttons/reset_button.dart';
 import '../../widgets/tiles/category_row.dart';
@@ -34,11 +36,14 @@ class CreateIncomeScreen extends StatefulWidget {
     required AccountStore accountStore,
     required IncomeStore incomeStore,
     required IncomeCategoryStore categoryStore,
+    required BalanceStore balanceStore,
   })  : _accountStore = accountStore,
+        _balanceStore = balanceStore,
         _incomeStore = incomeStore,
         _categoryStore = categoryStore;
 
   final AccountStore _accountStore;
+  final BalanceStore _balanceStore;
   final IncomeStore _incomeStore;
   final IncomeCategoryStore _categoryStore;
 
@@ -90,171 +95,167 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
   @override
   Widget build(BuildContext context) {
     return UmbrellaScaffold(
-      appBarTitle: 'Nova Receita',
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          MyForm(
-            formKey: _formKey,
-            padding: EdgeInsets.only(
-              top: 12.0,
-              left: MediaQuery.sizeOf(context).width * 0.05,
-              right: MediaQuery.sizeOf(context).width * 0.05,
+      appBar: CustomAppBar(
+        accountStore: widget._accountStore,
+        balanceStore: widget._balanceStore,
+        title: 'Nova Receita',
+      ),
+      child: SingleChildScrollView(
+        child: MyForm(
+          formKey: _formKey,
+          padding: EdgeInsets.only(
+            top: 12.0,
+            left: MediaQuery.sizeOf(context).width * 0.05,
+            right: MediaQuery.sizeOf(context).width * 0.05,
+          ),
+          children: [
+            ListScopedBuilder<AccountStore, List<Account>>(
+              store: widget._accountStore,
+              loadingWidget: const CircularProgressIndicator.adaptive(),
+              onError: (ctx, fail) => Text(fail.message),
+              onEmptyState: () => Container(),
+              onState: (ctx, accounts) {
+                account =
+                    account ?? accounts.singleWhere((acc) => acc.isDefault);
+
+                return AccountSelector(
+                  accounts: accounts,
+                  selectedAccount: account!,
+                  label: 'Conta a depositar',
+                  onSelected: (acc) {
+                    setState(() {
+                      account = acc;
+                    });
+                  },
+                );
+              },
             ),
-            children: [
-              ListScopedBuilder<AccountStore, List<Account>>(
-                store: widget._accountStore,
-                loadingWidget: const CircularProgressIndicator.adaptive(),
-                onError: (ctx, fail) => Text(fail.message),
-                onEmptyState: () => Container(),
-                onState: (ctx, accounts) {
-                  account =
-                      account ?? accounts.singleWhere((acc) => acc.isDefault);
+            const SizedBox(height: 15.0),
+            DefaultTextField(
+              validator: (name) {
+                if (name == null || name.isEmpty) {
+                  return 'Preencha o campo Nome';
+                }
 
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 15.0),
-                    child: AccountSelector(
-                      accounts: accounts,
-                      selectedAccount: account!,
-                      label: 'Conta a depositar',
-                      onSelected: (acc) {
-                        setState(() {
-                          account = acc;
-                        });
-                      },
-                    ),
-                  );
-                },
-              ),
-              DefaultTextField(
-                validator: (name) {
-                  if (name == null || name.isEmpty) {
-                    return 'Preencha o campo Nome';
-                  }
+                if (name.length < 5) {
+                  return 'O Nome deve conter pelo menos 5 letras';
+                }
 
-                  if (name.length < 5) {
-                    return 'O Nome deve conter pelo menos 5 letras';
-                  }
+                return null;
+              },
+              controller: nameFieldController,
+              focusNode: nameFieldFocusNode,
+              maxLength: 30,
+              labelText: 'Nome',
+            ),
+            NumberTextField(
+              controller: valueFieldController,
+              padding: const EdgeInsets.symmetric(vertical: 20.0),
+              isCurrency: true,
+              label: 'Valor',
+              initialValue: 0.00,
+              focusNode: valueFieldFocusNode,
+              validate: (number) {
+                if (number == 0.00) {
+                  return 'O Valor deve ser maior que 0';
+                }
 
-                  return null;
-                },
-                controller: nameFieldController,
-                focusNode: nameFieldFocusNode,
-                maxLength: 30,
-                labelText: 'Nome',
-              ),
-              NumberTextField(
-                controller: valueFieldController,
-                padding: const EdgeInsets.symmetric(vertical: 20.0),
-                isCurrency: true,
-                label: 'Valor',
-                initialValue: 0.00,
-                focusNode: valueFieldFocusNode,
-                validate: (number) {
-                  if (number == 0.00) {
-                    return 'O Valor deve ser maior que 0';
-                  }
-
-                  return null;
-                },
-              ),
-              FrequencySelector(
-                title: 'Qual a Frequência dessa Receita?',
-                selectedFrequency: frequency,
-                onSelected: (newFrequency) {
+                return null;
+              },
+            ),
+            FrequencySelector(
+              title: 'Qual a Frequência dessa Receita?',
+              selectedFrequency: frequency,
+              onSelected: (newFrequency) {
+                setState(() {
+                  frequency = newFrequency;
+                });
+              },
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
+              child: DateSelector(
+                date: date,
+                onDateSelected: (newDate) {
                   setState(() {
-                    frequency = newFrequency;
+                    date = newDate;
                   });
                 },
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
-                child: DateSelector(
-                  date: date,
-                  onDateSelected: (newDate) {
-                    setState(() {
-                      date = newDate;
-                    });
-                  },
-                ),
-              ),
-              ListScopedBuilder<IncomeCategoryStore, List<Category>>(
-                store: widget._categoryStore,
-                loadingWidget: const CircularProgressIndicator.adaptive(),
-                onEmptyState: () {
-                  UmbrellaDialogs.showError(
-                    context,
-                    "Não foi possível obter as Categorias. Por favor, aperte em 'Tentar novamente'",
-                    onRetry: () => widget._categoryStore.getAll(),
-                  );
-                  return const SizedBox.shrink();
-                },
-                onError: (ctx, fail) {
-                  fail is NetworkFail
-                      ? UmbrellaDialogs.showNetworkProblem(context,
-                          onRetry: () => widget._categoryStore.getAll())
-                      : UmbrellaDialogs.showError(context, fail.message,
-                          onRetry: () => widget._categoryStore.getAll());
+            ),
+            ListScopedBuilder<IncomeCategoryStore, List<Category>>(
+              store: widget._categoryStore,
+              loadingWidget: const CircularProgressIndicator.adaptive(),
+              onEmptyState: () {
+                UmbrellaDialogs.showError(
+                  context,
+                  "Não foi possível obter as Categorias. Por favor, aperte em 'Tentar novamente'",
+                  onRetry: () => widget._categoryStore.getAll(),
+                );
+                return const SizedBox.shrink();
+              },
+              onError: (ctx, fail) {
+                fail is NetworkFail
+                    ? UmbrellaDialogs.showNetworkProblem(context,
+                        onRetry: () => widget._categoryStore.getAll())
+                    : UmbrellaDialogs.showError(context, fail.message,
+                        onRetry: () => widget._categoryStore.getAll());
 
-                  /*TODO Create a Widget that substitutes the category selector on fetch error and empty state */
-                  return const SizedBox.shrink();
+                /*TODO Create a Widget that substitutes the category selector on fetch error and empty state */
+                return const SizedBox.shrink();
+              },
+              onState: (ctx, categories) => CategorySelector(
+                categories: categories,
+                onSelected: (newCategory) {
+                  setState(() {
+                    category = newCategory;
+                    if (logicalCategoryError != null) {
+                      logicalCategoryError = null;
+                    }
+                  });
                 },
-                onState: (ctx, categories) => CategorySelector(
-                  categories: categories,
-                  onSelected: (newCategory) {
-                    setState(() {
-                      category = newCategory;
-                      if (logicalCategoryError != null) {
-                        logicalCategoryError = null;
-                      }
-                    });
-                  },
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CategoryRow(
-                        padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                        category: category,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CategoryRow(
+                      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                      category: category,
+                    ),
+                    Visibility(
+                      visible: logicalCategoryError != null,
+                      child: SmallText(
+                        logicalCategoryError.toString(),
+                        color: UmbrellaPalette.errorColor,
                       ),
-                      Visibility(
-                        visible: logicalCategoryError != null,
-                        child: SmallText(
-                          logicalCategoryError.toString(),
-                          color: UmbrellaPalette.errorColor,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              DefaultTextField(
-                height: 70.0,
-                controller: personNameFieldController,
-                focusNode: personNameFocusNode,
-                labelText: 'Quem deve isso a você? (Opcional)',
-                maxLength: 20,
-                validator: (_) => null,
-                padding: const EdgeInsets.only(top: 30.0),
-              ),
-            ],
-          ),
-          Spaced(
-            padding: EdgeInsets.symmetric(
-              horizontal: MediaQuery.sizeOf(context).width * 0.05,
-              vertical: 20.0,
             ),
-            first: ResetButton(reset: resetForm),
-            second: PrimaryButton(
-              icon: const Icon(
-                Icons.add_circle_rounded,
-                color: Colors.black,
-                size: 24.0,
-              ),
-              label: const MediumText.bold('Adicionar'),
-              onPressed: _onFormSubmitted,
+            DefaultTextField(
+              height: 70.0,
+              controller: personNameFieldController,
+              focusNode: personNameFocusNode,
+              labelText: 'Quem deve isso a você? (Opcional)',
+              maxLength: 20,
+              validator: (_) => null,
+              padding: const EdgeInsets.only(top: 30.0),
             ),
-          ),
-        ],
+            Spaced(
+              padding: const EdgeInsets.symmetric(vertical: 20.0),
+              first: ResetButton(reset: resetForm),
+              second: PrimaryButton(
+                icon: const Icon(
+                  Icons.add_circle_rounded,
+                  color: Colors.black,
+                  size: 24.0,
+                ),
+                label: const MediumText.bold('Adicionar'),
+                onPressed: _onFormSubmitted,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

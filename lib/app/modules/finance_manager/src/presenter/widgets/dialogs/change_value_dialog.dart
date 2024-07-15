@@ -13,9 +13,9 @@ import '../forms/my_form.dart';
 import '../forms/number_text_field.dart';
 import '../layout/dialog_layout.dart';
 import '../layout/spaced.dart';
-import '../texts/big_text.dart';
 import '../texts/medium_text.dart';
 import '../texts/price.dart';
+import '../texts/title_text.dart';
 import 'umbrella_dialogs.dart';
 
 class ChangeValueDialog<P extends Paiyable> extends StatefulWidget {
@@ -59,7 +59,7 @@ class _ChangeValueDialogState extends State<ChangeValueDialog> {
         verticalSize: MainAxisSize.min,
         padding: const EdgeInsets.all(15.0),
         children: [
-          const Align(child: BigText.bold('Alterar Valor')),
+          const Align(child: TitleText.bold('Alterar Valor')),
           const SizedBox(height: 40.0),
           Row(
             children: [

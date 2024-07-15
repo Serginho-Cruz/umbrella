@@ -18,9 +18,11 @@ import '../../../domain/entities/credit_card.dart';
 import '../../../domain/entities/date.dart';
 import '../../../domain/entities/expense.dart';
 import '../../../domain/entities/frequency.dart';
+import '../../controllers/balance_store.dart';
 import '../../utils/umbrella_palette.dart';
 import '../../controllers/account_controller.dart';
 import '../../controllers/expense_store.dart';
+import '../../widgets/appbar/custom_app_bar.dart';
 import '../../widgets/buttons/primary_button.dart';
 import '../../widgets/buttons/reset_button.dart';
 import '../../widgets/tiles/category_row.dart';
@@ -42,12 +44,15 @@ class CreateExpenseScreen extends StatefulWidget {
     required ExpenseStore expenseStore,
     required ExpenseCategoryStore categoryStore,
     required AccountStore accountStore,
+    required BalanceStore balanceStore,
   })  : _cardStore = cardStore,
         _expenseStore = expenseStore,
         _categoryStore = categoryStore,
-        _accountStore = accountStore;
+        _accountStore = accountStore,
+        _balanceStore = balanceStore;
 
   final AccountStore _accountStore;
+  final BalanceStore _balanceStore;
   final CreditCardStore _cardStore;
   final ExpenseStore _expenseStore;
   final ExpenseCategoryStore _categoryStore;
@@ -113,337 +118,334 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     return UmbrellaScaffold(
-      appBarTitle: 'Nova Despesa',
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          MyForm(
-            formKey: _formKey,
-            padding: EdgeInsets.only(
-              top: 12.0,
-              left: MediaQuery.sizeOf(context).width * 0.05,
-              right: MediaQuery.sizeOf(context).width * 0.05,
-            ),
-            children: [
-              ListScopedBuilder<AccountStore, List<Account>>(
-                store: widget._accountStore,
-                loadingWidget: const CircularProgressIndicator.adaptive(),
-                onError: (ctx, fail) => Text(fail.message),
-                onEmptyState: () => Container(),
-                onState: (ctx, accounts) {
-                  account =
-                      account ?? accounts.singleWhere((acc) => acc.isDefault);
+      appBar: CustomAppBar(
+        accountStore: widget._accountStore,
+        balanceStore: widget._balanceStore,
+        title: 'Nova Despesa',
+      ),
+      child: SingleChildScrollView(
+        child: MyForm(
+          formKey: _formKey,
+          padding: EdgeInsets.only(
+            top: 12.0,
+            left: MediaQuery.sizeOf(context).width * 0.05,
+            right: MediaQuery.sizeOf(context).width * 0.05,
+          ),
+          children: [
+            ListScopedBuilder<AccountStore, List<Account>>(
+              store: widget._accountStore,
+              loadingWidget: const CircularProgressIndicator.adaptive(),
+              onError: (ctx, fail) => Text(fail.message),
+              onEmptyState: () => Container(),
+              onState: (ctx, accounts) {
+                account =
+                    account ?? accounts.singleWhere((acc) => acc.isDefault);
 
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 15.0),
-                    child: AccountSelector(
-                      accounts: accounts,
-                      selectedAccount: account!,
-                      label: 'Conta a debitar',
-                      onSelected: (acc) {
-                        setState(() {
-                          account = acc;
-                        });
-                      },
-                    ),
-                  );
-                },
-              ),
-              DefaultTextField(
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Preencha o campo Nome';
-                  }
-
-                  if (value.length < 5) {
-                    return 'O Nome deve conter pelo menos 5 letras';
-                  }
-
-                  return null;
-                },
-                controller: _nameFieldController,
-                focusNode: _nameFieldFocusNode,
-                maxLength: 30,
-                labelText: 'Nome',
-              ),
-              NumberTextField(
-                controller: _valueFieldController,
-                padding: const EdgeInsets.symmetric(vertical: 20.0),
-                isCurrency: true,
-                label: 'Valor',
-                initialValue: 0.00,
-                focusNode: _valueFieldFocusNode,
-                validate: (number) {
-                  if (number == 0.00) {
-                    return 'O Valor deve ser maior que 0';
-                  }
-
-                  return null;
-                },
-                onChange: (newValue) {
-                  if (!willBeTurntIntoInstallment) return;
-
-                  if (newValue == null ||
-                      newValue.isEmpty ||
-                      _parcelsNumberFieldController.text.isEmpty) {
-                    setState(() => parcelsValue = null);
-                    return;
-                  }
-
-                  double value =
-                      double.parse(CurrencyInputFormatter.unformat(newValue));
-                  setState(() {
-                    parcelsValue =
-                        (value / int.parse(_parcelsNumberFieldController.text))
-                            .roundToDecimal();
-                  });
-                },
-              ),
-              FrequencySelector(
-                title: 'Qual a Frequência dessa Despesa?',
-                selectedFrequency: frequency,
-                onSelected: (newFrequency) {
-                  setState(() {
-                    frequency = newFrequency;
-                  });
-                },
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
-                child: DateSelector(
-                  date: date,
-                  onDateSelected: (newDate) {
-                    setState(() {
-                      date = newDate;
-                    });
-                  },
-                ),
-              ),
-              ScopedBuilder<ExpenseCategoryStore, List<Category>>(
-                store: widget._categoryStore,
-                onState: (ctx, categories) => CategorySelector(
-                  categories: categories,
-                  onSelected: (cat) {
-                    setState(() {
-                      category = cat;
-                      if (logicalCategoryError != null) {
-                        logicalCategoryError = null;
-                      }
-                    });
-                  },
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CategoryRow(
-                        category: category,
-                        padding: const EdgeInsets.only(
-                          top: 8.0,
-                          bottom: 8.0,
-                        ),
-                      ),
-                      Visibility(
-                        visible: logicalCategoryError != null,
-                        child: SmallText(
-                          logicalCategoryError.toString(),
-                          color: UmbrellaPalette.errorColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                onError: (context, e) {
-                  Fail error = e;
-                  return Text(error.message);
-                },
-                onLoading: (context) =>
-                    const CircularProgressIndicator.adaptive(),
-              ),
-              ExpansionTile(
-                backgroundColor: Colors.transparent,
-                maintainState: true,
-                title: const Align(
-                  alignment: Alignment.centerLeft,
-                  child: MediumText.bold('Configurações Adicionais'),
-                ),
-                children: [
-                  ExpansionTile(
-                    title: const MediumText('Despesa no Crédito'),
-                    trailing: IgnorePointer(
-                      child: Switch.adaptive(
-                        value: willBePaidWithCredit,
-                        inactiveThumbColor: Colors.black,
-                        trackOutlineColor:
-                            const WidgetStatePropertyAll(Colors.black),
-                        inactiveTrackColor: UmbrellaPalette.gray,
-                        activeColor: Colors.white,
-                        activeTrackColor: UmbrellaPalette.secondaryColor,
-                        onChanged: (_) {},
-                      ),
-                    ),
-                    onExpansionChanged: (newValue) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 15.0),
+                  child: AccountSelector(
+                    accounts: accounts,
+                    selectedAccount: account!,
+                    label: 'Conta a debitar',
+                    onSelected: (acc) {
                       setState(() {
-                        willBePaidWithCredit = newValue;
-                        cardSelected = null;
+                        account = acc;
                       });
                     },
-                    children: [
-                      const SizedBox(height: 30.0),
-                      ListScopedBuilder<CreditCardStore, List<CreditCard>>(
-                        store: widget._cardStore,
-                        loadingWidget: const Stack(
-                          children: [
-                            ShimmerContainer(
-                              width: 275,
-                              height: 150,
-                            ),
-                            Text('Obtendo Cartões...'),
-                          ],
-                        ),
-                        onState: (ctx, state) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              CardSelector(
-                                cardSelected: cardSelected,
-                                cards: state,
-                                onCardSelected: (card) {
-                                  setState(() {
-                                    cardSelected = card;
-                                    if (logicalCardError != null) {
-                                      logicalCardError = null;
-                                    }
-                                  });
-                                },
-                              ),
-                              Visibility(
-                                visible: logicalCardError != null,
-                                child: SmallText(
-                                  logicalCardError.toString(),
-                                  color: UmbrellaPalette.errorColor,
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                        onError: (ctx, error) => Container(
-                          width: 275,
-                          height: 150,
-                          color: Colors.grey,
-                          child: const MediumText(
-                            'Erro ao Obter os Cartões',
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        onEmptyState: () => Container(
-                          width: 275,
-                          height: 150,
-                          color: Colors.grey,
-                          child: const Column(
-                            children: [
-                              MediumText(
-                                'Nenhum Cartão Cadastrado',
-                                textAlign: TextAlign.center,
-                              ),
-                              TextLink(
-                                route: '/finance_manager/home',
-                                text: 'Cadastre um Agora',
-                              ),
-                            ],
-                          ),
-                        ),
+                  ),
+                );
+              },
+            ),
+            DefaultTextField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Preencha o campo Nome';
+                }
+
+                if (value.length < 5) {
+                  return 'O Nome deve conter pelo menos 5 letras';
+                }
+
+                return null;
+              },
+              controller: _nameFieldController,
+              focusNode: _nameFieldFocusNode,
+              maxLength: 30,
+              labelText: 'Nome',
+            ),
+            NumberTextField(
+              controller: _valueFieldController,
+              padding: const EdgeInsets.symmetric(vertical: 20.0),
+              isCurrency: true,
+              label: 'Valor',
+              initialValue: 0.00,
+              focusNode: _valueFieldFocusNode,
+              validate: (number) {
+                if (number == 0.00) {
+                  return 'O Valor deve ser maior que 0';
+                }
+
+                return null;
+              },
+              onChange: (newValue) {
+                if (!willBeTurntIntoInstallment) return;
+
+                if (newValue == null ||
+                    newValue.isEmpty ||
+                    _parcelsNumberFieldController.text.isEmpty) {
+                  setState(() => parcelsValue = null);
+                  return;
+                }
+
+                double value =
+                    double.parse(CurrencyInputFormatter.unformat(newValue));
+                setState(() {
+                  parcelsValue =
+                      (value / int.parse(_parcelsNumberFieldController.text))
+                          .roundToDecimal();
+                });
+              },
+            ),
+            FrequencySelector(
+              title: 'Qual a Frequência dessa Despesa?',
+              selectedFrequency: frequency,
+              onSelected: (newFrequency) {
+                setState(() {
+                  frequency = newFrequency;
+                });
+              },
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
+              child: DateSelector(
+                date: date,
+                onDateSelected: (newDate) {
+                  setState(() {
+                    date = newDate;
+                  });
+                },
+              ),
+            ),
+            ScopedBuilder<ExpenseCategoryStore, List<Category>>(
+              store: widget._categoryStore,
+              onState: (ctx, categories) => CategorySelector(
+                categories: categories,
+                onSelected: (cat) {
+                  setState(() {
+                    category = cat;
+                    if (logicalCategoryError != null) {
+                      logicalCategoryError = null;
+                    }
+                  });
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CategoryRow(
+                      category: category,
+                      padding: const EdgeInsets.only(
+                        top: 8.0,
+                        bottom: 8.0,
                       ),
-                      ExpansionTile(
-                        title: const MediumText('Despesa Parcelada'),
-                        trailing: Transform.scale(
-                          scale: 1.2,
-                          child: IgnorePointer(
-                            child: Checkbox.adaptive(
-                              value: willBeTurntIntoInstallment,
-                              onChanged: (_) {},
-                            ),
-                          ),
-                        ),
-                        onExpansionChanged: (newValue) {
-                          setState(() {
-                            willBeTurntIntoInstallment = newValue;
-                          });
-
-                          if (newValue == false) {
-                            _parcelsNumberFieldController.clear();
-                          }
-                        },
-                        expandedCrossAxisAlignment: CrossAxisAlignment.start,
+                    ),
+                    Visibility(
+                      visible: logicalCategoryError != null,
+                      child: SmallText(
+                        logicalCategoryError.toString(),
+                        color: UmbrellaPalette.errorColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              onError: (context, e) {
+                Fail error = e;
+                return Text(error.message);
+              },
+              onLoading: (context) =>
+                  const CircularProgressIndicator.adaptive(),
+            ),
+            ExpansionTile(
+              backgroundColor: Colors.transparent,
+              maintainState: true,
+              title: const Align(
+                alignment: Alignment.centerLeft,
+                child: MediumText.bold('Configurações Adicionais'),
+              ),
+              children: [
+                ExpansionTile(
+                  title: const MediumText('Despesa no Crédito'),
+                  trailing: IgnorePointer(
+                    child: Switch.adaptive(
+                      value: willBePaidWithCredit,
+                      inactiveThumbColor: Colors.black,
+                      trackOutlineColor:
+                          const WidgetStatePropertyAll(Colors.black),
+                      inactiveTrackColor: UmbrellaPalette.gray,
+                      activeColor: Colors.white,
+                      activeTrackColor: UmbrellaPalette.secondaryColor,
+                      onChanged: (_) {},
+                    ),
+                  ),
+                  onExpansionChanged: (newValue) {
+                    setState(() {
+                      willBePaidWithCredit = newValue;
+                      cardSelected = null;
+                    });
+                  },
+                  children: [
+                    const SizedBox(height: 30.0),
+                    ListScopedBuilder<CreditCardStore, List<CreditCard>>(
+                      store: widget._cardStore,
+                      loadingWidget: const Stack(
                         children: [
-                          NumberTextField(
-                            controller: _parcelsNumberFieldController,
-                            padding: const EdgeInsets.only(top: 8.0),
-                            validate: (number) {
-                              if (number > 100) {
-                                return 'O Máximo de Parcelas é 100';
-                              }
-
-                              return null;
-                            },
-                            onChange: (parcelsNumber) {
-                              if (parcelsNumber == null ||
-                                  parcelsNumber.isEmpty ||
-                                  _valueFieldController.text.isEmpty) {
-                                setState(() => parcelsValue = null);
-                                return;
-                              }
-
-                              double value = double.parse(
-                                  CurrencyInputFormatter.unformat(
-                                      _valueFieldController.text));
-                              setState(() {
-                                parcelsValue =
-                                    (value / int.parse(parcelsNumber))
-                                        .roundToDecimal();
-                              });
-                            },
-                            label: 'Nº de Parcelas',
-                            maxLength: 3,
-                            focusNode: _parcelsNumberFieldFocusNode,
+                          ShimmerContainer(
+                            width: 275,
+                            height: 150,
                           ),
-                          const SizedBox(height: 20.0),
-                          MediumText(
-                            'Valor das Parcelas: ${parcelsValue != null ? 'R\$$parcelsValue' : 'Nenhum'}.',
-                          ),
-                          const SizedBox(height: 20.0),
+                          Text('Obtendo Cartões...'),
                         ],
                       ),
-                    ],
-                  ),
-                  DefaultTextField(
-                    height: 70.0,
-                    controller: _personNameFieldController,
-                    focusNode: _personNameFocusNode,
-                    labelText: 'A Quem você deve isso? (Opcional)',
-                    maxLength: 20,
-                    validator: (_) => null,
-                    padding: const EdgeInsets.only(top: 30.0),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          Spaced(
-            padding: EdgeInsets.symmetric(
-              horizontal: MediaQuery.sizeOf(context).width * 0.05,
-              vertical: 20.0,
+                      onState: (ctx, state) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CardSelector(
+                              cardSelected: cardSelected,
+                              cards: state,
+                              onCardSelected: (card) {
+                                setState(() {
+                                  cardSelected = card;
+                                  if (logicalCardError != null) {
+                                    logicalCardError = null;
+                                  }
+                                });
+                              },
+                            ),
+                            Visibility(
+                              visible: logicalCardError != null,
+                              child: SmallText(
+                                logicalCardError.toString(),
+                                color: UmbrellaPalette.errorColor,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                      onError: (ctx, error) => Container(
+                        width: 275,
+                        height: 150,
+                        color: Colors.grey,
+                        child: const MediumText(
+                          'Erro ao Obter os Cartões',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      onEmptyState: () => Container(
+                        width: 275,
+                        height: 150,
+                        color: Colors.grey,
+                        child: const Column(
+                          children: [
+                            MediumText(
+                              'Nenhum Cartão Cadastrado',
+                              textAlign: TextAlign.center,
+                            ),
+                            TextLink(
+                              route: '/finance_manager/home',
+                              text: 'Cadastre um Agora',
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    ExpansionTile(
+                      title: const MediumText('Despesa Parcelada'),
+                      trailing: Transform.scale(
+                        scale: 1.2,
+                        child: IgnorePointer(
+                          child: Checkbox.adaptive(
+                            value: willBeTurntIntoInstallment,
+                            onChanged: (_) {},
+                          ),
+                        ),
+                      ),
+                      onExpansionChanged: (newValue) {
+                        setState(() {
+                          willBeTurntIntoInstallment = newValue;
+                        });
+
+                        if (newValue == false) {
+                          _parcelsNumberFieldController.clear();
+                        }
+                      },
+                      expandedCrossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        NumberTextField(
+                          controller: _parcelsNumberFieldController,
+                          padding: const EdgeInsets.only(top: 8.0),
+                          validate: (number) {
+                            if (number > 100) {
+                              return 'O Máximo de Parcelas é 100';
+                            }
+
+                            return null;
+                          },
+                          onChange: (parcelsNumber) {
+                            if (parcelsNumber == null ||
+                                parcelsNumber.isEmpty ||
+                                _valueFieldController.text.isEmpty) {
+                              setState(() => parcelsValue = null);
+                              return;
+                            }
+
+                            double value = double.parse(
+                                CurrencyInputFormatter.unformat(
+                                    _valueFieldController.text));
+                            setState(() {
+                              parcelsValue = (value / int.parse(parcelsNumber))
+                                  .roundToDecimal();
+                            });
+                          },
+                          label: 'Nº de Parcelas',
+                          maxLength: 3,
+                          focusNode: _parcelsNumberFieldFocusNode,
+                        ),
+                        const SizedBox(height: 20.0),
+                        MediumText(
+                          'Valor das Parcelas: ${parcelsValue != null ? 'R\$$parcelsValue' : 'Nenhum'}.',
+                        ),
+                        const SizedBox(height: 20.0),
+                      ],
+                    ),
+                  ],
+                ),
+                DefaultTextField(
+                  height: 70.0,
+                  controller: _personNameFieldController,
+                  focusNode: _personNameFocusNode,
+                  labelText: 'A Quem você deve isso? (Opcional)',
+                  maxLength: 20,
+                  validator: (_) => null,
+                  padding: const EdgeInsets.only(top: 30.0),
+                ),
+              ],
             ),
-            first: ResetButton(reset: _resetForm),
-            second: PrimaryButton(
-              label: const MediumText.bold('Adicionar'),
-              onPressed: _onFormSubmitted,
-              icon: const Icon(
-                Icons.add_circle_rounded,
-                color: Colors.black,
-                size: 24.0,
+            Spaced(
+              padding: const EdgeInsets.symmetric(vertical: 20.0),
+              first: ResetButton(reset: _resetForm),
+              second: PrimaryButton(
+                label: const MediumText.bold('Adicionar'),
+                onPressed: _onFormSubmitted,
+                icon: const Icon(
+                  Icons.add_circle_rounded,
+                  color: Colors.black,
+                  size: 24.0,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

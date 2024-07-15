@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/entities/account.dart';
+import '../../utils/umbrella_sizes.dart';
 import '../layout/spaced.dart';
-import '../texts/big_text.dart';
 import '../texts/medium_text.dart';
 import '../texts/price.dart';
 
@@ -13,12 +13,16 @@ class AccountSelector extends StatelessWidget {
     this.selectedAccount,
     required this.onSelected,
     this.label = 'Conta',
+    this.canSelectNull = true,
+    this.fontSize = UmbrellaSizes.big,
   });
 
   final String label;
+  final double fontSize;
   final List<Account> accounts;
   final Account? selectedAccount;
   final void Function(Account?) onSelected;
+  final bool canSelectNull;
 
   @override
   Widget build(BuildContext context) {
@@ -28,23 +32,32 @@ class AccountSelector extends StatelessWidget {
       position: PopupMenuPosition.under,
       child: Spaced(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
-        first: BigText(label),
-        second: Row(children: [
-          BigText.bold(selectedAccount?.name ?? 'Nenhuma'),
-          const Icon(Icons.arrow_drop_down_rounded, size: 32.0)
-        ]),
+        first: Text(label, style: TextStyle(fontSize: fontSize)),
+        second: Row(
+          children: [
+            Text(
+              selectedAccount?.name ?? 'Nenhuma',
+              style: TextStyle(
+                fontSize: fontSize,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const Icon(Icons.arrow_drop_down_rounded, size: 32.0)
+          ],
+        ),
       ),
     );
   }
 
   List<PopupMenuEntry<Account>> _buildMenuItems(BuildContext context) {
     return [
-      PopupMenuItem(
-        onTap: () {
-          onSelected(null);
-        },
-        child: const MediumText('Nenhuma'),
-      ),
+      if (canSelectNull)
+        PopupMenuItem(
+          onTap: () {
+            onSelected(null);
+          },
+          child: const MediumText('Nenhuma'),
+        ),
       ...List.generate(
         accounts.length,
         (index) => PopupMenuItem(

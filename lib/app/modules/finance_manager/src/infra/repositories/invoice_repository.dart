@@ -101,16 +101,28 @@ class InvoiceRepositoryImpl implements InvoiceRepository {
   }
 
   @override
-  AsyncResult<List<Invoice>, Fail> getInvoicesInRange({
+  AsyncResult<List<Invoice>, Fail> getInRange({
     required Date inferiorLimit,
     required Date upperLimit,
-  }) {
-    // TODO: implement getInvoicesInRange
-    throw UnimplementedError();
+    required Account account,
+  }) async {
+    try {
+      var list = await _invoiceDatasource.getInRange(
+        inferiorLimit: inferiorLimit,
+        upperLimit: upperLimit,
+        account: account,
+      );
+
+      return Success(list);
+    } on Fail catch (f) {
+      return Failure(f);
+    } catch (e) {
+      return Failure(GenericError());
+    }
   }
 
   @override
-  AsyncResult<Unit, Fail> resetInvoice(Invoice invoice) {
+  AsyncResult<Unit, Fail> reset(Invoice invoice) {
     // TODO: implement resetInvoice
     throw UnimplementedError();
   }

@@ -194,9 +194,21 @@ class TemporaryInvoiceDatasource implements InvoiceDatasource {
   Future<List<Invoice>> getInRange({
     required Date inferiorLimit,
     required Date upperLimit,
+    required Account account,
   }) {
-    // TODO: implement getInRange
-    throw UnimplementedError();
+    List<Invoice> list = [];
+
+    _invoices.forEach((_, invoices) {
+      var inRange = invoices.where((inv) {
+        return inv.account.id == account.id &&
+            inferiorLimit.isBefore(inv.dueDate) &&
+            upperLimit.isAfter(inv.dueDate);
+      });
+
+      list.addAll(inRange);
+    });
+
+    return Future.delayed(const Duration(seconds: 1), () => list);
   }
 
   @override

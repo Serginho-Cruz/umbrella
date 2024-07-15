@@ -32,6 +32,7 @@ class FinanceManagerModule extends Module {
         expenseStore: Modular.get(),
         creditCardStore: Modular.get(),
         accountStore: Modular.get(),
+        balanceStore: Modular.get(),
       ),
     );
 
@@ -41,12 +42,14 @@ class FinanceManagerModule extends Module {
         incomeStore: Modular.get(),
         accountStore: Modular.get(),
         categoryStore: Modular.get(),
+        balanceStore: Modular.get(),
       ),
     );
     r.child(
       '/expense',
       child: (context) => ExpensesScreen(
         accountStore: Modular.get(),
+        balanceStore: Modular.get(),
         categoryStore: Modular.get(),
         expenseStore: Modular.get(),
       ),
@@ -56,6 +59,8 @@ class FinanceManagerModule extends Module {
       '/card/update',
       child: (ctx) => EditCreditCardScreen(
         card: r.args.data as CreditCard,
+        accountStore: Modular.get(),
+        balanceStore: Modular.get(),
         cardStore: Modular.get(),
       ),
     );
@@ -65,6 +70,8 @@ class FinanceManagerModule extends Module {
       child: (ctx) => EditExpenseScreen(
         expenseStore: Modular.get(),
         categoryStore: Modular.get(),
+        accountStore: Modular.get(),
+        balanceStore: Modular.get(),
         expense: r.args.data as Expense,
       ),
     );
@@ -75,6 +82,8 @@ class FinanceManagerModule extends Module {
         income: r.args.data as Income,
         incomeStore: Modular.get(),
         categoryStore: Modular.get(),
+        accountStore: Modular.get(),
+        balanceStore: Modular.get(),
       ),
     );
 
@@ -82,6 +91,8 @@ class FinanceManagerModule extends Module {
       '/card',
       child: (context) => CreditCardsScreen(
         cardStore: Modular.get(),
+        accountStore: Modular.get(),
+        balanceStore: Modular.get(),
       ),
       transition: TransitionType.scale,
     );
@@ -89,6 +100,7 @@ class FinanceManagerModule extends Module {
       '/expense/add',
       child: (context) => CreateExpenseScreen(
         accountStore: Modular.get(),
+        balanceStore: Modular.get(),
         cardStore: Modular.get(),
         expenseStore: Modular.get(),
         categoryStore: Modular.get(),
@@ -98,6 +110,7 @@ class FinanceManagerModule extends Module {
       '/income/add',
       child: (context) => CreateIncomeScreen(
         accountStore: Modular.get(),
+        balanceStore: Modular.get(),
         incomeStore: Modular.get(),
         categoryStore: Modular.get(),
       ),
@@ -106,6 +119,7 @@ class FinanceManagerModule extends Module {
       '/card/add',
       child: (context) => CreateCreditCardScreen(
         accountStore: Modular.get(),
+        balanceStore: Modular.get(),
         cardStore: Modular.get(),
       ),
     );
