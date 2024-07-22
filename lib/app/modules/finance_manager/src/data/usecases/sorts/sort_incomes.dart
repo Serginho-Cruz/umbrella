@@ -1,7 +1,7 @@
 import '../../../domain/models/income_model.dart';
-import '../../../domain/usecases/orders/order_incomes.dart';
+import '../../../domain/usecases/sorts/sort_incomes.dart';
 
-class OrderIncomesImpl implements OrderIncomes {
+class SortIncomesImpl implements SortIncomes {
   @override
   List<IncomeModel> byName(
     List<IncomeModel> incomes, {

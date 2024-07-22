@@ -1,7 +1,7 @@
 import '../../../domain/models/expense_model.dart';
-import '../../../domain/usecases/orders/order_expenses.dart';
+import '../../../domain/usecases/sorts/sort_expenses.dart';
 
-class OrderExpensesImpl implements OrderExpenses {
+class SortExpensesImpl implements SortExpenses {
   @override
   List<ExpenseModel> byName(
     List<ExpenseModel> expenses, {

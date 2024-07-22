@@ -28,12 +28,12 @@ abstract class ControllersBindings {
     i.addLazySingleton<ExpenseStore>(() => ExpenseStore(
           filterExpenses: i(),
           manageExpense: i(),
-          orderExpenses: i(),
+          sortExpenses: i(),
         ));
 
     i.addLazySingleton<IncomeStore>(() => IncomeStore(
           filterIncomes: i(),
-          orderIncomes: i(),
+          sortIncomes: i(),
           manageIncome: i(),
         ));
 

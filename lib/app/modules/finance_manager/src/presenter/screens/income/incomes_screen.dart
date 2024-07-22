@@ -6,7 +6,7 @@ import '../../../domain/entities/account.dart';
 import '../../../domain/entities/category.dart';
 import '../../../domain/models/income_model.dart';
 import '../../../domain/models/status.dart';
-import '../../../domain/usecases/orders/order_expenses.dart';
+import '../../../domain/usecases/sorts/sort_expenses.dart';
 import '../../controllers/balance_store.dart';
 import '../../utils/currency_format.dart';
 import '../../widgets/others/tappable_options.dart';

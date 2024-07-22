@@ -1,7 +1,7 @@
 import '../../../domain/entities/transaction.dart';
-import '../../../domain/usecases/orders/order_transactions.dart';
+import '../../../domain/usecases/sorts/sort_transactions.dart';
 
-class OrderTransactionsImpl implements OrderTransactions {
+class SortTransactionsImpl implements SortTransactions {
   @override
   List<Transaction> byID(List<Transaction> transactions) =>
       List.from(transactions)..sort((a, b) => a.id.compareTo(b.id));
@@ -28,7 +28,7 @@ class OrderTransactionsImpl implements OrderTransactions {
       );
 
   @override
-  List<Transaction> revertOrder(List<Transaction> transactions) =>
+  List<Transaction> revertSort(List<Transaction> transactions) =>
       transactions.reversed.toList();
 
   List<Transaction> _sortList({

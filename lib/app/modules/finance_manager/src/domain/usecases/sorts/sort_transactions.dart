@@ -1,6 +1,6 @@
 import '../../entities/transaction.dart';
 
-abstract interface class OrderTransactions {
+abstract interface class SortTransactions {
   List<Transaction> byValue({
     required List<Transaction> transactions,
     bool isCrescent,
@@ -11,5 +11,5 @@ abstract interface class OrderTransactions {
     bool isCrescent,
   });
   List<Transaction> byID(List<Transaction> transactions);
-  List<Transaction> revertOrder(List<Transaction> transactions);
+  List<Transaction> revertSort(List<Transaction> transactions);
 }

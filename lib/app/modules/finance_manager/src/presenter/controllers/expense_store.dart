@@ -9,22 +9,22 @@ import '../../domain/models/expense_model.dart';
 import '../../domain/models/status.dart';
 import '../../domain/usecases/filters/filter_expenses.dart';
 import '../../domain/usecases/manage_expense.dart';
-import '../../domain/usecases/orders/order_expenses.dart';
+import '../../domain/usecases/sorts/sort_expenses.dart';
 import '../../errors/errors.dart';
 
 class ExpenseStore extends Store<List<ExpenseModel>> {
   ExpenseStore({
     required ManageExpense manageExpense,
     required FilterExpenses filterExpenses,
-    required OrderExpenses orderExpenses,
+    required SortExpenses sortExpenses,
   })  : _manageExpense = manageExpense,
         _filterExpenses = filterExpenses,
-        _orderExpenses = orderExpenses,
+        _sortExpenses = sortExpenses,
         super([]);
 
   final ManageExpense _manageExpense;
   final FilterExpenses _filterExpenses;
-  final OrderExpenses _orderExpenses;
+  final SortExpenses _sortExpenses;
 
   final List<ExpenseModel> all = [];
 
@@ -168,15 +168,15 @@ class ExpenseStore extends Store<List<ExpenseModel>> {
     bool isCrescent = true,
   }) {
     return switch (option) {
-      PaiyableSortOption.byValue => _orderExpenses.byValue(
+      PaiyableSortOption.byValue => _sortExpenses.byValue(
           models,
           isCrescent: isCrescent,
         ),
-      PaiyableSortOption.byName => _orderExpenses.byName(
+      PaiyableSortOption.byName => _sortExpenses.byName(
           models,
           isCrescent: isCrescent,
         ),
-      PaiyableSortOption.byDueDate => _orderExpenses.byDueDate(
+      PaiyableSortOption.byDueDate => _sortExpenses.byDueDate(
           models,
           isCrescent: isCrescent,
         ),

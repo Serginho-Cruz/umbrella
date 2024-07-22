@@ -9,24 +9,24 @@ import '../../domain/entities/income.dart';
 import '../../domain/models/income_model.dart';
 import '../../domain/models/status.dart';
 import '../../domain/usecases/filters/filter_incomes.dart';
-import '../../domain/usecases/orders/order_expenses.dart';
-import '../../domain/usecases/orders/order_incomes.dart';
+import '../../domain/usecases/sorts/sort_expenses.dart';
+import '../../domain/usecases/sorts/sort_incomes.dart';
 import '../../errors/errors.dart';
 
 class IncomeStore extends Store<List<IncomeModel>> {
   final ManageIncome _manageIncome;
   final FilterIncomes _filterIncomes;
-  final OrderIncomes _sortIncomes;
+  final SortIncomes _sortIncomes;
 
   final List<IncomeModel> all = [];
 
   IncomeStore({
     required ManageIncome manageIncome,
     required FilterIncomes filterIncomes,
-    required OrderIncomes orderIncomes,
+    required SortIncomes sortIncomes,
   })  : _manageIncome = manageIncome,
         _filterIncomes = filterIncomes,
-        _sortIncomes = orderIncomes,
+        _sortIncomes = sortIncomes,
         super([]);
 
   AsyncResult<int, Fail> register(Income expense) async {
