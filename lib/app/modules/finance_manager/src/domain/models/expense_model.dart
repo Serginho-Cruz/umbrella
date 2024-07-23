@@ -1,7 +1,7 @@
 import '../entities/expense.dart';
 import 'finance_model.dart';
 
-class ExpenseModel extends FinanceModel {
+class ExpenseModel extends FinanceModel<Expense> {
   ExpenseModel.fromExpense(
     Expense expense, {
     required super.status,
@@ -19,6 +19,7 @@ class ExpenseModel extends FinanceModel {
           account: expense.account,
         );
 
+  @override
   Expense toEntity() {
     return Expense(
       id: id,

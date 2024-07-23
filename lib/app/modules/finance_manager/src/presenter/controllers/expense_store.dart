@@ -1,10 +1,12 @@
-import 'package:flutter_triple/flutter_triple.dart';
 import 'package:result_dart/result_dart.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/paiyable_store.dart';
 
 import '../../domain/entities/account.dart';
 import '../../domain/entities/category.dart';
+import '../../domain/entities/credit_card.dart';
 import '../../domain/entities/date.dart';
 import '../../domain/entities/expense.dart';
+import '../../domain/entities/payment.dart';
 import '../../domain/models/expense_model.dart';
 import '../../domain/models/status.dart';
 import '../../domain/usecases/filters/filter_expenses.dart';
@@ -12,7 +14,7 @@ import '../../domain/usecases/manage_expense.dart';
 import '../../domain/usecases/sorts/sort_expenses.dart';
 import '../../errors/errors.dart';
 
-class ExpenseStore extends Store<List<ExpenseModel>> {
+class ExpenseStore extends PaiyableStore<Expense, ExpenseModel> {
   ExpenseStore({
     required ManageExpense manageExpense,
     required FilterExpenses filterExpenses,
@@ -28,33 +30,38 @@ class ExpenseStore extends Store<List<ExpenseModel>> {
 
   final List<ExpenseModel> all = [];
 
-  AsyncResult<int, Fail> register(Expense expense) async {
-    var result = await _manageExpense.register(expense);
+  @override
+  AsyncResult<int, Fail> register(Expense entity) async {
+    var result = await _manageExpense.register(entity);
 
     return result;
   }
 
+  @override
   AsyncResult<void, Fail> updateValue(
-    Expense expense,
+    ExpenseModel paiyable,
     double newValue,
   ) =>
-      _manageExpense.updateValue(expense, newValue);
+      _manageExpense.updateValue(paiyable.toEntity(), newValue);
 
+  @override
   AsyncResult<void, Fail> switchAccount(
-    Expense expense,
+    ExpenseModel paiyable,
     Account newAccount,
   ) =>
-      _manageExpense.switchAccount(expense, newAccount);
+      _manageExpense.switchAccount(paiyable.toEntity(), newAccount);
 
-  AsyncResult<void, Fail> updateExpense({
-    required Expense oldExpense,
-    required Expense newExpense,
+  @override
+  AsyncResult<void, Fail> edit({
+    required Expense oldPaiyable,
+    required Expense newPaiyable,
   }) =>
       _manageExpense.update(
-        oldExpense: oldExpense,
-        newExpense: newExpense,
+        oldExpense: oldPaiyable,
+        newExpense: newPaiyable,
       );
 
+  @override
   Future<void> getForAll({
     required List<Account> accounts,
     required int month,
@@ -103,6 +110,7 @@ class ExpenseStore extends Store<List<ExpenseModel>> {
     setLoading(false);
   }
 
+  @override
   Future<void> getAllOf({
     required int month,
     required int year,
@@ -132,6 +140,14 @@ class ExpenseStore extends Store<List<ExpenseModel>> {
     });
 
     setLoading(false);
+  }
+
+  @override
+  AsyncResult<void, Fail> pay({
+    required List<Payment<Expense>> payments,
+    CreditCard? card,
+  }) async {
+    return const Success(2);
   }
 
   void filterByName(String name) {

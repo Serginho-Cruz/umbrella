@@ -1,7 +1,7 @@
 import '../entities/income.dart';
 import 'finance_model.dart';
 
-class IncomeModel extends FinanceModel {
+ class IncomeModel extends FinanceModel<Income> {
   IncomeModel.fromIncome(
     Income income, {
     required super.status,
@@ -19,6 +19,7 @@ class IncomeModel extends FinanceModel {
           personName: income.personName,
         );
 
+  @override
   Income toEntity() {
     return Income(
       id: id,

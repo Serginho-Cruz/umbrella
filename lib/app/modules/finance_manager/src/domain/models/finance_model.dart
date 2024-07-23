@@ -1,35 +1,27 @@
-import '../entities/account.dart';
-import '../entities/category.dart';
-import '../entities/date.dart';
-import '../entities/frequency.dart';
-import 'status.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/paiyable.dart';
 
-abstract class FinanceModel {
-  final int id;
+import '../entities/category.dart';
+import '../entities/frequency.dart';
+import 'paiyable_model.dart';
+
+abstract  class FinanceModel<T extends Paiyable> extends PaiyableModel<T> {
   final String name;
-  final double totalValue;
-  final double paidValue;
-  final double remainingValue;
-  final Category category;
-  final Status status;
-  final Date overdueDate;
   final Frequency frequency;
-  final Account account;
+  final Category category;
   final String? personName;
-  final Date? paymentDate;
 
   FinanceModel({
-    required this.id,
+    required super.id,
     required this.name,
-    required this.totalValue,
-    required this.paidValue,
-    required this.remainingValue,
-    required this.status,
+    required super.totalValue,
+    required super.paidValue,
+    required super.remainingValue,
+    required super.status,
+    required super.account,
+    super.paymentDate,
+    required super.overdueDate,
     required this.category,
     required this.frequency,
-    required this.account,
     this.personName,
-    this.paymentDate,
-    required this.overdueDate,
   });
 }

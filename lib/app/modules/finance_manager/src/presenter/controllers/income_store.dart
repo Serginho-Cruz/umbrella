@@ -1,6 +1,8 @@
-import 'package:flutter_triple/flutter_triple.dart';
 import 'package:result_dart/result_dart.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/credit_card.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/payment.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/manage_income.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/paiyable_store.dart';
 
 import '../../domain/entities/account.dart';
 import '../../domain/entities/category.dart';
@@ -13,7 +15,7 @@ import '../../domain/usecases/sorts/sort_expenses.dart';
 import '../../domain/usecases/sorts/sort_incomes.dart';
 import '../../errors/errors.dart';
 
-class IncomeStore extends Store<List<IncomeModel>> {
+class IncomeStore extends PaiyableStore<Income, IncomeModel> {
   final ManageIncome _manageIncome;
   final FilterIncomes _filterIncomes;
   final SortIncomes _sortIncomes;
@@ -29,33 +31,38 @@ class IncomeStore extends Store<List<IncomeModel>> {
         _sortIncomes = sortIncomes,
         super([]);
 
-  AsyncResult<int, Fail> register(Income expense) async {
-    var result = await _manageIncome.register(expense);
+  @override
+  AsyncResult<int, Fail> register(Income entity) async {
+    var result = await _manageIncome.register(entity);
 
     return result;
   }
 
+  @override
   AsyncResult<void, Fail> updateValue(
-    Income income,
+    IncomeModel paiyable,
     double newValue,
   ) =>
-      _manageIncome.updateValue(income, newValue);
+      _manageIncome.updateValue(paiyable.toEntity(), newValue);
 
+  @override
   AsyncResult<void, Fail> switchAccount(
-    Income income,
+    IncomeModel paiyable,
     Account newAccount,
   ) =>
-      _manageIncome.switchAccount(income, newAccount);
+      _manageIncome.switchAccount(paiyable.toEntity(), newAccount);
 
-  AsyncResult<void, Fail> updateIncome({
-    required Income oldIncome,
-    required Income newIncome,
+  @override
+  AsyncResult<void, Fail> edit({
+    required Income oldPaiyable,
+    required Income newPaiyable,
   }) =>
       _manageIncome.update(
-        oldIncome: oldIncome,
-        newIncome: newIncome,
+        oldIncome: oldPaiyable,
+        newIncome: newPaiyable,
       );
 
+  @override
   Future<void> getForAll({
     required List<Account> accounts,
     required int month,
@@ -100,6 +107,7 @@ class IncomeStore extends Store<List<IncomeModel>> {
     setLoading(false);
   }
 
+  @override
   Future<void> getAllOf({
     required int month,
     required int year,
@@ -129,6 +137,14 @@ class IncomeStore extends Store<List<IncomeModel>> {
     });
 
     setLoading(false);
+  }
+
+  @override
+  AsyncResult<void, Fail> pay({
+    required List<Payment<Income>> payments,
+    CreditCard? card,
+  }) async {
+    return const Success(2);
   }
 
   void filterByName(String name) {
