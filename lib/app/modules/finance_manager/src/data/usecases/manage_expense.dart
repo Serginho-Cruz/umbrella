@@ -1,5 +1,5 @@
 import 'package:result_dart/result_dart.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/extensions.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/round.dart';
 import '../../domain/entities/account.dart';
 import '../repositories/balance_repository.dart';
 import '../../domain/entities/date.dart';

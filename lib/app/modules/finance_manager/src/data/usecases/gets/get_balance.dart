@@ -4,7 +4,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entit
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/expense.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/income.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/invoice.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/extensions.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/round.dart';
 import '../../../domain/entities/account.dart';
 import '../../../domain/entities/frequency.dart';
 import '../../../domain/entities/paiyable.dart';

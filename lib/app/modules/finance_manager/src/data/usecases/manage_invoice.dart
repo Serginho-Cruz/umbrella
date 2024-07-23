@@ -6,7 +6,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entit
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/manage_invoice.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/invoice_messages.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/extensions.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/round.dart';
 
 import '../../domain/entities/account.dart';
 import '../../domain/entities/date.dart';

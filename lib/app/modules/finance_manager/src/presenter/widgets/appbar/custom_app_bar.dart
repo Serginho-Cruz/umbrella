@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/account.dart';
-import '../../controllers/account_controller.dart';
+import '../../controllers/account_store.dart';
 import '../../controllers/balance_store.dart';
 import '../../utils/umbrella_palette.dart';
 import '../../../domain/entities/date.dart';
