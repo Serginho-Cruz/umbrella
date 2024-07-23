@@ -32,6 +32,10 @@ class InvoiceUpdateError extends Fail {
   InvoiceUpdateError(super.message);
 }
 
+class PaymentError extends Fail {
+  PaymentError(super.message);
+}
+
 class InstallmentError extends Fail {
   InstallmentError(super.message);
 }

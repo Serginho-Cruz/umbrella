@@ -5,31 +5,37 @@ class PaymentMethod extends Equatable {
   final String name;
   final String icon;
 
-  const PaymentMethod._({
-    required this.id,
-    required this.name,
-    required this.icon,
-  });
+  const PaymentMethod.money()
+      : id = 1,
+        name = 'Dinheiro',
+        icon = 'icons/methods/money.png';
 
-  factory PaymentMethod.money() => const PaymentMethod._(
-      id: 1, name: 'Dinheiro', icon: 'icons/methods/money.png');
+  const PaymentMethod.debit()
+      : id = 2,
+        name = 'Débito',
+        icon = 'icons/methods/debit.png';
 
-  factory PaymentMethod.debit() => const PaymentMethod._(
-      id: 2, name: 'Débito', icon: 'icons/methods/debit.png');
+  const PaymentMethod.pix()
+      : id = 3,
+        name = 'Pix',
+        icon = 'icons/methods/pix.png';
 
-  factory PaymentMethod.pix() =>
-      const PaymentMethod._(id: 3, name: 'Pix', icon: 'icons/methods/pix.png');
+  const PaymentMethod.credit()
+      : id = 4,
+        name = 'Crédito',
+        icon = 'icons/methods/credit.png';
 
-  factory PaymentMethod.credit() => const PaymentMethod._(
-      id: 4, name: 'Crédito', icon: 'icons/methods/credit.png');
+  const PaymentMethod.boleto()
+      : id = 5,
+        name = 'Boleto',
+        icon = 'icons/methods/boleto.png';
 
-  factory PaymentMethod.boleto() => const PaymentMethod._(
-      id: 5, name: 'Boleto', icon: 'icons/methods/boleto.png');
+  const PaymentMethod.creditInInstallments()
+      : id = 6,
+        name = 'Crédito Parcelado',
+        icon = 'icons/methods/credit.png';
 
-  factory PaymentMethod.creditInInstallments() => const PaymentMethod._(
-      id: 6, name: 'Crédito Parcelado', icon: 'icons/methods/credit.png');
-
-  static List<PaymentMethod> get normals => [
+  static List<PaymentMethod> get normals => const [
         PaymentMethod.money(),
         PaymentMethod.debit(),
         PaymentMethod.pix(),
