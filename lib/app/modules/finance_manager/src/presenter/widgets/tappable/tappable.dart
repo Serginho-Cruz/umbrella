@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../utils/umbrella_palette.dart';
 import '../texts/medium_text.dart';
+import 'tappable_option.dart';
 
 enum TappableDispatcher { tap, doubleTap }
 
@@ -14,7 +15,7 @@ class Tappable extends StatefulWidget {
   });
 
   final Widget child;
-  final List<({String name, VoidCallback onPressed})> options;
+  final List<TappableOption> options;
   final TappableDispatcher openMenuDispatcher;
 
   @override

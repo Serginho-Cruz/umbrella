@@ -1,12 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-
-import '../../../domain/entities/expense.dart';
-import '../../../domain/entities/income.dart';
-import '../../../domain/entities/invoice.dart';
-import '../../../domain/entities/paiyable.dart';
+import '../../../domain/models/paiyable_model.dart';
 import '../../utils/currency_input_formatter.dart';
+import '../../utils/resolve_paiyable_name.dart';
 import '../buttons/primary_button.dart';
 import '../buttons/secondary_button.dart';
 import '../forms/my_form.dart';
@@ -18,14 +15,14 @@ import '../texts/price.dart';
 import '../texts/title_text.dart';
 import 'umbrella_dialogs.dart';
 
-class ChangeValueDialog<P extends Paiyable> extends StatefulWidget {
+class ChangeValueDialog<P extends PaiyableModel> extends StatefulWidget {
   const ChangeValueDialog({
     super.key,
     required this.onValueAltered,
-    required this.paiyable,
+    required this.model,
   });
 
-  final P paiyable;
+  final P model;
   final Future<String?> Function(double) onValueAltered;
 
   @override
@@ -63,9 +60,9 @@ class _ChangeValueDialogState extends State<ChangeValueDialog> {
           const SizedBox(height: 40.0),
           Row(
             children: [
-              MediumText(_resolvePaiyableDisplayName()),
+              MediumText(resolvePaiyableTypeName(widget.model)),
               const SizedBox(width: 10.0),
-              MediumText.bold(_resolvePaiyableName()),
+              MediumText.bold(resolvePaiyableName(widget.model)),
             ],
           ),
           const SizedBox(height: 20.0),
@@ -74,7 +71,7 @@ class _ChangeValueDialogState extends State<ChangeValueDialog> {
               const MediumText('Valor Total:'),
               const SizedBox(width: 10.0),
               Price.medium(
-                widget.paiyable.totalValue,
+                widget.model.totalValue,
                 fontWeight: FontWeight.bold,
               ),
             ],
@@ -132,29 +129,5 @@ class _ChangeValueDialogState extends State<ChangeValueDialog> {
             )
           : Navigator.pop(context);
     });
-  }
-
-  String _resolvePaiyableDisplayName() {
-    return switch (widget.paiyable) {
-      Expense() => 'Despesa:',
-      Income() => 'Receita:',
-      Invoice() => 'Fatura:',
-      Paiyable() => '',
-    };
-  }
-
-  String _resolvePaiyableName() {
-    if (widget.paiyable is Income) {
-      var inc = widget.paiyable as Income;
-      return inc.name;
-    }
-
-    if (widget.paiyable is Expense) {
-      var exp = widget.paiyable as Expense;
-      return exp.name;
-    }
-
-    var inv = widget.paiyable as Invoice;
-    return '${inv.card.name} / ${inv.closingDate.monthName} de ${inv.closingDate.year}';
   }
 }

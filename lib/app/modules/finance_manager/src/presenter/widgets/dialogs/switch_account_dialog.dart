@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/paiyable_model.dart';
 
 import '../../../domain/entities/account.dart';
-import '../../../domain/entities/paiyable.dart';
 import '../../utils/umbrella_sizes.dart';
 import '../buttons/primary_button.dart';
 import '../buttons/secondary_button.dart';
@@ -16,15 +16,15 @@ import '../texts/medium_text.dart';
 import '../texts/title_text.dart';
 import 'umbrella_dialogs.dart';
 
-class SwitchAccountDialog<P extends Paiyable> extends StatefulWidget {
+class SwitchAccountDialog<P extends PaiyableModel> extends StatefulWidget {
   const SwitchAccountDialog({
     super.key,
     required this.onAccountChanged,
-    required this.paiyable,
+    required this.model,
     required this.accounts,
   });
 
-  final P paiyable;
+  final P model;
   final Future<String?> Function(Account) onAccountChanged;
   final List<Account> accounts;
 
@@ -38,7 +38,7 @@ class _SwitchAccountDialogState extends State<SwitchAccountDialog> {
   @override
   void initState() {
     super.initState();
-    accountSelected = widget.paiyable.account.copyWith();
+    accountSelected = widget.model.account.copyWith();
   }
 
   @override
@@ -49,10 +49,10 @@ class _SwitchAccountDialogState extends State<SwitchAccountDialog> {
         children: [
           const Align(child: TitleText.bold('Trocar Conta')),
           const SizedBox(height: 40.0),
-          PaiyableName(paiyable: widget.paiyable),
+          PaiyableName(model: widget.model),
           const SizedBox(height: 30.0),
           AccountName(
-            account: widget.paiyable.account,
+            account: widget.model.account,
             trailingText: 'Conta Atual:',
             alignment: MainAxisAlignment.start,
             minimalSpace: 10.0,
@@ -97,7 +97,7 @@ class _SwitchAccountDialogState extends State<SwitchAccountDialog> {
   }
 
   void switchAccount() {
-    if (accountSelected.id == widget.paiyable.account.id) {
+    if (accountSelected.id == widget.model.account.id) {
       Navigator.pop(context);
       return;
     }

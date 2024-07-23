@@ -26,7 +26,7 @@ class CategoryRow extends StatelessWidget {
           MediumText(category?.name ?? 'Indefinido'),
           const SizedBox(width: 12.0),
           CategoryIcon(
-            iconName: category?.icon ?? 'undefined.png',
+            iconName: category?.icon ?? 'icons/undefined.png',
             radius: 36.0,
           ),
         ],

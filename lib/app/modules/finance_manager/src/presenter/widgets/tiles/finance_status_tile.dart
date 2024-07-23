@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/models/status.dart';
+import '../../utils/adapt_name.dart';
 import '../../utils/umbrella_palette.dart';
 import '../icons/status_icon.dart';
 import '../texts/small_text.dart';
@@ -34,11 +35,7 @@ class FinanceStatusTile extends StatelessWidget {
   }
 
   Widget _buildStatus(Status status) {
-    String name = switch (status) {
-      Status.okay => 'Pago',
-      Status.inTime => 'Em Tempo',
-      Status.overdue => 'Vencido',
-    };
+    String name = adaptStatusName(status);
 
     return Row(
       mainAxisSize: MainAxisSize.min,
