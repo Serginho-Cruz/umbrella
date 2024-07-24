@@ -9,13 +9,13 @@ import '../../../domain/entities/category.dart';
 import '../../../domain/entities/date.dart';
 import '../../../domain/entities/expense.dart';
 import '../../../domain/entities/frequency.dart';
-import '../../controllers/account_controller.dart';
+import '../../controllers/account_store.dart';
 import '../../controllers/expense_store.dart';
 import '../../widgets/appbar/custom_app_bar.dart';
 import '../../widgets/simple_information/account_name.dart';
 import '../../widgets/buttons/primary_button.dart';
 import '../../widgets/buttons/reset_button.dart';
-import '../../widgets/tiles/category_row.dart';
+import '../../widgets/simple_information/category_row.dart';
 import '../../widgets/layout/umbrella_scaffold.dart';
 import '../../widgets/selectors/category_selector.dart';
 import '../../widgets/selectors/date_selector.dart';
@@ -253,7 +253,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
     );
 
     widget._expenseStore
-        .updateExpense(newExpense: newExpense, oldExpense: widget._expense)
+        .edit(newPaiyable: newExpense, oldPaiyable: widget._expense)
         .then((result) {
       result.fold((success) {
         UmbrellaDialogs.showSuccess(

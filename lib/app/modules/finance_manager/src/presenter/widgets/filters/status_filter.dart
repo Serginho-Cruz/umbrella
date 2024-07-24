@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../domain/models/status.dart';
 import '../texts/medium_text.dart';
 
-class PaiyableStatusFilter extends StatelessWidget {
-  const PaiyableStatusFilter({
+class StatusFilter extends StatelessWidget {
+  const StatusFilter({
     super.key,
     required this.status,
     this.selectedStatus = const [],

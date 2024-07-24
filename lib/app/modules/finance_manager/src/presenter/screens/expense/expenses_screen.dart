@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/balance_store.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/extensions.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/round.dart';
 
 import '../../../domain/entities/account.dart';
 import '../../../domain/entities/category.dart';
@@ -9,8 +9,9 @@ import '../../../domain/models/expense_model.dart';
 import '../../../domain/models/status.dart';
 import '../../../domain/usecases/sorts/sort_expenses.dart';
 import '../../utils/currency_format.dart';
-import '../../widgets/others/tappable_options.dart';
-import '../../controllers/account_controller.dart';
+import '../../widgets/filters/finance_filter.dart';
+import '../../widgets/tappable/expense_tappable_options.dart';
+import '../../controllers/account_store.dart';
 import '../../controllers/expense_category_store.dart';
 import '../../controllers/expense_store.dart';
 import '../../widgets/appbar/custom_app_bar.dart';
@@ -18,13 +19,12 @@ import '../../widgets/appbar/month_changer.dart';
 import '../../widgets/buttons/navigation_button.dart';
 import '../../widgets/buttons/navigation_icon_button.dart';
 import '../../widgets/dialogs/umbrella_dialogs.dart';
-import '../../widgets/filters/paiyable_filter.dart';
 import '../../widgets/layout/spaced.dart';
 import '../../widgets/layout/umbrella_scaffold.dart';
 import '../../widgets/others/list_scoped_builder.dart';
 import '../../widgets/selectors/account_selector.dart';
 import '../../widgets/shimmer/shimmer_list_tile.dart';
-import '../../widgets/others/tappable.dart';
+import '../../widgets/tappable/tappable.dart';
 import '../../widgets/texts/big_text.dart';
 import '../../widgets/texts/medium_text.dart';
 import '../../widgets/texts/small_disclaimer.dart';
@@ -239,7 +239,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                         ...List.generate(
                           expenses.length,
                           (i) => Tappable(
-                            options: TappableOptions.expenses(
+                            options: ExpenseTappableOptions.get(
                               context: context,
                               model: expenses[i],
                               store: widget._expenseStore,
@@ -335,7 +335,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             maxValue = max;
           }
 
-          return PaiyableFilter<ExpenseModel>(
+          return FinanceFilter<ExpenseModel>(
             models: widget._expenseStore.all,
             filterName: widget._expenseStore.filterByName,
             filterByCategory: (models, cats) {

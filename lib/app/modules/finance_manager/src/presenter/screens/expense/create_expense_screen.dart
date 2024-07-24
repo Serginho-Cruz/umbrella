@@ -10,7 +10,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/wi
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/list_scoped_builder.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/shimmer/shimmer_container.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/utils/currency_input_formatter.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/extensions.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/round.dart';
 
 import '../../../domain/entities/account.dart';
 import '../../../domain/entities/category.dart';
@@ -20,12 +20,12 @@ import '../../../domain/entities/expense.dart';
 import '../../../domain/entities/frequency.dart';
 import '../../controllers/balance_store.dart';
 import '../../utils/umbrella_palette.dart';
-import '../../controllers/account_controller.dart';
+import '../../controllers/account_store.dart';
 import '../../controllers/expense_store.dart';
 import '../../widgets/appbar/custom_app_bar.dart';
 import '../../widgets/buttons/primary_button.dart';
 import '../../widgets/buttons/reset_button.dart';
-import '../../widgets/tiles/category_row.dart';
+import '../../widgets/simple_information/category_row.dart';
 import '../../widgets/layout/umbrella_scaffold.dart';
 import '../../widgets/selectors/card_selector.dart';
 import '../../widgets/selectors/category_selector.dart';

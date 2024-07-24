@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/appbar/custom_app_bar.dart';
 
 import '../../../domain/entities/credit_card.dart';
-import '../../controllers/account_controller.dart';
+import '../../controllers/account_store.dart';
 import '../../controllers/balance_store.dart';
 import '../../utils/currency_format.dart';
 import '../../utils/currency_input_formatter.dart';

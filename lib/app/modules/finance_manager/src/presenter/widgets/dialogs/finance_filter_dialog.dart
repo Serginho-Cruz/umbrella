@@ -5,17 +5,18 @@ import '../../../domain/entities/category.dart';
 import '../../../domain/models/finance_model.dart';
 import '../../../domain/models/status.dart';
 import '../../../domain/usecases/sorts/sort_expenses.dart';
+import '../../utils/adapt_name.dart';
 import '../buttons/primary_button.dart';
 import '../filters/category_filter.dart';
-import '../filters/paiyable_status_filter.dart';
+import '../filters/status_filter.dart';
 import '../filters/range_value_filter.dart';
 import '../layout/spaced.dart';
 import '../texts/big_text.dart';
 import '../texts/medium_text.dart';
 import '../layout/dialog_layout.dart';
 
-class PaiyableFilterDialog<T extends FinanceModel> extends StatefulWidget {
-  const PaiyableFilterDialog({
+class FinanceFilterDialog<T extends FinanceModel> extends StatefulWidget {
+  const FinanceFilterDialog({
     super.key,
     required this.categories,
     required this.selectedValues,
@@ -42,10 +43,10 @@ class PaiyableFilterDialog<T extends FinanceModel> extends StatefulWidget {
   final List<Status> statusFiltered;
 
   @override
-  State<PaiyableFilterDialog> createState() => _PaiyableFilterDialogState();
+  State<FinanceFilterDialog> createState() => _FinanceFilterDialogState();
 }
 
-class _PaiyableFilterDialogState extends State<PaiyableFilterDialog> {
+class _FinanceFilterDialogState extends State<FinanceFilterDialog> {
   late RangeValues values;
   late double minValue, maxValue;
 
@@ -132,7 +133,7 @@ class _PaiyableFilterDialogState extends State<PaiyableFilterDialog> {
                 padding: EdgeInsets.only(top: 18.0, bottom: 12.0),
                 child: BigText.bold('Status'),
               ),
-              PaiyableStatusFilter(
+              StatusFilter(
                 status: Status.values,
                 selectedStatus: selectedStatus,
                 onStatusChanged: (status) {
@@ -157,7 +158,7 @@ class _PaiyableFilterDialogState extends State<PaiyableFilterDialog> {
                         setState(() => sortOption = newOption);
                       },
                     ),
-                    MediumText(option.adaptedName),
+                    MediumText(adaptSortOptionName(option)),
                   ],
                 ),
               ),
@@ -228,12 +229,4 @@ class _PaiyableFilterDialogState extends State<PaiyableFilterDialog> {
 
     return RangeValues(min, max);
   }
-}
-
-extension on PaiyableSortOption {
-  String get adaptedName => switch (this) {
-        PaiyableSortOption.byName => 'Nome',
-        PaiyableSortOption.byDueDate => 'Data de Vencimento',
-        PaiyableSortOption.byValue => 'Valor',
-      };
 }

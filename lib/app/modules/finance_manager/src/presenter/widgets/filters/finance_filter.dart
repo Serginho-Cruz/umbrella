@@ -5,11 +5,11 @@ import '../../../domain/models/finance_model.dart';
 import '../../../domain/models/status.dart';
 import '../../../domain/usecases/sorts/sort_expenses.dart';
 import '../buttons/filter_button.dart';
-import '../dialogs/paiyable_filter_dialog.dart';
+import '../dialogs/finance_filter_dialog.dart';
 import 'umbrella_search_bar.dart';
 
-class PaiyableFilter<T extends FinanceModel> extends StatelessWidget {
-  const PaiyableFilter({
+class FinanceFilter<T extends FinanceModel> extends StatelessWidget {
+  const FinanceFilter({
     super.key,
     required this.filterName,
     required this.categories,
@@ -70,7 +70,7 @@ class PaiyableFilter<T extends FinanceModel> extends StatelessWidget {
           onPressed: () {
             showDialog(
               context: context,
-              builder: (ctx) => PaiyableFilterDialog(
+              builder: (ctx) => FinanceFilterDialog(
                 onFiltersApplied: _filter,
                 categories: categories,
                 filteredCategories: filteredCategories,

@@ -4,7 +4,7 @@ import '../../../domain/entities/category.dart';
 import '../../../domain/entities/date.dart';
 import '../../../domain/entities/frequency.dart';
 import '../../../domain/entities/income.dart';
-import '../../controllers/account_controller.dart';
+import '../../controllers/account_store.dart';
 import '../../controllers/balance_store.dart';
 import '../../controllers/income_store.dart';
 import '../../controllers/income_category_store.dart';
@@ -12,7 +12,7 @@ import '../../widgets/appbar/custom_app_bar.dart';
 import '../../widgets/simple_information/account_name.dart';
 import '../../widgets/buttons/primary_button.dart';
 import '../../widgets/buttons/reset_button.dart';
-import '../../widgets/tiles/category_row.dart';
+import '../../widgets/simple_information/category_row.dart';
 import '../../widgets/layout/umbrella_scaffold.dart';
 import '../../widgets/selectors/category_selector.dart';
 import '../../widgets/selectors/date_selector.dart';
@@ -247,7 +247,7 @@ class _EditIncomeScreenState extends State<EditIncomeScreen> {
     );
 
     widget._incomeStore
-        .updateIncome(newIncome: newIncome, oldIncome: widget._income)
+        .edit(newPaiyable: newIncome, oldPaiyable: widget._income)
         .then((result) {
       result.fold((success) {
         UmbrellaDialogs.showSuccess(

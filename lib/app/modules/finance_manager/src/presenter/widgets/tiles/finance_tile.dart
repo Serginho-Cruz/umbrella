@@ -8,7 +8,7 @@ import '../../utils/umbrella_palette.dart';
 import '../texts/big_text.dart';
 import '../texts/medium_text.dart';
 import '../texts/price.dart';
-import 'category_row.dart';
+import '../simple_information/category_row.dart';
 import '../layout/spaced.dart';
 import '../icons/status_icon.dart';
 

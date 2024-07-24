@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/tiles/finance_tile.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/extensions.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/round.dart';
 import '../../../domain/entities/account.dart';
 import '../../../domain/entities/category.dart';
 import '../../../domain/models/income_model.dart';
@@ -9,8 +9,7 @@ import '../../../domain/models/status.dart';
 import '../../../domain/usecases/sorts/sort_expenses.dart';
 import '../../controllers/balance_store.dart';
 import '../../utils/currency_format.dart';
-import '../../widgets/others/tappable_options.dart';
-import '../../controllers/account_controller.dart';
+import '../../controllers/account_store.dart';
 import '../../controllers/income_category_store.dart';
 import '../../controllers/income_store.dart';
 import '../../widgets/appbar/custom_app_bar.dart';
@@ -18,10 +17,11 @@ import '../../widgets/appbar/month_changer.dart';
 import '../../widgets/buttons/navigation_button.dart';
 import '../../widgets/buttons/navigation_icon_button.dart';
 import '../../widgets/layout/spaced.dart';
-import '../../widgets/filters/paiyable_filter.dart';
+import '../../widgets/filters/finance_filter.dart';
 import '../../widgets/selectors/account_selector.dart';
 import '../../widgets/shimmer/shimmer_list_tile.dart';
-import '../../widgets/others/tappable.dart';
+import '../../widgets/tappable/income_tappable_options.dart';
+import '../../widgets/tappable/tappable.dart';
 import '../../widgets/texts/big_text.dart';
 import '../../widgets/texts/small_disclaimer.dart';
 import '../../widgets/texts/small_text.dart';
@@ -237,7 +237,7 @@ class _IncomesScreenState extends State<IncomesScreen> {
                         ...List.generate(
                           incomes.length,
                           (i) => Tappable(
-                            options: TappableOptions.incomes(
+                            options: IncomeTappableOptions.get(
                               context: context,
                               model: incomes[i],
                               store: widget._incomeStore,
@@ -333,7 +333,7 @@ class _IncomesScreenState extends State<IncomesScreen> {
             maxValue = max;
           }
 
-          return PaiyableFilter<IncomeModel>(
+          return FinanceFilter<IncomeModel>(
             models: widget._incomeStore.all,
             filterName: widget._incomeStore.filterByName,
             filterByCategory: (models, cats) {

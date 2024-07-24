@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/account.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/list_scoped_builder.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/tappable_options.dart';
 import '../../domain/entities/credit_card.dart';
 import '../../domain/models/expense_model.dart';
 import '../../domain/models/income_model.dart';
 import '../controllers/balance_store.dart';
 import '../utils/umbrella_palette.dart';
-import '../controllers/account_controller.dart';
+import '../controllers/account_store.dart';
 import '../controllers/credit_card_store.dart';
 import '../controllers/expense_store.dart';
 import '../controllers/income_store.dart';
@@ -22,7 +21,10 @@ import '../widgets/selectors/account_selector.dart';
 import '../widgets/shimmer/shimmer_container.dart';
 import '../widgets/appbar/custom_app_bar.dart';
 import '../widgets/layout/horizontal_animated_list.dart';
-import '../widgets/others/tappable.dart';
+import '../widgets/tappable/credit_card_tappable_options.dart';
+import '../widgets/tappable/expense_tappable_options.dart';
+import '../widgets/tappable/income_tappable_options.dart';
+import '../widgets/tappable/tappable.dart';
 import '../widgets/texts/big_text.dart';
 import '../widgets/texts/title_text.dart';
 
@@ -144,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         length: state.length,
                         itemBuilderFunction: (context, index) {
                           return Tappable(
-                            options: TappableOptions.incomes(
+                            options: IncomeTappableOptions.get(
                               context: screenContext,
                               model: state[index],
                               store: widget._incomeStore,
@@ -171,7 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         length: state.length,
                         itemBuilderFunction: (context, index) {
                           return Tappable(
-                            options: TappableOptions.expenses(
+                            options: ExpenseTappableOptions.get(
                               context: screenContext,
                               model: state[index],
                               store: widget._expenseStore,
@@ -201,7 +203,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           length: state.length,
                           itemBuilderFunction: (context, index) {
                             return Tappable(
-                              options: TappableOptions.cards(
+                              options: CreditCardTappableOptions.get(
                                 context: screenContext,
                                 card: state[index],
                                 onPop: widget._creditCardStore.getAll,
