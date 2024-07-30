@@ -19,13 +19,11 @@ class BalancesSection extends StatefulWidget {
     required this.accountStore,
     required this.balanceStore,
     required this.visualisationDate,
-    this.selectedAccount,
   });
 
   final AccountStore accountStore;
   final BalanceStore balanceStore;
   final Date visualisationDate;
-  final Account? selectedAccount;
 
   @override
   State<BalancesSection> createState() => _BalancesSectionState();
@@ -40,9 +38,13 @@ class _BalancesSectionState extends State<BalancesSection> {
   late String expectedBalanceLoadingLeading;
   late String expectedBalanceErrorLeading;
 
+  Account? selectedAccount;
+
   @override
   void initState() {
     super.initState();
+    widget.accountStore.addSelectedAccountListener(_onAccountChanged);
+    selectedAccount = widget.accountStore.selectedAccount;
     _resolveBalancesToShow();
   }
 
@@ -54,6 +56,12 @@ class _BalancesSectionState extends State<BalancesSection> {
         .isAtTheSameMonthAs(widget.visualisationDate)) {
       _resolveBalancesToShow();
     }
+  }
+
+  @override
+  void dispose() {
+    widget.accountStore.removeSelectedAccountListener(_onAccountChanged);
+    super.dispose();
   }
 
   @override
@@ -89,6 +97,12 @@ class _BalancesSectionState extends State<BalancesSection> {
         ],
       ),
     );
+  }
+
+  void _onAccountChanged(Account? newSelected) {
+    setState(() {
+      selectedAccount = newSelected;
+    });
   }
 
   Widget _buildActualBalanceRow() {
@@ -172,16 +186,16 @@ class _BalancesSectionState extends State<BalancesSection> {
   }
 
   double _resolveActualBalance(List<Account> accs) {
-    if (widget.selectedAccount == null) {
+    if (selectedAccount == null) {
       double balance = 0.00;
 
       for (var acc in accs) {
-        balance = (balance = acc.actualBalance).roundToDecimal();
+        balance = (balance + acc.actualBalance).roundToDecimal();
       }
       return balance;
     }
 
-    return widget.selectedAccount!.actualBalance;
+    return selectedAccount!.actualBalance;
   }
 
   Color _resolveBalanceColor(double balance) {

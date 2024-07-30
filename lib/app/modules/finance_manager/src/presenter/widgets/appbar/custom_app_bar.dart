@@ -59,14 +59,12 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
 
 class _CustomAppBarState extends State<CustomAppBar> {
   late Date balanceVisualisationDate;
-  late Account? selectedAccount;
 
   @override
   void initState() {
     super.initState();
     widget.accountStore?.addSelectedAccountListener(_onSelectedAccountChanged);
     balanceVisualisationDate = MonthChanger.currentMonthAndYear;
-    selectedAccount = widget.accountStore?.selectedAccount;
   }
 
   @override
@@ -114,7 +112,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 accountStore: widget.accountStore!,
                 balanceStore: widget.balanceStore!,
                 visualisationDate: balanceVisualisationDate,
-                selectedAccount: selectedAccount,
               ),
             ),
         ],
@@ -123,16 +120,13 @@ class _CustomAppBarState extends State<CustomAppBar> {
   }
 
   void _onSelectedAccountChanged(Account? selected) {
-    _fetchBalance(selected);
-    setState(() {
-      selectedAccount = selected;
-    });
+    _fetchBalance();
   }
 
   void _onMonthChange(int month, int year) {
     Future(() {
       widget.onMonthChange!.call(month, year);
-      _fetchBalance(widget.accountStore?.selectedAccount);
+      _fetchBalance();
 
       setState(() {
         balanceVisualisationDate = Date(day: 1, month: month, year: year);
@@ -140,12 +134,14 @@ class _CustomAppBarState extends State<CustomAppBar> {
     });
   }
 
-  void _fetchBalance(Account? selected) {
+  void _fetchBalance() {
     if (widget.accountStore == null) return;
 
     var date = MonthChanger.currentMonthAndYear;
 
     int month = date.month, year = date.year;
+
+    var selected = widget.accountStore?.selectedAccount;
 
     if (selected != null) {
       widget.balanceStore?.get(

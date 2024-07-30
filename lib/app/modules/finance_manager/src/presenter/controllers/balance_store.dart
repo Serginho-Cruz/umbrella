@@ -14,6 +14,8 @@ class BalanceStore
     required int year,
     required Account account,
   }) async {
+    if (isLoading) return;
+
     setLoading(true);
 
     var balances = await Future.wait([
@@ -43,6 +45,8 @@ class BalanceStore
     required int year,
     required List<Account> accounts,
   }) async {
+    if (isLoading) return;
+
     setLoading(true);
 
     double initial = 0.00, expected = 0.00, last = 0.00;

@@ -66,6 +66,14 @@ class _IncomesScreenState extends State<IncomesScreen> {
     Future.delayed(Duration.zero, () {
       widget._categoryStore.getAll();
     });
+
+    widget._accountStore.addSelectedAccountListener(_onAccountChanged);
+  }
+
+  @override
+  void dispose() {
+    widget._accountStore.removeSelectedAccountListener(_onAccountChanged);
+    super.dispose();
   }
 
   @override
@@ -139,14 +147,7 @@ class _IncomesScreenState extends State<IncomesScreen> {
                   AccountSelector(
                     accounts: accounts,
                     selectedAccount: widget._accountStore.selectedAccount,
-                    onSelected: (selected) {
-                      if (selected != widget._accountStore.selectedAccount) {
-                        setState(
-                          () => widget._accountStore.selectedAccount = selected,
-                        );
-                        _fetchIncomes();
-                      }
-                    },
+                    onSelected: widget._accountStore.changeSelectedAccount,
                   ),
                   const SizedBox(height: 20.0),
                   _mountTotalText(
@@ -274,6 +275,11 @@ class _IncomesScreenState extends State<IncomesScreen> {
     );
   }
 
+  void _onAccountChanged(Account? newSelected) {
+    setState(() {});
+    _fetchIncomes();
+  }
+
   void _fetchIncomes() {
     if (widget._accountStore.state.isEmpty) {
       Navigator.pushReplacementNamed(context, '/finance_manager/');
@@ -282,15 +288,13 @@ class _IncomesScreenState extends State<IncomesScreen> {
 
     var current = MonthChanger.currentMonthAndYear;
 
-    var selectedAccount = widget._accountStore.selectedAccount;
-
     wasFiltered = false;
 
-    selectedAccount != null
+    widget._accountStore.selectedAccount != null
         ? widget._incomeStore.getAllOf(
             month: current.month,
             year: current.year,
-            account: selectedAccount,
+            account: widget._accountStore.selectedAccount!,
           )
         : widget._incomeStore.getForAll(
             accounts: widget._accountStore.state,

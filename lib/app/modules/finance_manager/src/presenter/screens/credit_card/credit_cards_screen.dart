@@ -41,9 +41,7 @@ class _CreditCardsScreenState extends State<CreditCardsScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero, () {
-      widget._cardStore.getAll();
-    });
+    _fetchCards();
   }
 
   @override
@@ -61,11 +59,11 @@ class _CreditCardsScreenState extends State<CreditCardsScreen> {
       floatingActionButton: const NavigationIconButton(
         route: '/finance_manager/card/add',
       ),
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: MediaQuery.sizeOf(context).width * 0.05,
-          ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.sizeOf(context).width * 0.05,
+        ),
+        child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

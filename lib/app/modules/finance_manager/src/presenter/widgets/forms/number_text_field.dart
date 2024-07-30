@@ -13,13 +13,13 @@ class NumberTextField extends StatelessWidget {
     this.height,
     this.isOptional = false,
     required this.validate,
-    required this.focusNode,
+    this.focusNode,
     this.initialValue,
     this.maxLength,
     this.onChange,
   });
 
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
   final bool isCurrency;
   final bool isOptional;
   final TextEditingController? controller;
@@ -30,7 +30,7 @@ class NumberTextField extends StatelessWidget {
   final double? width;
   final double? height;
   final int? maxLength;
-  final void Function(String?)? onChange;
+  final void Function(double?)? onChange;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +44,7 @@ class NumberTextField extends StatelessWidget {
           maxLength: maxLength,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           keyboardType: TextInputType.number,
-          onChanged: onChange,
+          onChanged: onChange == null ? null : onChanged,
           inputFormatters: [
             isCurrency
                 ? CurrencyInputFormatter()
@@ -57,33 +57,48 @@ class NumberTextField extends StatelessWidget {
               borderRadius: BorderRadius.circular(12.0),
             ),
           ),
-          validator: (actualText) {
-            if (isOptional && actualText == null) {
-              return null;
-            }
-
-            if (actualText == null) {
-              return 'O Campo é Obrigatório';
-            }
-
-            if (isCurrency) {
-              actualText = CurrencyInputFormatter.unformat(actualText);
-            }
-
-            if (double.tryParse(actualText) == null) {
-              return 'Valor Inválido. O Campo deve conter um número';
-            }
-
-            double number = double.parse(actualText);
-            var error = validate(number);
-
-            if (error != null) return error;
-
-            return null;
-          },
+          validator: validator,
           focusNode: focusNode,
         ),
       ),
     );
+  }
+
+  void onChanged(String? text) {
+    String? numberText =
+        isCurrency ? CurrencyInputFormatter.unformat(text!) : text;
+
+    double? value;
+
+    if (numberText != null) {
+      value = double.tryParse(numberText);
+    }
+
+    onChange?.call(value);
+  }
+
+  String? validator(String? actualText) {
+    if (isOptional && actualText == null) {
+      return null;
+    }
+
+    if (actualText == null) {
+      return 'O Campo é Obrigatório';
+    }
+
+    if (isCurrency) {
+      actualText = CurrencyInputFormatter.unformat(actualText);
+    }
+
+    if (double.tryParse(actualText) == null) {
+      return 'Valor Inválido. O Campo deve conter um número';
+    }
+
+    double number = double.parse(actualText);
+    var error = validate(number);
+
+    if (error != null) return error;
+
+    return null;
   }
 }

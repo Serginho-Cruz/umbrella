@@ -43,7 +43,7 @@ class CreditCardStore extends Store<List<CreditCard>> {
   }
 
   Future<void> getAll() async {
-    if (_hasAll) return;
+    if (_hasAll || isLoading) return;
 
     if (!_authController.isLogged) {
       return;

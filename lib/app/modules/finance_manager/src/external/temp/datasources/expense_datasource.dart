@@ -15,7 +15,7 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         totalValue: 250.00,
         paidValue: 0.00,
         remainingValue: 250.00,
-        dueDate: Date(day: 12, month: 6, year: 2024),
+        dueDate: Date.today().copyWith(day: 12),
         paymentDate: null,
         category: const Category(id: 1, icon: 'icons/conta.png', name: 'Conta'),
         frequency: Frequency.monthly,
@@ -53,7 +53,7 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         totalValue: 20.00,
         paidValue: 0.00,
         remainingValue: 20.00,
-        dueDate: Date(day: 9, month: 6, year: 2024),
+        dueDate: Date.today().copyWith(day: 6),
         paymentDate: null,
         category:
             const Category(id: 5, icon: 'icons/outros.png', name: 'Outros'),
@@ -87,7 +87,7 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         totalValue: 900.00,
         paidValue: 0.00,
         remainingValue: 900.00,
-        dueDate: Date(day: 20, month: 6, year: 2024),
+        dueDate:Date.today().copyWith(day: 18),
         category:
             const Category(id: 4, name: "Moradia", icon: 'icons/moradia.png'),
         frequency: Frequency.monthly,

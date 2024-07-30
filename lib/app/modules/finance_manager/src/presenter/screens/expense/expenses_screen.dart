@@ -64,12 +64,18 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   @override
   void initState() {
     super.initState();
+
     Future.delayed(Duration.zero, () {
       widget._categoryStore.getAll();
-      widget._expenseStore.when<void>(onState: (_) {
-        setState(() {});
-      });
     });
+
+    widget._accountStore.addSelectedAccountListener(_onAccountChanged);
+  }
+
+  @override
+  void dispose() {
+    widget._accountStore.removeSelectedAccountListener(_onAccountChanged);
+    super.dispose();
   }
 
   @override
@@ -141,14 +147,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                   AccountSelector(
                     accounts: accounts,
                     selectedAccount: widget._accountStore.selectedAccount,
-                    onSelected: (selected) {
-                      if (selected != widget._accountStore.selectedAccount) {
-                        setState(
-                          () => widget._accountStore.selectedAccount = selected,
-                        );
-                        _fetchExpenses();
-                      }
-                    },
+                    onSelected: widget._accountStore.changeSelectedAccount,
                   ),
                   const SizedBox(height: 20.0),
                   _mountTotalText(
@@ -276,6 +275,11 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     );
   }
 
+  void _onAccountChanged(Account? account) {
+    setState(() {});
+    _fetchExpenses();
+  }
+
   void _fetchExpenses() {
     if (widget._accountStore.state.isEmpty) {
       Navigator.pushReplacementNamed(context, '/finance_manager/');
@@ -284,15 +288,13 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
 
     var current = MonthChanger.currentMonthAndYear;
 
-    var selectedAccount = widget._accountStore.selectedAccount;
-
     wasFiltered = false;
 
-    selectedAccount != null
+    widget._accountStore.selectedAccount != null
         ? widget._expenseStore.getAllOf(
             month: current.month,
             year: current.year,
-            account: selectedAccount,
+            account: widget._accountStore.selectedAccount!,
           )
         : widget._expenseStore.getForAll(
             accounts: widget._accountStore.state,

@@ -21,7 +21,7 @@ abstract class ExpenseTappableOptions {
         'Editar Despesa',
         () => TappableOptionsUtils.navigateTo(
           context: context,
-          route: '/finance_manager/expense/update',
+          route: '/expense/update',
           arguments: model.toEntity(),
         ).then((_) => onPop?.call()),
       ),

@@ -15,7 +15,7 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         totalValue: 1250.00,
         paidValue: 0.00,
         remainingValue: 1250.00,
-        dueDate: Date(day: 12, month: 5, year: 2024),
+        dueDate: Date.today().copyWith(day: 12),
         paymentDate: null,
         category:
             const Category(id: 11, name: 'Outros', icon: 'icons/outros.png'),

@@ -67,7 +67,7 @@ class ExpenseStore extends PaiyableStore<Expense, ExpenseModel> {
     required int month,
     required int year,
   }) async {
-    if (accounts.isEmpty) return;
+    if (accounts.isEmpty || isLoading) return;
 
     setLoading(true);
 
@@ -116,6 +116,8 @@ class ExpenseStore extends PaiyableStore<Expense, ExpenseModel> {
     required int year,
     required Account account,
   }) async {
+    if (isLoading) return;
+
     setLoading(true);
 
     var expensesResult = await _manageExpense.getAllOf(

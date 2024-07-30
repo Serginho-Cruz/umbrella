@@ -191,17 +191,14 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                 if (!willBeTurntIntoInstallment) return;
 
                 if (newValue == null ||
-                    newValue.isEmpty ||
                     _parcelsNumberFieldController.text.isEmpty) {
                   setState(() => parcelsValue = null);
                   return;
                 }
 
-                double value =
-                    double.parse(CurrencyInputFormatter.unformat(newValue));
                 setState(() {
                   parcelsValue =
-                      (value / int.parse(_parcelsNumberFieldController.text))
+                      (newValue / int.parse(_parcelsNumberFieldController.text))
                           .roundToDecimal();
                 });
               },
@@ -393,7 +390,6 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                           },
                           onChange: (parcelsNumber) {
                             if (parcelsNumber == null ||
-                                parcelsNumber.isEmpty ||
                                 _valueFieldController.text.isEmpty) {
                               setState(() => parcelsValue = null);
                               return;
@@ -403,8 +399,8 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                                 CurrencyInputFormatter.unformat(
                                     _valueFieldController.text));
                             setState(() {
-                              parcelsValue = (value / int.parse(parcelsNumber))
-                                  .roundToDecimal();
+                              parcelsValue =
+                                  (value / parcelsNumber).roundToDecimal();
                             });
                           },
                           label: 'Nº de Parcelas',

@@ -68,7 +68,7 @@ class IncomeStore extends PaiyableStore<Income, IncomeModel> {
     required int month,
     required int year,
   }) async {
-    if (accounts.isEmpty) return;
+    if (accounts.isEmpty || isLoading) return;
 
     setLoading(true);
 
@@ -113,6 +113,7 @@ class IncomeStore extends PaiyableStore<Income, IncomeModel> {
     required int year,
     required Account account,
   }) async {
+    if (isLoading) return;
     setLoading(true);
 
     var incomesResult = await _manageIncome.getAllOf(

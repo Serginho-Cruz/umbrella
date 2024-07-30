@@ -111,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
             balanceStore: widget._balanceStore,
           ),
           child: RefreshIndicator(
-            onRefresh: widget._accountStore.getAll,
+            onRefresh: () => widget._accountStore.getAll(force: true),
             child: SingleChildScrollView(
               physics: const ClampingScrollPhysics(),
               child: Column(
@@ -124,11 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       label: 'Conta Atual',
                       accounts: accounts,
                       selectedAccount: widget._accountStore.selectedAccount,
-                      onSelected: (selected) {
-                        setState(() {
-                          widget._accountStore.selectedAccount = selected;
-                        });
-                      },
+                      onSelected: widget._accountStore.changeSelectedAccount,
                     ),
                   ),
                   const Padding(
@@ -231,6 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onAccountChanged(Account? newSelected) {
+    setState(() {});
     _fetchAll(widget._accountStore.state);
   }
 

@@ -23,8 +23,10 @@ class AccountStore extends Store<List<Account>> {
 
   Future<void> updateAccount(Account oldAccount, Account newAccount) async {}
 
-  Future<void> getAll() async {
-    if (!_authController.isLogged) return;
+  Future<void> getAll({bool force = false}) async {
+    if (!_authController.isLogged || isLoading) return;
+
+    if (force == false && state.isNotEmpty) return;
 
     setLoading(true);
     var user = _authController.user!;
@@ -50,12 +52,12 @@ class AccountStore extends Store<List<Account>> {
     _selectedAccountListeners.remove(listener);
   }
 
-  Account? get selectedAccount => _selectedAccount;
+  Account? get selectedAccount => _selectedAccount?.copyWith();
 
-  set selectedAccount(Account? account) {
-    if (_selectedAccount == account) return;
+  void changeSelectedAccount(Account? account) {
+    if (_selectedAccount?.id == account?.id) return;
 
-    _selectedAccount = account;
+    _selectedAccount = account?.copyWith();
 
     for (var listener in _selectedAccountListeners) {
       listener(account);
