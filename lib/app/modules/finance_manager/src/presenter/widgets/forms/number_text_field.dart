@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/utils/currency_format.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/utils/currency_input_formatter.dart';
 
 class NumberTextField extends StatelessWidget {
@@ -40,6 +41,11 @@ class NumberTextField extends StatelessWidget {
         height: height,
         width: width,
         child: TextFormField(
+          initialValue: initialValue != null
+              ? isCurrency
+                  ? CurrencyFormat.format(initialValue!)
+                  : initialValue.toString()
+              : null,
           controller: controller,
           maxLength: maxLength,
           autovalidateMode: AutovalidateMode.onUserInteraction,

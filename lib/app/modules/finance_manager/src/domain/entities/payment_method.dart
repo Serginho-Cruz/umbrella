@@ -43,6 +43,10 @@ class PaymentMethod extends Equatable {
         PaymentMethod.boleto()
       ];
 
+  bool get isCredit {
+    return this == const PaymentMethod.credit();
+  }
+
   @override
   List<Object?> get props => [id, name, icon];
 }

@@ -23,16 +23,17 @@ class _HorizontalAnimatedListState extends State<HorizontalAnimatedList> {
   void initState() {
     super.initState();
     _key = GlobalKey();
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    Future.delayed(Duration.zero, () {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _key.currentState!.removeAllItems(
           (context, animation) => SizeTransition(sizeFactor: animation));
       _key.currentState!.insertAllItems(0, widget.length,
           duration: const Duration(milliseconds: 1200));
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return SizedBox(
       height: widget.height,
       child: AnimatedList(

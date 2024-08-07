@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+
 import 'account.dart';
 import 'date.dart';
 import 'paiyable.dart';
@@ -34,4 +35,20 @@ class Payment<T extends Paiyable> extends Equatable {
         value,
         date,
       ];
+
+  Payment<T> copyWith({
+    Account? usedAccount,
+    T? paiyable,
+    PaymentMethod? paymentMethod,
+    double? value,
+    Date? date,
+  }) {
+    return Payment<T>(
+      usedAccount: usedAccount ?? this.usedAccount,
+      paiyable: paiyable ?? this.paiyable,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
+      value: value ?? this.value,
+      date: date ?? this.date,
+    );
+  }
 }

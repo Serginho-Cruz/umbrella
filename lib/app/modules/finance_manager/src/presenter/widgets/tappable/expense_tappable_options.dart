@@ -14,7 +14,16 @@ abstract class ExpenseTappableOptions {
     VoidCallback? onPop,
   }) {
     return [
-      TappableOption('Pagar', () {}),
+      TappableOption('Pagar', () {
+        TappableOptionsUtils.navigateTo(
+          route: '/pay',
+          context: context,
+          arguments: {
+            'model': model,
+            'store': store,
+          },
+        ).then((_) => onPop?.call());
+      }),
       TappableOption('Parcelar', () {}),
       TappableOption('Re-parcelar', () {}),
       TappableOption(

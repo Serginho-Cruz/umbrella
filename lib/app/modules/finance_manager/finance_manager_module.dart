@@ -1,5 +1,6 @@
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:umbrella_echonomics/app/modules/auth/auth_module.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/paiyable_model.dart';
 
 import 'bindings/controllers_bindings.dart';
 import 'bindings/datasources_bindings.dart';
@@ -9,6 +10,7 @@ import 'src/domain/entities/credit_card.dart';
 import 'src/domain/entities/expense.dart';
 import 'src/domain/entities/income.dart';
 import 'bindings/usecases_bindings.dart';
+import 'src/presenter/controllers/paiyable_store.dart';
 
 class FinanceManagerModule extends Module {
   @override
@@ -118,6 +120,17 @@ class FinanceManagerModule extends Module {
     r.child(
       '/card/add',
       child: (context) => CreateCreditCardScreen(
+        accountStore: Modular.get(),
+        balanceStore: Modular.get(),
+        cardStore: Modular.get(),
+      ),
+    );
+
+    r.child(
+      '/pay',
+      child: (context) => PaymentScreen(
+        model: r.args.data['model'] as PaiyableModel,
+        store: r.args.data['store'] as PaiyableStore,
         accountStore: Modular.get(),
         balanceStore: Modular.get(),
         cardStore: Modular.get(),

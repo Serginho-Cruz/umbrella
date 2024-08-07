@@ -15,6 +15,7 @@ class AccountSelector extends StatelessWidget {
     this.label = 'Conta',
     this.canSelectNull = true,
     this.fontSize = UmbrellaSizes.big,
+    this.padding = EdgeInsets.zero,
   });
 
   final String label;
@@ -23,6 +24,7 @@ class AccountSelector extends StatelessWidget {
   final Account? selectedAccount;
   final void Function(Account?) onSelected;
   final bool canSelectNull;
+  final EdgeInsetsGeometry padding;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +33,7 @@ class AccountSelector extends StatelessWidget {
       itemBuilder: _buildMenuItems,
       position: PopupMenuPosition.under,
       child: Spaced(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        padding: padding,
         first: Text(label, style: TextStyle(fontSize: fontSize)),
         second: Row(
           children: [
