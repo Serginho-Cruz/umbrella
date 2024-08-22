@@ -1,6 +1,9 @@
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:umbrella_echonomics/app/modules/auth/auth_module.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/paiyable_model.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/expense_model.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/income_model.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/expense_store.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/income_store.dart';
 
 import 'bindings/controllers_bindings.dart';
 import 'bindings/datasources_bindings.dart';
@@ -10,7 +13,6 @@ import 'src/domain/entities/credit_card.dart';
 import 'src/domain/entities/expense.dart';
 import 'src/domain/entities/income.dart';
 import 'bindings/usecases_bindings.dart';
-import 'src/presenter/controllers/paiyable_store.dart';
 
 class FinanceManagerModule extends Module {
   @override
@@ -127,13 +129,25 @@ class FinanceManagerModule extends Module {
     );
 
     r.child(
-      '/pay',
-      child: (context) => PaymentScreen(
-        model: r.args.data['model'] as PaiyableModel,
-        store: r.args.data['store'] as PaiyableStore,
+      '/expense/pay',
+      child: (context) => PaymentScreen<Expense, ExpenseModel>(
+        model: r.args.data['model'] as ExpenseModel,
+        store: r.args.data['store'] as ExpenseStore,
         accountStore: Modular.get(),
         balanceStore: Modular.get(),
         cardStore: Modular.get(),
+      ),
+    );
+
+    r.child(
+      '/income/pay',
+      child: (context) => PaymentScreen<Income, IncomeModel>(
+        model: r.args.data['model'] as IncomeModel,
+        store: r.args.data['store'] as IncomeStore,
+        accountStore: Modular.get(),
+        balanceStore: Modular.get(),
+        cardStore: Modular.get(),
+        isCreditAllowed: false,
       ),
     );
   }

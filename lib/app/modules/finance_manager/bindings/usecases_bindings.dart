@@ -1,5 +1,7 @@
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/filters/filter_expenses.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/receive_income.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/receive_income.dart';
 
 import '../src/data/usecases/filters/filter_credit_cards.dart';
 import '../src/data/usecases/filters/filter_incomes.dart';
@@ -80,5 +82,11 @@ abstract class UsecasesBindings {
         manageInvoice: i(),
       ),
     );
+
+    i.addLazySingleton<ReceiveIncome>(() => ReceiveIncomeImpl(
+        incomeRepository: i(),
+        paymentMethodRepository: i(),
+        transactionRepository: i(),
+        balanceRepository: i()));
   }
 }

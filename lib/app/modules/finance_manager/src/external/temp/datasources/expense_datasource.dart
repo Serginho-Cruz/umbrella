@@ -17,7 +17,7 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         remainingValue: 250.00,
         dueDate: Date.today().copyWith(day: 12),
         paymentDate: null,
-        category: const Category(id: 1, icon: 'icons/conta.png', name: 'Conta'),
+        category: const Category(id: 1, icon: 'conta.png', name: 'Conta'),
         frequency: Frequency.monthly,
         account: const Account(
           id: 1,
@@ -36,7 +36,7 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         paymentDate: Date(day: 10, month: 6, year: 2024),
         category: const Category(
           id: 2,
-          icon: 'icons/alimentacao.png',
+          icon: 'alimentacao.png',
           name: 'Alimentação',
         ),
         frequency: Frequency.none,
@@ -55,8 +55,7 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         remainingValue: 20.00,
         dueDate: Date.today().copyWith(day: 6),
         paymentDate: null,
-        category:
-            const Category(id: 5, icon: 'icons/outros.png', name: 'Outros'),
+        category: const Category(id: 5, icon: 'outros.png', name: 'Outros'),
         frequency: Frequency.monthly,
         account: const Account(
           id: 1,
@@ -75,8 +74,8 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         remainingValue: 0.00,
         dueDate: Date.today(),
         paymentDate: Date.today(),
-        category: const Category(
-            id: 1, name: "Vestimenta", icon: 'icons/vestimenta.png'),
+        category:
+            const Category(id: 1, name: "Vestimenta", icon: 'vestimenta.png'),
         frequency: Frequency.none,
         account: const Account(
             id: 2, name: 'Banco do Brasil', actualBalance: 200.00),
@@ -87,9 +86,8 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         totalValue: 900.00,
         paidValue: 0.00,
         remainingValue: 900.00,
-        dueDate:Date.today().copyWith(day: 18),
-        category:
-            const Category(id: 4, name: "Moradia", icon: 'icons/moradia.png'),
+        dueDate: Date.today().copyWith(day: 18),
+        category: const Category(id: 4, name: "Moradia", icon: 'moradia.png'),
         frequency: Frequency.monthly,
         account: const Account(
             id: 2, name: 'Banco do Brasil', actualBalance: 200.00),
@@ -107,7 +105,7 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         category: const Category(
           id: 2,
           name: 'Outros',
-          icon: 'icons/outros.png',
+          icon: 'outros.png',
         ),
         account: const Account(id: 3, name: 'Itaú', actualBalance: 156.32),
       ),

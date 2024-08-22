@@ -95,7 +95,12 @@ class _PaymentCreditCardState extends State<PaymentCreditCard> {
   }
 
   void onCardSelected(CreditCard newSelected) {
+    if (newSelected == selectedCard) return;
+
     widget.onCardChanged(newSelected);
+    setState(() {
+      selectedCard = newSelected.copyWith();
+    });
   }
 
   void onValueChanged(double? newValue) {

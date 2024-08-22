@@ -61,7 +61,7 @@ class PaiyableInformationCard extends StatelessWidget {
       if (person == null) return [];
 
       var widget = Spaced(
-        first: const MediumText('Devendo a:'),
+        first: const MediumText('Devendo a'),
         second: MediumText(person),
       );
 
@@ -74,7 +74,7 @@ class PaiyableInformationCard extends StatelessWidget {
       if (person == null) return [];
 
       var widget = Spaced(
-        first: const MediumText('Devedor:'),
+        first: const MediumText('Devedor'),
         second: MediumText(person),
       );
 
@@ -83,12 +83,12 @@ class PaiyableInformationCard extends StatelessWidget {
 
     paiyable = paiyable as Invoice;
     var cardRow = Spaced(
-      first: const MediumText('Cartão:'),
+      first: const MediumText('Cartão'),
       second: MediumText(paiyable.card.name),
     );
 
     var closeRow = Spaced(
-      first: const MediumText('Fechamento:'),
+      first: const MediumText('Fechamento'),
       second: MediumText(
         paiyable.closingDate.toString(format: DateFormat.ddmmyyyy),
       ),
@@ -100,23 +100,23 @@ class PaiyableInformationCard extends StatelessWidget {
   List<Widget> _getCommomInformations() {
     return [
       Spaced(
-        first: const MediumText('Pertence a:'),
+        first: const MediumText('Pertence a'),
         second: MediumText(model.account.name),
       ),
       Spaced(
-        first: const MediumText('Total:'),
+        first: const MediumText('Total'),
         second: Price.medium(model.totalValue),
       ),
       Spaced(
-        first: const MediumText('Já Pago:'),
+        first: const MediumText('Já Pago'),
         second: Price.medium(model.paidValue),
       ),
       Spaced(
-        first: const MediumText('Valor Restante:'),
+        first: const MediumText('Valor Restante'),
         second: Price.medium(model.remainingValue),
       ),
       Spaced(
-        first: const MediumText('Valor Restante:'),
+        first: const MediumText('Data de Vencimento'),
         second: MediumText(
           model.overdueDate.toString(
             format: DateFormat.ddmmyyyy,

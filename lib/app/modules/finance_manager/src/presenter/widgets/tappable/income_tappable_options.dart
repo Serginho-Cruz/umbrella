@@ -14,7 +14,14 @@ abstract class IncomeTappableOptions {
     VoidCallback? onPop,
   }) {
     return [
-      TappableOption('Receber', () {}),
+      TappableOption(
+        'Receber',
+        () => TappableOptionsUtils.navigateTo(
+          context: context,
+          route: '/income/pay',
+          arguments: {'model' : model, 'store': store},
+        ).then((_) => onPop?.call()),
+      ),
       TappableOption(
         'Editar Receita',
         () => TappableOptionsUtils.navigateTo(

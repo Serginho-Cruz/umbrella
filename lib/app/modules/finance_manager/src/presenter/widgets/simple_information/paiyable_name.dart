@@ -12,7 +12,7 @@ class PaiyableName extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        MediumText(resolvePaiyableTypeName(model)),
+        MediumText('${resolvePaiyableTypeName(model)}:'),
         const SizedBox(width: 10.0),
         MediumText.bold(resolvePaiyableName(model)),
       ],

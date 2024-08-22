@@ -17,8 +17,7 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         remainingValue: 1250.00,
         dueDate: Date.today().copyWith(day: 12),
         paymentDate: null,
-        category:
-            const Category(id: 11, name: 'Outros', icon: 'icons/outros.png'),
+        category: const Category(id: 11, name: 'Outros', icon: 'outros.png'),
         frequency: Frequency.monthly,
         account: const Account(
           id: 1,
@@ -35,8 +34,7 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         remainingValue: 0.00,
         dueDate: Date(day: 10, month: 5, year: 2024),
         paymentDate: Date(day: 10, month: 5, year: 2024),
-        category:
-            const Category(id: 11, name: 'Outros', icon: 'icons/outros.png'),
+        category: const Category(id: 11, name: 'Outros', icon: 'outros.png'),
         frequency: Frequency.none,
         account: const Account(
           id: 1,
@@ -52,8 +50,7 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         paidValue: 0.00,
         remainingValue: 1200.00,
         dueDate: Date(day: 20, month: 12, year: 2024),
-        category:
-            const Category(id: 11, name: 'Outros', icon: 'icons/outros.png'),
+        category: const Category(id: 11, name: 'Outros', icon: 'outros.png'),
         frequency: Frequency.yearly,
         account: const Account(
           id: 1,
@@ -69,8 +66,7 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         paidValue: 0.00,
         remainingValue: 2000.00,
         dueDate: Date(day: 6, month: 9, year: 2024),
-        category:
-            const Category(id: 11, name: 'Outros', icon: 'icons/outros.png'),
+        category: const Category(id: 11, name: 'Outros', icon: 'outros.png'),
         frequency: Frequency.yearly,
         account: const Account(
           id: 1,
@@ -89,8 +85,7 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         remainingValue: 0.00,
         dueDate: Date.today(),
         paymentDate: Date.today(),
-        category:
-            const Category(id: 11, name: 'Outros', icon: 'icons/outros.png'),
+        category: const Category(id: 11, name: 'Outros', icon: 'outros.png'),
         frequency: Frequency.none,
         account: const Account(
             id: 2, name: 'Banco do Brasil', actualBalance: 200.00),
@@ -102,8 +97,7 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         paidValue: 0.00,
         remainingValue: 900.00,
         dueDate: Date(day: 20, month: 5, year: 2024),
-        category:
-            const Category(id: 11, name: 'Outros', icon: 'icons/outros.png'),
+        category: const Category(id: 11, name: 'Outros', icon: 'outros.png'),
         frequency: Frequency.none,
         account: const Account(
             id: 2, name: 'Banco do Brasil', actualBalance: 200.00),
@@ -118,8 +112,7 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
         remainingValue: 2000.00,
         frequency: Frequency.yearly,
         dueDate: Date(day: 12, month: 1, year: 2025),
-        category:
-            const Category(id: 11, name: 'Outros', icon: 'icons/outros.png'),
+        category: const Category(id: 11, name: 'Outros', icon: 'outros.png'),
         account: const Account(id: 3, name: 'Itaú', actualBalance: 156.32),
       ),
     ],

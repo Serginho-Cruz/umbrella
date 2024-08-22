@@ -16,7 +16,7 @@ abstract class ExpenseTappableOptions {
     return [
       TappableOption('Pagar', () {
         TappableOptionsUtils.navigateTo(
-          route: '/pay',
+          route: '/expense/pay',
           context: context,
           arguments: {
             'model': model,
