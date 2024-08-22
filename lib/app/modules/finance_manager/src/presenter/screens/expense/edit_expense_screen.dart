@@ -198,10 +198,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
               padding: const EdgeInsets.only(top: 30.0),
             ),
             Spaced(
-              padding: EdgeInsets.symmetric(
-                horizontal: MediaQuery.sizeOf(context).width * 0.05,
-                vertical: 20.0,
-              ),
+              padding: const EdgeInsets.symmetric(vertical: 20.0),
               first: ResetButton(reset: resetForm),
               second: PrimaryButton(
                 label: const MediumText.bold('Atualizar'),
