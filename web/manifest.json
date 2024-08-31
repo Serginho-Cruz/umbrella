@@ -1,6 +1,6 @@
 {
-    "name": "umbrella_echonomics",
-    "short_name": "umbrella_echonomics",
+    "name": "umbrella",
+    "short_name": "umbrella",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

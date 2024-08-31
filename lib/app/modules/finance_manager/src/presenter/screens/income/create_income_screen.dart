@@ -153,7 +153,6 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
               padding: const EdgeInsets.symmetric(vertical: 20.0),
               isCurrency: true,
               label: 'Valor',
-              initialValue: 0.00,
               focusNode: valueFieldFocusNode,
               validate: (number) {
                 if (number == 0.00) {

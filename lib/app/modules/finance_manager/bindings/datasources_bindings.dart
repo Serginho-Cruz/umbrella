@@ -1,4 +1,6 @@
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/external/temp/datasources/payment_method_datasource.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/datasources/payment_method_datasource.dart';
 
 import '../src/external/temp/datasources/account_datasource.dart';
 import '../src/external/temp/datasources/balance_datasource.dart';
@@ -41,5 +43,8 @@ abstract class DatasourcesBindings {
 
     i.addLazySingleton<TransactionDatasource>(
         TemporaryTransactionDatasource.new);
+
+    i.addLazySingleton<PaymentMethodDatasource>(
+        TemporaryPaymentMethodDatasource.new);
   }
 }

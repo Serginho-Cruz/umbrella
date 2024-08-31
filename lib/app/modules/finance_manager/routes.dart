@@ -10,3 +10,5 @@ export 'src/presenter/screens/income/incomes_screen.dart';
 export 'src/presenter/screens/credit_card/create_credit_card_screen.dart';
 export 'src/presenter/screens/credit_card/edit_credit_card_screen.dart';
 export 'src/presenter/screens/credit_card/credit_cards_screen.dart';
+
+export 'src/presenter/screens/payment_screen.dart';

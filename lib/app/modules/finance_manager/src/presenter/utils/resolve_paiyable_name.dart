@@ -6,9 +6,9 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/model
 
 String resolvePaiyableTypeName(PaiyableModel model) {
   return switch (model) {
-    ExpenseModel() => 'Despesa:',
-    IncomeModel() => 'Receita:',
-    Invoice() => 'Fatura:',
+    ExpenseModel() => 'Despesa',
+    IncomeModel() => 'Receita',
+    Invoice() => 'Fatura',
     PaiyableModel() => '',
   };
 }

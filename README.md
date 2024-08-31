@@ -1,4 +1,4 @@
-# umbrella_echonomics
+# umbrella
 
 A new Flutter project.
 

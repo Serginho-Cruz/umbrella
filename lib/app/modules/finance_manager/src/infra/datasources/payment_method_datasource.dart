@@ -21,5 +21,5 @@ abstract interface class PaymentMethodDatasource {
     required PaymentMethod method,
     required double value,
   });
-  Future<void> deletePaymentRecord(Paiyable paiyable);
+  Future<void> deletePaymentRecords(Paiyable paiyable);
 }

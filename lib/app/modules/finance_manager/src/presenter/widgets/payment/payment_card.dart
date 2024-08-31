@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/payment_method.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/utils/umbrella_palette.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/utils/umbrella_sizes.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/forms/number_text_field.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/payment/payment_card_container.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/selectors/account_selector.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/texts/big_text.dart';
 
 import '../../../domain/entities/account.dart';
 
@@ -39,45 +38,33 @@ class _PaymentCardState extends State<PaymentCard> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: MediaQuery.sizeOf(context).width * 0.8,
-      child: Card(
-        color: UmbrellaPalette.secondaryColor,
-        elevation: 4,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              BigText.bold(
-                widget.paymentMethod.name,
-                decoration: TextDecoration.underline,
-              ),
-              const SizedBox(height: 20.0),
-              AccountSelector(
-                accounts: widget.accounts,
-                onSelected: onAccountSelected,
-                selectedAccount: selectedAccount,
-                label: 'Conta',
-                fontSize: UmbrellaSizes.medium,
-                canSelectNull: false,
-              ),
-              NumberTextField(
-                label: 'Valor',
-                validate: validateValue,
-                isCurrency: true,
-                initialValue: 0.00,
-                onChange: onValueChanged,
-              )
-            ],
-          ),
+    return PaymentCardContainer(
+      paymentMethod: widget.paymentMethod,
+      borderRadius: 8.0,
+      children: [
+        AccountSelector(
+          accounts: widget.accounts,
+          onSelected: onAccountSelected,
+          selectedAccount: selectedAccount,
+          label: 'Conta',
+          fontSize: UmbrellaSizes.medium,
+          canSelectNull: false,
+          padding: const EdgeInsets.symmetric(vertical: 12.0),
         ),
-      ),
+        NumberTextField(
+          label: 'Valor',
+          validate: validateValue,
+          isCurrency: true,
+          initialValue: 0.00,
+          onChange: onValueChanged,
+        )
+      ],
     );
   }
 
   void onValueChanged(double? newValue) {
     double value = newValue ?? 0.00;
+
     widget.onValueChanged(value);
   }
 

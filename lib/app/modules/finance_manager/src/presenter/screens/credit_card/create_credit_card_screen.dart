@@ -70,6 +70,7 @@ class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
     var first = UmbrellaPalette.cardHexAndNames.keys.first;
     hexColor = first;
     colorName = UmbrellaPalette.cardHexAndNames[first]!;
+    account = widget._accountStore.state.firstWhere((acc) => acc.isDefault);
   }
 
   @override

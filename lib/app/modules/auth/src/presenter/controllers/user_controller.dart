@@ -14,9 +14,7 @@ class UserController extends Store<User?> {
     required ManageLocalUser manageLocalUser,
   })  : _manageUser = manageUser,
         _manageLocalUser = manageLocalUser,
-        super(null) {
-    searchLocally();
-  }
+        super(null);
 
   Future<({bool hasError, String error})> register(User newUser) async {
     var result = await _manageUser.register(newUser);

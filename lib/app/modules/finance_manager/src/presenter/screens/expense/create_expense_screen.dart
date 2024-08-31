@@ -25,6 +25,7 @@ import '../../controllers/expense_store.dart';
 import '../../widgets/appbar/custom_app_bar.dart';
 import '../../widgets/buttons/primary_button.dart';
 import '../../widgets/buttons/reset_button.dart';
+import '../../widgets/cards/credit_card_widget.dart';
 import '../../widgets/simple_information/category_row.dart';
 import '../../widgets/layout/umbrella_scaffold.dart';
 import '../../widgets/selectors/card_selector.dart';
@@ -178,7 +179,6 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
               padding: const EdgeInsets.symmetric(vertical: 20.0),
               isCurrency: true,
               label: 'Valor',
-              initialValue: 0.00,
               focusNode: _valueFieldFocusNode,
               validate: (number) {
                 if (number == 0.00) {
@@ -317,6 +317,30 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                                     logicalCardError = null;
                                   }
                                 });
+                              },
+                              buildChild: (card) {
+                                return card != null
+                                    ? CreditCardWidget(
+                                        creditCard: card,
+                                        margin:
+                                            const EdgeInsets.only(top: 15.0),
+                                      )
+                                    : Container(
+                                        height: 150,
+                                        width: 275,
+                                        margin: const EdgeInsets.all(15.0),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                          color: Colors.grey,
+                                        ),
+                                        child: const Center(
+                                          child: MediumText(
+                                            'Clique Aqui',
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      );
                               },
                             ),
                             Visibility(

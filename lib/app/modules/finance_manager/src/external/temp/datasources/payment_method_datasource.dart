@@ -15,7 +15,7 @@ class TemporaryPaymentMethodDatasource implements PaymentMethodDatasource {
       {};
 
   @override
-  Future<void> deletePaymentRecord(Paiyable paiyable) {
+  Future<void> deletePaymentRecords(Paiyable paiyable) {
     var type = _determineTypeOf(paiyable);
 
     _data.remove((id: paiyable.id, type: type));
@@ -109,11 +109,11 @@ class TemporaryPaymentMethodDatasource implements PaymentMethodDatasource {
   }
 
   PaiyableType _determineTypeOf(Paiyable paiyable) {
-    return switch (Paiyable) {
-      Invoice() => PaiyableType.invoice,
-      Expense() => PaiyableType.expense,
-      Income() => PaiyableType.invoice,
-      _ => throw Fail('Não Implementado'),
+    return switch (paiyable) {
+      Invoice _ => PaiyableType.invoice,
+      Expense _ => PaiyableType.expense,
+      Income _ => PaiyableType.income,
+      _ => throw Fail('Inexistente'),
     };
   }
 }

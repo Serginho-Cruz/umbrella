@@ -2,6 +2,7 @@ import 'package:result_dart/result_dart.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/credit_card.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/payment.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/manage_income.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/receive_income.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/paiyable_store.dart';
 
 import '../../domain/entities/account.dart';
@@ -19,6 +20,7 @@ class IncomeStore extends PaiyableStore<Income, IncomeModel> {
   final ManageIncome _manageIncome;
   final FilterIncomes _filterIncomes;
   final SortIncomes _sortIncomes;
+  final ReceiveIncome _receiveIncome;
 
   final List<IncomeModel> all = [];
 
@@ -26,9 +28,11 @@ class IncomeStore extends PaiyableStore<Income, IncomeModel> {
     required ManageIncome manageIncome,
     required FilterIncomes filterIncomes,
     required SortIncomes sortIncomes,
+    required ReceiveIncome receiveIncome,
   })  : _manageIncome = manageIncome,
         _filterIncomes = filterIncomes,
         _sortIncomes = sortIncomes,
+        _receiveIncome = receiveIncome,
         super([]);
 
   @override
@@ -145,6 +149,12 @@ class IncomeStore extends PaiyableStore<Income, IncomeModel> {
     required List<Payment<Income>> payments,
     CreditCard? card,
   }) async {
+    for (var payment in payments) {
+      var res = await _receiveIncome(payment);
+
+      if (res.isError()) return res;
+    }
+
     return const Success(2);
   }
 

@@ -19,14 +19,14 @@ class TemporaryTransactionDatasource implements TransactionDatasource {
 
     int newId;
 
-    var allIds =
-        _data.values.map((list) => list.map((t) => t.id).toList()).toList();
+    var allIds = _data.values
+        .map((list) => list.map((t) => t.id).toList())
+        .reduce((all, ids) => all..addAll(ids));
 
     if (allIds.isEmpty) {
       newId = 1;
     } else {
-      var ids = allIds.reduce((value, element) => value..addAll(element))
-        ..sort();
+      var ids = allIds..sort();
       newId = ids.last + 1;
     }
 

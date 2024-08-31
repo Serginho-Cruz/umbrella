@@ -60,7 +60,7 @@ class _ChangeValueDialogState extends State<ChangeValueDialog> {
           const SizedBox(height: 40.0),
           Row(
             children: [
-              MediumText(resolvePaiyableTypeName(widget.model)),
+              MediumText('${resolvePaiyableTypeName(widget.model)}:'),
               const SizedBox(width: 10.0),
               MediumText.bold(resolvePaiyableName(widget.model)),
             ],

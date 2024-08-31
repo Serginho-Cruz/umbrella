@@ -35,6 +35,7 @@ abstract class ControllersBindings {
           filterIncomes: i(),
           sortIncomes: i(),
           manageIncome: i(),
+          receiveIncome: i(),
         ));
 
     i.addLazySingleton<IncomeCategoryStore>(() => IncomeCategoryStore(i()));

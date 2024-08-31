@@ -21,7 +21,7 @@ class CategoryIcon extends StatelessWidget {
         image: DecorationImage(
           fit: BoxFit.cover,
           alignment: Alignment.center,
-          image: AssetImage('assets/$iconName'),
+          image: AssetImage('assets/icons/categories/$iconName'),
         ),
       ),
     );

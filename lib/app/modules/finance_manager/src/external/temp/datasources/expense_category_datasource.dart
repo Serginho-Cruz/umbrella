@@ -8,42 +8,42 @@ class TemporaryExpenseCategoryDatasource implements ExpenseCategoryDatasource {
       const Category(
         id: 1,
         name: 'Contas',
-        icon: 'icons/conta.png',
+        icon: 'conta.png',
       ),
       const Category(
         id: 2,
         name: 'Vestimenta',
-        icon: 'icons/vestimenta.png',
+        icon: 'vestimenta.png',
       ),
       const Category(
         id: 3,
         name: 'Cosméticos',
-        icon: 'icons/cosmeticos.png',
+        icon: 'cosmeticos.png',
       ),
       const Category(
         id: 4,
         name: 'Transporte',
-        icon: 'icons/transporte.png',
+        icon: 'transporte.png',
       ),
       const Category(
         id: 5,
         name: 'Comida',
-        icon: 'icons/alimentacao.png',
+        icon: 'alimentacao.png',
       ),
       const Category(
         id: 6,
         name: 'Estudo',
-        icon: 'icons/estudo.png',
+        icon: 'estudo.png',
       ),
       const Category(
         id: 7,
         name: 'Festas',
-        icon: 'icons/comemoracao.png',
+        icon: 'comemoracao.png',
       ),
-      const Category(id: 8, name: 'Moradia', icon: 'icons/moradia.png'),
-      const Category(id: 9, name: 'Saúde', icon: 'icons/saude.png'),
-      const Category(id: 10, name: 'Reparos', icon: 'icons/reparos.png'),
-      const Category(id: 11, name: 'Outros', icon: 'icons/outros.png'),
+      const Category(id: 8, name: 'Moradia', icon: 'moradia.png'),
+      const Category(id: 9, name: 'Saúde', icon: 'saude.png'),
+      const Category(id: 10, name: 'Reparos', icon: 'reparos.png'),
+      const Category(id: 11, name: 'Outros', icon: 'outros.png'),
     ]);
   }
 }
