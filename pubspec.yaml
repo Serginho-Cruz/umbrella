@@ -42,6 +42,9 @@ dependencies:
   shimmer: ^3.0.0
   shared_preferences: ^2.2.3
   email_validator: ^3.0.0
+  envied: ^0.5.4+1
+  parse_server_sdk_flutter: ^8.0.0
+  flutter_secure_storage: ^9.2.2
 
 dev_dependencies:
   flutter_test:
@@ -53,6 +56,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^4.0.0
+  envied_generator: ^0.5.4+1
+  build_runner: ^2.4.12
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

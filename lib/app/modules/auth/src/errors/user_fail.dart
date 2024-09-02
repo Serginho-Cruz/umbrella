@@ -1,23 +1,14 @@
+import 'fail.dart';
 import 'messages.dart';
 
-abstract class UserFail implements Exception {
-  final String message;
-
-  UserFail(this.message);
+sealed class UserFail extends Fail {
+  const UserFail(super.message);
 }
 
 class GenericUserFail extends UserFail {
-  GenericUserFail() : super(Messages.genericUserFail);
-}
-
-class EmailAlreadyRegistered extends UserFail {
-  EmailAlreadyRegistered() : super(Messages.emailAlreadyRegistered);
-}
-
-class UserDoesntExist extends UserFail {
-  UserDoesntExist() : super(Messages.userDoesntExist);
+  const GenericUserFail() : super(Messages.genericUserFail);
 }
 
 class DatabaseProcessError extends UserFail {
-  DatabaseProcessError(super.message);
+  const DatabaseProcessError(super.message);
 }

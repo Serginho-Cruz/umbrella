@@ -1,10 +1,14 @@
 import 'package:result_dart/result_dart.dart';
 
-import '../../errors/auth_fail.dart';
+import '../../errors/fail.dart';
 import '../entities/user.dart';
 
 abstract interface class Auth {
-  AsyncResult<User, AuthFail> login(String email, String password);
-  AsyncResult<Unit, AuthFail> logout();
-  AsyncResult<Unit, AuthFail> setLastLogin(User user);
+  AsyncResult<User, Fail> login(
+    String email,
+    String password, {
+    bool rememberUser = false,
+  });
+  AsyncResult<Unit, Fail> logout(User user);
+  AsyncResult<User, Fail> loginWithToken(String token);
 }

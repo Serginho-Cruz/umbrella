@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter/services.dart' show SystemChrome, DeviceOrientation;
+import 'package:flutter_modular/flutter_modular.dart' show ModularApp;
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart'
+    show Parse;
+import 'package:umbrella_echonomics/env.dart';
 
 import 'app/app_module.dart';
 import 'app/app_widget.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
   );
 
+  await Parse()
+      .initialize(Env.appId, Env.url, clientKey: Env.clientKey, debug: true);
+
   runApp(
     ModularApp(
-      debugMode: false,
+      debugMode: true,
       module: AppModule(),
       child: const AppWidget(),
     ),

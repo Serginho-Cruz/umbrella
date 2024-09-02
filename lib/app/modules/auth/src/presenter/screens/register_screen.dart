@@ -7,6 +7,7 @@ import '../widgets/auth_button.dart';
 import '../widgets/auth_field.dart';
 import '../widgets/error_dialog.dart';
 import '../widgets/link.dart';
+import '../widgets/success_dialog.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({
@@ -159,58 +160,66 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  void _onRegisterTap() {
+  void _onRegisterTap() async {
     if (_formKey.currentState!.validate()) {
       User user = User(
-        id: 0,
+        id: '',
         name: _nameController.text,
         email: _emailController.text,
         password: _passwordController.text,
       );
 
-      Future(() async {
-        var result = await widget._controller.register(user);
+      var result = await widget._controller.register(user);
 
-        return result;
-      }).then((result) {
-        var (:hasError, :error) = result;
-        if (hasError) {
-          ErrorDialog.show(context, error: error);
-          return;
-        }
+      var (:hasError, :error) = result;
 
-        Navigator.pushReplacementNamed(context, '/');
-      });
+      if (!mounted) {
+        return;
+      }
+
+      if (hasError) {
+        ErrorDialog.show(context, error: error);
+        return;
+      }
+
+      await SuccessDialog.show(
+        context,
+        title: 'Cadastro feito com Sucesso',
+        successMessage:
+            'Seu cadastro foi feito com sucesso. Iremos redirecionar você para a Tela de Login.',
+      );
+
+      if (mounted) Navigator.pushReplacementNamed(context, './');
     }
   }
+}
 
-  String? _validateName(String? text) {
-    if (text == null || text.trim().isEmpty) return "O Nome é Obrigatório";
+String? _validateName(String? text) {
+  if (text == null || text.trim().isEmpty) return "O Nome é Obrigatório";
 
-    if (text.length < 5 || text.length >= 20) {
-      return "O Nome deve ter entre 5 e 20 caracteres";
-    }
-
-    return null;
+  if (text.length < 5 || text.length >= 20) {
+    return "O Nome deve ter entre 5 e 20 caracteres";
   }
 
-  String? _validateEmail(String? text) {
-    if (text == null || text.trim().isEmpty) return "O Email é Obrigatório";
+  return null;
+}
 
-    if (EmailValidator.validate(text) == false) {
-      return "E-mail Inválido, confira se não há erros";
-    }
+String? _validateEmail(String? text) {
+  if (text == null || text.trim().isEmpty) return "O Email é Obrigatório";
 
-    return null;
+  if (EmailValidator.validate(text) == false) {
+    return "E-mail Inválido, confira se não há erros";
   }
 
-  String? _validatePassword(String? text) {
-    if (text == null || text.trim().isEmpty) return "A Senha é Obrigatória";
+  return null;
+}
 
-    if (text.length < 6 || text.length > 10) {
-      return "A Senha deve ter entre 6 e 10 caracteres";
-    }
+String? _validatePassword(String? text) {
+  if (text == null || text.trim().isEmpty) return "A Senha é Obrigatória";
 
-    return null;
+  if (text.length < 6 || text.length > 10) {
+    return "A Senha deve ter entre 6 e 10 caracteres";
   }
+
+  return null;
 }

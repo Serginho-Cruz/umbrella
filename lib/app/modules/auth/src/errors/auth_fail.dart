@@ -1,21 +1,27 @@
+import 'fail.dart';
 import 'messages.dart';
 
-abstract class AuthFail implements Exception {
-  final String message;
-
-  AuthFail(this.message);
+sealed class AuthFail extends Fail {
+  const AuthFail(super.message);
 }
 
-class GenericAuthFail extends AuthFail {
-  GenericAuthFail() : super(Messages.genericAuthFail);
-  GenericAuthFail.withMessage(super.message);
+final class GenericAuthFail extends AuthFail {
+  const GenericAuthFail() : super(Messages.genericAuthFail);
+  const GenericAuthFail.withMessage(super.message);
 }
 
-class UserNotFoundWithEmail extends AuthFail {
-  UserNotFoundWithEmail(String email)
-      : super("Não foi encontrado nenhum usuário com o e-mail: $email");
+class EmailAlreadyRegistered extends AuthFail {
+  const EmailAlreadyRegistered() : super(Messages.emailAlreadyRegistered);
 }
 
-class IncorrectPassword extends AuthFail {
-  IncorrectPassword() : super(Messages.incorrectPassword);
+final class InvalidEmail extends AuthFail {
+  const InvalidEmail() : super(Messages.invalidEmail);
+}
+
+final class IncorrectCredentials extends AuthFail {
+  const IncorrectCredentials() : super(Messages.incorrectCredentials);
+}
+
+final class SessionStorageExpired extends AuthFail {
+  const SessionStorageExpired() : super(Messages.mustloginAgain);
 }

@@ -18,7 +18,11 @@ class AuthController {
     required String password,
     bool isToRemember = false,
   }) async {
-    var result = await _authUsecase.login(email, password);
+    var result = await _authUsecase.login(
+      email,
+      password,
+      rememberUser: isToRemember,
+    );
 
     if (result.isError()) {
       return result.exceptionOrNull()!.message;
@@ -29,29 +33,44 @@ class AuthController {
     _user = user;
     _userController.update(user);
 
-    if (isToRemember) {
-      _userController.setInLocal(user);
-    }
     return null;
   }
 
-  Future<String?> logout() async {
-    var result = await _authUsecase.logout();
+  Future<void> logout() async {
+    if (_user == null) {
+      _isLogged = false;
+      return;
+    }
+
+    var result = await _authUsecase.logout(_user!);
 
     if (result.isSuccess()) {
       _isLogged = false;
       _user = null;
     }
-    return result.exceptionOrNull()?.message;
+    return;
+  }
+
+  Future<String?> _loginWithToken(String token) async {
+    var result = await _authUsecase.loginWithToken(token);
+
+    if (result.isError()) {
+      return result.exceptionOrNull()!.message;
+    }
+
+    _isLogged = true;
+    _user = result.getOrNull();
+
+    return null;
   }
 
   Future<bool> isUserInLocal() async {
-    var user = await _userController.searchLocally();
+    var token = await _userController.searchLocally();
 
-    if (user != null) {
-      login(email: user.email, password: user.password, isToRemember: true);
+    if (token != null) {
+      await _loginWithToken(token);
     }
 
-    return user != null;
+    return token != null;
   }
 }

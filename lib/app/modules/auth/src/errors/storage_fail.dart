@@ -1,23 +1,23 @@
 import 'package:umbrella_echonomics/app/modules/auth/src/errors/messages.dart';
 
-abstract class StorageFail implements Exception {
-  final String message;
+import 'fail.dart';
 
-  StorageFail(this.message);
+sealed class StorageFail extends Fail {
+  const StorageFail(super.message);
 }
 
-class StoreFail extends StorageFail {
-  StoreFail() : super(Messages.storeError);
+final class StoreFail extends StorageFail {
+  const StoreFail() : super(Messages.storeError);
 }
 
-class RetrieveFail extends StorageFail {
-  RetrieveFail() : super(Messages.retrieveError);
+final class RetrieveFail extends StorageFail {
+  const RetrieveFail() : super(Messages.retrieveError);
 }
 
-class LocalUserDoesntExist extends StorageFail {
-  LocalUserDoesntExist() : super(Messages.localUserDoesntExist);
+final class LocalUserDoesntExist extends StorageFail {
+  const LocalUserDoesntExist() : super(Messages.localUserDoesntExist);
 }
 
-class DeleteFail extends StorageFail {
-  DeleteFail() : super(Messages.deleteLocalUserError);
+final class DeleteFail extends StorageFail {
+  const DeleteFail() : super(Messages.deleteLocalUserError);
 }

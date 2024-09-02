@@ -1,53 +1,59 @@
 import 'package:result_dart/result_dart.dart';
 import 'package:umbrella_echonomics/app/modules/auth/src/data/repositories/user_repository.dart';
 import 'package:umbrella_echonomics/app/modules/auth/src/domain/entities/user.dart';
+import 'package:umbrella_echonomics/app/modules/auth/src/domain/usecases/manage_local_token.dart';
 
-import 'package:umbrella_echonomics/app/modules/auth/src/errors/auth_fail.dart';
-import 'package:umbrella_echonomics/app/modules/auth/src/errors/user_fail.dart';
-
-import '../../../../finance_manager/src/domain/entities/date.dart';
 import '../../domain/usecases/auth.dart';
+import '../../errors/fail.dart';
 
 class AuthImpl implements Auth {
   final UserRepository _repository;
+  final ManageLocalToken _manageLocalToken;
 
-  AuthImpl(this._repository);
+  AuthImpl({
+    required UserRepository repository,
+    required ManageLocalToken manageLocalToken,
+  })  : _repository = repository,
+        _manageLocalToken = manageLocalToken;
 
   @override
-  AsyncResult<User, AuthFail> login(String email, String password) async {
-    //Cryptograph email and password
-    var emailSearch = await _repository.getByEmail(email);
+  AsyncResult<User, Fail> login(
+    String email,
+    String password, {
+    bool rememberUser = false,
+  }) async {
+    var userResult = await _repository.login(email, password);
 
-    if (emailSearch.isError()) {
-      return switch (emailSearch.exceptionOrNull()!) {
-        UserDoesntExist() => Failure(UserNotFoundWithEmail(email)),
-        _ => GenericAuthFail().toFailure(),
-      };
+    if (userResult.isError()) {
+      return userResult;
     }
 
-    User user = emailSearch.getOrNull()!;
+    final User user = userResult.getOrNull()!;
 
-    if (user.password != password) return IncorrectPassword().toFailure();
+    if (rememberUser && user.token != null) {
+      _manageLocalToken.storeInLocal(user.token!);
+    }
 
-    setLastLogin(user);
     return Success(user);
   }
 
   @override
-  AsyncResult<Unit, AuthFail> logout() async {
-    var result = await _repository.deleteLocal();
+  AsyncResult<Unit, Fail> logout(User user) async {
+    var result = await _manageLocalToken.deleteInLocal();
 
     if (result.isError()) {
-      var message = result.exceptionOrNull()!.message;
-      return GenericAuthFail.withMessage(message).toFailure();
+      return result;
     }
 
-    return unit.toSuccess();
+    return _repository.logout(user);
   }
 
   @override
-  AsyncResult<Unit, AuthFail> setLastLogin(User user) async {
-    await _repository.setLastLogin(user, Date.today());
-    return unit.toSuccess();
+  AsyncResult<User, Fail> loginWithToken(String token) async {
+    var result = await _repository.loginWithToken(token);
+
+    if (result.isError()) _repository.deleteLocalToken();
+
+    return result;
   }
 }
