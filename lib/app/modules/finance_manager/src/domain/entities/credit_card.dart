@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'account.dart';
 
 class CreditCard extends Equatable {
-  final int id;
+  final String id;
   final String name;
   final double annuity;
   final String color;
@@ -29,7 +29,7 @@ class CreditCard extends Equatable {
     required Account accountToDiscountInvoice,
   }) {
     return CreditCard(
-      id: 0,
+      id: '',
       name: name,
       annuity: annuity,
       color: color,
@@ -40,7 +40,7 @@ class CreditCard extends Equatable {
   }
 
   CreditCard copyWith({
-    int? id,
+    String? id,
     String? name,
     double? annuity,
     String? color,

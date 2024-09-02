@@ -12,7 +12,7 @@ class CreditCardRepositoryImpl implements CreditCardRepository {
   CreditCardRepositoryImpl(this._creditCardDatasource);
 
   @override
-  AsyncResult<int, Fail> create(CreditCard card, User user) async {
+  AsyncResult<String, Fail> create(CreditCard card, User user) async {
     try {
       var id = await _creditCardDatasource.create(card, user);
       return Success(id);

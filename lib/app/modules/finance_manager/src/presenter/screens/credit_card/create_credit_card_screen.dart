@@ -219,7 +219,7 @@ class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
         CurrencyInputFormatter.unformat(annuityFieldController.text);
 
     return CreditCard(
-      id: 0,
+      id: '',
       name: name,
       accountToDiscountInvoice: account!,
       annuity: double.parse(annuityText),
@@ -241,7 +241,7 @@ class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
         CurrencyInputFormatter.unformat(annuityFieldController.text);
 
     CreditCard card = CreditCard(
-      id: 0,
+      id: '',
       accountToDiscountInvoice: account!,
       name: nameFieldController.text,
       annuity: double.parse(annuityStr),

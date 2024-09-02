@@ -8,10 +8,10 @@ import '../../../errors/errors.dart';
 
 class TemporaryInvoiceDatasource implements InvoiceDatasource {
   //Card's id and its invoices
-  final Map<int, List<Invoice>> _invoices = {
-    1: [
+  final Map<String, List<Invoice>> _invoices = {
+    '1': [
       Invoice(
-        id: 1,
+        id: '1',
         totalValue: 0.00,
         paidValue: 0.00,
         remainingValue: 0.00,
@@ -20,22 +20,22 @@ class TemporaryInvoiceDatasource implements InvoiceDatasource {
         dueDate: Date(day: 18, month: 6, year: 2024),
         isClosed: true,
         card: const CreditCard(
-          id: 1,
+          id: '1',
           name: 'Marisa',
           annuity: 0.00,
           color: '45ACFF',
           cardInvoiceClosingDay: 9,
           cardInvoiceDueDay: 18,
           accountToDiscountInvoice:
-              Account(id: 2, actualBalance: 200.00, name: 'Banco do Brasil'),
+              Account(id: '2', actualBalance: 200.00, name: 'Banco do Brasil'),
         ),
         account: const Account(
-            id: 2, name: 'Banco do Brasil', actualBalance: 200.00),
+            id: '2', name: 'Banco do Brasil', actualBalance: 200.00),
       )
     ],
-    2: [
+    '2': [
       Invoice(
-        id: 2,
+        id: '2',
         totalValue: 0.00,
         paidValue: 0.00,
         remainingValue: 0.00,
@@ -44,22 +44,22 @@ class TemporaryInvoiceDatasource implements InvoiceDatasource {
         dueDate: Date(day: 7, month: 7, year: 2024),
         isClosed: false,
         card: const CreditCard(
-          id: 2,
+          id: '2',
           name: 'Banco do Brasil',
           annuity: 0.00,
           color: '12601A',
           cardInvoiceClosingDay: 27,
           cardInvoiceDueDay: 7,
           accountToDiscountInvoice:
-              Account(id: 2, actualBalance: 200.00, name: 'Banco do Brasil'),
+              Account(id: '2', actualBalance: 200.00, name: 'Banco do Brasil'),
         ),
         account: const Account(
-            id: 2, name: 'Banco do Brasil', actualBalance: 200.00),
+            id: '2', name: 'Banco do Brasil', actualBalance: 200.00),
       )
     ],
-    3: [
+    '3': [
       Invoice(
-        id: 3,
+        id: '3',
         totalValue: 0.00,
         paidValue: 0.00,
         remainingValue: 0.00,
@@ -68,17 +68,17 @@ class TemporaryInvoiceDatasource implements InvoiceDatasource {
         dueDate: Date(day: 12, month: 6, year: 2024),
         isClosed: true,
         card: const CreditCard(
-          id: 3,
+          id: '3',
           name: 'Daju',
           annuity: 10.00,
           color: '45ACFF',
           cardInvoiceClosingDay: 2,
           cardInvoiceDueDay: 12,
           accountToDiscountInvoice:
-              Account(id: 1, actualBalance: 200.00, name: 'Conta Padrão'),
+              Account(id: '1', actualBalance: 200.00, name: 'Conta Padrão'),
         ),
         account:
-            const Account(id: 1, actualBalance: 200.00, name: 'Conta Padrão'),
+            const Account(id: '1', actualBalance: 200.00, name: 'Conta Padrão'),
       )
     ],
   };
@@ -98,7 +98,7 @@ class TemporaryInvoiceDatasource implements InvoiceDatasource {
 
     for (var invoices in _invoices.values) {
       for (var invoice in invoices) {
-        allIds.add(invoice.id);
+        allIds.add(int.parse(invoice.id));
       }
     }
 
@@ -128,7 +128,7 @@ class TemporaryInvoiceDatasource implements InvoiceDatasource {
     dueDate = Date(day: dueDay, month: dueMonth, year: dueYear);
 
     var invoice = Invoice(
-      id: newId,
+      id: newId.toString(),
       card: card,
       itens: const [],
       totalValue: 0.00,

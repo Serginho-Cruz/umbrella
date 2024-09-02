@@ -11,8 +11,8 @@ import '../../../errors/errors.dart';
 enum PaiyableType { income, expense, invoice }
 
 class TemporaryPaymentMethodDatasource implements PaymentMethodDatasource {
-  final Map<({int id, PaiyableType type}), Map<PaymentMethod, double>> _data =
-      {};
+  final Map<({String id, PaiyableType type}), Map<PaymentMethod, double>>
+      _data = {};
 
   @override
   Future<void> deletePaymentRecords(Paiyable paiyable) {

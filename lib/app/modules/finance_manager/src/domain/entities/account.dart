@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class Account extends Equatable {
-  final int id;
+  final String id;
   final String name;
   final bool isDefault;
   final double actualBalance;
@@ -14,7 +14,7 @@ class Account extends Equatable {
   });
 
   Account copyWith({
-    int? id,
+    String? id,
     String? name,
     bool? isDefault,
     double? actualBalance,

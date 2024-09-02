@@ -32,6 +32,8 @@ pubspec.lock
 .pub-cache/
 .pub/
 /build/
+.env
+env.g.dart
 
 # Symbolication related
 app.*.symbols

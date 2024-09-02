@@ -7,27 +7,27 @@ import '../../../errors/errors.dart';
 import '../../../infra/datasources/expense_datasource.dart';
 
 class TemporaryExpenseDatasource implements ExpenseDatasource {
-  final Map<int, List<Expense>> _expenses = {
-    1: [
+  final Map<String, List<Expense>> _expenses = {
+    'orgOnrBpoL': [
       Expense(
-        id: 1,
+        id: '1',
         name: "Conta de Luz",
         totalValue: 250.00,
         paidValue: 0.00,
         remainingValue: 250.00,
         dueDate: Date.today().copyWith(day: 12),
         paymentDate: null,
-        category: const Category(id: 1, icon: 'conta.png', name: 'Conta'),
+        category: const Category(id: '1', icon: 'conta.png', name: 'Conta'),
         frequency: Frequency.monthly,
         account: const Account(
-          id: 1,
+          id: 'orgOnrBpoL',
           isDefault: true,
-          actualBalance: 200.0,
+          actualBalance: 0,
           name: 'Conta Padrão',
         ),
       ),
       Expense(
-        id: 2,
+        id: '2',
         name: "Compras do Mês",
         totalValue: 609.23,
         paidValue: 609.23,
@@ -35,39 +35,37 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         dueDate: Date(day: 10, month: 6, year: 2024),
         paymentDate: Date(day: 10, month: 6, year: 2024),
         category: const Category(
-          id: 2,
+          id: '2',
           icon: 'alimentacao.png',
           name: 'Alimentação',
         ),
         frequency: Frequency.none,
         account: const Account(
-          id: 1,
+          id: 'orgOnrBpoL',
           isDefault: true,
-          actualBalance: 200.0,
+          actualBalance: 0.0,
           name: 'Conta Padrão',
         ),
       ),
       Expense(
-        id: 3,
+        id: '3',
         name: "Dados Móveis",
         totalValue: 20.00,
         paidValue: 0.00,
         remainingValue: 20.00,
         dueDate: Date.today().copyWith(day: 6),
         paymentDate: null,
-        category: const Category(id: 5, icon: 'outros.png', name: 'Outros'),
+        category: const Category(id: '5', icon: 'outros.png', name: 'Outros'),
         frequency: Frequency.monthly,
         account: const Account(
-          id: 1,
+          id: 'orgOnrBpoL',
           isDefault: true,
-          actualBalance: 200.0,
+          actualBalance: 0,
           name: 'Conta Padrão',
         ),
       ),
-    ],
-    2: [
       Expense(
-        id: 4,
+        id: '4',
         name: 'Roupas Novas',
         totalValue: 1500.00,
         paidValue: 1500.00,
@@ -75,27 +73,25 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         dueDate: Date.today(),
         paymentDate: Date.today(),
         category:
-            const Category(id: 1, name: "Vestimenta", icon: 'vestimenta.png'),
+            const Category(id: '1', name: "Vestimenta", icon: 'vestimenta.png'),
         frequency: Frequency.none,
         account: const Account(
-            id: 2, name: 'Banco do Brasil', actualBalance: 200.00),
+            id: 'orgOnrBpoL', name: 'Conta Padrão', actualBalance: 0.00),
       ),
       Expense(
-        id: 5,
+        id: '5',
         name: 'Aluguel',
         totalValue: 900.00,
         paidValue: 0.00,
         remainingValue: 900.00,
         dueDate: Date.today().copyWith(day: 18),
-        category: const Category(id: 4, name: "Moradia", icon: 'moradia.png'),
+        category: const Category(id: '4', name: "Moradia", icon: 'moradia.png'),
         frequency: Frequency.monthly,
         account: const Account(
-            id: 2, name: 'Banco do Brasil', actualBalance: 200.00),
+            id: 'orgOnrBpoL', name: 'Conta Padrão', actualBalance: 0.00),
       ),
-    ],
-    3: [
       Expense(
-        id: 6,
+        id: '6',
         name: 'IPVA',
         totalValue: 2000.00,
         paidValue: 0.00,
@@ -103,11 +99,12 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
         frequency: Frequency.yearly,
         dueDate: Date(day: 12, month: 1, year: 2025),
         category: const Category(
-          id: 2,
+          id: '2',
           name: 'Outros',
           icon: 'outros.png',
         ),
-        account: const Account(id: 3, name: 'Itaú', actualBalance: 156.32),
+        account: const Account(
+            id: 'orgOnrBpoL', name: 'Conta Padrão', actualBalance: 0.00),
       ),
     ],
   };
@@ -123,18 +120,18 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
     }
 
     all.sort((e1, e2) => e1.id.compareTo(e2.id));
-    int newId = all.last.id + 1;
+    int newId = int.parse(all.last.id) + 1;
 
     _expenses
         .putIfAbsent(expense.account.id, () => [])
-        .add(expense.copyWith(id: newId));
+        .add(expense.copyWith(id: newId.toString()));
     return Future.value(newId);
   }
 
   @override
   Future<void> update(Expense newExpense) async {
     int? index;
-    int? accountId;
+    String? accountId;
 
     for (var accId in _expenses.keys) {
       for (var element in _expenses[accId]!.indexed) {
@@ -197,7 +194,7 @@ class TemporaryExpenseDatasource implements ExpenseDatasource {
   @override
   Future<void> delete(Expense expense) async {
     int? index;
-    int? accountId;
+    String? accountId;
 
     for (var accId in _expenses.keys) {
       for (var element in _expenses[accId]!.indexed) {

@@ -28,11 +28,11 @@ class Invoice extends Paiyable {
     this.interest = 0.00,
   });
   Invoice copyWith({
+    String? id,
     bool? isClosed,
     Date? closingDate,
     CreditCard? card,
     List<InvoiceItem>? itens,
-    int? id,
     double? paidValue,
     double? remainingValue,
     Date? dueDate,

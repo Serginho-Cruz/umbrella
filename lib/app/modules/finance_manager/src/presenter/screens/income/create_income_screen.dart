@@ -274,7 +274,7 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
         CurrencyInputFormatter.unformat(valueFieldController.text);
 
     Income newIncome = Income(
-        id: 0,
+        id: '',
         name: nameFieldController.text,
         totalValue: double.parse(totalValueStr),
         paidValue: 0.00,

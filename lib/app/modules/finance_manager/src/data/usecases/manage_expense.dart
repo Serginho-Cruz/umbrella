@@ -91,7 +91,7 @@ class ManageExpenseImpl implements ManageExpense {
 
       for (var expense in monthlyExpenses.getOrDefault([])) {
         expenses.add(expense.copyWith(
-          id: 0,
+          id: '',
           remainingValue: expense.totalValue,
           paidValue: 0.00,
           paymentDate: null,

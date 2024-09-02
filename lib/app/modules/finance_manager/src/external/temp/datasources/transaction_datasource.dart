@@ -9,7 +9,7 @@ import '../../../domain/entities/income.dart';
 import '../../../domain/entities/invoice.dart';
 
 class TemporaryTransactionDatasource implements TransactionDatasource {
-  final Map<int, List<Transaction>> _data = {};
+  final Map<String, List<Transaction>> _data = {};
 
   @override
   Future<int> register(Transaction transaction, Account account) {

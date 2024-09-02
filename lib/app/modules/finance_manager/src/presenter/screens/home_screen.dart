@@ -94,11 +94,19 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       //Implements Something when an error occurs on account store
       onError: (ctx, fail) {
-        return const SizedBox.shrink();
+        return Scaffold(
+          body: Center(
+            child: BigText('Erro: ${fail.message}'),
+          ),
+        );
       },
       //Same here, users cannot have 0 accounts
       onEmptyState: () {
-        return const SizedBox.shrink();
+        return const Scaffold(
+          body: Center(
+            child: BigText('Nenhuma Conta foi Criada'),
+          ),
+        );
       },
       onState: (ctx, accounts) {
         return UmbrellaScaffold(

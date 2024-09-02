@@ -6,7 +6,7 @@ import '../entities/account.dart';
 import '../entities/credit_card.dart';
 
 abstract interface class ManageCreditCard {
-  AsyncResult<int, Fail> register(CreditCard card, User user);
+  AsyncResult<String, Fail> register(CreditCard card, User user);
   AsyncResult<Unit, Fail> update(CreditCard oldCard, CreditCard newCard);
   AsyncResult<Unit, Fail> switchAccount(CreditCard card, Account newAccount);
   AsyncResult<List<CreditCard>, Fail> getAll(User user);

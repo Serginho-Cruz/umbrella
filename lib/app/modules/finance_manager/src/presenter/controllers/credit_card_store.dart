@@ -24,7 +24,7 @@ class CreditCardStore extends Store<List<CreditCard>> {
   bool _hasAll = false;
   List<CreditCard> all = [];
 
-  AsyncResult<int, Fail> register(CreditCard card) async {
+  AsyncResult<String, Fail> register(CreditCard card) async {
     var result = await _manageCreditCard.register(card, _authController.user!);
 
     if (result.isSuccess()) _hasAll = false;

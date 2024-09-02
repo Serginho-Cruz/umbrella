@@ -7,7 +7,7 @@ import 'invoice.dart';
 import 'paiyable.dart';
 
 class Installment extends Equatable {
-  final int id;
+  final String id;
   final double value;
   final CreditCard card;
   final int parcelsNumber;
@@ -26,7 +26,7 @@ class Installment extends Equatable {
   }) : assert(paiyable is Expense || paiyable is Invoice);
 
   Installment copyWith({
-    int? id,
+    String? id,
     CreditCard? card,
     int? parcelsNumber,
     int? actualParcel,

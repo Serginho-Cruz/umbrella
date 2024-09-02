@@ -21,14 +21,20 @@ class ManageCreditCardImpl implements ManageCreditCard {
   });
 
   @override
-  AsyncResult<int, Fail> register(CreditCard card, User user) async {
+  AsyncResult<String, Fail> register(CreditCard card, User user) async {
     final cardCreateResult = await cardRepository.create(card, user);
 
     if (cardCreateResult.isError()) {
       return cardCreateResult;
     }
 
-    return invoiceRepository.generateOfCard(card);
+    final invoiceCreateResult = await invoiceRepository.generateOfCard(card);
+
+    if (invoiceCreateResult.isError()) {
+      return invoiceCreateResult.map((id) => id.toString());
+    }
+
+    return cardCreateResult;
   }
 
   @override

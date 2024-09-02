@@ -26,7 +26,7 @@ class Income extends Paiyable with EquatableMixin {
   });
 
   Income copyWith({
-    int? id,
+    String? id,
     String? name,
     double? totalValue,
     double? paidValue,

@@ -485,7 +485,7 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
         CurrencyInputFormatter.unformat(_valueFieldController.text);
 
     Expense newExpense = Expense(
-        id: 0,
+        id: '',
         name: _nameFieldController.text,
         totalValue: double.parse(totalValueStr),
         paidValue: 0.00,

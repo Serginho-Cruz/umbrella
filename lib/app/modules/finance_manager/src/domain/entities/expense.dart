@@ -42,7 +42,7 @@ class Expense extends Paiyable with EquatableMixin {
       ];
 
   Expense copyWith({
-    int? id,
+    String? id,
     String? name,
     double? totalValue,
     double? paidValue,

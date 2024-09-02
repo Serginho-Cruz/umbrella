@@ -2,7 +2,6 @@ import 'package:result_dart/result_dart.dart';
 import 'package:umbrella_echonomics/app/modules/auth/src/domain/entities/user.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/account_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/account.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/paiyable.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/round.dart';
 
@@ -14,7 +13,7 @@ class AccountRepositoryImpl implements AccountRepository {
   AccountRepositoryImpl(this._datasource);
 
   @override
-  AsyncResult<int, Fail> create(Account account, User user) async {
+  AsyncResult<String, Fail> create(Account account, User user) async {
     try {
       var result = await _datasource.create(account, user);
       return Success(result);
@@ -41,18 +40,6 @@ class AccountRepositoryImpl implements AccountRepository {
   AsyncResult<List<Account>, Fail> getAll(User user) async {
     try {
       var result = await _datasource.getAllOf(user);
-      return Success(result);
-    } on Fail catch (f) {
-      return Failure(f);
-    } catch (e) {
-      return Failure(GenericError());
-    }
-  }
-
-  @override
-  AsyncResult<Account, Fail> getOfPaiyable(Paiyable paiyable) async {
-    try {
-      var result = await _datasource.getOfPaiyable(paiyable);
       return Success(result);
     } on Fail catch (f) {
       return Failure(f);

@@ -90,7 +90,7 @@ class ManageIncomeImpl implements ManageIncome {
 
       for (var income in monthlyIncomes.getOrDefault([])) {
         incomes.add(income.copyWith(
-          id: 0,
+          id: '',
           remainingValue: income.totalValue,
           paidValue: 0.00,
           paymentDate: null,

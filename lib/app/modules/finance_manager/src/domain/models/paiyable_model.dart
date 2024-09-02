@@ -5,7 +5,7 @@ import '../entities/date.dart';
 import 'status.dart';
 
 abstract class PaiyableModel<T extends Paiyable> {
-  final int id;
+  final String id;
   final double totalValue;
   final double paidValue;
   final double remainingValue;
