@@ -4,7 +4,6 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:umbrella_echonomics/app/modules/auth/src/data/usecases/manage_user.dart';
 import 'package:umbrella_echonomics/app/modules/auth/src/domain/usecases/manage_user.dart';
 import 'package:umbrella_echonomics/app/modules/auth/src/external/datasources/back4app/user_datasource.dart';
-import 'package:umbrella_echonomics/app/modules/auth/src/external/services/back4app_local_storage.dart';
 import 'package:umbrella_echonomics/app/modules/auth/src/infra/repositories/user_repository.dart';
 import 'package:umbrella_echonomics/app/modules/auth/src/presenter/controllers/auth_controller.dart';
 
@@ -13,6 +12,7 @@ import 'src/data/usecases/auth.dart';
 import 'src/data/usecases/manage_local_token.dart';
 import 'src/domain/usecases/auth.dart';
 import 'src/domain/usecases/manage_local_token.dart';
+import 'src/external/services/token_storage.dart';
 import 'src/infra/datasources/user_datasource.dart';
 import 'src/infra/services/local_storage_service.dart';
 import 'src/presenter/controllers/user_controller.dart';
