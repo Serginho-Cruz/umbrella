@@ -1,32 +1,37 @@
-import 'package:flutter/material.dart';
-import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart'
+    show ParseResponse, ParseError;
 
 import '../../errors/api_errors.dart';
 import '../../errors/errors.dart';
 
 bool isResponseSuccesful(ParseResponse response) {
-  return response.success && [200, 201].contains(response.statusCode);
+  return response.success & [200, 201].contains(response.statusCode);
 }
 
-Fail extractFail(ParseResponse response) {
-  debugPrint(
-      'Status Code: ${response.statusCode}, Erro: ${response.error?.message}');
+Fail extractFail(
+  ParseResponse response, {
+  Map<int, Fail>? returnOn,
+}) {
+  returnOn = returnOn ?? const {};
+  int? errorCode = response.error?.code;
 
-  switch (response.error?.code) {
+  switch (errorCode) {
     case ParseError.connectionFailed:
-      return NetworkFail();
+      return const NetworkFail();
 
     case ParseError.operationForbidden:
-      return ForbiddenAction();
+      return const ForbiddenAction();
+
+    case ParseError.internalServerError:
+      return const InternalServerError();
   }
 
-  debugPrint(
-      'Status Code: ${response.statusCode}, Erro: ${response.error?.message}');
+  if (returnOn.containsKey(errorCode)) return returnOn[errorCode]!;
 
   return switch (response.statusCode) {
-    401 => UnauthorizedFail(),
-    404 => Error404(),
-    500 => InternalServerError(),
-    _ => GenericError(),
+    401 => const UnauthorizedFail(),
+    404 => const Error404(),
+    500 => const InternalServerError(),
+    _ => const GenericError(),
   };
 }

@@ -4,7 +4,6 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/wi
 import '../../../domain/entities/account.dart';
 import '../../../domain/entities/credit_card.dart';
 import '../../controllers/balance_store.dart';
-import '../../utils/currency_input_formatter.dart';
 import '../../utils/umbrella_palette.dart';
 import '../../controllers/account_store.dart';
 import '../../controllers/credit_card_store.dart';
@@ -19,7 +18,6 @@ import '../../widgets/dialogs/umbrella_dialogs.dart';
 import '../../widgets/selectors/account_selector.dart';
 import '../../widgets/forms/default_text_field.dart';
 import '../../widgets/forms/my_form.dart';
-import '../../widgets/forms/number_text_field.dart';
 import '../../widgets/others/list_scoped_builder.dart';
 import '../../widgets/selectors/color_selector.dart';
 import '../../widgets/selectors/day_selector.dart';
@@ -46,9 +44,7 @@ class CreateCreditCardScreen extends StatefulWidget {
 class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
   final GlobalKey<FormState> formKey = GlobalKey();
   late final TextEditingController nameFieldController;
-  late final TextEditingController annuityFieldController;
 
-  late final FocusNode annuityFocusNode;
   late final FocusNode nameFieldFocusNode;
 
   Account? account;
@@ -62,10 +58,8 @@ class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
   void initState() {
     super.initState();
     nameFieldController = TextEditingController();
-    annuityFieldController = TextEditingController(text: 'R\$ 0,00');
 
     nameFieldFocusNode = FocusNode();
-    annuityFocusNode = FocusNode();
 
     var first = UmbrellaPalette.cardHexAndNames.keys.first;
     hexColor = first;
@@ -76,10 +70,7 @@ class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
   @override
   void dispose() {
     nameFieldController.dispose();
-    annuityFieldController.dispose();
-
     nameFieldFocusNode.dispose();
-    annuityFocusNode.dispose();
     super.dispose();
   }
 
@@ -143,14 +134,7 @@ class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
               onEditingComplete: () {
                 nameFieldFocusNode.unfocus();
               },
-            ),
-            NumberTextField(
-              controller: annuityFieldController,
-              padding: const EdgeInsets.symmetric(vertical: 20.0),
-              isCurrency: true,
-              label: 'Anuidade do Cartão',
-              focusNode: annuityFocusNode,
-              validate: (number) => null,
+              padding: const EdgeInsets.only(bottom: 40),
             ),
             DaySelector(
               bottomSheetText:
@@ -215,14 +199,11 @@ class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
 
   CreditCard mountCard() {
     String name = nameFieldController.text.trim();
-    String annuityText =
-        CurrencyInputFormatter.unformat(annuityFieldController.text);
 
     return CreditCard(
       id: '',
       name: name,
       accountToDiscountInvoice: account!,
-      annuity: double.parse(annuityText),
       cardInvoiceClosingDay: invoiceCloseDay,
       cardInvoiceDueDay: invoiceDueDate,
       color: hexColor,
@@ -237,14 +218,10 @@ class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
       return;
     }
 
-    String annuityStr =
-        CurrencyInputFormatter.unformat(annuityFieldController.text);
-
     CreditCard card = CreditCard(
       id: '',
       accountToDiscountInvoice: account!,
       name: nameFieldController.text,
-      annuity: double.parse(annuityStr),
       color: hexColor,
       cardInvoiceClosingDay: invoiceCloseDay,
       cardInvoiceDueDay: invoiceDueDate,
@@ -293,7 +270,6 @@ class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
 
     setState(() {
       nameFieldController.clear();
-      annuityFieldController.text = 'R\$ 0,00';
       invoiceCloseDay = 1;
       invoiceDueDate = 10;
       hexColor = hex;

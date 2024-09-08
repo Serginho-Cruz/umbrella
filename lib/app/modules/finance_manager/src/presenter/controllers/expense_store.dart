@@ -6,7 +6,7 @@ import '../../domain/entities/category.dart';
 import '../../domain/entities/credit_card.dart';
 import '../../domain/entities/date.dart';
 import '../../domain/entities/expense.dart';
-import '../../domain/entities/payment.dart';
+import '../../domain/entities/payment_record.dart';
 import '../../domain/models/expense_model.dart';
 import '../../domain/models/status.dart';
 import '../../domain/usecases/filters/filter_expenses.dart';
@@ -31,7 +31,7 @@ class ExpenseStore extends PaiyableStore<Expense, ExpenseModel> {
   final List<ExpenseModel> all = [];
 
   @override
-  AsyncResult<int, Fail> register(Expense entity) async {
+  AsyncResult<String, Fail> register(Expense entity) async {
     var result = await _manageExpense.register(entity);
 
     return result;
@@ -146,7 +146,7 @@ class ExpenseStore extends PaiyableStore<Expense, ExpenseModel> {
 
   @override
   AsyncResult<void, Fail> pay({
-    required List<Payment<Expense>> payments,
+    required List<PaymentRecord<Expense>> payments,
     CreditCard? card,
   }) async {
     return const Success(2);

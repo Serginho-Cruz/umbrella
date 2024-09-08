@@ -5,7 +5,7 @@ import '../../../domain/entities/category.dart';
 import '../../../domain/entities/date.dart';
 import '../../../domain/entities/frequency.dart';
 import '../../../domain/entities/income.dart';
-import '../../../errors/errors.dart';
+import '../../../errors/api_errors.dart';
 import '../../controllers/balance_store.dart';
 import '../../utils/currency_input_formatter.dart';
 import '../../utils/umbrella_palette.dart';

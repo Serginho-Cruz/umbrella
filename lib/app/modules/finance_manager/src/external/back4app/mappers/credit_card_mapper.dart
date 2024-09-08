@@ -13,14 +13,16 @@ sealed class CreditCardMapper {
   }) {
     var parseObject = CreditCardObject();
 
-    var parseAccount = AccountMapper.toParse(card.accountToDiscountInvoice,
-        parseUser: parseUser);
+    var parseAccount = AccountMapper.toParse(
+      card.accountToDiscountInvoice,
+      parseUser: parseUser,
+    );
 
     if (!noId) parseObject.objectId = card.id;
     parseObject.set('name', card.name);
     parseObject.set('color', card.color);
-    parseObject.set('invoiceCloseDate', card.cardInvoiceClosingDay);
-    parseObject.set('invoiceOverdueDate', card.cardInvoiceDueDay);
+    parseObject.set('invoiceCloseDay', card.cardInvoiceClosingDay);
+    parseObject.set('invoiceOverdueDay', card.cardInvoiceDueDay);
 
     parseObject.set('account', parseAccount);
     if (parseUser != null) parseObject.set('user', parseUser);
@@ -32,7 +34,6 @@ sealed class CreditCardMapper {
     return CreditCard(
       id: object.objectId!,
       name: object.get<String>('name')!,
-      annuity: object.get<double>('annuity')!,
       color: object.get<String>('color')!,
       cardInvoiceClosingDay: object.get<int>('invoiceCloseDay')!,
       cardInvoiceDueDay: object.get<int>('invoiceOverdueDay')!,

@@ -1,23 +1,22 @@
+import 'backend_error_messages.dart';
 import 'errors.dart';
 
 class InternalServerError extends Fail {
-  InternalServerError()
-      : super(
-            'Houve um problema no servidor. Por favor, tente novamente mais tarde');
+  const InternalServerError() : super(BackendErrorMessages.internalError);
 }
 
 class Error404 extends Fail {
-  Error404()
-      : super(
-            'Houve um problema no servidor. Por favor, tente novamente mais tarde');
+  const Error404() : super(BackendErrorMessages.error404);
 }
 
 class UnauthorizedFail extends Fail {
-  UnauthorizedFail()
-      : super('Você precisa estar logado para realizar esta ação');
+  const UnauthorizedFail() : super(BackendErrorMessages.unauthorized);
 }
 
 class ForbiddenAction extends Fail {
-  ForbiddenAction()
-      : super('Você não possui permissão para realizar esta ação');
+  const ForbiddenAction() : super(BackendErrorMessages.forbiddenAction);
+}
+
+class NetworkFail extends Fail {
+  const NetworkFail() : super(BackendErrorMessages.networkFailure);
 }

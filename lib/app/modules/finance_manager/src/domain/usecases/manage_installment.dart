@@ -6,7 +6,7 @@ import '../entities/credit_card.dart';
 import '../entities/installment.dart';
 
 abstract interface class ManageInstallment {
-  AsyncResult<int, Fail> register(Installment installment);
+  AsyncResult<String, Fail> register(Installment installment);
   AsyncResult<Unit, Fail> update({
     required Installment newInstallment,
     required Installment oldInstallment,

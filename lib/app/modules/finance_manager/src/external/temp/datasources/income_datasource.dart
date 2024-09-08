@@ -116,7 +116,7 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
   };
 
   @override
-  Future<int> create(Income income) {
+  Future<String> create(Income income) {
     List<Income> all = [];
 
     for (var list in _incomes.values) {
@@ -133,7 +133,7 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
     _incomes.update(income.account.id, (value) => value..add(newIncome),
         ifAbsent: () => [newIncome]);
 
-    return Future.value(newId);
+    return Future.value(newId.toString());
   }
 
   @override
@@ -153,7 +153,7 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
       if (index != null) break;
     }
 
-    if (index == null || accountId == null) throw GenericError();
+    if (index == null || accountId == null) throw const GenericError();
 
     _incomes[accountId]!.removeAt(index);
 
@@ -216,7 +216,7 @@ class TemporaryIncomeDatasource implements IncomeDatasource {
       if (index != null) break;
     }
 
-    if (index == null || accountId == null) throw GenericError();
+    if (index == null || accountId == null) throw const GenericError();
 
     _incomes[accountId]!.removeAt(index);
   }

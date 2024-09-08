@@ -22,7 +22,6 @@ class TemporaryInvoiceDatasource implements InvoiceDatasource {
         card: const CreditCard(
           id: '1',
           name: 'Marisa',
-          annuity: 0.00,
           color: '45ACFF',
           cardInvoiceClosingDay: 9,
           cardInvoiceDueDay: 18,
@@ -46,7 +45,6 @@ class TemporaryInvoiceDatasource implements InvoiceDatasource {
         card: const CreditCard(
           id: '2',
           name: 'Banco do Brasil',
-          annuity: 0.00,
           color: '12601A',
           cardInvoiceClosingDay: 27,
           cardInvoiceDueDay: 7,
@@ -70,7 +68,6 @@ class TemporaryInvoiceDatasource implements InvoiceDatasource {
         card: const CreditCard(
           id: '3',
           name: 'Daju',
-          annuity: 10.00,
           color: '45ACFF',
           cardInvoiceClosingDay: 2,
           cardInvoiceDueDay: 12,

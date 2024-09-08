@@ -5,14 +5,16 @@ import 'date.dart';
 import 'paiyable.dart';
 import 'payment_method.dart';
 
-class Payment<T extends Paiyable> extends Equatable {
+class PaymentRecord<T extends Paiyable> extends Equatable {
+  final String id;
   final Account usedAccount;
   final T paiyable;
   final PaymentMethod paymentMethod;
   final double value;
   final Date date;
 
-  const Payment({
+  const PaymentRecord({
+    required this.id,
     required this.usedAccount,
     required this.paiyable,
     required this.paymentMethod,
@@ -20,7 +22,8 @@ class Payment<T extends Paiyable> extends Equatable {
     required this.date,
   });
 
-  const Payment.credit({
+  const PaymentRecord.credit({
+    required this.id,
     required this.usedAccount,
     required this.paiyable,
     required this.value,
@@ -29,6 +32,7 @@ class Payment<T extends Paiyable> extends Equatable {
 
   @override
   List<Object?> get props => [
+        id,
         usedAccount,
         paiyable,
         paymentMethod,
@@ -36,14 +40,16 @@ class Payment<T extends Paiyable> extends Equatable {
         date,
       ];
 
-  Payment<T> copyWith({
+  PaymentRecord<T> copyWith({
+    String? id,
     Account? usedAccount,
     T? paiyable,
     PaymentMethod? paymentMethod,
     double? value,
     Date? date,
   }) {
-    return Payment<T>(
+    return PaymentRecord<T>(
+      id: id ?? this.id,
       usedAccount: usedAccount ?? this.usedAccount,
       paiyable: paiyable ?? this.paiyable,
       paymentMethod: paymentMethod ?? this.paymentMethod,

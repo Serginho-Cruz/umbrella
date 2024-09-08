@@ -4,8 +4,6 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/wi
 import '../../../domain/entities/credit_card.dart';
 import '../../controllers/account_store.dart';
 import '../../controllers/balance_store.dart';
-import '../../utils/currency_format.dart';
-import '../../utils/currency_input_formatter.dart';
 import '../../utils/umbrella_palette.dart';
 import '../../controllers/credit_card_store.dart';
 import '../../widgets/simple_information/account_name.dart';
@@ -19,7 +17,6 @@ import '../../widgets/texts/big_text.dart';
 import '../../widgets/dialogs/umbrella_dialogs.dart';
 import '../../widgets/forms/default_text_field.dart';
 import '../../widgets/forms/my_form.dart';
-import '../../widgets/forms/number_text_field.dart';
 import '../../widgets/selectors/color_selector.dart';
 import '../../widgets/selectors/day_selector.dart';
 import '../../widgets/texts/medium_text.dart';
@@ -48,9 +45,7 @@ class EditCreditCardScreen extends StatefulWidget {
 class _EditCreditCardScreenState extends State<EditCreditCardScreen> {
   final GlobalKey<FormState> formKey = GlobalKey();
   late final TextEditingController nameFieldController;
-  late final TextEditingController annuityFieldController;
 
-  late final FocusNode annuityFieldFocusNode;
   late final FocusNode nameFieldFocusNode;
 
   int invoiceCloseDay = 1;
@@ -63,10 +58,8 @@ class _EditCreditCardScreenState extends State<EditCreditCardScreen> {
   void initState() {
     super.initState();
     nameFieldController = TextEditingController();
-    annuityFieldController = TextEditingController();
 
     nameFieldFocusNode = FocusNode();
-    annuityFieldFocusNode = FocusNode();
 
     _setVariablesToOriginal();
   }
@@ -74,16 +67,13 @@ class _EditCreditCardScreenState extends State<EditCreditCardScreen> {
   @override
   void dispose() {
     nameFieldController.dispose();
-    annuityFieldController.dispose();
 
     nameFieldFocusNode.dispose();
-    annuityFieldFocusNode.dispose();
     super.dispose();
   }
 
   void _setVariablesToOriginal() {
     nameFieldController.text = widget._card.name;
-    annuityFieldController.text = CurrencyFormat.format(widget._card.annuity);
 
     invoiceCloseDay = widget._card.cardInvoiceClosingDay;
     invoiceDueDate = widget._card.cardInvoiceDueDay;
@@ -134,14 +124,7 @@ class _EditCreditCardScreenState extends State<EditCreditCardScreen> {
                 nameFieldFocusNode.unfocus();
                 setState(() {});
               },
-            ),
-            NumberTextField(
-              controller: annuityFieldController,
-              padding: const EdgeInsets.symmetric(vertical: 20.0),
-              isCurrency: true,
-              label: 'Anuidade do Cartão',
-              focusNode: annuityFieldFocusNode,
-              validate: (number) => null,
+              padding: const EdgeInsets.only(bottom: 20.0),
             ),
             DaySelector(
               bottomSheetText:
@@ -255,14 +238,10 @@ class _EditCreditCardScreenState extends State<EditCreditCardScreen> {
   CreditCard _mountCard() {
     String name = nameFieldController.text.trim();
 
-    String annuityText =
-        CurrencyInputFormatter.unformat(annuityFieldController.text);
-
     return CreditCard(
       id: widget._card.id,
       name: name,
       accountToDiscountInvoice: widget._card.accountToDiscountInvoice,
-      annuity: double.parse(annuityText),
       cardInvoiceClosingDay: invoiceCloseDay,
       cardInvoiceDueDay: invoiceDueDate,
       color: colorHex,

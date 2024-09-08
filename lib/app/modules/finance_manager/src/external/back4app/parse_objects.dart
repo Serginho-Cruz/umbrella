@@ -5,7 +5,7 @@ class AccountObject extends ParseObject {
 }
 
 class BalanceObject extends ParseObject {
-  BalanceObject() : super('Balances');
+  BalanceObject() : super('Balance');
 }
 
 class CategoryObject extends ParseObject {
@@ -13,19 +13,19 @@ class CategoryObject extends ParseObject {
 }
 
 class ExpenseCategoryObject extends CategoryObject {
-  ExpenseCategoryObject() : super('ExpenseCategories');
+  ExpenseCategoryObject() : super('ExpenseCategory');
 }
 
 class IncomeCategoryObject extends ParseObject {
-  IncomeCategoryObject() : super('IncomeCategories');
+  IncomeCategoryObject() : super('IncomeCategory');
 }
 
 class ExpenseObject extends ParseObject {
-  ExpenseObject() : super('Expenses');
+  ExpenseObject() : super('Expense');
 }
 
 class IncomeObject extends ParseObject {
-  IncomeObject() : super('Incomes');
+  IncomeObject() : super('Income');
 }
 
 class CreditCardObject extends ParseObject {
@@ -41,21 +41,21 @@ class InvoiceItemObject extends ParseObject {
 }
 
 class InstallmentObject extends ParseObject {
-  InstallmentObject() : super('Installments');
+  InstallmentObject() : super('Installment');
 }
 
 class ParcelObject extends ParseObject {
-  ParcelObject() : super('Parcels');
+  ParcelObject() : super('Parcel');
 }
 
 class PaymentMethodObject extends ParseObject {
-  PaymentMethodObject() : super('PaymentMethods');
+  PaymentMethodObject() : super('PaymentMethod');
 }
 
 class PaymentRecordObject extends ParseObject {
-  PaymentRecordObject() : super('PaymentRecords');
+  PaymentRecordObject() : super('PaymentRecord');
 }
 
 class NotificationsConfigurationsObject extends ParseObject {
-  NotificationsConfigurationsObject() : super('NotificationsConfigurations');
+  NotificationsConfigurationsObject() : super('NotificationsConfiguration');
 }

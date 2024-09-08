@@ -4,7 +4,6 @@ import 'account.dart';
 class CreditCard extends Equatable {
   final String id;
   final String name;
-  final double annuity;
   final String color;
   final int cardInvoiceClosingDay;
   final int cardInvoiceDueDay;
@@ -13,7 +12,6 @@ class CreditCard extends Equatable {
   const CreditCard({
     required this.id,
     required this.name,
-    required this.annuity,
     required this.color,
     required this.cardInvoiceClosingDay,
     required this.cardInvoiceDueDay,
@@ -22,7 +20,6 @@ class CreditCard extends Equatable {
 
   factory CreditCard.withoutId({
     required String name,
-    required double annuity,
     required String color,
     required int cardInvoiceClosingDay,
     required int cardInvoiceDueDay,
@@ -31,7 +28,6 @@ class CreditCard extends Equatable {
     return CreditCard(
       id: '',
       name: name,
-      annuity: annuity,
       color: color,
       cardInvoiceClosingDay: cardInvoiceClosingDay,
       cardInvoiceDueDay: cardInvoiceDueDay,
@@ -42,14 +38,12 @@ class CreditCard extends Equatable {
   CreditCard copyWith({
     String? id,
     String? name,
-    double? annuity,
     String? color,
     int? cardInvoiceClosingDay,
     int? cardInvoiceDueDay,
     Account? accountToDiscountInvoice,
   }) {
     return CreditCard(
-      annuity: annuity ?? this.annuity,
       id: id ?? this.id,
       name: name ?? this.name,
       color: color ?? this.color,
@@ -65,7 +59,6 @@ class CreditCard extends Equatable {
   List<Object?> get props => [
         id,
         name,
-        annuity,
         color,
         cardInvoiceClosingDay,
         cardInvoiceDueDay,

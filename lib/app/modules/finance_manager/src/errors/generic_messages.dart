@@ -1,4 +1,6 @@
 abstract class GenericMessages {
+  static const String genericFail =
+      'Um problema inesperado aconteceu. Por favor, tente novamente mais tarde';
   static const invalidNumber = 'O Valor precisa ser maior que 0';
   static const emptyString = 'A String está vazia';
   static const overLimitString = 'A String está acima do limite de caracteres';

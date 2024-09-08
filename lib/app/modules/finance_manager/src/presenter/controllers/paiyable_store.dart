@@ -2,7 +2,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:result_dart/result_dart.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/account.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/credit_card.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/payment.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/payment_record.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/paiyable_model.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
 
@@ -12,7 +12,7 @@ abstract class PaiyableStore<E extends Paiyable, T extends PaiyableModel<E>>
     extends Store<List<T>> {
   PaiyableStore(super.initialState);
 
-  AsyncResult<int, Fail> register(E entity);
+  AsyncResult<String, Fail> register(E entity);
   AsyncResult<void, Fail> updateValue(T paiyable, double newValue);
 
   AsyncResult<void, Fail> switchAccount(
@@ -38,7 +38,7 @@ abstract class PaiyableStore<E extends Paiyable, T extends PaiyableModel<E>>
   });
 
   AsyncResult<void, Fail> pay({
-    required List<Payment<E>> payments,
+    required List<PaymentRecord<E>> payments,
     CreditCard? card,
   });
 }

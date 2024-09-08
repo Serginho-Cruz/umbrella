@@ -1,48 +1,49 @@
 import 'package:result_dart/result_dart.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/transaction_repository.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/payment_record_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/account.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/paiyable.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/transaction.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/datasources/transaction_datasource.dart';
 
-class TransactionRepositoryImpl implements TransactionRepository {
-  final TransactionDatasource _datasource;
+import '../../domain/entities/payment_record.dart';
+import '../datasources/payment_record_datasource.dart';
 
-  TransactionRepositoryImpl(this._datasource);
+class PaymentRecordRepositoryImpl implements PaymentRecordRepository {
+  final PaymentRecordDatasource _datasource;
+
+  PaymentRecordRepositoryImpl(this._datasource);
 
   @override
-  AsyncResult<int, Fail> register(
-    Transaction transaction,
+  AsyncResult<String, Fail> register(
+    PaymentRecord record,
     Account account,
   ) async {
     try {
-      var id = await _datasource.register(transaction, account);
+      var id = await _datasource.register(record, account);
       return Success(id);
     } on Fail catch (f) {
       return Failure(f);
     } catch (_) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 
   @override
-  AsyncResult<List<Transaction>, Fail> getAllOf({
+  AsyncResult<List<PaymentRecord>, Fail> getAllOf({
     required int month,
     required int year,
     required Account account,
   }) async {
     try {
-      var transactions = await _datasource.getAllOf(
+      var records = await _datasource.getAllOf(
         account: account,
         month: month,
         year: year,
       );
-      return Success(transactions);
+      return Success(records);
     } on Fail catch (f) {
       return Failure(f);
     } catch (_) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 
@@ -54,7 +55,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (_) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 }
