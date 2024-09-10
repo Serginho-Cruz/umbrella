@@ -34,7 +34,6 @@ class Back4AppUserDatasource implements UserDatasource {
 
     if (isResponseSuccesful(response)) {
       final loggedUser = response.results!.first as ParseUser;
-      loggedUser.forgetLocalSession();
 
       return UserMapper.fromParse(loggedUser);
     }

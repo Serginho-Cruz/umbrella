@@ -9,6 +9,7 @@ import 'paiyable.dart';
 class Expense extends Paiyable with EquatableMixin {
   final String name;
   final String? personName;
+  final String? frequentExpenseId;
   final Frequency frequency;
   final Category category;
 
@@ -22,6 +23,7 @@ class Expense extends Paiyable with EquatableMixin {
     required super.account,
     super.paymentDate,
     this.personName,
+    this.frequentExpenseId,
     required this.category,
     required this.frequency,
   });
@@ -36,6 +38,7 @@ class Expense extends Paiyable with EquatableMixin {
         paymentDate,
         dueDate,
         personName,
+        frequentExpenseId,
         category,
         account,
         frequency,
@@ -50,6 +53,7 @@ class Expense extends Paiyable with EquatableMixin {
     Date? dueDate,
     Date? paymentDate,
     String? personName,
+    String? frequentExpenseId,
     Category? category,
     Frequency? frequency,
     Account? account,
@@ -63,6 +67,7 @@ class Expense extends Paiyable with EquatableMixin {
       dueDate: dueDate ?? this.dueDate,
       paymentDate: paymentDate ?? this.paymentDate,
       personName: personName ?? this.personName,
+      frequentExpenseId: frequentExpenseId ?? frequentExpenseId,
       category: category ?? this.category,
       account: account ?? this.account,
       frequency: frequency ?? this.frequency,

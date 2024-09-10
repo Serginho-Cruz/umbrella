@@ -5,6 +5,7 @@ import 'package:umbrella_echonomics/app/modules/auth/src/external/user_mapper.da
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/account.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/external/back4app/mappers/account_mapper.dart';
 
+import '../../../errors/errors.dart';
 import '../../../infra/datasources/account_datasource.dart';
 import '../functions.dart';
 import '../parse_objects.dart';
@@ -17,7 +18,7 @@ class Back4AppAccountDatasource implements AccountDatasource {
         AccountMapper.toParse(account, parseUser: parseUser, noId: true)
           ..setACL(ParseACL(owner: parseUser));
 
-    var response = await object.save();
+    var response = await object.create();
 
     if (isResponseSuccesful(response)) {
       return (response.results!.first as ParseObject).objectId!;
@@ -30,7 +31,7 @@ class Back4AppAccountDatasource implements AccountDatasource {
   Future<void> update(Account newAccount) async {
     var object = AccountMapper.toParse(newAccount);
 
-    var response = await object.save();
+    var response = await object.update();
 
     if (isResponseSuccesful(response)) {
       return;
@@ -45,12 +46,16 @@ class Back4AppAccountDatasource implements AccountDatasource {
 
     var query = QueryBuilder(AccountObject());
 
-    query.whereEqualTo('user', parseUser);
+    query.whereEqualTo('user', parseUser.toPointer());
 
     var response = await query.query();
 
     if (isResponseSuccesful(response)) {
-      var objects = response.results as List<ParseObject>;
+      var objects = response.results as List<ParseObject>?;
+
+      if (objects == null) {
+        throw const UserHasntAccounts();
+      }
 
       return objects.map((object) => AccountMapper.fromParse(object)).toList();
     }

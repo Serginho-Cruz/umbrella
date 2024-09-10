@@ -24,8 +24,16 @@ class ExpenseObject extends ParseObject {
   ExpenseObject() : super('Expense');
 }
 
+class FrequentExpenseObject extends ParseObject {
+  FrequentExpenseObject() : super('FrequentExpense');
+}
+
 class IncomeObject extends ParseObject {
   IncomeObject() : super('Income');
+}
+
+class FrequentIncomeObject extends ParseObject {
+  FrequentIncomeObject() : super('FrequentIncome');
 }
 
 class CreditCardObject extends ParseObject {

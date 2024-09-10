@@ -9,6 +9,7 @@ class Income extends Paiyable with EquatableMixin {
   final String name;
   final Frequency frequency;
   final String? personName;
+  final String? frequentIncomeId;
   final Category category;
 
   const Income({
@@ -22,6 +23,7 @@ class Income extends Paiyable with EquatableMixin {
     super.paymentDate,
     required this.frequency,
     this.personName,
+    this.frequentIncomeId,
     required this.category,
   });
 
@@ -35,6 +37,7 @@ class Income extends Paiyable with EquatableMixin {
     Date? paymentDate,
     Frequency? frequency,
     String? personName,
+    String? frequentIncomeId,
     Category? category,
     Account? account,
   }) {
@@ -48,6 +51,7 @@ class Income extends Paiyable with EquatableMixin {
       paymentDate: paymentDate ?? this.paymentDate,
       frequency: frequency ?? this.frequency,
       personName: personName ?? this.personName,
+      frequentIncomeId: frequentIncomeId ?? this.frequentIncomeId,
       category: category ?? this.category,
       account: account ?? this.account,
     );
@@ -66,5 +70,6 @@ class Income extends Paiyable with EquatableMixin {
         category,
         account,
         personName,
+        frequentIncomeId,
       ];
 }

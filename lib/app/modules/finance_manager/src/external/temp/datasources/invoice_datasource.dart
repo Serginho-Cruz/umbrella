@@ -90,7 +90,7 @@ class TemporaryInvoiceDatasource implements InvoiceDatasource {
   }
 
   @override
-  Future<int> generateOfCard(CreditCard card) {
+  Future<String> generateOfCard(CreditCard card) {
     List<int> allIds = [];
 
     for (var invoices in _invoices.values) {
@@ -140,7 +140,7 @@ class TemporaryInvoiceDatasource implements InvoiceDatasource {
     _invoices.update(card.id, (value) => value..add(invoice),
         ifAbsent: () => [invoice]);
 
-    return Future.delayed(const Duration(seconds: 1), () => newId);
+    return Future.delayed(const Duration(seconds: 1), () => newId.toString());
   }
 
   @override
@@ -182,7 +182,7 @@ class TemporaryInvoiceDatasource implements InvoiceDatasource {
   }
 
   @override
-  Future<Invoice> getById(int id) {
+  Future<Invoice> getById(String id) {
     // TODO: implement getById
     throw UnimplementedError();
   }
@@ -245,7 +245,7 @@ class TemporaryInvoiceDatasource implements InvoiceDatasource {
       }
     }
 
-    if (index == -1) throw GenericError();
+    if (index == -1) throw const GenericError();
 
     _invoices.update(invoice.card.id, (invoices) {
       return invoices

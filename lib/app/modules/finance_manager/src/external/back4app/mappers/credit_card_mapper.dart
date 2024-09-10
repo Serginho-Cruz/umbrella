@@ -13,10 +13,7 @@ sealed class CreditCardMapper {
   }) {
     var parseObject = CreditCardObject();
 
-    var parseAccount = AccountMapper.toParse(
-      card.accountToDiscountInvoice,
-      parseUser: parseUser,
-    );
+    var parseAccount = AccountMapper.toParse(card.accountToDiscountInvoice);
 
     if (!noId) parseObject.objectId = card.id;
     parseObject.set('name', card.name);

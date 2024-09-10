@@ -107,7 +107,7 @@ class IncomeStore extends PaiyableStore<Income, IncomeModel> {
       ..clear()
       ..addAll(models);
 
-    update(models);
+    update(models, force: true);
     setLoading(false);
   }
 
@@ -135,7 +135,7 @@ class IncomeStore extends PaiyableStore<Income, IncomeModel> {
         ..clear()
         ..addAll(models);
 
-      update(models);
+      update(models, force: true);
     }, (fail) {
       all.clear();
       setError(fail);

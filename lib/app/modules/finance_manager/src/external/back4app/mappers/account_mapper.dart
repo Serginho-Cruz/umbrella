@@ -21,11 +21,13 @@ sealed class AccountMapper {
   }
 
   static Account fromParse(ParseObject object) {
-    return Account(
+    Account account = Account(
       id: object.objectId!,
       name: object.get('name'),
       actualBalance: object.get('actualBalance').toDouble(),
       isDefault: object.get('isDefault'),
     );
+
+    return account;
   }
 }

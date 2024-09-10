@@ -7,10 +7,14 @@ sealed class UserMapper {
   ///
   ///Use [toParseFrom] instead on a login scenario.
   static ParseUser toParse(User user) {
-    var parse = ParseUser(user.email, user.password, user.email);
+    var parse = ParseUser(
+      user.email,
+      user.password,
+      user.email,
+      sessionToken: user.token,
+    );
     return parse
       ..set('name', user.name)
-      ..sessionToken = user.token
       ..objectId = user.id;
   }
 

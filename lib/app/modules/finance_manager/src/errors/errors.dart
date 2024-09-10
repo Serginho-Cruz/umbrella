@@ -9,6 +9,10 @@ class GenericError extends Fail {
   const GenericError() : super(GenericMessages.genericFail);
 }
 
+class UserHasntAccounts extends Fail {
+  const UserHasntAccounts() : super(GenericMessages.userHasNotAccounts);
+}
+
 class AccountDoesntExist extends Fail {
   const AccountDoesntExist(super.message);
 }

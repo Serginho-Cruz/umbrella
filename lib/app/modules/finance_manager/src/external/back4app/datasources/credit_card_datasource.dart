@@ -7,6 +7,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/external/bac
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/datasources/credit_card_datasource.dart';
 
 import '../functions.dart';
+import '../mappers/account_mapper.dart';
 
 class Back4AppCreditCardDatasource implements CreditCardDatasource {
   @override
@@ -17,7 +18,7 @@ class Back4AppCreditCardDatasource implements CreditCardDatasource {
         CreditCardMapper.toParse(card, parseUser: parseUser, noId: true)
           ..setACL(ParseACL(owner: parseUser));
 
-    var response = await object.save();
+    var response = await object.create();
 
     if (isResponseSuccesful(response)) {
       return (response.results!.first as ParseObject).objectId!;
@@ -46,7 +47,7 @@ class Back4AppCreditCardDatasource implements CreditCardDatasource {
     var query = QueryBuilder(CreditCardObject());
 
     query.whereEqualTo('user', parseUser);
-    query.includeObject(['Account']);
+    query.includeObject(['account']);
 
     var response = await query.query();
 
@@ -55,7 +56,10 @@ class Back4AppCreditCardDatasource implements CreditCardDatasource {
 
       if (objects == null) return [];
 
-      return [];
+      return objects.map((object) {
+        var account = AccountMapper.fromParse(object.get('account'));
+        return CreditCardMapper.fromParse(object, account: account);
+      }).toList();
     }
 
     throw extractFail(response);

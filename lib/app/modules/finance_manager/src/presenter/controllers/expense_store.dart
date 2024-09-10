@@ -106,7 +106,7 @@ class ExpenseStore extends PaiyableStore<Expense, ExpenseModel> {
       ..clear()
       ..addAll(models);
 
-    update(models);
+    update(models, force: true);
     setLoading(false);
   }
 
@@ -135,7 +135,7 @@ class ExpenseStore extends PaiyableStore<Expense, ExpenseModel> {
         ..clear()
         ..addAll(models);
 
-      update(models);
+      update(models, force: true);
     }, (fail) {
       all.clear();
       setError(fail);

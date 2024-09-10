@@ -1,19 +1,19 @@
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/account.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/expense.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/frequency.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/datasources/expense_datasource.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/income.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/datasources/income_datasource.dart';
 
 import '../functions.dart';
 import '../mappers/account_mapper.dart';
-import '../mappers/expense_mapper.dart';
+import '../mappers/income_mapper.dart';
 import '../parse_objects.dart';
 
-class Back4AppExpenseDatasource implements ExpenseDatasource {
+class Back4AppIncomeDatasource implements IncomeDatasource {
   @override
-  Future<String> create(Expense expense) async {
-    var object = ExpenseMapper.toParse(expense, noId: true);
+  Future<String> create(Income income) async {
+    var object = IncomeMapper.toParse(income, noId: true);
 
     var response = await object.create();
 
@@ -25,18 +25,12 @@ class Back4AppExpenseDatasource implements ExpenseDatasource {
   }
 
   @override
-  Future<void> delete(Expense expense) {
-    // TODO: implement delete
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<Expense>> getAllOf({
+  Future<List<Income>> getAllOf({
+    required Account account,
     required int month,
     required int year,
-    required Account account,
   }) async {
-    var query = QueryBuilder(ExpenseObject());
+    var query = QueryBuilder(IncomeObject());
 
     DateTime firstDay = DateTime(year, month);
     DateTime lastDay =
@@ -52,9 +46,8 @@ class Back4AppExpenseDatasource implements ExpenseDatasource {
 
     if (isResponseSuccesful(response)) {
       if (response.results == null) return [];
-
-      return (response.results! as List<ParseObject>)
-          .map(ExpenseMapper.fromParse)
+      return (response.results as List<ParseObject>)
+          .map(IncomeMapper.fromParse)
           .toList();
     }
 
@@ -62,14 +55,16 @@ class Back4AppExpenseDatasource implements ExpenseDatasource {
   }
 
   @override
-  Future<List<Expense>> getByFrequency(
+  Future<List<Income>> getByFrequency(
     Frequency frequency,
     Account account,
   ) async {
-    var query = QueryBuilder(ExpenseObject());
+    var query = QueryBuilder(IncomeObject());
 
     query.whereEqualTo('frequency', frequency.toInt());
     query.whereEqualTo('account', AccountMapper.toParse(account));
+
+    query.includeObject(['account', 'category']);
 
     var response = await query.query();
 
@@ -77,7 +72,7 @@ class Back4AppExpenseDatasource implements ExpenseDatasource {
       if (response.results == null) return [];
 
       return (response.results! as List<ParseObject>)
-          .map(ExpenseMapper.fromParse)
+          .map(IncomeMapper.fromParse)
           .toList();
     }
 
@@ -85,11 +80,11 @@ class Back4AppExpenseDatasource implements ExpenseDatasource {
   }
 
   @override
-  Future<List<Expense>> getByFrequencyInRange({
-    required Frequency frequency,
-    required Account account,
+  Future<List<Income>> getByFrequencyInRange({
     required Date inferiorLimit,
     required Date upperLimit,
+    required Frequency frequency,
+    required Account account,
   }) async {
     var query = QueryBuilder(ExpenseObject());
 
@@ -98,13 +93,14 @@ class Back4AppExpenseDatasource implements ExpenseDatasource {
     query.whereGreaterThanOrEqualsTo('overdueDate', inferiorLimit.toDateTime());
     query.whereLessThanOrEqualTo('overdueDate', upperLimit.toDateTime());
 
+    query.includeObject(['account', 'category']);
+
     var response = await query.query();
 
     if (isResponseSuccesful(response)) {
       if (response.results == null) return [];
-
       return (response.results! as List<ParseObject>)
-          .map(ExpenseMapper.fromParse)
+          .map(IncomeMapper.fromParse)
           .toList();
     }
 
@@ -112,8 +108,8 @@ class Back4AppExpenseDatasource implements ExpenseDatasource {
   }
 
   @override
-  Future<void> update(Expense newExpense) async {
-    var object = ExpenseMapper.toParse(newExpense);
+  Future<void> update(Income newIncome) async {
+    var object = IncomeMapper.toParse(newIncome);
 
     var response = await object.update();
 
@@ -122,5 +118,11 @@ class Back4AppExpenseDatasource implements ExpenseDatasource {
     }
 
     throw extractFail(response);
+  }
+
+  @override
+  Future<void> delete(Income income) {
+    // TODO: implement delete
+    throw UnimplementedError();
   }
 }
