@@ -1,8 +1,8 @@
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
-import '../../errors/auth_fail.dart';
-import '../../errors/fail.dart';
-import '../../errors/generic_fails.dart';
+import '../../common/errors/auth_fail.dart';
+import '../../common/errors/fail.dart';
+import '../../common/errors/generic_fails.dart';
 
 bool isResponseSuccesful(ParseResponse response) {
   return response.success & [200, 201].contains(response.statusCode);

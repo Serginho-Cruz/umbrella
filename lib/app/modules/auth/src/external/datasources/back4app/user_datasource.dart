@@ -1,9 +1,9 @@
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 import 'package:umbrella_echonomics/app/modules/auth/src/domain/entities/user.dart';
 import 'package:umbrella_echonomics/app/modules/auth/src/external/datasources/functions.dart';
-import 'package:umbrella_echonomics/app/modules/auth/src/infra/datasources/user_datasource.dart';
 
-import '../../../errors/auth_fail.dart';
+import '../../../common/errors/auth_fail.dart';
+import '../../../infra/datasources/user_datasource.dart';
 import '../../user_mapper.dart';
 
 class Back4AppUserDatasource implements UserDatasource {

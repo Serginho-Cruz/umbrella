@@ -1,106 +1,64 @@
 import 'package:flutter/material.dart';
 
-class AuthTextField extends StatefulWidget {
+class AuthTextField extends StatelessWidget {
   const AuthTextField({
     super.key,
     required this.label,
     required this.icon,
-    required this.controller,
     this.keyboardType,
-    this.isPassword = false,
-    required this.validate,
-    required this.focusNode,
+    this.focusNode,
     this.padding = EdgeInsets.zero,
-    this.nextFocusNode,
+    this.autovalidateMode = AutovalidateMode.onUnfocus,
+    this.readOnly = false,
+    this.obscureText = false,
+    this.suffixIcon,
+    this.onSubmitted,
+    this.onChanged,
+    required this.validate,
   });
 
+  final AutovalidateMode autovalidateMode;
   final EdgeInsetsGeometry padding;
   final String label;
   final IconData icon;
-  final TextEditingController controller;
   final TextInputType? keyboardType;
-  final bool isPassword;
-  final FocusNode focusNode;
-  final FocusNode? nextFocusNode;
+  final FocusNode? focusNode;
+  final bool readOnly;
+  final bool obscureText;
+  final Widget? suffixIcon;
+  final void Function(String)? onChanged;
+  final void Function(String)? onSubmitted;
   final String? Function(String?) validate;
-
-  @override
-  State<AuthTextField> createState() => _AuthTextFieldState();
-}
-
-class _AuthTextFieldState extends State<AuthTextField> {
-  String? errorText;
-  bool showPassword = true;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: widget.padding,
+      padding: padding,
       child: TextFormField(
-        controller: widget.controller,
-        keyboardType: widget.keyboardType,
-        focusNode: widget.focusNode,
-        obscureText: widget.isPassword ? showPassword : false,
+        keyboardType: keyboardType,
+        focusNode: focusNode,
+        autovalidateMode: autovalidateMode,
         decoration: InputDecoration(
-          labelText: widget.label,
+          labelText: label,
           filled: true,
           fillColor: Colors.white,
-          prefixIcon: Icon(widget.icon, color: Colors.black, size: 20.0),
+          prefixIcon: Icon(icon, color: Colors.black, size: 20.0),
           border: OutlineInputBorder(
             borderSide: const BorderSide(),
             borderRadius: BorderRadius.circular(8.0),
           ),
-          errorText: errorText,
           errorMaxLines: 2,
           errorBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.red),
           ),
-          suffixIcon: widget.isPassword
-              ? InkWell(
-                  onTap: () {
-                    setState(() {
-                      showPassword = !showPassword;
-                    });
-                  },
-                  customBorder: const CircleBorder(),
-                  child: const Icon(
-                    Icons.remove_red_eye_rounded,
-                    color: Colors.black,
-                    size: 20.0,
-                  ),
-                )
-              : null,
+          suffixIcon: suffixIcon,
         ),
-        onTapOutside: (_) {
-          widget.focusNode.unfocus();
-          _validateField();
-        },
-        onEditingComplete: () {
-          widget.focusNode.unfocus();
-          _validateField();
-          if (errorText == null) widget.nextFocusNode?.requestFocus();
-        },
-        onChanged: (_) {
-          if (errorText != null) {
-            setState(() {
-              errorText = null;
-            });
-          }
-        },
-        validator: widget.validate,
+        obscureText: obscureText,
+        readOnly: readOnly,
+        onFieldSubmitted: onSubmitted,
+        onChanged: onChanged,
+        validator: validate,
       ),
     );
-  }
-
-  void _validateField() {
-    String text = widget.controller.text;
-
-    var result = widget.validate(text);
-
-    if (result != null) {
-      setState(() {
-        errorText = result;
-      });
-    }
   }
 }

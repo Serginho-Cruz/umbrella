@@ -1,6 +1,6 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:result_dart/result_dart.dart';
-import 'package:umbrella_echonomics/app/modules/auth/src/errors/storage_fail.dart';
+import 'package:umbrella_echonomics/app/modules/auth/src/common/errors/storage_fail.dart';
 import 'package:umbrella_echonomics/app/modules/auth/src/infra/services/local_storage_service.dart';
 
 class TokenStorage implements LocalStorageService {

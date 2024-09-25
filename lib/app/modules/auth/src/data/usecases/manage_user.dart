@@ -1,9 +1,9 @@
 import 'package:result_dart/result_dart.dart';
-import 'package:umbrella_echonomics/app/modules/auth/src/data/repositories/user_repository.dart';
 import 'package:umbrella_echonomics/app/modules/auth/src/domain/entities/user.dart';
-import 'package:umbrella_echonomics/app/modules/auth/src/domain/usecases/manage_user.dart';
 
-import '../../errors/fail.dart';
+import '../../domain/usecases/manage_user.dart';
+import '../../common/errors/fail.dart';
+import '../repositories/user_repository.dart';
 
 class ManageUserImpl implements ManageUser {
   final UserRepository _repository;
@@ -24,10 +24,6 @@ class ManageUserImpl implements ManageUser {
 
   @override
   AsyncResult<Unit, Fail> delete(User user) async {
-    var result = await _repository.deleteLocalToken();
-
-    if (result.isError()) return result;
-
     return _repository.delete(user);
   }
 }

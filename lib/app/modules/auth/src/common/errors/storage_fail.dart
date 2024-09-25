@@ -1,4 +1,4 @@
-import 'package:umbrella_echonomics/app/modules/auth/src/errors/messages.dart';
+import 'package:umbrella_echonomics/app/modules/auth/src/common/errors/messages.dart';
 
 import 'fail.dart';
 

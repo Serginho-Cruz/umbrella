@@ -1,22 +1,15 @@
 import 'package:result_dart/result_dart.dart';
 import 'package:umbrella_echonomics/app/modules/auth/src/domain/entities/user.dart';
-import 'package:umbrella_echonomics/app/modules/auth/src/errors/auth_fail.dart';
-import 'package:umbrella_echonomics/app/modules/auth/src/errors/storage_fail.dart';
-import 'package:umbrella_echonomics/app/modules/auth/src/errors/user_fail.dart';
-import 'package:umbrella_echonomics/app/modules/auth/src/infra/datasources/user_datasource.dart';
-import 'package:umbrella_echonomics/app/modules/auth/src/infra/services/local_storage_service.dart';
+import 'package:umbrella_echonomics/app/modules/auth/src/common/errors/auth_fail.dart';
+import 'package:umbrella_echonomics/app/modules/auth/src/common/errors/user_fail.dart';
+import '../../common/errors/fail.dart';
+import '../datasources/user_datasource.dart';
 import '../../data/repositories/user_repository.dart';
-import '../../errors/fail.dart';
 
 class UserRepositoryImpl implements UserRepository {
-  final LocalStorageService _localStorageService;
   final UserDatasource _userDatasource;
 
-  UserRepositoryImpl({
-    required LocalStorageService localStorageService,
-    required UserDatasource userDatasource,
-  })  : _localStorageService = localStorageService,
-        _userDatasource = userDatasource;
+  UserRepositoryImpl(this._userDatasource);
 
   @override
   AsyncResult<String, Fail> register(User user) async {
@@ -52,9 +45,9 @@ class UserRepositoryImpl implements UserRepository {
 
     try {
       user = await _userDatasource.login(email, password);
-    } on Fail catch (e) {
-      return e.toFailure();
-    } catch (e) {
+    } on Fail catch (f) {
+      return f.toFailure();
+    } catch (_) {
       return const GenericAuthFail().toFailure();
     }
 
@@ -67,10 +60,10 @@ class UserRepositoryImpl implements UserRepository {
 
     try {
       user = await _userDatasource.loginWithToken(token);
-    } on Fail catch (e) {
-      return e.toFailure();
-    } catch (e) {
-      return const GenericAuthFail().toFailure();
+    } on Fail catch (f) {
+      return f.toFailure();
+    } catch (_) {
+      return const Failure(GenericAuthFail());
     }
 
     return user.toSuccess();
@@ -87,21 +80,6 @@ class UserRepositoryImpl implements UserRepository {
     }
 
     return unit.toSuccess();
-  }
-
-  @override
-  AsyncResult<Unit, StorageFail> saveTokenLocally(String token) {
-    return _localStorageService.storeUserToken(token);
-  }
-
-  @override
-  AsyncResult<String, StorageFail> retrieveTokenLocally() {
-    return _localStorageService.retrieveUserToken();
-  }
-
-  @override
-  AsyncResult<Unit, StorageFail> deleteLocalToken() {
-    return _localStorageService.deleteUserToken();
   }
 
   @override

@@ -1,10 +1,10 @@
 import 'package:result_dart/result_dart.dart';
-import 'package:umbrella_echonomics/app/modules/auth/src/data/repositories/user_repository.dart';
-import 'package:umbrella_echonomics/app/modules/auth/src/domain/entities/user.dart';
-import 'package:umbrella_echonomics/app/modules/auth/src/domain/usecases/manage_local_token.dart';
 
+import '../../domain/entities/user.dart';
 import '../../domain/usecases/auth.dart';
-import '../../errors/fail.dart';
+import '../../domain/usecases/manage_local_token.dart';
+import '../../common/errors/fail.dart';
+import '../repositories/user_repository.dart';
 
 class AuthImpl implements Auth {
   final UserRepository _repository;
@@ -31,7 +31,7 @@ class AuthImpl implements Auth {
     final User user = userResult.getOrNull()!;
 
     if (rememberUser && user.token != null) {
-      _manageLocalToken.storeInLocal(user.token!);
+      _manageLocalToken.store(user.token!);
     }
 
     return Success(user);
@@ -39,7 +39,7 @@ class AuthImpl implements Auth {
 
   @override
   AsyncResult<Unit, Fail> logout(User user) async {
-    var result = await _manageLocalToken.deleteInLocal();
+    var result = await _manageLocalToken.delete();
 
     if (result.isError()) {
       return result;
@@ -52,7 +52,7 @@ class AuthImpl implements Auth {
   AsyncResult<User, Fail> loginWithToken(String token) async {
     var result = await _repository.loginWithToken(token);
 
-    if (result.isError()) _repository.deleteLocalToken();
+    if (result.isError()) _manageLocalToken.delete();
 
     return result;
   }

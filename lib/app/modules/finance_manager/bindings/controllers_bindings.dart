@@ -11,14 +11,14 @@ import '../src/presenter/controllers/income_category_store.dart';
 abstract class ControllersBindings {
   static void bind(Injector i) {
     i.addLazySingleton<AccountStore>(
-        () => AccountStore(authController: i(), manageAccount: i()));
+        () => AccountStore(authStore: i(), manageAccount: i()));
 
     i.addLazySingleton(() => BalanceStore(i()));
 
     i.addLazySingleton<CreditCardStore>(
       () => CreditCardStore(
         manageCreditCard: i(),
-        authController: i(),
+        authStore: i(),
         filterCards: i(),
       ),
     );

@@ -1,7 +1,7 @@
 import 'package:result_dart/result_dart.dart';
 
-import '../../errors/fail.dart';
-import '../entities/user.dart';
+import '../../common/errors/fail.dart';
+import '../../domain/entities/user.dart';
 
 abstract interface class ManageUser {
   AsyncResult<String, Fail> register(User user);
