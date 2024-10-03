@@ -14,6 +14,7 @@ class AuthTextField extends StatelessWidget {
     this.suffixIcon,
     this.onSubmitted,
     this.onChanged,
+    this.onTapOutside,
     required this.validate,
   });
 
@@ -26,6 +27,7 @@ class AuthTextField extends StatelessWidget {
   final bool readOnly;
   final bool obscureText;
   final Widget? suffixIcon;
+  final void Function(PointerDownEvent)? onTapOutside;
   final void Function(String)? onChanged;
   final void Function(String)? onSubmitted;
   final String? Function(String?) validate;
@@ -55,6 +57,7 @@ class AuthTextField extends StatelessWidget {
         ),
         obscureText: obscureText,
         readOnly: readOnly,
+        onTapOutside: onTapOutside,
         onFieldSubmitted: onSubmitted,
         onChanged: onChanged,
         validator: validate,

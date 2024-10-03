@@ -113,7 +113,7 @@ class TemporaryPaymentMethodDatasource implements PaymentMethodDatasource {
       Invoice _ => PaiyableType.invoice,
       Expense _ => PaiyableType.expense,
       Income _ => PaiyableType.income,
-      _ => throw Fail('Inexistente'),
+      _ => throw const Fail('Inexistente'),
     };
   }
 }

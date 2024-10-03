@@ -26,6 +26,7 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  late final FocusNode _nameFocusNode;
   late final FocusNode _emailFocusNode;
   late final FocusNode _passwordFocusNode;
   late final FocusNode _confirmPasswordFocusNode;
@@ -40,6 +41,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void initState() {
     super.initState();
 
+    _nameFocusNode = FocusNode();
     _emailFocusNode = FocusNode();
     _passwordFocusNode = FocusNode();
     _confirmPasswordFocusNode = FocusNode();
@@ -84,7 +86,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         return AuthTextField(
                           padding: const EdgeInsets.only(bottom: 20.0),
                           keyboardType: TextInputType.name,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           icon: Icons.person_rounded,
+                          focusNode: _nameFocusNode,
                           label: 'Nome',
                           readOnly: widget._store.state is LoadingState,
                           onChanged: widget._store.setName,
@@ -92,6 +96,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             if (widget._store.email.isEmpty) {
                               _emailFocusNode.requestFocus();
                             }
+                          },
+                          onTapOutside: (_) {
+                            _nameFocusNode.unfocus();
                           },
                           validate: widget._store.validateName,
                         );
@@ -101,6 +108,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           padding: const EdgeInsets.only(bottom: 20.0),
                           focusNode: _emailFocusNode,
                           icon: Icons.email,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           label: 'E-mail',
                           onChanged: widget._store.setEmail,
                           keyboardType: TextInputType.emailAddress,
@@ -110,6 +118,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               _passwordFocusNode.requestFocus();
                             }
                           },
+                          onTapOutside: (_) {
+                            _emailFocusNode.unfocus();
+                          },
                           validate: widget._store.validateEmail,
                         );
                       }),
@@ -117,6 +128,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         padding: const EdgeInsets.only(bottom: 20.0),
                         focusNode: _passwordFocusNode,
                         icon: Icons.lock,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         label: 'Senha',
                         readOnly: widget._store.state is LoadingState,
                         obscureText: !widget._store.isPasswordVisible,
@@ -132,6 +144,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                           onTap: widget._store.togglePasswordVisibility,
                         ),
+                        onTapOutside: (_) {
+                          _passwordFocusNode.unfocus();
+                        },
                         onChanged: widget._store.setPassword,
                         onSubmitted: (_) {
                           if (widget._store.confirmPassword.isEmpty) {
@@ -148,6 +163,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       AuthTextField(
                         padding: const EdgeInsets.only(bottom: 40.0),
                         focusNode: _confirmPasswordFocusNode,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         icon: Icons.lock,
                         label: 'Confirmar Senha',
                         readOnly: widget._store.state is LoadingState,
@@ -164,6 +180,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                           onTap: widget._store.togglePasswordVisibility,
                         ),
+                        onTapOutside: (_) {
+                          _confirmPasswordFocusNode.unfocus();
+                        },
                         onChanged: widget._store.setConfirmPassword,
                         validate: widget._store.validateConfirmPassword,
                       ),
@@ -213,6 +232,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void dispose() {
+    _nameFocusNode.dispose();
     _emailFocusNode.dispose();
     _passwordFocusNode.dispose();
     _confirmPasswordFocusNode.dispose();

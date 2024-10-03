@@ -55,7 +55,7 @@ abstract class _AuthStoreBase with Store {
 
     _setLoading();
 
-    var result = await _auth.login(email, password);
+    var result = await _auth.login(email, password, rememberUser: isToRemember);
 
     _foldUserResult(result, onUser: resetFields);
   }

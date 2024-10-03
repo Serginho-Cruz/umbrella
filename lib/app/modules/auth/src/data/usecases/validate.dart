@@ -1,4 +1,5 @@
 import '../../common/errors/validation_errors.dart';
+import '../../common/validators/base_validator.dart';
 import '../../common/validators/email_validator.dart';
 import '../../common/validators/max_length_validator.dart';
 import '../../common/validators/min_length_validator.dart';
@@ -12,7 +13,11 @@ import '../../domain/usecases/validate.dart';
 class ValidateImpl implements Validate {
   @override
   String? confirmPassword(String? password, String? confirmPassword) {
-    if (password != confirmPassword || confirmPassword != null) {
+    if (confirmPassword == null || confirmPassword.isEmpty) {
+      return ValidationErrors.requiredField;
+    }
+
+    if (password != confirmPassword) {
       return ValidationErrors.passwordsMustBeEqual;
     }
     return null;
@@ -20,7 +25,8 @@ class ValidateImpl implements Validate {
 
   @override
   String? email(String? email) {
-    return ValidationChain<String?>([EmailValidator()]).validate(email);
+    return ValidationChain<String?>([RequiredValidator(), EmailValidator()])
+        .validate(email);
   }
 
   @override
@@ -38,17 +44,15 @@ class ValidateImpl implements Validate {
     String? password, {
     PasswordValidationMode mode = PasswordValidationMode.full,
   }) {
-    final ValidationChain<String?> chain;
+    final List<BaseValidator<String?>> validators;
 
-    chain = switch (mode) {
-      PasswordValidationMode.granular => ValidationChain([
-          PasswordGranularValidator(),
-        ]),
-      PasswordValidationMode.full => ValidationChain([
-          PasswordValidator(),
-        ]),
+    validators = switch (mode) {
+      PasswordValidationMode.granular => [PasswordGranularValidator()],
+      PasswordValidationMode.full => [PasswordValidator()],
     };
 
-    return chain.validate(password);
+    validators.insert(0, RequiredValidator());
+
+    return ValidationChain(validators).validate(password);
   }
 }

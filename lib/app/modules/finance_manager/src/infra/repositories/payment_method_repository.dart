@@ -29,7 +29,7 @@ class PaymentMethodRepositoryImpl implements PaymentMethodRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (e) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 
@@ -50,7 +50,7 @@ class PaymentMethodRepositoryImpl implements PaymentMethodRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (e) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 
@@ -71,7 +71,7 @@ class PaymentMethodRepositoryImpl implements PaymentMethodRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (e) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 
@@ -92,7 +92,7 @@ class PaymentMethodRepositoryImpl implements PaymentMethodRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (e) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 }

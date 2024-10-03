@@ -288,14 +288,14 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
             : personNameFieldController.text.trim());
 
     widget._incomeStore.register(newIncome).then((result) {
-      result.fold((success) {
-        UmbrellaDialogs.showSuccess(
+      result.fold((success) async {
+        await UmbrellaDialogs.showSuccess(
           context,
           title: 'Receita Cadastrada',
           message:
-              'Sua receita foi cadastrada com sucesso. Iremos redireciona-lo para a Tela Principal',
+              'Sua receita foi cadastrada com sucesso. Iremos redireciona-lo para a Tela Anterior',
         );
-        Navigator.pushReplacementNamed(context, '/finance_manager/');
+        if (mounted) Navigator.pop(context);
       }, (failure) {
         UmbrellaDialogs.showError(context, failure.message);
       });

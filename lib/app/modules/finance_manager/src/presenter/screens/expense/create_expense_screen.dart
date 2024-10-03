@@ -500,14 +500,14 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
 
     //TODO: Put logic to pay in credit or in installments
     widget._expenseStore.register(newExpense).then((result) {
-      result.fold((success) {
-        UmbrellaDialogs.showSuccess(
+      result.fold((success) async {
+        await UmbrellaDialogs.showSuccess(
           context,
           title: 'Despesa Cadastrada',
           message:
-              'Sua despesa foi cadastrada com sucesso. Iremos redireciona-lo para a Tela Principal',
+              'Sua despesa foi cadastrada com sucesso. Iremos redireciona-lo para a Tela Anterior',
         );
-        Navigator.pushReplacementNamed(context, '/finance_manager/');
+        if (mounted) Navigator.pop(context);
       }, (failure) {
         UmbrellaDialogs.showError(context, failure.message);
       });

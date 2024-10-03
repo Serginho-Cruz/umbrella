@@ -20,6 +20,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  late final FocusNode _emailFocusNode;
   late final FocusNode _passwordFocusNode;
   late final ReactionDisposer _disposer;
 
@@ -31,6 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     _passwordFocusNode = FocusNode();
+    _emailFocusNode = FocusNode();
   }
 
   @override
@@ -97,12 +99,16 @@ class _LoginScreenState extends State<LoginScreen> {
                             return AuthTextField(
                               label: "E-mail",
                               icon: Icons.mail,
+                              focusNode: _emailFocusNode,
                               keyboardType: TextInputType.emailAddress,
                               readOnly: widget._store.state is LoadingState,
                               onSubmitted: (_) {
                                 if (widget._store.password.isEmpty) {
                                   _passwordFocusNode.requestFocus();
                                 }
+                              },
+                              onTapOutside: (_) {
+                                _emailFocusNode.unfocus();
                               },
                               onChanged: widget._store.setEmail,
                               validate: widget._store.validateEmail,
@@ -130,6 +136,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                           color: Colors.black,
                                         ),
                                 ),
+                                readOnly: widget._store.state is LoadingState,
+                                onTapOutside: (_) {
+                                  _passwordFocusNode.unfocus();
+                                },
+                                onChanged: widget._store.setPassword,
                                 validate: widget._store.validatePassword,
                               ),
                             ),
@@ -160,6 +171,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             50.0,
                           ),
                           onPressed: () {
+                            debugPrint(
+                                '${widget._store.email} / ${widget._store.password}');
                             if (_formKey.currentState!.validate()) {
                               widget._store.login();
                             }
@@ -192,6 +205,9 @@ class _LoginScreenState extends State<LoginScreen> {
     _disposer();
 
     _passwordFocusNode
+      ..unfocus()
+      ..dispose();
+    _emailFocusNode
       ..unfocus()
       ..dispose();
     widget._store.resetFields();

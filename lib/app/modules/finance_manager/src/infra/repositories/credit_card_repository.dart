@@ -19,7 +19,7 @@ class CreditCardRepositoryImpl implements CreditCardRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (_) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 
@@ -31,7 +31,7 @@ class CreditCardRepositoryImpl implements CreditCardRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (_) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 
@@ -43,7 +43,7 @@ class CreditCardRepositoryImpl implements CreditCardRepository {
     } on Fail catch (fail) {
       return Failure(fail);
     } catch (exception) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 
@@ -55,7 +55,7 @@ class CreditCardRepositoryImpl implements CreditCardRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (_) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 }

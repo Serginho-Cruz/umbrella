@@ -126,6 +126,14 @@ mixin _$AuthStore on _AuthStoreBase, Store {
     return _$logoutAsyncAction.run(() => super.logout());
   }
 
+  late final _$registerAsyncAction =
+      AsyncAction('_AuthStoreBase.register', context: context);
+
+  @override
+  Future<void> register() {
+    return _$registerAsyncAction.run(() => super.register());
+  }
+
   late final _$deleteAsyncAction =
       AsyncAction('_AuthStoreBase.delete', context: context);
 

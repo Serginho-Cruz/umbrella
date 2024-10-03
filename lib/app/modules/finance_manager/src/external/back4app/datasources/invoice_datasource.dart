@@ -31,7 +31,7 @@ class Back4AppInvoiceDatasource implements InvoiceDatasource {
 
     Date close, overdue;
 
-    if (response.results == null) {
+    if (response.results == null || response.results!.isEmpty) {
       close = Date.today().copyWith(day: card.cardInvoiceClosingDay);
       overdue = Date.today().copyWith(day: card.cardInvoiceDueDay);
     } else {

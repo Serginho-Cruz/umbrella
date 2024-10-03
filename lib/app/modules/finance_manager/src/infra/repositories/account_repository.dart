@@ -20,7 +20,7 @@ class AccountRepositoryImpl implements AccountRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (e) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 
@@ -32,7 +32,7 @@ class AccountRepositoryImpl implements AccountRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (e) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 
@@ -44,7 +44,7 @@ class AccountRepositoryImpl implements AccountRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (e) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 
@@ -56,7 +56,7 @@ class AccountRepositoryImpl implements AccountRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (e) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 

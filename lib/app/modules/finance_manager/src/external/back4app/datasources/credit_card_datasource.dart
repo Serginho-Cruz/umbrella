@@ -31,7 +31,7 @@ class Back4AppCreditCardDatasource implements CreditCardDatasource {
   Future<void> update(CreditCard newCard) async {
     var object = CreditCardMapper.toParse(newCard);
 
-    var response = await object.save();
+    var response = await object.update();
 
     if (isResponseSuccesful(response)) {
       return;
