@@ -6,14 +6,16 @@ import '../../entities/category.dart';
 import '../../entities/payment_method.dart';
 
 abstract interface class GetGraphsData {
-  AsyncResult<Map<String, double>, Fail> valueOfEachPerson(Account account);
+  AsyncResult<Map<String, double>, Fail> valueOfEachPerson(
+    List<Account> accounts,
+  );
   AsyncResult<Map<Category, double>, Fail> valueOfEachExpenseCategory(
-    Account account,
+    List<Account> accounts,
   );
   AsyncResult<Map<Category, double>, Fail> valueOfEachIncomeCategory(
-    Account account,
+    List<Account> accounts,
   );
   AsyncResult<Map<PaymentMethod, double>, Fail> valuePaidWithEachMethod(
-    Account account,
+    List<Account> accounts,
   );
 }

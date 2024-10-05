@@ -7,6 +7,7 @@ import '../src/data/usecases/filters/filter_credit_cards.dart';
 import '../src/data/usecases/filters/filter_incomes.dart';
 import '../src/data/usecases/gets/get_balance.dart';
 import '../src/data/usecases/gets/get_expense_categories.dart';
+import '../src/data/usecases/gets/get_graphs_data.dart';
 import '../src/data/usecases/manage_account.dart';
 import '../src/data/usecases/manage_credit_card.dart';
 import '../src/data/usecases/manage_income.dart';
@@ -19,6 +20,7 @@ import '../src/domain/usecases/filters/filter_incomes.dart';
 import '../src/domain/usecases/gets/get_balance.dart';
 import '../src/domain/usecases/gets/get_expense_categories.dart';
 import '../src/data/usecases/gets/get_income_categories.dart';
+import '../src/domain/usecases/gets/get_graphs_data.dart';
 import '../src/domain/usecases/manage_account.dart';
 import '../src/domain/usecases/manage_credit_card.dart';
 import '../src/domain/usecases/manage_installment.dart';
@@ -88,5 +90,7 @@ abstract class UsecasesBindings {
         paymentMethodRepository: i(),
         paymentRecordRepository: i(),
         balanceRepository: i()));
+
+    i.addLazySingleton<GetGraphsData>(() => GetGraphsDataImpl());
   }
 }

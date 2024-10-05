@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../utils/umbrella_sizes.dart';
 
-class ExtrabigText extends StatelessWidget {
+class ExtrasmallText extends StatelessWidget {
   final String data;
   final int? maxLines;
   final TextOverflow? overflow;
@@ -15,7 +15,7 @@ class ExtrabigText extends StatelessWidget {
   final bool softWrap;
   final TextDecoration? decoration;
 
-  const ExtrabigText(
+  const ExtrasmallText(
     this.data, {
     super.key,
     this.maxLines,
@@ -29,7 +29,7 @@ class ExtrabigText extends StatelessWidget {
     this.decoration,
   });
 
-  const ExtrabigText.light(
+  const ExtrasmallText.light(
     this.data, {
     super.key,
     this.maxLines,
@@ -42,7 +42,7 @@ class ExtrabigText extends StatelessWidget {
     this.decoration,
   }) : fontWeight = FontWeight.w300;
 
-  const ExtrabigText.bold(
+  const ExtrasmallText.bold(
     this.data, {
     super.key,
     this.maxLines,
@@ -65,7 +65,7 @@ class ExtrabigText extends StatelessWidget {
       textDirection: textDirection,
       softWrap: softWrap,
       style: TextStyle(
-        fontSize: UmbrellaSizes.extrabig,
+        fontSize: UmbrellaSizes.extrasmall,
         fontWeight: fontWeight,
         fontStyle: fontStyle,
         color: color,

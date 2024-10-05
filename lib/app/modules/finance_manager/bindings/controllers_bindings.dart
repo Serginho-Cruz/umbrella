@@ -5,6 +5,7 @@ import '../src/presenter/controllers/balance_store.dart';
 import '../src/presenter/controllers/credit_card_store.dart';
 import '../src/presenter/controllers/expense_category_store.dart';
 import '../src/presenter/controllers/expense_store.dart';
+import '../src/presenter/controllers/graphs_store.dart';
 import '../src/presenter/controllers/income_store.dart';
 import '../src/presenter/controllers/income_category_store.dart';
 
@@ -39,5 +40,7 @@ abstract class ControllersBindings {
         ));
 
     i.addLazySingleton<IncomeCategoryStore>(() => IncomeCategoryStore(i()));
+
+    i.addLazySingleton<GraphsStore>(() => GraphsStore(usecase: i()));
   }
 }

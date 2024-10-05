@@ -143,7 +143,7 @@ class _PaymentScreenState<E extends Paiyable> extends State<PaymentScreen> {
               const SizedBox(height: 10.0),
               _buildTextValue('Atualmente Pagando: ', goingToPay),
               const SizedBox(height: 40.0),
-              const Extrabig.bold(
+              const ExtrabigText.bold(
                 'Seções de Pagamento',
                 textAlign: TextAlign.center,
               ),

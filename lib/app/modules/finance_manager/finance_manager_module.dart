@@ -4,6 +4,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/model
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/income_model.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/expense_store.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/income_store.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/screens/graphics_screen.dart';
 
 import 'bindings/controllers_bindings.dart';
 import 'bindings/datasources_bindings.dart';
@@ -148,6 +149,12 @@ class FinanceManagerModule extends Module {
         balanceStore: Modular.get(),
         cardStore: Modular.get(),
         isCreditAllowed: false,
+      ),
+    );
+    r.child(
+      '/graphics',
+      child: (context) => GraphicsScreen(
+        graphsStore: Modular.get(),
       ),
     );
   }

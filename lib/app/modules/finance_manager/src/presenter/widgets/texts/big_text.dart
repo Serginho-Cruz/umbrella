@@ -10,6 +10,9 @@ class BigText extends StatelessWidget {
   final TextDirection? textDirection;
   final FontWeight? fontWeight;
   final Color color;
+  final FontStyle? fontStyle;
+
+  final bool softWrap;
   final TextDecoration? decoration;
 
   const BigText(
@@ -21,6 +24,8 @@ class BigText extends StatelessWidget {
     this.textDirection,
     this.fontWeight,
     this.color = Colors.black,
+    this.fontStyle,
+    this.softWrap = false,
     this.decoration,
   });
 
@@ -32,6 +37,8 @@ class BigText extends StatelessWidget {
     this.textAlign,
     this.textDirection,
     this.color = Colors.black,
+    this.fontStyle,
+    this.softWrap = false,
     this.decoration,
   }) : fontWeight = FontWeight.w300;
 
@@ -43,6 +50,8 @@ class BigText extends StatelessWidget {
     this.textAlign,
     this.textDirection,
     this.color = Colors.black,
+    this.fontStyle,
+    this.softWrap = false,
     this.decoration,
   }) : fontWeight = FontWeight.bold;
 
@@ -54,10 +63,12 @@ class BigText extends StatelessWidget {
       overflow: overflow,
       textAlign: textAlign,
       textDirection: textDirection,
+      softWrap: softWrap,
       style: TextStyle(
         fontSize: UmbrellaSizes.big,
         fontWeight: fontWeight,
         color: color,
+        fontStyle: fontStyle,
         decoration: decoration,
       ),
     );

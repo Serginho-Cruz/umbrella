@@ -33,7 +33,7 @@ class _PaymentMethodSelectorDialogState
         children: [
           const Padding(
             padding: EdgeInsets.only(bottom: 30.0),
-            child: Extrabig.bold(
+            child: ExtrabigText.bold(
               'Escolha o Método de Pagamento',
               textAlign: TextAlign.center,
             ),

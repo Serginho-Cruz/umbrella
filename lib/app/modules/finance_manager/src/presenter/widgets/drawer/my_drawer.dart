@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:umbrella_echonomics/app/modules/auth/src/domain/entities/user.dart';
-import 'package:umbrella_echonomics/app/modules/auth/src/presenter/controllers/auth_controller.dart';
+import 'package:umbrella_echonomics/app/modules/auth/src/domain/entities/user_state.dart';
+import 'package:umbrella_echonomics/app/modules/auth/src/presenter/stores/auth_store.dart';
 
 class MyDrawer extends StatelessWidget {
   MyDrawer({super.key});
 
   final String _prefix = '/finance_manager';
-  final User user = Modular.get<AuthController>().user!;
+  final User user = (Modular.get<AuthStore>().state as SuccessState).user;
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +41,12 @@ class MyDrawer extends StatelessWidget {
             title: 'Meus Cartões',
             icon: const Icon(Icons.credit_card),
             routeName: '/card',
+          ),
+          _makeDrawerOption(
+            context,
+            icon: const Icon(Icons.bar_chart),
+            title: 'Gráficos',
+            routeName: '/graphics',
           ),
         ],
       ),
