@@ -155,6 +155,8 @@ class FinanceManagerModule extends Module {
       '/graphics',
       child: (context) => GraphicsScreen(
         graphsStore: Modular.get(),
+        accountStore: Modular.get(),
+        balanceStore: Modular.get(),
       ),
     );
   }

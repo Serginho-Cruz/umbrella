@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../utils/umbrella_sizes.dart';
+
 class SmallDisclaimer extends StatelessWidget {
   const SmallDisclaimer(
     this.data, {
@@ -26,7 +28,7 @@ class SmallDisclaimer extends StatelessWidget {
       textAlign: textAlign,
       softWrap: softWrap,
       style: TextStyle(
-        fontSize: 14.0,
+        fontSize: UmbrellaSizes.extrasmall,
         fontWeight: fontWeight,
         fontStyle: fontStyle,
       ),

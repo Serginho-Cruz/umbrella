@@ -9,7 +9,7 @@ class AxisConfig extends AxisTitles {
   const AxisConfig.empty() : super();
 
   AxisConfig({
-    required super.axisNameSize,
+    super.axisNameSize,
     Widget? axisNameWidget,
     String? axisName,
     double? reservedColumnSize,
