@@ -2,6 +2,7 @@ import 'package:mobx/mobx.dart';
 
 import '../../domain/entities/account.dart';
 import '../../domain/entities/category.dart';
+import '../../domain/models/status.dart';
 import '../../domain/states/graphs_state.dart';
 import '../../domain/usecases/gets/get_graphs_data.dart';
 part 'graphs_store.g.dart';
@@ -10,9 +11,9 @@ part 'graphs_store.g.dart';
 class GraphsStore = _GraphsStoreBase with _$GraphsStore;
 
 abstract class _GraphsStoreBase with Store {
-  final GetGraphsData usecase;
+  final GetGraphsData _usecase;
 
-  _GraphsStoreBase({required this.usecase});
+  _GraphsStoreBase(this._usecase);
 
   @observable
   GraphsState<Map<Category, double>> valuePerExpenseCategoryState =
@@ -22,11 +23,19 @@ abstract class _GraphsStoreBase with Store {
   GraphsState<Map<Category, double>> valuePerIncomeCategoryState =
       GraphsSuccessState({});
 
+  @observable
+  GraphsState<Map<Status, double>> valueCastPerStatusState =
+      GraphsSuccessState({});
+
+  @observable
+  GraphsState<Map<Status, double>> valueReceivedPerStatusState =
+      GraphsSuccessState({});
+
   @action
   Future<void> fetchExpenseCategoryGraphData(List<Account> accounts) async {
     valuePerExpenseCategoryState = GraphsLoadingState();
 
-    var result = await usecase.valueOfEachExpenseCategory(accounts);
+    var result = await _usecase.valueOfEachExpenseCategory(accounts);
 
     result.fold((map) {
       valuePerExpenseCategoryState = GraphsSuccessState(map);
@@ -39,12 +48,38 @@ abstract class _GraphsStoreBase with Store {
   Future<void> fetchIncomeCategoryGraphData(List<Account> accounts) async {
     valuePerIncomeCategoryState = GraphsLoadingState();
 
-    var result = await usecase.valueOfEachIncomeCategory(accounts);
+    var result = await _usecase.valueOfEachIncomeCategory(accounts);
 
     result.fold((map) {
       valuePerIncomeCategoryState = GraphsSuccessState(map);
     }, (fail) {
       valuePerIncomeCategoryState = GraphsErrorState(fail);
+    });
+  }
+
+  @action
+  Future<void> fetchExpenseStatusGraphData(List<Account> accounts) async {
+    valueCastPerStatusState = GraphsLoadingState();
+
+    var result = await _usecase.valueForEachExpenseStatus(accounts);
+
+    result.fold((map) {
+      valueCastPerStatusState = GraphsSuccessState(map);
+    }, (fail) {
+      valueCastPerStatusState = GraphsErrorState(fail);
+    });
+  }
+
+  @action
+  Future<void> fetchIncomeStatusGraphData(List<Account> accounts) async {
+    valueReceivedPerStatusState = GraphsLoadingState();
+
+    var result = await _usecase.valueForEachIncomeStatus(accounts);
+
+    result.fold((map) {
+      valueReceivedPerStatusState = GraphsSuccessState(map);
+    }, (fail) {
+      valueReceivedPerStatusState = GraphsErrorState(fail);
     });
   }
 }

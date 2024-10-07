@@ -41,6 +41,6 @@ abstract class ControllersBindings {
 
     i.addLazySingleton<IncomeCategoryStore>(() => IncomeCategoryStore(i()));
 
-    i.addLazySingleton<GraphsStore>(() => GraphsStore(usecase: i()));
+    i.addLazySingleton<GraphsStore>(() => GraphsStore(i()));
   }
 }

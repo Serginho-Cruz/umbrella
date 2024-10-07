@@ -4,6 +4,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import '../controllers/graphs_store.dart';
 import '../widgets/appbar/custom_app_bar.dart';
 import '../widgets/charts/column/category_column_chart.dart';
+import '../widgets/charts/pie/status_pie_chart.dart';
 import '../widgets/layout/umbrella_scaffold.dart';
 import '../widgets/others/segmented_graphs_state.dart';
 import '../widgets/texts/big_text.dart';
@@ -38,11 +39,13 @@ class _GraphicsScreenState extends State<GraphicsScreen> {
     Colors.teal,
   ];
 
+  int? touchedIndex;
+  Offset? touchedOffset;
+
   @override
   void initState() {
     super.initState();
-    widget._graphsStore.fetchExpenseCategoryGraphData([]);
-    widget._graphsStore.fetchIncomeCategoryGraphData([]);
+    _fetchData();
   }
 
   @override
@@ -50,10 +53,7 @@ class _GraphicsScreenState extends State<GraphicsScreen> {
     final screenWidth = MediaQuery.sizeOf(context).width;
 
     return RefreshIndicator(
-      onRefresh: () async {
-        widget._graphsStore.fetchExpenseCategoryGraphData([]);
-        widget._graphsStore.fetchIncomeCategoryGraphData([]);
-      },
+      onRefresh: _fetchData,
       child: UmbrellaScaffold(
         appBar: const CustomAppBar(
           showBalances: false,
@@ -132,10 +132,77 @@ class _GraphicsScreenState extends State<GraphicsScreen> {
                 );
               },
             ),
+            const SizedBox(height: 40.0),
+            _graphTitle('Valor em Despesas por Status'),
+            Observer(
+              builder: (_) {
+                return SegmentedGraphsState(
+                  observable: widget._graphsStore.valueCastPerStatusState,
+                  onLoading: (ctx) => const SizedBox(
+                    height: 200.0,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        MediumText.bold('Buscando dados...'),
+                        CircularProgressIndicator.adaptive(
+                          semanticsLabel:
+                              'Carregando Dados do Gráfico de Valor gasto por Status',
+                        ),
+                      ],
+                    ),
+                  ),
+                  onFail: (ctx, failState) => SizedBox(
+                    height: 200,
+                    child: MediumText.bold(failState.fail.message),
+                  ),
+                  onSuccess: (ctx, state) => StatusPieChart(
+                    data: state.data,
+                    graphSize: screenWidth - 20,
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 40.0),
+            _graphTitle('Valor em Receitas por Status'),
+            Observer(
+              builder: (_) {
+                return SegmentedGraphsState(
+                  observable: widget._graphsStore.valueReceivedPerStatusState,
+                  onLoading: (ctx) => const SizedBox(
+                    height: 200.0,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        MediumText.bold('Buscando dados...'),
+                        CircularProgressIndicator.adaptive(
+                          semanticsLabel:
+                              'Carregando Dados do Gráfico de Valor recebido por Status',
+                        ),
+                      ],
+                    ),
+                  ),
+                  onFail: (ctx, failState) => SizedBox(
+                    height: 200,
+                    child: MediumText.bold(failState.fail.message),
+                  ),
+                  onSuccess: (ctx, state) => StatusPieChart(
+                    data: state.data,
+                    graphSize: screenWidth - 20,
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _fetchData() async {
+    widget._graphsStore.fetchExpenseCategoryGraphData([]);
+    widget._graphsStore.fetchIncomeCategoryGraphData([]);
+    widget._graphsStore.fetchExpenseStatusGraphData([]);
+    widget._graphsStore.fetchIncomeStatusGraphData([]);
   }
 
   Widget _graphTitle(String title) {
