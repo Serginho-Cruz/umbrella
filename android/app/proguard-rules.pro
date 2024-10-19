@@ -1,0 +1,21 @@
+-keep public class * {
+    public protected *;
+}
+-dontwarn org.ietf.jgss.GSSContext
+-dontwarn org.ietf.jgss.GSSCredential
+-dontwarn org.ietf.jgss.GSSException
+-dontwarn org.ietf.jgss.GSSManager
+-dontwarn org.ietf.jgss.GSSName
+-dontwarn org.ietf.jgss.Oid
+-dontwarn org.joda.time.Instant
+-dontwarn com.google.api.client.http.GenericUrl
+-dontwarn com.google.api.client.http.HttpHeaders
+-dontwarn com.google.api.client.http.HttpRequest
+-dontwarn com.google.api.client.http.HttpRequestFactory
+-dontwarn com.google.api.client.http.HttpResponse
+-dontwarn com.google.api.client.http.HttpTransport
+-dontwarn com.google.api.client.http.javanet.NetHttpTransport$Builder
+-dontwarn com.google.api.client.http.javanet.NetHttpTransport
+-dontwarn javax.**
+-keep class com.google.crypto.tink.** { *; }
+-keep class com.google.api.client.** { *; }

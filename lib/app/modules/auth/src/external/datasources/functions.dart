@@ -31,6 +31,6 @@ Fail extractFail(
     401 => const UnauthorizedFail(),
     404 => const Error404(),
     500 => const InternalServerError(),
-    _ => const GenericAuthFail(),
+    _ => GenericAuthFail.withMessage((response.error?.message).toString()),
   };
 }

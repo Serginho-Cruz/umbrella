@@ -47,8 +47,8 @@ class UserRepositoryImpl implements UserRepository {
       user = await _userDatasource.login(email, password);
     } on Fail catch (f) {
       return f.toFailure();
-    } catch (_) {
-      return const GenericAuthFail().toFailure();
+    } catch (e) {
+      return GenericAuthFail.withMessage(e.toString()).toFailure();
     }
 
     return user.toSuccess();

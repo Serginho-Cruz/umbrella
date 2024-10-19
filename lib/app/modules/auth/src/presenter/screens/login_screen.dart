@@ -219,18 +219,11 @@ class _LoginScreenState extends State<LoginScreen> {
     _disposer = reaction((_) {
       return widget._store.state;
     }, (state) {
+      _checkHasDialog();
       switch (state) {
         case InitialState():
-          if (_isDialogBeingShown) {
-            Navigator.pop(context);
-            _isDialogBeingShown = false;
-          }
           break;
         case SuccessState():
-          if (_isDialogBeingShown) {
-            Navigator.pop(context);
-            _isDialogBeingShown = false;
-          }
           Navigator.pushReplacementNamed(context, '/finance_manager/');
           break;
         case LoadingState():
@@ -238,13 +231,17 @@ class _LoginScreenState extends State<LoginScreen> {
           _isDialogBeingShown = true;
           break;
         case FailState():
-          if (_isDialogBeingShown) {
-            Navigator.pop(context);
-          }
-          _isDialogBeingShown = true;
           ErrorDialog.show(context, error: state.fail.message);
+          _isDialogBeingShown = true;
           break;
       }
     });
+  }
+
+  void _checkHasDialog() {
+    if (_isDialogBeingShown) {
+      Navigator.pop(context);
+      _isDialogBeingShown = false;
+    }
   }
 }
