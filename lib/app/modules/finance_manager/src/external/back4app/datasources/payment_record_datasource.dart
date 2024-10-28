@@ -34,6 +34,15 @@ class Back4AppPaymentRecordDatasource implements PaymentRecordDatasource {
   }) async {
     var query = QueryBuilder(PaymentRecordObject());
 
+    query.includeObject([
+      "Expense",
+      "Income",
+      "Invoice",
+      "CreditCard",
+      "Account",
+      "PaymentMethod",
+    ]);
+
     DateTime firstDay = DateTime(year, month);
     DateTime lastDay =
         firstDay.copyWith(day: Date.totalDaysOnMonth(month, year));

@@ -15,6 +15,7 @@ class NavigationIconButton extends StatelessWidget {
     ),
     this.width = 60.0,
     this.height = 60.0,
+    this.onPop,
   });
 
   final double width;
@@ -23,6 +24,8 @@ class NavigationIconButton extends StatelessWidget {
   final Color backgroundColor;
   final Color hoverColor;
   final Icon icon;
+
+  final VoidCallback? onPop;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +43,9 @@ class NavigationIconButton extends StatelessWidget {
         ),
         hoverColor: hoverColor,
         onPressed: () {
-          Navigator.of(context).pushNamed(route);
+          Navigator.of(context).pushNamed(route).then((_) {
+            onPop?.call();
+          });
         },
       ),
     );

@@ -28,7 +28,10 @@ class ManageCreditCardImpl implements ManageCreditCard {
       return cardCreateResult;
     }
 
-    final invoiceCreateResult = await invoiceRepository.generateOfCard(card);
+    CreditCard cardRegistered = card.copyWith(id: cardCreateResult.getOrNull());
+
+    final invoiceCreateResult =
+        await invoiceRepository.generateOfCard(cardRegistered);
 
     if (invoiceCreateResult.isError()) {
       return invoiceCreateResult.map((id) => id.toString());

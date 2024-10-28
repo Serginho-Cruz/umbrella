@@ -20,8 +20,8 @@ sealed class InvoiceMapper {
     object.set('interest', invoice.interest);
     object.set('adjust', invoice.adjust);
     object.set('iof', invoice.iof);
-    object.set('closeDate', invoice.closingDate);
-    object.set('overdueDate', invoice.dueDate);
+    object.set('closeDate', invoice.closingDate.toDateTime());
+    object.set('overdueDate', invoice.dueDate.toDateTime());
     object.set('card', CreditCardMapper.toParse(invoice.card));
     object.set('account', AccountMapper.toParse(invoice.account));
     object.set('isClosed', invoice.isClosed);

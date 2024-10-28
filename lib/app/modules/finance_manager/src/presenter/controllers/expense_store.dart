@@ -11,6 +11,7 @@ import '../../domain/models/expense_model.dart';
 import '../../domain/models/status.dart';
 import '../../domain/usecases/filters/filter_expenses.dart';
 import '../../domain/usecases/manage_expense.dart';
+import '../../domain/usecases/pay_expense.dart';
 import '../../domain/usecases/sorts/sort_expenses.dart';
 import '../../errors/errors.dart';
 
@@ -19,14 +20,17 @@ class ExpenseStore extends PaiyableStore<Expense, ExpenseModel> {
     required ManageExpense manageExpense,
     required FilterExpenses filterExpenses,
     required SortExpenses sortExpenses,
+    required PayExpense payExpense,
   })  : _manageExpense = manageExpense,
         _filterExpenses = filterExpenses,
         _sortExpenses = sortExpenses,
+        _pay = payExpense,
         super([]);
 
   final ManageExpense _manageExpense;
   final FilterExpenses _filterExpenses;
   final SortExpenses _sortExpenses;
+  final PayExpense _pay;
 
   final List<ExpenseModel> all = [];
 
@@ -149,6 +153,13 @@ class ExpenseStore extends PaiyableStore<Expense, ExpenseModel> {
     required List<PaymentRecord<Expense>> payments,
     CreditCard? card,
   }) async {
+    for (var payment in payments) {
+      var result = await _pay.withoutCredit(payment);
+
+      if (result.isError()) {
+        return result;
+      }
+    }
     return const Success(2);
   }
 

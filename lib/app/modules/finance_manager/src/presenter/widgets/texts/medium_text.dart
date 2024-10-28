@@ -24,7 +24,7 @@ class MediumText extends StatelessWidget {
     this.fontWeight,
     this.color = Colors.black,
     this.fontStyle,
-    this.softWrap = false,
+    this.softWrap = true,
     this.decoration,
   });
 
@@ -38,7 +38,7 @@ class MediumText extends StatelessWidget {
     this.color = Colors.black,
     this.fontStyle,
     this.decoration,
-    this.softWrap = false,
+    this.softWrap = true,
   }) : fontWeight = FontWeight.w300;
 
   const MediumText.bold(
@@ -50,7 +50,7 @@ class MediumText extends StatelessWidget {
     this.textDirection,
     this.color = Colors.black,
     this.fontStyle,
-    this.softWrap = false,
+    this.softWrap = true,
     this.decoration,
   }) : fontWeight = FontWeight.bold;
 

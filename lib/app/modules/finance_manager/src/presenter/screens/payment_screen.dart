@@ -40,6 +40,7 @@ class PaymentScreen<E extends Paiyable, T extends PaiyableModel<E>>
     required this.model,
     required this.store,
     this.isCreditAllowed = true,
+    this.isBoletoAllowed = true,
     this.unallowedCard,
     required this.accountStore,
     required this.balanceStore,
@@ -49,6 +50,7 @@ class PaymentScreen<E extends Paiyable, T extends PaiyableModel<E>>
   final T model;
   final PaiyableStore<E, T> store;
   final bool isCreditAllowed;
+  final bool isBoletoAllowed;
   final CreditCard? unallowedCard;
   final AccountStore accountStore;
   final BalanceStore balanceStore;
@@ -80,6 +82,10 @@ class _PaymentScreenState<E extends Paiyable> extends State<PaymentScreen> {
 
     if (!widget.isCreditAllowed) {
       remainingMethods.remove(const PaymentMethod.credit());
+    }
+
+    if (!widget.isBoletoAllowed) {
+      remainingMethods.remove(const PaymentMethod.boleto());
     }
   }
 

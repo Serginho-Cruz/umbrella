@@ -8,8 +8,8 @@ class ShimmerCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const ShimmerContainer(
-      height: 275,
-      width: 150,
+      height: 150,
+      width: 275,
       borderRadius: 15.0,
     );
   }

@@ -149,6 +149,7 @@ class FinanceManagerModule extends Module {
         balanceStore: Modular.get(),
         cardStore: Modular.get(),
         isCreditAllowed: false,
+        isBoletoAllowed: false,
       ),
     );
     r.child(

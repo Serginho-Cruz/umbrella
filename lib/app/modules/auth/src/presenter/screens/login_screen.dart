@@ -26,7 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  bool _isDialogBeingShown = false;
+  bool _isLoadingDialogBeingShown = false;
 
   @override
   void initState() {
@@ -228,20 +228,19 @@ class _LoginScreenState extends State<LoginScreen> {
           break;
         case LoadingState():
           LoadingDialog.show(context);
-          _isDialogBeingShown = true;
+          _isLoadingDialogBeingShown = true;
           break;
         case FailState():
           ErrorDialog.show(context, error: state.fail.message);
-          _isDialogBeingShown = true;
           break;
       }
     });
   }
 
   void _checkHasDialog() {
-    if (_isDialogBeingShown) {
+    if (_isLoadingDialogBeingShown) {
       Navigator.pop(context);
-      _isDialogBeingShown = false;
+      _isLoadingDialogBeingShown = false;
     }
   }
 }

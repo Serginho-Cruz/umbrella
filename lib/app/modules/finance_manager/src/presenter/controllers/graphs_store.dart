@@ -5,6 +5,7 @@ import '../../domain/entities/category.dart';
 import '../../domain/models/status.dart';
 import '../../domain/states/graphs_state.dart';
 import '../../domain/usecases/gets/get_graphs_data.dart';
+import '../widgets/appbar/month_changer.dart';
 part 'graphs_store.g.dart';
 
 // ignore: library_private_types_in_public_api
@@ -35,7 +36,13 @@ abstract class _GraphsStoreBase with Store {
   Future<void> fetchExpenseCategoryGraphData(List<Account> accounts) async {
     valuePerExpenseCategoryState = GraphsLoadingState();
 
-    var result = await _usecase.valueOfEachExpenseCategory(accounts);
+    final date = MonthChanger.currentMonthAndYear;
+
+    var result = await _usecase.valueOfEachExpenseCategory(
+      accounts: accounts,
+      month: date.month,
+      year: date.year,
+    );
 
     result.fold((map) {
       valuePerExpenseCategoryState = GraphsSuccessState(map);
@@ -48,7 +55,13 @@ abstract class _GraphsStoreBase with Store {
   Future<void> fetchIncomeCategoryGraphData(List<Account> accounts) async {
     valuePerIncomeCategoryState = GraphsLoadingState();
 
-    var result = await _usecase.valueOfEachIncomeCategory(accounts);
+    final date = MonthChanger.currentMonthAndYear;
+
+    var result = await _usecase.valueOfEachIncomeCategory(
+      accounts: accounts,
+      month: date.month,
+      year: date.year,
+    );
 
     result.fold((map) {
       valuePerIncomeCategoryState = GraphsSuccessState(map);
@@ -61,7 +74,13 @@ abstract class _GraphsStoreBase with Store {
   Future<void> fetchExpenseStatusGraphData(List<Account> accounts) async {
     valueCastPerStatusState = GraphsLoadingState();
 
-    var result = await _usecase.valueForEachExpenseStatus(accounts);
+    final date = MonthChanger.currentMonthAndYear;
+
+    var result = await _usecase.valueForEachExpenseStatus(
+      accounts: accounts,
+      month: date.month,
+      year: date.year,
+    );
 
     result.fold((map) {
       valueCastPerStatusState = GraphsSuccessState(map);
@@ -74,7 +93,13 @@ abstract class _GraphsStoreBase with Store {
   Future<void> fetchIncomeStatusGraphData(List<Account> accounts) async {
     valueReceivedPerStatusState = GraphsLoadingState();
 
-    var result = await _usecase.valueForEachIncomeStatus(accounts);
+    final date = MonthChanger.currentMonthAndYear;
+
+    var result = await _usecase.valueForEachIncomeStatus(
+      accounts: accounts,
+      month: date.month,
+      year: date.year,
+    );
 
     result.fold((map) {
       valueReceivedPerStatusState = GraphsSuccessState(map);

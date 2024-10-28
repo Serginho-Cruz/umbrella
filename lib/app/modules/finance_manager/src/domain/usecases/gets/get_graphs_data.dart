@@ -7,27 +7,39 @@ import '../../entities/payment_method.dart';
 import '../../models/status.dart';
 
 abstract interface class GetGraphsData {
-  AsyncResult<Map<String, double>, Fail> valueOfEachPerson(
-    List<Account> accounts,
-  );
+  AsyncResult<Map<String, double>, Fail> valueOfEachPerson({
+    required List<Account> accounts,
+    required int month,
+    required int year,
+  });
 
-  AsyncResult<Map<Category, double>, Fail> valueOfEachExpenseCategory(
-    List<Account> accounts,
-  );
+  AsyncResult<Map<Category, double>, Fail> valueOfEachExpenseCategory({
+    required List<Account> accounts,
+    required int month,
+    required int year,
+  });
 
-  AsyncResult<Map<Category, double>, Fail> valueOfEachIncomeCategory(
-    List<Account> accounts,
-  );
+  AsyncResult<Map<Category, double>, Fail> valueOfEachIncomeCategory({
+    required List<Account> accounts,
+    required int month,
+    required int year,
+  });
 
-  AsyncResult<Map<PaymentMethod, double>, Fail> valuePaidWithEachMethod(
-    List<Account> accounts,
-  );
+  AsyncResult<Map<PaymentMethod, double>, Fail> valuePaidWithEachMethod({
+    required List<Account> accounts,
+    required int month,
+    required int year,
+  });
 
-  AsyncResult<Map<Status, double>, Fail> valueForEachExpenseStatus(
-    List<Account> accounts,
-  );
+  AsyncResult<Map<Status, double>, Fail> valueForEachExpenseStatus({
+    required List<Account> accounts,
+    required int month,
+    required int year,
+  });
 
-  AsyncResult<Map<Status, double>, Fail> valueForEachIncomeStatus(
-    List<Account> accounts,
-  );
+  AsyncResult<Map<Status, double>, Fail> valueForEachIncomeStatus({
+    required List<Account> accounts,
+    required int month,
+    required int year,
+  });
 }

@@ -1,5 +1,4 @@
 import 'package:result_dart/result_dart.dart';
-import 'dart:math' show Random;
 
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/account.dart';
 
@@ -10,114 +9,166 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entit
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/round.dart';
 
+import '../../../domain/entities/expense.dart';
+import '../../../domain/entities/income.dart';
+import '../../../domain/entities/paiyable.dart';
 import '../../../domain/models/status.dart';
 import '../../../domain/usecases/gets/get_graphs_data.dart';
+import '../../repositories/expense_repository.dart';
+import '../../repositories/income_repository.dart';
+import '../../repositories/payment_record_repository.dart';
 
 class GetGraphsDataImpl implements GetGraphsData {
+  final ExpenseRepository _expenseRepository;
+  final IncomeRepository _incomeRepository;
+  final PaymentRecordRepository _recordRepository;
+
+  GetGraphsDataImpl({
+    required ExpenseRepository expenseRepository,
+    required IncomeRepository incomeRepository,
+    required PaymentRecordRepository recordRepository,
+  })  : _expenseRepository = expenseRepository,
+        _incomeRepository = incomeRepository,
+        _recordRepository = recordRepository;
+
   @override
-  AsyncResult<Map<Category, double>, Fail> valueOfEachExpenseCategory(
-    List<Account> accounts,
-  ) {
-    Map<Category, double> map = {};
+  AsyncResult<Map<Category, double>, Fail> valueOfEachExpenseCategory({
+    required List<Account> accounts,
+    required int month,
+    required int year,
+  }) async {
+    var result = await _fetchPaiyables<Expense>(accounts, month, year);
 
-    const categories = [
-      Category(id: 'aa', icon: 'alimentation.png', name: 'Alimentação'),
-      Category(id: 'bb', icon: 'bill.png', name: 'Conta'),
-      Category(id: 'cc', icon: 'celebration.png', name: 'Comemoração'),
-      Category(id: 'dd', icon: 'clothing.png', name: 'Vestimenta'),
-      Category(id: 'ee', icon: 'cosmetics.png', name: 'Cosméticos'),
-      Category(id: 'ff', icon: 'health.png', name: 'Saúde'),
-      Category(id: 'gg', icon: 'home.png', name: 'Moradia'),
-      Category(id: 'hh', icon: 'others.png', name: 'Outros'),
-      Category(id: 'ii', icon: 'repairs.png', name: 'Reparos'),
-      Category(id: 'jj', icon: 'study.png', name: 'Estudo'),
-      Category(id: 'kk', icon: 'transport.png', name: 'Transporte'),
-    ];
+    if (result.isError()) return result.map((_) => const {});
 
-    for (var category in categories) {
-      map[category] = _getValue(300);
-    }
+    Map<Category, double> map = _extractInformation<Category, Expense>(
+      paiyables: result.getOrDefault(<Expense>[]),
+      extractValue: (p) => p.category,
+    );
 
-    map.removeWhere((_, value) => value == 0);
-
-    return Future.delayed(const Duration(seconds: 2), () => Success(map));
+    return Success(map);
   }
 
   @override
-  AsyncResult<Map<Category, double>, Fail> valueOfEachIncomeCategory(
-    List<Account> accounts,
-  ) {
-    Map<Category, double> map = {};
+  AsyncResult<Map<Category, double>, Fail> valueOfEachIncomeCategory({
+    required List<Account> accounts,
+    required int month,
+    required int year,
+  }) async {
+    var result = await _fetchPaiyables<Income>(accounts, month, year);
 
-    const categories = [
-      Category(id: 'aa', icon: 'alimentation.png', name: 'Alimentação'),
-      Category(id: 'bb', icon: 'bill.png', name: 'Conta'),
-      Category(id: 'cc', icon: 'celebration.png', name: 'Comemoração'),
-      Category(id: 'dd', icon: 'clothing.png', name: 'Vestimenta'),
-      Category(id: 'ee', icon: 'cosmetics.png', name: 'Cosméticos'),
-      Category(id: 'ff', icon: 'health.png', name: 'Saúde'),
-      Category(id: 'gg', icon: 'home.png', name: 'Moradia'),
-      Category(id: 'hh', icon: 'others.png', name: 'Outros'),
-      Category(id: 'ii', icon: 'repairs.png', name: 'Reparos'),
-      Category(id: 'jj', icon: 'study.png', name: 'Estudo'),
-      Category(id: 'kk', icon: 'transport.png', name: 'Transporte'),
-    ];
+    if (result.isError()) return result.map((_) => const {});
 
-    for (var category in categories) {
-      map[category] = _getValue(500);
-    }
+    Map<Category, double> map = _extractInformation<Category, Income>(
+      paiyables: result.getOrDefault(<Income>[]),
+      extractValue: (p) => p.category,
+    );
 
-    map.removeWhere((_, value) => value == 0);
-
-    return Future.delayed(const Duration(seconds: 2), () => Success(map));
+    return Success(map);
   }
 
   @override
-  AsyncResult<Map<String, double>, Fail> valueOfEachPerson(
-    List<Account> accounts,
-  ) {
+  AsyncResult<Map<Status, double>, Fail> valueForEachExpenseStatus({
+    required List<Account> accounts,
+    required int month,
+    required int year,
+  }) async {
+    var result = await _fetchPaiyables<Expense>(accounts, month, year);
+
+    if (result.isError()) return result.map((_) => const {});
+
+    Map<Status, double> map = _extractInformation<Status, Expense>(
+      paiyables: result.getOrDefault(<Expense>[]),
+      extractValue: (p) => StatusUtils.resolveForPaiyable(p),
+    );
+
+    return Success(map);
+  }
+
+  @override
+  AsyncResult<Map<Status, double>, Fail> valueForEachIncomeStatus({
+    required List<Account> accounts,
+    required int month,
+    required int year,
+  }) async {
+    var result = await _fetchPaiyables<Income>(accounts, month, year);
+
+    if (result.isError()) return result.map((_) => const {});
+
+    Map<Status, double> map = _extractInformation<Status, Income>(
+      paiyables: result.getOrDefault(<Income>[]),
+      extractValue: (p) => StatusUtils.resolveForPaiyable(p),
+    );
+
+    return Success(map);
+  }
+
+  @override
+  AsyncResult<Map<String, double>, Fail> valueOfEachPerson({
+    required List<Account> accounts,
+    required int month,
+    required int year,
+  }) {
     // TODO: implement valueOfEachPerson
     throw UnimplementedError();
   }
 
   @override
-  AsyncResult<Map<PaymentMethod, double>, Fail> valuePaidWithEachMethod(
-    List<Account> accounts,
-  ) {
+  AsyncResult<Map<PaymentMethod, double>, Fail> valuePaidWithEachMethod({
+    required List<Account> accounts,
+    required int month,
+    required int year,
+  }) {
     // TODO: implement valuePaidWithEachMethod
     throw UnimplementedError();
   }
 
-  @override
-  AsyncResult<Map<Status, double>, Fail> valueForEachExpenseStatus(
-    List<Account> accounts,
+  AsyncResult<List<T>, Fail> _fetchPaiyables<T extends Paiyable>(
+    List<Account> accs,
+    int month,
+    int year,
   ) async {
-    var map = <Status, double>{};
+    List<T> paiyables = [];
 
-    for (Status st in Status.values) {
-      map[st] = _getValue(600);
+    var fetchFunction = paiyables is List<Expense>
+        ? _expenseRepository.getAllOf
+        : _incomeRepository.getAllOf;
+
+    for (var account in accs) {
+      Result<List<T>, Fail> result = await fetchFunction(
+        account: account,
+        month: month,
+        year: year,
+      ) as Result<List<T>, Fail>;
+
+      if (result.isError()) return result.map((_) => <T>[]);
+
+      paiyables.addAll(result.getOrDefault(<T>[]));
     }
 
-    map.removeWhere((_, value) => value == 0);
-
-    return Future.delayed(const Duration(seconds: 2), () => Success(map));
+    return Success(paiyables);
   }
 
-  @override
-  AsyncResult<Map<Status, double>, Fail> valueForEachIncomeStatus(
-    List<Account> accounts,
-  ) async {
-    var map = <Status, double>{};
+  Map<T, double> _extractInformation<T, P extends Paiyable>({
+    required List<P> paiyables,
+    required T Function(P) extractValue,
+    double Function(P)? extractAmount,
+  }) {
+    extractAmount ??= (p) => p.totalValue;
 
-    for (Status st in Status.values) {
-      map[st] = _getValue(600);
+    Map<T, double> map = {};
+
+    for (var paiyable in paiyables) {
+      T information = extractValue(paiyable);
+      double amount = paiyable.totalValue;
+
+      map.update(
+        information,
+        (value) => (value + amount).roundToDecimal(),
+        ifAbsent: () => amount.roundToDecimal(),
+      );
     }
 
-    map.removeWhere((_, value) => value == 0);
-
-    return Future.delayed(const Duration(seconds: 2), () => Success(map));
+    return map..removeWhere((_, amount) => amount == 0);
   }
-
-  double _getValue(double max) =>
-      (Random().nextDouble() * max).roundToDecimal();
 }

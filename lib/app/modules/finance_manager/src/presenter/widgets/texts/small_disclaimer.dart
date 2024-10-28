@@ -8,7 +8,7 @@ class SmallDisclaimer extends StatelessWidget {
     super.key,
     this.maxLines,
     this.textAlign,
-    this.softWrap = false,
+    this.softWrap = true,
     this.fontWeight,
     this.fontStyle,
   });

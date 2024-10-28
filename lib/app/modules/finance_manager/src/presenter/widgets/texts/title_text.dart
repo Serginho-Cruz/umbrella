@@ -25,7 +25,7 @@ class TitleText extends StatelessWidget {
     this.fontWeight,
     this.color = Colors.black,
     this.fontStyle,
-    this.softWrap = false,
+    this.softWrap = true,
     this.decoration,
   });
 
@@ -38,7 +38,7 @@ class TitleText extends StatelessWidget {
     this.textDirection,
     this.color = Colors.black,
     this.fontStyle,
-    this.softWrap = false,
+    this.softWrap = true,
     this.decoration,
   }) : fontWeight = FontWeight.w300;
 
@@ -51,7 +51,7 @@ class TitleText extends StatelessWidget {
     this.textDirection,
     this.color = Colors.black,
     this.fontStyle,
-    this.softWrap = false,
+    this.softWrap = true,
     this.decoration,
   }) : fontWeight = FontWeight.bold;
 

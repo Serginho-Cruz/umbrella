@@ -156,6 +156,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               store: widget._incomeStore,
                               accountStore: widget._accountStore,
                               onPop: () {
+                                final date = MonthChanger.currentMonthAndYear;
+                                widget._balanceStore.getForAll(
+                                  accounts: accounts,
+                                  month: date.month,
+                                  year: date.year,
+                                );
                                 _fetchIncomes(accounts);
                               },
                             ),
@@ -182,7 +188,15 @@ class _HomeScreenState extends State<HomeScreen> {
                               model: state[index],
                               store: widget._expenseStore,
                               accountStore: widget._accountStore,
-                              onPop: () => _fetchExpenses(accounts),
+                              onPop: () {
+                                final date = MonthChanger.currentMonthAndYear;
+                                widget._balanceStore.getForAll(
+                                  accounts: accounts,
+                                  month: date.month,
+                                  year: date.year,
+                                );
+                                _fetchExpenses(accounts);
+                              },
                             ),
                             child: ExpenseCard(model: state[index]),
                           );

@@ -233,9 +233,9 @@ class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
           context,
           title: 'Cartão Cadastrado',
           message:
-              'Seu Cartão de Crédito foi cadastrada com sucesso. Iremos redireciona-lo para a Tela Principal',
+              'Seu Cartão de Crédito foi cadastrada com sucesso. Iremos redireciona-lo para a Tela Anterior',
         ).then((_) {
-          Navigator.pushReplacementNamed(context, '/finance_manager/');
+          Navigator.pop(context);
         });
       }, (failure) {
         UmbrellaDialogs.showError(context, failure.message);

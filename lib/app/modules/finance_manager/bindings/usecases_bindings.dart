@@ -1,6 +1,8 @@
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/filters/filter_expenses.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/pay_expense.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/receive_income.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/pay_expense.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/receive_income.dart';
 
 import '../src/data/usecases/filters/filter_credit_cards.dart';
@@ -91,6 +93,18 @@ abstract class UsecasesBindings {
         paymentRecordRepository: i(),
         balanceRepository: i()));
 
-    i.addLazySingleton<GetGraphsData>(() => GetGraphsDataImpl());
+    i.addLazySingleton<PayExpense>(() => PayExpenseImpl(
+        expenseRepository: i(),
+        paymentMethodRepository: i(),
+        paymentRecordRepository: i(),
+        balanceRepository: i()));
+
+    i.addLazySingleton<GetGraphsData>(
+      () => GetGraphsDataImpl(
+        expenseRepository: i(),
+        incomeRepository: i(),
+        recordRepository: i(),
+      ),
+    );
   }
 }

@@ -7,6 +7,7 @@ class Fail implements Exception {
 
 class GenericError extends Fail {
   const GenericError() : super(GenericMessages.genericFail);
+  GenericError.withMessage(super.message);
 }
 
 class UserHasntAccounts extends Fail {

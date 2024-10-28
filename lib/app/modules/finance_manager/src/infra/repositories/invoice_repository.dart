@@ -20,7 +20,7 @@ class InvoiceRepositoryImpl implements InvoiceRepository {
       return Success(id);
     } on Fail catch (fail) {
       return Failure(fail);
-    } catch (e) {
+    } catch (_) {
       return const GenericError().toFailure();
     }
   }
@@ -33,7 +33,7 @@ class InvoiceRepositoryImpl implements InvoiceRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (e) {
-      return const Failure(GenericError());
+      return Failure(GenericError.withMessage(e.toString()));
     }
   }
 

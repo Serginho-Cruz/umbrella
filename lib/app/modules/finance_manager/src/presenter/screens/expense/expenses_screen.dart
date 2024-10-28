@@ -132,8 +132,17 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
               });
             },
           ),
-          floatingActionButton: const NavigationIconButton(
+          floatingActionButton: NavigationIconButton(
             route: '/finance_manager/expense/add',
+            onPop: () {
+              final date = MonthChanger.currentMonthAndYear;
+              widget._balanceStore.getForAll(
+                accounts: accounts,
+                month: date.month,
+                year: date.year,
+              );
+              _fetchExpenses();
+            },
           ),
           child: SingleChildScrollView(
             child: Padding(
@@ -243,7 +252,15 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                               model: expenses[i],
                               store: widget._expenseStore,
                               accountStore: widget._accountStore,
-                              onPop: _fetchExpenses,
+                              onPop: () {
+                                final date = MonthChanger.currentMonthAndYear;
+                                widget._balanceStore.getForAll(
+                                  accounts: accounts,
+                                  month: date.month,
+                                  year: date.year,
+                                );
+                                _fetchExpenses();
+                              },
                             ),
                             openMenuDispatcher: TappableDispatcher.doubleTap,
                             child: FinanceTile(
@@ -254,7 +271,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                         ),
                         const FinanceStatusTile(),
                         const SmallDisclaimer(
-                          'Aperte duas vezes em uma despesa para abrir o menu de opções',
+                          'Aperte duas vezes em uma receita para abrir o menu de opções',
                           textAlign: TextAlign.center,
                           maxLines: 2,
                         ),
@@ -316,8 +333,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           loadingWidget: const SmallText.bold('Carregando...'),
           onError: (ctx, _) => const MediumText.bold('Erro'),
           onEmptyState: () => MediumText.bold(CurrencyFormat.format(0.00)),
-          onState: (ctx, incomes) {
-            double value = calcTotal(incomes);
+          onState: (ctx, expenses) {
+            double value = calcTotal(expenses);
 
             return MediumText.bold(CurrencyFormat.format(value));
           },
