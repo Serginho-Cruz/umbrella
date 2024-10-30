@@ -21,11 +21,11 @@ class StatusPieChart extends StatelessWidget {
   final double graphSize;
   final double legendSize;
 
-  final List<Color> _pieColors = const [
-    Colors.lightGreen,
-    Colors.lightBlue,
-    Colors.red,
-  ];
+  final Map<Status, Color> _pieColors = const {
+    Status.okay: Colors.lightGreen,
+    Status.inTime: Colors.lightBlue,
+    Status.overdue: Colors.red,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +34,7 @@ class StatusPieChart extends StatelessWidget {
       transform: (index, entry, isTouched) => PieSliceConfig(
         radius: isTouched ? 150 : 130,
         value: entry.value,
-        color: _pieColors[index],
+        color: _pieColors[entry.key],
         titleWidget: Transform.scale(
           scale: isTouched ? 1.2 : 1,
           child: StatusIcon(status: entry.key, size: 40),
@@ -56,7 +56,7 @@ class StatusPieChart extends StatelessWidget {
         children: [
           DecoratedBox(
             decoration: BoxDecoration(
-              color: _pieColors[entry.key.index],
+              color: _pieColors[entry.key],
               border: Border.all(width: 2),
               borderRadius: BorderRadius.circular(2),
             ),

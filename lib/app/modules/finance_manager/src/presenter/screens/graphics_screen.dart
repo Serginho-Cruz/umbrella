@@ -53,7 +53,7 @@ class _GraphicsScreenState extends State<GraphicsScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 2), _fetchData);
+    _fetchData();
   }
 
   bool _shouldShowAppBarFunctionalities(Orientation orientation) {
