@@ -1,14 +1,42 @@
-export 'src/presenter/screens/home_screen.dart';
-export 'src/presenter/screens/expense/create_expense_screen.dart';
-export 'src/presenter/screens/expense/edit_expense_screen.dart';
-export 'src/presenter/screens/expense/expenses_screen.dart';
+abstract final class FinanceRoutes {
+  static const String _module = '/finance_manager';
+  static const String _incomes = '/income';
+  static const String _expenses = '/expense';
+  static const String _cards = '/card';
 
-export 'src/presenter/screens/income/create_income_screen.dart';
-export 'src/presenter/screens/income/edit_income_screen.dart';
-export 'src/presenter/screens/income/incomes_screen.dart';
+  static const String home = '$_module/';
+  static const String charts = '$_module/graphics';
 
-export 'src/presenter/screens/credit_card/create_credit_card_screen.dart';
-export 'src/presenter/screens/credit_card/edit_credit_card_screen.dart';
-export 'src/presenter/screens/credit_card/credit_cards_screen.dart';
+  static const String incomes = '$_module$_incomes';
+  static const String addIncome = '$_module$_incomes/add';
+  static const String updateIncome = '$_module$_incomes/update';
+  static const String payIncome = '$_module$_incomes/pay';
 
-export 'src/presenter/screens/payment_screen.dart';
+  static const String expenses = '$_module$_expenses';
+  static const String addExpense = '$_module$_expenses/add';
+  static const String updateExpense = '$_module$_expenses/update';
+  static const String payExpense = '$_module$_expenses/pay';
+
+  static const String cards = '$_module$_cards';
+  static const String addCard = '$_module$_cards/add';
+  static const String updateCard = '$_module$_cards/update';
+}
+
+abstract final class UnmodularFormatFinanceRoutes {
+  static const String home = '/';
+  static const String charts = '/graphics';
+
+  static const String incomes = '/income';
+  static const String addIncome = '$incomes/add';
+  static const String updateIncome = '$incomes/update';
+  static const String payIncome = '$incomes/pay';
+
+  static const String expenses = '/expense';
+  static const String addExpense = '$expenses/add';
+  static const String updateExpense = '$expenses/update';
+  static const String payExpense = '$expenses/pay';
+
+  static const String cards = '/card';
+  static const String addCard = '$cards/add';
+  static const String updateCard = '$cards/update';
+}
