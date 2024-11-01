@@ -10,7 +10,9 @@ class MediumText extends StatelessWidget {
   final TextDirection? textDirection;
   final FontWeight? fontWeight;
   final Color color;
+  final FontStyle? fontStyle;
   final TextDecoration? decoration;
+  final bool softWrap;
 
   const MediumText(
     this.data, {
@@ -21,6 +23,8 @@ class MediumText extends StatelessWidget {
     this.textDirection,
     this.fontWeight,
     this.color = Colors.black,
+    this.fontStyle,
+    this.softWrap = true,
     this.decoration,
   });
 
@@ -32,7 +36,9 @@ class MediumText extends StatelessWidget {
     this.textAlign,
     this.textDirection,
     this.color = Colors.black,
+    this.fontStyle,
     this.decoration,
+    this.softWrap = true,
   }) : fontWeight = FontWeight.w300;
 
   const MediumText.bold(
@@ -43,6 +49,8 @@ class MediumText extends StatelessWidget {
     this.textAlign,
     this.textDirection,
     this.color = Colors.black,
+    this.fontStyle,
+    this.softWrap = true,
     this.decoration,
   }) : fontWeight = FontWeight.bold;
 
@@ -54,10 +62,12 @@ class MediumText extends StatelessWidget {
       overflow: overflow,
       textAlign: textAlign,
       textDirection: textDirection,
+      softWrap: softWrap,
       style: TextStyle(
         fontSize: UmbrellaSizes.medium,
         fontWeight: fontWeight,
         color: color,
+        fontStyle: fontStyle,
         decoration: decoration,
       ),
     );

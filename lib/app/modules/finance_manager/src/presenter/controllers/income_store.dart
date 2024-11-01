@@ -1,6 +1,6 @@
 import 'package:result_dart/result_dart.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/credit_card.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/payment.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/payment_record.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/manage_income.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/receive_income.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/paiyable_store.dart';
@@ -36,7 +36,7 @@ class IncomeStore extends PaiyableStore<Income, IncomeModel> {
         super([]);
 
   @override
-  AsyncResult<int, Fail> register(Income entity) async {
+  AsyncResult<String, Fail> register(Income entity) async {
     var result = await _manageIncome.register(entity);
 
     return result;
@@ -107,7 +107,7 @@ class IncomeStore extends PaiyableStore<Income, IncomeModel> {
       ..clear()
       ..addAll(models);
 
-    update(models);
+    update(models, force: true);
     setLoading(false);
   }
 
@@ -135,7 +135,7 @@ class IncomeStore extends PaiyableStore<Income, IncomeModel> {
         ..clear()
         ..addAll(models);
 
-      update(models);
+      update(models, force: true);
     }, (fail) {
       all.clear();
       setError(fail);
@@ -146,7 +146,7 @@ class IncomeStore extends PaiyableStore<Income, IncomeModel> {
 
   @override
   AsyncResult<void, Fail> pay({
-    required List<Payment<Income>> payments,
+    required List<PaymentRecord<Income>> payments,
     CreditCard? card,
   }) async {
     for (var payment in payments) {

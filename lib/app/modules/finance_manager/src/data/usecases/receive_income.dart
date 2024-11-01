@@ -2,12 +2,11 @@ import 'package:result_dart/result_dart.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/balance_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/income_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/payment_method_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/transaction_repository.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/payment_record_repository.dart';
 
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/income.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/payment.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/payment_record.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/payment_method.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/transaction.dart';
 
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/payment_error_messages.dart';
@@ -19,20 +18,20 @@ import '../../domain/usecases/receive_income.dart';
 class ReceiveIncomeImpl implements ReceiveIncome {
   final IncomeRepository incomeRepository;
   final PaymentMethodRepository paymentMethodRepository;
-  final TransactionRepository transactionRepository;
+  final PaymentRecordRepository paymentRecordRepository;
   final BalanceRepository balanceRepository;
 
   ReceiveIncomeImpl({
     required this.incomeRepository,
     required this.paymentMethodRepository,
-    required this.transactionRepository,
+    required this.paymentRecordRepository,
     required this.balanceRepository,
   });
 
   @override
-  AsyncResult<Unit, Fail> call(Payment<Income> payment) async {
+  AsyncResult<Unit, Fail> call(PaymentRecord<Income> payment) async {
     if (payment.paiyable.remainingValue < payment.value) {
-      return PaymentError(PaymentErrorMessages.valueGreaterThanRemaining)
+      return const PaymentError(PaymentErrorMessages.valueGreaterThanRemaining)
           .toFailure();
     }
 
@@ -43,7 +42,7 @@ class ReceiveIncomeImpl implements ReceiveIncome {
     ];
 
     if (!allowedMethods.contains(payment.paymentMethod)) {
-      return PaymentError(PaymentErrorMessages.invalidPaymentMethod)
+      return const PaymentError(PaymentErrorMessages.invalidPaymentMethod)
           .toFailure();
     }
 
@@ -79,20 +78,12 @@ class ReceiveIncomeImpl implements ReceiveIncome {
       return balanceUpdates.firstWhere((res) => res.isError());
     }
 
-    var transaction = Transaction(
-      id: 0,
-      value: payment.value,
-      paymentDate: Date.today(),
-      paiyable: updatedIncome,
-      paymentMethod: payment.paymentMethod,
-    );
-
-    var transactionRes = await transactionRepository.register(
-      transaction,
+    var registerRes = await paymentRecordRepository.register(
+      payment,
       payment.usedAccount,
     );
 
-    if (transactionRes.isError()) return transactionRes.pure(unit);
+    if (registerRes.isError()) return registerRes.pure(unit);
 
     var addPaymentRegister = await paymentMethodRepository.registerPayment(
       paiyable: updatedIncome,

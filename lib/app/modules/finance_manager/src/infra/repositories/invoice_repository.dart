@@ -14,14 +14,14 @@ class InvoiceRepositoryImpl implements InvoiceRepository {
   InvoiceRepositoryImpl(this._invoiceDatasource);
 
   @override
-  AsyncResult<int, Fail> generateOfCard(CreditCard card) async {
+  AsyncResult<String, Fail> generateOfCard(CreditCard card) async {
     try {
       var id = await _invoiceDatasource.generateOfCard(card);
       return Success(id);
     } on Fail catch (fail) {
       return Failure(fail);
-    } catch (e) {
-      return GenericError().toFailure();
+    } catch (_) {
+      return const GenericError().toFailure();
     }
   }
 
@@ -33,7 +33,7 @@ class InvoiceRepositoryImpl implements InvoiceRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (e) {
-      return Failure(GenericError());
+      return Failure(GenericError.withMessage(e.toString()));
     }
   }
 
@@ -69,7 +69,7 @@ class InvoiceRepositoryImpl implements InvoiceRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (e) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 
@@ -81,7 +81,7 @@ class InvoiceRepositoryImpl implements InvoiceRepository {
     } on Fail catch (fail) {
       return Failure(fail);
     } catch (e) {
-      return GenericError().toFailure();
+      return const GenericError().toFailure();
     }
   }
 
@@ -117,7 +117,7 @@ class InvoiceRepositoryImpl implements InvoiceRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (e) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 

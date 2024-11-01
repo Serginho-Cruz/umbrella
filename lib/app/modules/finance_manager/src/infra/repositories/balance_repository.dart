@@ -35,7 +35,7 @@ class BalanceRepositoryImpl implements BalanceRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (_) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
 
     return const Success(unit);
@@ -58,7 +58,7 @@ class BalanceRepositoryImpl implements BalanceRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (_) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 
@@ -79,7 +79,7 @@ class BalanceRepositoryImpl implements BalanceRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (_) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 
@@ -100,7 +100,7 @@ class BalanceRepositoryImpl implements BalanceRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (_) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 
@@ -121,7 +121,7 @@ class BalanceRepositoryImpl implements BalanceRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (_) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
 
     return const Success(unit);
@@ -146,7 +146,7 @@ class BalanceRepositoryImpl implements BalanceRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (_) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
 
     return const Success(unit);

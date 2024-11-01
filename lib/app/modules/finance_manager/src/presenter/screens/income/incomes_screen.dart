@@ -131,8 +131,17 @@ class _IncomesScreenState extends State<IncomesScreen> {
             showMonthChanger: true,
             onMonthChange: (_, __) => _fetchIncomes(),
           ),
-          floatingActionButton: const NavigationIconButton(
+          floatingActionButton: NavigationIconButton(
             route: '/finance_manager/income/add',
+            onPop: () {
+              final date = MonthChanger.currentMonthAndYear;
+              widget._balanceStore.getForAll(
+                accounts: accounts,
+                month: date.month,
+                year: date.year,
+              );
+              _fetchIncomes();
+            },
           ),
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
@@ -243,7 +252,15 @@ class _IncomesScreenState extends State<IncomesScreen> {
                               model: incomes[i],
                               store: widget._incomeStore,
                               accountStore: widget._accountStore,
-                              onPop: _fetchIncomes,
+                              onPop: () {
+                                final date = MonthChanger.currentMonthAndYear;
+                                widget._balanceStore.getForAll(
+                                  accounts: accounts,
+                                  month: date.month,
+                                  year: date.year,
+                                );
+                                _fetchIncomes();
+                              },
                             ),
                             openMenuDispatcher: TappableDispatcher.doubleTap,
                             child: FinanceTile(

@@ -1,5 +1,6 @@
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:umbrella_echonomics/app/modules/auth/src/presenter/controllers/auth_controller.dart';
+import 'package:umbrella_echonomics/app/modules/auth/src/domain/entities/user_state.dart';
+import 'package:umbrella_echonomics/app/modules/auth/src/presenter/stores/auth_store.dart';
 
 import '../../domain/entities/account.dart';
 import '../../domain/usecases/manage_account.dart';
@@ -7,13 +8,13 @@ import '../../domain/usecases/manage_account.dart';
 class AccountStore extends Store<List<Account>> {
   AccountStore({
     required ManageAccount manageAccount,
-    required AuthController authController,
+    required AuthStore authStore,
   })  : _manageAccount = manageAccount,
-        _authController = authController,
+        _authStore = authStore,
         super([]);
 
   final ManageAccount _manageAccount;
-  final AuthController _authController;
+  final AuthStore _authStore;
 
   Account? _selectedAccount;
 
@@ -24,12 +25,12 @@ class AccountStore extends Store<List<Account>> {
   Future<void> updateAccount(Account oldAccount, Account newAccount) async {}
 
   Future<void> getAll({bool force = false}) async {
-    if (!_authController.isLogged || isLoading) return;
+    if (_authStore.state is! SuccessState) return;
 
     if (force == false && state.isNotEmpty) return;
 
     setLoading(true);
-    var user = _authController.user!;
+    var user = (_authStore.state as SuccessState).user;
 
     var result = await _manageAccount.getAll(user);
 

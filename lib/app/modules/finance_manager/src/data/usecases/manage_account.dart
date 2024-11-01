@@ -14,7 +14,7 @@ class ManageAccountImpl implements ManageAccount {
   ManageAccountImpl(this._repository);
 
   @override
-  AsyncResult<int, Fail> register(Account account, User user) async {
+  AsyncResult<String, Fail> register(Account account, User user) async {
     var result = await _repository.create(account, user);
     return result;
   }

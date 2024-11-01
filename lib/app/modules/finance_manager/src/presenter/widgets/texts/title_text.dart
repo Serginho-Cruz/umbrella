@@ -10,6 +10,9 @@ class TitleText extends StatelessWidget {
   final TextDirection? textDirection;
   final FontWeight? fontWeight;
   final Color color;
+  final FontStyle? fontStyle;
+
+  final bool softWrap;
   final TextDecoration? decoration;
 
   const TitleText(
@@ -21,6 +24,8 @@ class TitleText extends StatelessWidget {
     this.textDirection,
     this.fontWeight,
     this.color = Colors.black,
+    this.fontStyle,
+    this.softWrap = true,
     this.decoration,
   });
 
@@ -32,6 +37,8 @@ class TitleText extends StatelessWidget {
     this.textAlign,
     this.textDirection,
     this.color = Colors.black,
+    this.fontStyle,
+    this.softWrap = true,
     this.decoration,
   }) : fontWeight = FontWeight.w300;
 
@@ -43,6 +50,8 @@ class TitleText extends StatelessWidget {
     this.textAlign,
     this.textDirection,
     this.color = Colors.black,
+    this.fontStyle,
+    this.softWrap = true,
     this.decoration,
   }) : fontWeight = FontWeight.bold;
 
@@ -54,9 +63,11 @@ class TitleText extends StatelessWidget {
       overflow: overflow,
       textAlign: textAlign,
       textDirection: textDirection,
+      softWrap: softWrap,
       style: TextStyle(
         fontSize: UmbrellaSizes.title,
         fontWeight: fontWeight,
+        fontStyle: fontStyle,
         color: color,
         decoration: decoration,
       ),

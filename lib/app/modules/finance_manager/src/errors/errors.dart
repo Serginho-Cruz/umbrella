@@ -1,41 +1,43 @@
+import 'generic_messages.dart';
+
 class Fail implements Exception {
-  String message;
-  Fail(this.message);
-}
-
-class NetworkFail extends Fail {
-  NetworkFail()
-      : super('Houve um problema de conexão. Cheque e tente novamente');
-}
-
-class AccountDoesntExist extends Fail {
-  AccountDoesntExist(super.meesage);
+  final String message;
+  const Fail(this.message);
 }
 
 class GenericError extends Fail {
-  GenericError() : super("Um Erro inesperado aconteceu, tente novamente");
+  const GenericError() : super(GenericMessages.genericFail);
+  GenericError.withMessage(super.message);
+}
+
+class UserHasntAccounts extends Fail {
+  const UserHasntAccounts() : super(GenericMessages.userHasNotAccounts);
+}
+
+class AccountDoesntExist extends Fail {
+  const AccountDoesntExist(super.message);
 }
 
 class DateError extends Fail {
-  DateError(super.message);
+  const DateError(super.message);
 }
 
 class CreditError extends Fail {
-  CreditError(super.message);
+  const CreditError(super.message);
 }
 
 class InvoiceNotExist extends Fail {
-  InvoiceNotExist(super.message);
+  const InvoiceNotExist(super.message);
 }
 
 class InvoiceUpdateError extends Fail {
-  InvoiceUpdateError(super.message);
+  const InvoiceUpdateError(super.message);
 }
 
 class PaymentError extends Fail {
-  PaymentError(super.message);
+  const PaymentError(super.message);
 }
 
 class InstallmentError extends Fail {
-  InstallmentError(super.message);
+  const InstallmentError(super.message);
 }

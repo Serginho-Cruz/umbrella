@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/account.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/income_model.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/account_store.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/balance_store.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/credit_card_store.dart';
@@ -28,9 +27,10 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/wi
 
 import '../../domain/entities/credit_card.dart';
 import '../../domain/entities/paiyable.dart';
-import '../../domain/entities/payment.dart';
+import '../../domain/entities/payment_record.dart';
 import '../../domain/entities/payment_method.dart';
 import '../../domain/models/paiyable_model.dart';
+import '../../errors/api_errors.dart';
 import '../widgets/layout/spaced.dart';
 
 class PaymentScreen<E extends Paiyable, T extends PaiyableModel<E>>
@@ -40,6 +40,7 @@ class PaymentScreen<E extends Paiyable, T extends PaiyableModel<E>>
     required this.model,
     required this.store,
     this.isCreditAllowed = true,
+    this.isBoletoAllowed = true,
     this.unallowedCard,
     required this.accountStore,
     required this.balanceStore,
@@ -49,6 +50,7 @@ class PaymentScreen<E extends Paiyable, T extends PaiyableModel<E>>
   final T model;
   final PaiyableStore<E, T> store;
   final bool isCreditAllowed;
+  final bool isBoletoAllowed;
   final CreditCard? unallowedCard;
   final AccountStore accountStore;
   final BalanceStore balanceStore;
@@ -63,7 +65,7 @@ class _PaymentScreenState<E extends Paiyable> extends State<PaymentScreen> {
   List<PaymentMethod> sortedMethods = [];
   List<Widget> paymentCards = [];
 
-  Map<PaymentMethod, Payment<E>> payments = {};
+  Map<PaymentMethod, PaymentRecord<E>> payments = {};
   double goingToPay = 0.00;
   CreditCard? selectedCard;
 
@@ -76,10 +78,14 @@ class _PaymentScreenState<E extends Paiyable> extends State<PaymentScreen> {
 
     remainingMethods
       ..clear()
-      ..addAll(PaymentMethod.normals);
+      ..addAll(PaymentMethod.all);
 
     if (!widget.isCreditAllowed) {
       remainingMethods.remove(const PaymentMethod.credit());
+    }
+
+    if (!widget.isBoletoAllowed) {
+      remainingMethods.remove(const PaymentMethod.boleto());
     }
   }
 
@@ -143,7 +149,7 @@ class _PaymentScreenState<E extends Paiyable> extends State<PaymentScreen> {
               const SizedBox(height: 10.0),
               _buildTextValue('Atualmente Pagando: ', goingToPay),
               const SizedBox(height: 40.0),
-              const Extrabig.bold(
+              const ExtrabigText.bold(
                 'Seções de Pagamento',
                 textAlign: TextAlign.center,
               ),
@@ -273,7 +279,7 @@ class _PaymentScreenState<E extends Paiyable> extends State<PaymentScreen> {
 
     remainingMethods
       ..clear()
-      ..addAll(PaymentMethod.normals);
+      ..addAll(PaymentMethod.all);
 
     sortedMethods.clear();
 
@@ -319,7 +325,8 @@ class _PaymentScreenState<E extends Paiyable> extends State<PaymentScreen> {
   }
 
   void addPaymentSection(PaymentMethod method) {
-    payments[method] = Payment<E>(
+    payments[method] = PaymentRecord<E>(
+      id: '',
       usedAccount: widget.model.account,
       paiyable: widget.model.toEntity() as E,
       paymentMethod: method,

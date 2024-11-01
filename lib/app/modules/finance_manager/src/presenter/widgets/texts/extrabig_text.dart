@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../utils/umbrella_sizes.dart';
 
-class Extrabig extends StatelessWidget {
+class ExtrabigText extends StatelessWidget {
   final String data;
   final int? maxLines;
   final TextOverflow? overflow;
@@ -10,9 +10,12 @@ class Extrabig extends StatelessWidget {
   final TextDirection? textDirection;
   final FontWeight? fontWeight;
   final Color color;
+  final FontStyle? fontStyle;
+
+  final bool softWrap;
   final TextDecoration? decoration;
 
-  const Extrabig(
+  const ExtrabigText(
     this.data, {
     super.key,
     this.maxLines,
@@ -21,10 +24,12 @@ class Extrabig extends StatelessWidget {
     this.textDirection,
     this.fontWeight,
     this.color = Colors.black,
+    this.fontStyle,
+    this.softWrap = true,
     this.decoration,
   });
 
-  const Extrabig.light(
+  const ExtrabigText.light(
     this.data, {
     super.key,
     this.maxLines,
@@ -32,10 +37,12 @@ class Extrabig extends StatelessWidget {
     this.textAlign,
     this.textDirection,
     this.color = Colors.black,
+    this.fontStyle,
+    this.softWrap = true,
     this.decoration,
   }) : fontWeight = FontWeight.w300;
 
-  const Extrabig.bold(
+  const ExtrabigText.bold(
     this.data, {
     super.key,
     this.maxLines,
@@ -43,6 +50,8 @@ class Extrabig extends StatelessWidget {
     this.textAlign,
     this.textDirection,
     this.color = Colors.black,
+    this.fontStyle,
+    this.softWrap = true,
     this.decoration,
   }) : fontWeight = FontWeight.bold;
 
@@ -54,9 +63,11 @@ class Extrabig extends StatelessWidget {
       overflow: overflow,
       textAlign: textAlign,
       textDirection: textDirection,
+      softWrap: softWrap,
       style: TextStyle(
         fontSize: UmbrellaSizes.extrabig,
         fontWeight: fontWeight,
+        fontStyle: fontStyle,
         color: color,
         decoration: decoration,
       ),

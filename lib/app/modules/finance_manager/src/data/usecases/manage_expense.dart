@@ -22,7 +22,7 @@ class ManageExpenseImpl implements ManageExpense {
         _balanceRepository = balanceRepository;
 
   @override
-  AsyncResult<int, Fail> register(Expense expense) async {
+  AsyncResult<String, Fail> register(Expense expense) async {
     final result = await _expenseRepository.create(expense);
 
     if (result.isError()) return result;
@@ -33,7 +33,7 @@ class ManageExpenseImpl implements ManageExpense {
         expense.account,
       );
 
-      if (decrementResult.isError()) return decrementResult.pure(0);
+      if (decrementResult.isError()) return decrementResult.pure('');
     }
 
     return result;
@@ -91,7 +91,7 @@ class ManageExpenseImpl implements ManageExpense {
 
       for (var expense in monthlyExpenses.getOrDefault([])) {
         expenses.add(expense.copyWith(
-          id: 0,
+          id: '',
           remainingValue: expense.totalValue,
           paidValue: 0.00,
           paymentDate: null,

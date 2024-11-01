@@ -18,14 +18,14 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   ExpenseRepositoryImpl(this._datasource);
 
   @override
-  AsyncResult<int, Fail> create(Expense expense) async {
+  AsyncResult<String, Fail> create(Expense expense) async {
     try {
       var newid = await _datasource.create(expense);
       return Success(newid);
     } on Fail catch (f) {
       return Failure(f);
     } catch (e) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 
@@ -37,7 +37,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (e) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 
@@ -58,7 +58,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (e) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 
@@ -73,7 +73,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (e) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 
@@ -96,7 +96,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (e) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 
@@ -108,7 +108,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (e) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 }

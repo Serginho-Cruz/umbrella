@@ -59,6 +59,8 @@ class NumberTextField extends StatelessWidget {
           decoration: InputDecoration(
             labelText: label,
             counterText: '',
+            fillColor: Colors.white,
+            filled: true,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.0),
             ),

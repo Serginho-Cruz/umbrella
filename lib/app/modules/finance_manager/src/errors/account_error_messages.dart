@@ -5,6 +5,6 @@ abstract final class AccountMessages {
   static const String accountNotFoundForDelete =
       'Não foi possível encontrar a conta. Por favor tente novamente mais tarde';
 
-  static String userHasntsAccounts(String username) =>
+  static String userHasntAccounts(String username) =>
       "Não há contas registradas para o usuário $username";
 }

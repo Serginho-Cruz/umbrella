@@ -5,7 +5,7 @@ import '../../domain/entities/credit_card.dart';
 import '../../errors/errors.dart';
 
 abstract interface class CreditCardRepository {
-  AsyncResult<int, Fail> create(CreditCard card, User user);
+  AsyncResult<String, Fail> create(CreditCard card, User user);
   AsyncResult<Unit, Fail> update(CreditCard newCard);
   AsyncResult<List<CreditCard>, Fail> getAll(User user);
   AsyncResult<Unit, Fail> delete(CreditCard card);

@@ -7,7 +7,7 @@ import '../../domain/entities/invoice.dart';
 import '../../errors/errors.dart';
 
 abstract interface class InvoiceRepository {
-  AsyncResult<int, Fail> generateOfCard(CreditCard card);
+  AsyncResult<String, Fail> generateOfCard(CreditCard card);
   AsyncResult<Unit, Fail> update(Invoice newInvoice);
   AsyncResult<List<Invoice>, Fail> getAllOf({
     required int month,

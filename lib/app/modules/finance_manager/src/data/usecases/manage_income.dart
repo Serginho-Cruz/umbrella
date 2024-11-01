@@ -21,7 +21,7 @@ class ManageIncomeImpl implements ManageIncome {
         _balanceRepository = balanceRepository;
 
   @override
-  AsyncResult<int, Fail> register(Income income) async {
+  AsyncResult<String, Fail> register(Income income) async {
     final result = await _incomeRepository.create(income);
 
     if (result.isError()) return result;
@@ -32,7 +32,7 @@ class ManageIncomeImpl implements ManageIncome {
         income.account,
       );
 
-      if (incrementResult.isError()) return incrementResult.pure(0);
+      if (incrementResult.isError()) return incrementResult.pure('');
     }
 
     return result;
@@ -90,7 +90,7 @@ class ManageIncomeImpl implements ManageIncome {
 
       for (var income in monthlyIncomes.getOrDefault([])) {
         incomes.add(income.copyWith(
-          id: 0,
+          id: '',
           remainingValue: income.totalValue,
           paidValue: 0.00,
           paymentDate: null,

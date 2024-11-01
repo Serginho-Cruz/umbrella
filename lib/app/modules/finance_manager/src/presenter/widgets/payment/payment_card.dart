@@ -6,6 +6,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/wi
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/selectors/account_selector.dart';
 
 import '../../../domain/entities/account.dart';
+import '../texts/medium_text.dart';
 
 class PaymentCard extends StatefulWidget {
   const PaymentCard({
@@ -39,9 +40,12 @@ class _PaymentCardState extends State<PaymentCard> {
   @override
   Widget build(BuildContext context) {
     return PaymentCardContainer(
-      paymentMethod: widget.paymentMethod,
       borderRadius: 8.0,
       children: [
+        MediumText.bold(
+          widget.paymentMethod.name,
+          decoration: TextDecoration.underline,
+        ),
         AccountSelector(
           accounts: widget.accounts,
           onSelected: onAccountSelected,
@@ -49,7 +53,7 @@ class _PaymentCardState extends State<PaymentCard> {
           label: 'Conta',
           fontSize: UmbrellaSizes.medium,
           canSelectNull: false,
-          padding: const EdgeInsets.symmetric(vertical: 12.0),
+          padding: const EdgeInsets.only(top: 20.0, bottom: 12.0),
         ),
         NumberTextField(
           label: 'Valor',

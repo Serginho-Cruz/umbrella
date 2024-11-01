@@ -17,14 +17,14 @@ class IncomeRepositoryImpl implements IncomeRepository {
   IncomeRepositoryImpl(this._datasource);
 
   @override
-  AsyncResult<int, Fail> create(Income income) async {
+  AsyncResult<String, Fail> create(Income income) async {
     try {
       var newid = await _datasource.create(income);
       return Success(newid);
     } on Fail catch (f) {
       return Failure(f);
     } catch (e) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 
@@ -36,7 +36,7 @@ class IncomeRepositoryImpl implements IncomeRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (e) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 
@@ -57,7 +57,7 @@ class IncomeRepositoryImpl implements IncomeRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (e) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 
@@ -72,7 +72,7 @@ class IncomeRepositoryImpl implements IncomeRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (e) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 
@@ -95,7 +95,7 @@ class IncomeRepositoryImpl implements IncomeRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (e) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 
@@ -107,7 +107,7 @@ class IncomeRepositoryImpl implements IncomeRepository {
     } on Fail catch (f) {
       return Failure(f);
     } catch (e) {
-      return Failure(GenericError());
+      return const Failure(GenericError());
     }
   }
 }

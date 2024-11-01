@@ -94,11 +94,19 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       //Implements Something when an error occurs on account store
       onError: (ctx, fail) {
-        return const SizedBox.shrink();
+        return Scaffold(
+          body: Center(
+            child: BigText('Erro: ${fail.message}'),
+          ),
+        );
       },
       //Same here, users cannot have 0 accounts
       onEmptyState: () {
-        return const SizedBox.shrink();
+        return const Scaffold(
+          body: Center(
+            child: BigText('Nenhuma Conta foi Criada'),
+          ),
+        );
       },
       onState: (ctx, accounts) {
         return UmbrellaScaffold(
@@ -148,6 +156,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               store: widget._incomeStore,
                               accountStore: widget._accountStore,
                               onPop: () {
+                                final date = MonthChanger.currentMonthAndYear;
+                                widget._balanceStore.getForAll(
+                                  accounts: accounts,
+                                  month: date.month,
+                                  year: date.year,
+                                );
                                 _fetchIncomes(accounts);
                               },
                             ),
@@ -174,7 +188,15 @@ class _HomeScreenState extends State<HomeScreen> {
                               model: state[index],
                               store: widget._expenseStore,
                               accountStore: widget._accountStore,
-                              onPop: () => _fetchExpenses(accounts),
+                              onPop: () {
+                                final date = MonthChanger.currentMonthAndYear;
+                                widget._balanceStore.getForAll(
+                                  accounts: accounts,
+                                  month: date.month,
+                                  year: date.year,
+                                );
+                                _fetchExpenses(accounts);
+                              },
                             ),
                             child: ExpenseCard(model: state[index]),
                           );

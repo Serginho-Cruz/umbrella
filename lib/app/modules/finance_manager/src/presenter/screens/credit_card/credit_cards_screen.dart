@@ -56,8 +56,9 @@ class _CreditCardsScreenState extends State<CreditCardsScreen> {
           Future(_fetchCards);
         },
       ),
-      floatingActionButton: const NavigationIconButton(
+      floatingActionButton: NavigationIconButton(
         route: '/finance_manager/card/add',
+        onPop: _fetchCards,
       ),
       child: Padding(
         padding: EdgeInsets.symmetric(
@@ -74,7 +75,13 @@ class _CreditCardsScreenState extends State<CreditCardsScreen> {
                 store: widget._cardStore,
                 loadingWidget: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: List.generate(5, (_) => const ShimmerCard()),
+                  children: List.generate(
+                    5,
+                    (_) => const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10.0),
+                      child: ShimmerCard(),
+                    ),
+                  ),
                 ),
                 onError: (ctx, fail) {
                   UmbrellaDialogs.showError(

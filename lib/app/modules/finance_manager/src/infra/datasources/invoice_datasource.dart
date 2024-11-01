@@ -4,7 +4,7 @@ import '../../domain/entities/date.dart';
 import '../../domain/entities/invoice.dart';
 
 abstract interface class InvoiceDatasource {
-  Future<int> generateOfCard(CreditCard card);
+  Future<String> generateOfCard(CreditCard card);
   Future<void> update(Invoice invoice);
   Future<List<Invoice>> getAllOf({
     required int month,
@@ -21,8 +21,7 @@ abstract interface class InvoiceDatasource {
     required Date date,
     required CreditCard card,
   });
-  Future<Invoice> getById(int id);
-
+  Future<Invoice> getById(String id);
   Future<List<Invoice>> getInRange({
     required Date inferiorLimit,
     required Date upperLimit,

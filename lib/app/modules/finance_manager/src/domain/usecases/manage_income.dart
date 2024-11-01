@@ -5,7 +5,7 @@ import '../entities/account.dart';
 import '../entities/income.dart';
 
 abstract interface class ManageIncome {
-  AsyncResult<int, Fail> register(Income income);
+  AsyncResult<String, Fail> register(Income income);
   AsyncResult<Unit, Fail> update({
     required Income oldIncome,
     required Income newIncome,

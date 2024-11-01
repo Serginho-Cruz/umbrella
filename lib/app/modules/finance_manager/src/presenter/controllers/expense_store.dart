@@ -6,11 +6,12 @@ import '../../domain/entities/category.dart';
 import '../../domain/entities/credit_card.dart';
 import '../../domain/entities/date.dart';
 import '../../domain/entities/expense.dart';
-import '../../domain/entities/payment.dart';
+import '../../domain/entities/payment_record.dart';
 import '../../domain/models/expense_model.dart';
 import '../../domain/models/status.dart';
 import '../../domain/usecases/filters/filter_expenses.dart';
 import '../../domain/usecases/manage_expense.dart';
+import '../../domain/usecases/pay_expense.dart';
 import '../../domain/usecases/sorts/sort_expenses.dart';
 import '../../errors/errors.dart';
 
@@ -19,19 +20,22 @@ class ExpenseStore extends PaiyableStore<Expense, ExpenseModel> {
     required ManageExpense manageExpense,
     required FilterExpenses filterExpenses,
     required SortExpenses sortExpenses,
+    required PayExpense payExpense,
   })  : _manageExpense = manageExpense,
         _filterExpenses = filterExpenses,
         _sortExpenses = sortExpenses,
+        _pay = payExpense,
         super([]);
 
   final ManageExpense _manageExpense;
   final FilterExpenses _filterExpenses;
   final SortExpenses _sortExpenses;
+  final PayExpense _pay;
 
   final List<ExpenseModel> all = [];
 
   @override
-  AsyncResult<int, Fail> register(Expense entity) async {
+  AsyncResult<String, Fail> register(Expense entity) async {
     var result = await _manageExpense.register(entity);
 
     return result;
@@ -106,7 +110,7 @@ class ExpenseStore extends PaiyableStore<Expense, ExpenseModel> {
       ..clear()
       ..addAll(models);
 
-    update(models);
+    update(models, force: true);
     setLoading(false);
   }
 
@@ -135,7 +139,7 @@ class ExpenseStore extends PaiyableStore<Expense, ExpenseModel> {
         ..clear()
         ..addAll(models);
 
-      update(models);
+      update(models, force: true);
     }, (fail) {
       all.clear();
       setError(fail);
@@ -146,9 +150,16 @@ class ExpenseStore extends PaiyableStore<Expense, ExpenseModel> {
 
   @override
   AsyncResult<void, Fail> pay({
-    required List<Payment<Expense>> payments,
+    required List<PaymentRecord<Expense>> payments,
     CreditCard? card,
   }) async {
+    for (var payment in payments) {
+      var result = await _pay.withoutCredit(payment);
+
+      if (result.isError()) {
+        return result;
+      }
+    }
     return const Success(2);
   }
 

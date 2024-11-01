@@ -3,7 +3,7 @@ import 'account.dart';
 import 'date.dart';
 
 abstract class Paiyable extends Equatable {
-  final int id;
+  final String id;
   final Account account;
   final double paidValue;
   final double remainingValue;

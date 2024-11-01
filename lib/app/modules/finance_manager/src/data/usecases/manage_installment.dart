@@ -7,7 +7,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/error
 
 class ManageInstallmentImpl implements ManageInstallment {
   @override
-  AsyncResult<int, Fail> register(Installment installment) {
+  AsyncResult<String, Fail> register(Installment installment) {
     // TODO: implement register
     throw UnimplementedError();
   }

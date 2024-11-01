@@ -5,7 +5,7 @@ import '../../../domain/entities/category.dart';
 import '../../../domain/entities/date.dart';
 import '../../../domain/entities/frequency.dart';
 import '../../../domain/entities/income.dart';
-import '../../../errors/errors.dart';
+import '../../../errors/api_errors.dart';
 import '../../controllers/balance_store.dart';
 import '../../utils/currency_input_formatter.dart';
 import '../../utils/umbrella_palette.dart';
@@ -274,7 +274,7 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
         CurrencyInputFormatter.unformat(valueFieldController.text);
 
     Income newIncome = Income(
-        id: 0,
+        id: '',
         name: nameFieldController.text,
         totalValue: double.parse(totalValueStr),
         paidValue: 0.00,
@@ -288,14 +288,14 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
             : personNameFieldController.text.trim());
 
     widget._incomeStore.register(newIncome).then((result) {
-      result.fold((success) {
-        UmbrellaDialogs.showSuccess(
+      result.fold((success) async {
+        await UmbrellaDialogs.showSuccess(
           context,
           title: 'Receita Cadastrada',
           message:
-              'Sua receita foi cadastrada com sucesso. Iremos redireciona-lo para a Tela Principal',
+              'Sua receita foi cadastrada com sucesso. Iremos redireciona-lo para a Tela Anterior',
         );
-        Navigator.pushReplacementNamed(context, '/finance_manager/');
+        if (mounted) Navigator.pop(context);
       }, (failure) {
         UmbrellaDialogs.showError(context, failure.message);
       });

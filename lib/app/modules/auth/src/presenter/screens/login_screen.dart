@@ -1,74 +1,38 @@
 import 'package:flutter/material.dart';
-import 'package:email_validator/email_validator.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:mobx/mobx.dart';
 import 'package:umbrella_echonomics/app/modules/auth/src/presenter/widgets/auth_field.dart';
-import '../controllers/auth_controller.dart';
+import '../../domain/entities/user_state.dart';
+import '../stores/auth_store.dart';
 import '../widgets/auth_button.dart';
 import '../widgets/error_dialog.dart';
 import '../widgets/link.dart';
+import '../widgets/loading_dialog.dart';
+import '../widgets/tappable_icon.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key, required AuthController controller})
-      : _controller = controller;
+  const LoginScreen({super.key, required AuthStore store}) : _store = store;
 
-  final AuthController _controller;
+  final AuthStore _store;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  late final TextEditingController _emailController;
-  late final TextEditingController _passwordController;
-
   late final FocusNode _emailFocusNode;
   late final FocusNode _passwordFocusNode;
+  late final ReactionDisposer _disposer;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  late bool isToRemindUser;
 
-  String? _validateEmail(String? email) {
-    if (email == null || email.trim().isEmpty) {
-      return 'O Campo E-mail é obrigatório';
-    }
-    if (!EmailValidator.validate(email)) return 'O E-mail informado é inválido';
-
-    return null;
-  }
-
-  String? _validatePassword(String? password) {
-    if (password == null || password.trim().isEmpty) {
-      return 'O Campo Senha é obrigatório';
-    }
-    if (password.length < 6 || password.length > 10) {
-      return 'A Senha deve ter de 6 a 10 dígitos';
-    }
-
-    return null;
-  }
+  bool _isLoadingDialogBeingShown = false;
 
   @override
   void initState() {
     super.initState();
-    _emailController = TextEditingController();
-    _passwordController = TextEditingController();
-
-    _emailFocusNode = FocusNode();
     _passwordFocusNode = FocusNode();
-    isToRemindUser = false;
-  }
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-
-    _emailFocusNode
-      ..unfocus()
-      ..dispose();
-    _passwordFocusNode
-      ..unfocus()
-      ..dispose();
-    super.dispose();
+    _emailFocusNode = FocusNode();
   }
 
   @override
@@ -130,53 +94,73 @@ class _LoginScreenState extends State<LoginScreen> {
                           'Entrar no Aplicativo',
                           style: TextStyle(fontSize: 20.0),
                         ),
-                        AuthTextField(
-                          controller: _emailController,
-                          focusNode: _emailFocusNode,
-                          nextFocusNode: _passwordFocusNode,
-                          label: "E-mail",
-                          icon: Icons.mail,
-                          keyboardType: TextInputType.emailAddress,
-                          validate: _validateEmail,
+                        Observer(
+                          builder: (_) {
+                            return AuthTextField(
+                              label: "E-mail",
+                              icon: Icons.mail,
+                              focusNode: _emailFocusNode,
+                              keyboardType: TextInputType.emailAddress,
+                              readOnly: widget._store.state is LoadingState,
+                              onSubmitted: (_) {
+                                if (widget._store.password.isEmpty) {
+                                  _passwordFocusNode.requestFocus();
+                                }
+                              },
+                              onTapOutside: (_) {
+                                _emailFocusNode.unfocus();
+                              },
+                              onChanged: widget._store.setEmail,
+                              validate: widget._store.validateEmail,
+                            );
+                          },
                         ),
                         Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            AuthTextField(
-                              controller: _passwordController,
-                              focusNode: _passwordFocusNode,
-                              label: "Senha",
-                              icon: Icons.lock_open_rounded,
-                              isPassword: true,
-                              validate: _validatePassword,
+                            Observer(
+                              builder: (_) => AuthTextField(
+                                focusNode: _passwordFocusNode,
+                                label: "Senha",
+                                icon: Icons.lock,
+                                obscureText: !widget._store.isPasswordVisible,
+                                suffixIcon: TappableIcon(
+                                  onTap: widget._store.togglePasswordVisibility,
+                                  icon: widget._store.isPasswordVisible
+                                      ? const Icon(
+                                          Icons.visibility_off,
+                                          color: Colors.black,
+                                        )
+                                      : const Icon(
+                                          Icons.visibility,
+                                          color: Colors.black,
+                                        ),
+                                ),
+                                readOnly: widget._store.state is LoadingState,
+                                onTapOutside: (_) {
+                                  _passwordFocusNode.unfocus();
+                                },
+                                onChanged: widget._store.setPassword,
+                                validate: widget._store.validatePassword,
+                              ),
                             ),
                             Material(
                               type: MaterialType.transparency,
-                              child: ListTile(
-                                title: const Text(
-                                  "Lembre de Mim",
-                                  style: TextStyle(fontSize: 14.0),
-                                ),
-                                trailing: IgnorePointer(
-                                  child: Checkbox.adaptive(
-                                    value: isToRemindUser,
-                                    semanticLabel:
-                                        'Gostaria de entrar diretamente no app nos próximos acessos? Sem precisar passar pela fase de login',
-                                    onChanged: (value) {
-                                      setState(() {
-                                        isToRemindUser = value!;
-                                      });
-                                    },
+                              child: Observer(builder: (_) {
+                                return CheckboxListTile(
+                                  title: const Text(
+                                    "Lembre de Mim",
+                                    style: TextStyle(fontSize: 14.0),
                                   ),
-                                ),
-                                hoverColor: Colors.grey,
-                                contentPadding: EdgeInsets.zero,
-                                onTap: () {
-                                  setState(() {
-                                    isToRemindUser = !isToRemindUser;
-                                  });
-                                },
-                              ),
+                                  onChanged: (newValue) {
+                                    widget._store
+                                        .setRememberUser(newValue ?? false);
+                                  },
+                                  value: widget._store.isToRemember,
+                                  hoverColor: Colors.grey,
+                                  contentPadding: EdgeInsets.zero,
+                                );
+                              }),
                             ),
                           ],
                         ),
@@ -186,7 +170,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             MediaQuery.sizeOf(context).width * 0.8 - 20.0,
                             50.0,
                           ),
-                          onPressed: _onPressed,
+                          onPressed: () {
+                            debugPrint(
+                                '${widget._store.email} / ${widget._store.password}');
+                            if (_formKey.currentState!.validate()) {
+                              widget._store.login();
+                            }
+                          },
                         ),
                       ],
                     ),
@@ -204,22 +194,53 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void _onPressed() {
-    if (_formKey.currentState!.validate()) {
-      widget._controller
-          .login(
-        email: _emailController.text,
-        password: _passwordController.text,
-        isToRemember: isToRemindUser,
-      )
-          .then((error) {
-        if (error != null) {
-          ErrorDialog.show(context, error: error);
-          return;
-        }
+  @override
+  void didChangeDependencies() {
+    _setUpReaction();
+    super.didChangeDependencies();
+  }
 
-        Navigator.of(context).pushReplacementNamed('/finance_manager/');
-      });
+  @override
+  void dispose() {
+    _disposer();
+
+    _passwordFocusNode
+      ..unfocus()
+      ..dispose();
+    _emailFocusNode
+      ..unfocus()
+      ..dispose();
+    widget._store.resetFields();
+
+    super.dispose();
+  }
+
+  void _setUpReaction() {
+    _disposer = reaction((_) {
+      return widget._store.state;
+    }, (state) {
+      _checkHasDialog();
+      switch (state) {
+        case InitialState():
+          break;
+        case SuccessState():
+          Navigator.pushReplacementNamed(context, '/finance_manager/');
+          break;
+        case LoadingState():
+          LoadingDialog.show(context);
+          _isLoadingDialogBeingShown = true;
+          break;
+        case FailState():
+          ErrorDialog.show(context, error: state.fail.message);
+          break;
+      }
+    });
+  }
+
+  void _checkHasDialog() {
+    if (_isLoadingDialogBeingShown) {
+      Navigator.pop(context);
+      _isLoadingDialogBeingShown = false;
     }
   }
 }

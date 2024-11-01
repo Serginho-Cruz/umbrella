@@ -1,46 +1,53 @@
 import 'dart:async';
 
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:umbrella_echonomics/app/modules/auth/src/data/usecases/manage_user.dart';
-import 'package:umbrella_echonomics/app/modules/auth/src/domain/usecases/manage_user.dart';
-import 'package:umbrella_echonomics/app/modules/auth/src/external/datasources/user_temporary_datasource.dart';
-import 'package:umbrella_echonomics/app/modules/auth/src/external/services/shared_preferences_storage.dart';
-import 'package:umbrella_echonomics/app/modules/auth/src/infra/repositories/user_repository.dart';
-import 'package:umbrella_echonomics/app/modules/auth/src/presenter/controllers/auth_controller.dart';
 
 import 'src/data/repositories/user_repository.dart';
 import 'src/data/usecases/auth.dart';
-import 'src/data/usecases/manage_local_user.dart';
+import 'src/data/usecases/manage_local_token.dart';
+import 'src/data/usecases/manage_user.dart';
+import 'src/data/usecases/validate.dart';
+import 'src/domain/entities/user_state.dart';
 import 'src/domain/usecases/auth.dart';
-import 'src/domain/usecases/manage_local_user.dart';
+import 'src/domain/usecases/manage_local_token.dart';
+import 'src/domain/usecases/manage_user.dart';
+import 'src/domain/usecases/validate.dart';
+import 'src/external/datasources/back4app/user_datasource.dart';
+import 'src/external/services/token_storage.dart';
 import 'src/infra/datasources/user_datasource.dart';
+import 'src/infra/repositories/user_repository.dart';
 import 'src/infra/services/local_storage_service.dart';
-import 'src/presenter/controllers/user_controller.dart';
 import 'src/presenter/screens/login_screen.dart';
 import 'src/presenter/screens/register_screen.dart';
+import 'src/presenter/stores/auth_store.dart';
 
 class AuthModule extends Module {
   @override
   void exportedBinds(Injector i) {
-    i.addSingleton(() => UserController(manageUser: i(), manageLocalUser: i()));
-    i.addSingleton(() => AuthController(i(), i()));
+    i.addSingleton(
+      () => AuthStore(
+        auth: i(),
+        manageLocalToken: i(),
+        manageUser: i(),
+        validateFields: i(),
+      ),
+    );
     super.exportedBinds(i);
   }
 
   @override
   void binds(Injector i) {
     super.binds(i);
-    i.addLazySingleton<LocalStorageService>(SharedPreferencesStorage.new);
-    i.addLazySingleton<UserDatasource>(UserTemporaryDatasource.new);
+    i.addLazySingleton<LocalStorageService>(TokenStorage.new);
+    i.addLazySingleton<UserDatasource>(Back4AppUserDatasource.new);
     i.addLazySingleton<UserRepository>(
-      () => UserRepositoryImpl(
-        localStorageService: i(),
-        userDatasource: i(),
-      ),
+      () => UserRepositoryImpl(i()),
     );
-    i.addLazySingleton<Auth>(() => AuthImpl(i()));
+    i.addLazySingleton<ManageLocalToken>(() => ManageLocalTokenImpl(i()));
     i.addLazySingleton<ManageUser>(() => ManageUserImpl(i()));
-    i.addLazySingleton<ManageLocalUser>(() => ManageLocalUserImpl(i()));
+    i.addLazySingleton<Auth>(
+        () => AuthImpl(manageLocalToken: i(), repository: i()));
+    i.addLazySingleton<Validate>(ValidateImpl.new);
   }
 
   @override
@@ -49,13 +56,13 @@ class AuthModule extends Module {
     r.child(
       '/',
       child: (context) => LoginScreen(
-        controller: Modular.get<AuthController>(),
+        store: Modular.get<AuthStore>(),
       ),
     );
     r.child(
       '/register',
       child: (context) => RegisterScreen(
-        controller: Modular.get<UserController>(),
+        store: Modular.get<AuthStore>(),
       ),
     );
   }
@@ -66,11 +73,11 @@ class AuthGuard extends RouteGuard {
 
   @override
   FutureOr<bool> canActivate(String path, ParallelRoute route) async {
-    var controller = Modular.get<AuthController>();
+    var store = Modular.get<AuthStore>();
 
-    if (controller.isLogged) return true;
+    if (store.state is SuccessState) return true;
 
-    bool isInLocal = await Modular.get<AuthController>().isUserInLocal();
+    bool isInLocal = await store.isUserInLocal();
 
     return isInLocal;
   }

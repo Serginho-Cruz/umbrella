@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
 
+import '../../utils/umbrella_sizes.dart';
+
 class SmallDisclaimer extends StatelessWidget {
   const SmallDisclaimer(
     this.data, {
     super.key,
     this.maxLines,
     this.textAlign,
+    this.softWrap = true,
     this.fontWeight,
+    this.fontStyle,
   });
 
   final String data;
   final int? maxLines;
   final TextAlign? textAlign;
+  final FontStyle? fontStyle;
+
+  final bool softWrap;
   final FontWeight? fontWeight;
 
   @override
@@ -19,9 +26,11 @@ class SmallDisclaimer extends StatelessWidget {
     return Text(
       '*$data',
       textAlign: textAlign,
+      softWrap: softWrap,
       style: TextStyle(
-        fontSize: 14.0,
+        fontSize: UmbrellaSizes.extrasmall,
         fontWeight: fontWeight,
+        fontStyle: fontStyle,
       ),
       overflow: TextOverflow.ellipsis,
       maxLines: maxLines,

@@ -46,10 +46,12 @@ class _PaymentCreditCardState extends State<PaymentCreditCard> {
   @override
   Widget build(BuildContext context) {
     return PaymentCardContainer(
-      paymentMethod: const PaymentMethod.credit(),
       borderRadius: 8.0,
       children: [
-        const SizedBox(height: 4.0),
+        MediumText.bold(
+          const PaymentMethod.credit().name,
+          decoration: TextDecoration.underline,
+        ),
         AccountSelector(
           accounts: widget.accounts,
           onSelected: onAccountSelected,
@@ -57,7 +59,7 @@ class _PaymentCreditCardState extends State<PaymentCreditCard> {
           label: 'Conta',
           fontSize: UmbrellaSizes.medium,
           canSelectNull: false,
-          padding: const EdgeInsets.symmetric(vertical: 5.0),
+          padding: const EdgeInsets.only(top: 12.0, bottom: 8.0),
         ),
         CardSelector(
           cards: widget.creditCards,
@@ -65,7 +67,7 @@ class _PaymentCreditCardState extends State<PaymentCreditCard> {
           cardSelected: selectedCard,
           buildChild: (card) {
             return Spaced(
-              padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
               first: const MediumText('Cartão'),
               second: MediumText.bold(card?.name ?? 'Não Escolhido'),
             );
