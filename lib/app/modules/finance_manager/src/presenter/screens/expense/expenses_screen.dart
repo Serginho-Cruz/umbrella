@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:umbrella_echonomics/app/modules/bind_service_provider.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/balance_store.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/round.dart';
 
 import '../../../domain/entities/account.dart';
 import '../../../domain/entities/category.dart';
+import '../../../domain/entities/date.dart';
 import '../../../domain/models/expense_model.dart';
 import '../../../domain/models/status.dart';
 import '../../../domain/usecases/sorts/sort_expenses.dart';
+import '../../controllers/month_store.dart';
 import '../../utils/currency_format.dart';
 import '../../widgets/filters/finance_filter.dart';
+import '../../widgets/others/list_segmented_state_widget.dart';
 import '../../widgets/tappable/expense_tappable_options.dart';
 import '../../controllers/account_store.dart';
 import '../../controllers/expense_category_store.dart';
 import '../../controllers/expense_store.dart';
 import '../../widgets/appbar/custom_app_bar.dart';
-import '../../widgets/appbar/month_changer.dart';
 import '../../widgets/buttons/navigation_button.dart';
 import '../../widgets/buttons/navigation_icon_button.dart';
 import '../../widgets/dialogs/umbrella_dialogs.dart';
@@ -82,12 +86,12 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   Widget build(BuildContext context) {
     return ListScopedBuilder<AccountStore, List<Account>>(
       store: widget._accountStore,
-      loadingWidget: const UmbrellaScaffold(
+      loadingWidget: UmbrellaScaffold(
         appBar: CustomAppBar(title: 'Despesas', showBalances: false),
-        floatingActionButton: NavigationIconButton(
+        floatingActionButton: const NavigationIconButton(
           route: '/finance_manager/expense/add',
         ),
-        child: Column(
+        child: const Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
@@ -123,8 +127,6 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         return UmbrellaScaffold(
           appBar: CustomAppBar(
             title: 'Despesas',
-            accountStore: widget._accountStore,
-            balanceStore: widget._balanceStore,
             showMonthChanger: true,
             onMonthChange: (_, __) {
               Future.delayed(Duration.zero, () {
@@ -135,11 +137,12 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           floatingActionButton: NavigationIconButton(
             route: '/finance_manager/expense/add',
             onPop: () {
-              final date = MonthChanger.currentMonthAndYear;
+              var (:month, :year) = BindServiceProvider.get<MonthStore>().month;
+
               widget._balanceStore.getForAll(
                 accounts: accounts,
-                month: date.month,
-                year: date.year,
+                month: month,
+                year: year,
               );
               _fetchExpenses();
             },
@@ -185,97 +188,113 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                     },
                   ),
                   const SizedBox(height: 30.0),
-                  ScopedBuilder<ExpenseCategoryStore, List<Category>>(
-                    store: widget._categoryStore,
-                    onLoading: (ctx) =>
-                        const CircularProgressIndicator.adaptive(),
-                    onError: (ctx, fail) => _mountFilter(),
-                    onState: (ctx, categories) => _mountFilter(categories),
-                  ),
+                  Observer(builder: (_) {
+                    return ListSegmentedStateWidget<Category>(
+                      state: widget._categoryStore.state,
+                      onLoading: (ctx) =>
+                          const CircularProgressIndicator.adaptive(),
+                      onFail: (ctx, fail) => _mountFilter(),
+                      onState: (ctx, categories) => _mountFilter(categories),
+                    );
+                  }),
                   const SizedBox(height: 30.0),
-                  ListScopedBuilder<ExpenseStore, List<ExpenseModel>>(
-                    store: widget._expenseStore,
-                    onError: (ctx, fail) {
-                      UmbrellaDialogs.showError(
-                        context,
-                        fail.message,
-                      );
-                      var month = MonthChanger.currentMonthAndYear.monthName;
-                      return Center(
-                        child: MediumText(
-                            'Erro ao obter as Despesas do Mês de $month'),
-                      );
-                    },
-                    loadingWidget: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: List.generate(
-                        5,
-                        (i) => ShimmerListTile(
-                          roundedOnTop: i == 0,
-                          roundedOnBottom: i == 4,
-                        ),
-                      ),
-                    ),
-                    onEmptyState: () {
-                      String text;
-                      String monthName =
-                          MonthChanger.currentMonthAndYear.monthName;
-                      if (wasFiltered) {
-                        text =
-                            'Nenhuma Despesa com os filtros atuais para o mês de $monthName';
-                      } else {
-                        text =
-                            'Nenhuma Despesa encontrada para o mês de $monthName';
-                      }
+                  Observer(
+                    builder: (_) =>
+                        ListScopedBuilder<ExpenseStore, List<ExpenseModel>>(
+                      store: widget._expenseStore,
+                      onError: (ctx, fail) {
+                        UmbrellaDialogs.showError(
+                          context,
+                          fail.message,
+                        );
+                        var (:month, :year) =
+                            BindServiceProvider.get<MonthStore>().month;
 
-                      return SizedBox(
-                        height: 200.0,
-                        width: MediaQuery.sizeOf(context).width * 0.8,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.money_off_rounded, size: 60.0),
-                            const SizedBox(height: 20.0),
-                            MediumText.bold(text, textAlign: TextAlign.center),
-                          ],
-                        ),
-                      );
-                    },
-                    onState: (ctx, expenses) => Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ...List.generate(
-                          expenses.length,
-                          (i) => Tappable(
-                            options: ExpenseTappableOptions.get(
-                              context: context,
-                              model: expenses[i],
-                              store: widget._expenseStore,
-                              accountStore: widget._accountStore,
-                              onPop: () {
-                                final date = MonthChanger.currentMonthAndYear;
-                                widget._balanceStore.getForAll(
-                                  accounts: accounts,
-                                  month: date.month,
-                                  year: date.year,
-                                );
-                                _fetchExpenses();
-                              },
-                            ),
-                            openMenuDispatcher: TappableDispatcher.doubleTap,
-                            child: FinanceTile(
-                              model: expenses[i],
-                              roundedOnTop: i == 0,
-                            ),
+                        String name =
+                            Date(day: 1, month: month, year: year).monthName;
+                        return Center(
+                          child: MediumText(
+                              'Erro ao obter as Despesas do Mês de $name'),
+                        );
+                      },
+                      loadingWidget: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: List.generate(
+                          5,
+                          (i) => ShimmerListTile(
+                            roundedOnTop: i == 0,
+                            roundedOnBottom: i == 4,
                           ),
                         ),
-                        const FinanceStatusTile(),
-                        const SmallDisclaimer(
-                          'Aperte duas vezes em uma receita para abrir o menu de opções',
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                        ),
-                      ],
+                      ),
+                      onEmptyState: () {
+                        String text;
+                        var (:month, :year) =
+                            BindServiceProvider.get<MonthStore>().month;
+
+                        String name =
+                            Date(day: 1, month: month, year: year).monthName;
+                        if (wasFiltered) {
+                          text =
+                              'Nenhuma Despesa com os filtros atuais para o mês de $name';
+                        } else {
+                          text =
+                              'Nenhuma Despesa encontrada para o mês de $name';
+                        }
+
+                        return SizedBox(
+                          height: 200.0,
+                          width: MediaQuery.sizeOf(context).width * 0.8,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.money_off_rounded, size: 60.0),
+                              const SizedBox(height: 20.0),
+                              MediumText.bold(text,
+                                  textAlign: TextAlign.center),
+                            ],
+                          ),
+                        );
+                      },
+                      onState: (ctx, expenses) => Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ...List.generate(
+                            expenses.length,
+                            (i) => Tappable(
+                              options: ExpenseTappableOptions.get(
+                                context: context,
+                                model: expenses[i],
+                                store: widget._expenseStore,
+                                accountStore: widget._accountStore,
+                                onPop: () {
+                                  var (:month, :year) =
+                                      BindServiceProvider.get<MonthStore>()
+                                          .month;
+
+                                  widget._balanceStore.getForAll(
+                                    accounts: accounts,
+                                    month: month,
+                                    year: year,
+                                  );
+                                  _fetchExpenses();
+                                },
+                              ),
+                              openMenuDispatcher: TappableDispatcher.doubleTap,
+                              child: FinanceTile(
+                                model: expenses[i],
+                                roundedOnTop: i == 0,
+                              ),
+                            ),
+                          ),
+                          const FinanceStatusTile(),
+                          const SmallDisclaimer(
+                            'Aperte duas vezes em uma receita para abrir o menu de opções',
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   Spaced(
@@ -303,20 +322,20 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       return;
     }
 
-    var current = MonthChanger.currentMonthAndYear;
+    var (:month, :year) = BindServiceProvider.get<MonthStore>().month;
 
     wasFiltered = false;
 
     widget._accountStore.selectedAccount != null
         ? widget._expenseStore.getAllOf(
-            month: current.month,
-            year: current.year,
+            month: month,
+            year: year,
             account: widget._accountStore.selectedAccount!,
           )
         : widget._expenseStore.getForAll(
             accounts: widget._accountStore.state,
-            month: current.month,
-            year: current.year,
+            month: month,
+            year: year,
           );
   }
 

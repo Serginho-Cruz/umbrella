@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_triple/flutter_triple.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/credit_card_store.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/expense_category_store.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/dialogs/umbrella_dialogs.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/list_segmented_state_widget.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/selectors/account_selector.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/forms/my_form.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/layout/spaced.dart';
@@ -18,7 +19,6 @@ import '../../../domain/entities/credit_card.dart';
 import '../../../domain/entities/date.dart';
 import '../../../domain/entities/expense.dart';
 import '../../../domain/entities/frequency.dart';
-import '../../controllers/balance_store.dart';
 import '../../utils/umbrella_palette.dart';
 import '../../controllers/account_store.dart';
 import '../../controllers/expense_store.dart';
@@ -45,15 +45,12 @@ class CreateExpenseScreen extends StatefulWidget {
     required ExpenseStore expenseStore,
     required ExpenseCategoryStore categoryStore,
     required AccountStore accountStore,
-    required BalanceStore balanceStore,
   })  : _cardStore = cardStore,
         _expenseStore = expenseStore,
         _categoryStore = categoryStore,
-        _accountStore = accountStore,
-        _balanceStore = balanceStore;
+        _accountStore = accountStore;
 
   final AccountStore _accountStore;
-  final BalanceStore _balanceStore;
   final CreditCardStore _cardStore;
   final ExpenseStore _expenseStore;
   final ExpenseCategoryStore _categoryStore;
@@ -120,8 +117,6 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
   Widget build(BuildContext context) {
     return UmbrellaScaffold(
       appBar: CustomAppBar(
-        accountStore: widget._accountStore,
-        balanceStore: widget._balanceStore,
         title: 'Nova Despesa',
       ),
       child: SingleChildScrollView(
@@ -223,44 +218,46 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                 },
               ),
             ),
-            ScopedBuilder<ExpenseCategoryStore, List<Category>>(
-              store: widget._categoryStore,
-              onState: (ctx, categories) => CategorySelector(
-                categories: categories,
-                onSelected: (cat) {
-                  setState(() {
-                    category = cat;
-                    if (logicalCategoryError != null) {
-                      logicalCategoryError = null;
-                    }
-                  });
-                },
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CategoryRow(
-                      category: category,
-                      padding: const EdgeInsets.only(
-                        top: 8.0,
-                        bottom: 8.0,
+            Observer(
+              builder: (_) => ListSegmentedStateWidget<Category>(
+                state: widget._categoryStore.state,
+                onState: (ctx, categories) => CategorySelector(
+                  categories: categories,
+                  onSelected: (cat) {
+                    setState(() {
+                      category = cat;
+                      if (logicalCategoryError != null) {
+                        logicalCategoryError = null;
+                      }
+                    });
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CategoryRow(
+                        category: category,
+                        padding: const EdgeInsets.only(
+                          top: 8.0,
+                          bottom: 8.0,
+                        ),
                       ),
-                    ),
-                    Visibility(
-                      visible: logicalCategoryError != null,
-                      child: SmallText(
-                        logicalCategoryError.toString(),
-                        color: UmbrellaPalette.errorColor,
+                      Visibility(
+                        visible: logicalCategoryError != null,
+                        child: SmallText(
+                          logicalCategoryError.toString(),
+                          color: UmbrellaPalette.errorColor,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
+                onFail: (context, e) {
+                  Fail error = e;
+                  return Text(error.message);
+                },
+                onLoading: (context) =>
+                    const CircularProgressIndicator.adaptive(),
               ),
-              onError: (context, e) {
-                Fail error = e;
-                return Text(error.message);
-              },
-              onLoading: (context) =>
-                  const CircularProgressIndicator.adaptive(),
             ),
             ExpansionTile(
               backgroundColor: Colors.transparent,

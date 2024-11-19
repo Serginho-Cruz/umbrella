@@ -5,7 +5,7 @@ import '../../domain/entities/category.dart';
 import '../../domain/models/status.dart';
 import '../../domain/states/graphs_state.dart';
 import '../../domain/usecases/gets/get_graphs_data.dart';
-import '../widgets/appbar/month_changer.dart';
+import 'month_store.dart';
 part 'graphs_store.g.dart';
 
 // ignore: library_private_types_in_public_api
@@ -13,8 +13,13 @@ class GraphsStore = _GraphsStoreBase with _$GraphsStore;
 
 abstract class _GraphsStoreBase with Store {
   final GetGraphsData _usecase;
+  final MonthStore _monthStore;
 
-  _GraphsStoreBase(this._usecase);
+  _GraphsStoreBase({
+    required GetGraphsData usecase,
+    required MonthStore monthStore,
+  })  : _usecase = usecase,
+        _monthStore = monthStore;
 
   @observable
   GraphsState<Map<Category, double>> valuePerExpenseCategoryState =
@@ -36,12 +41,12 @@ abstract class _GraphsStoreBase with Store {
   Future<void> fetchExpenseCategoryGraphData(List<Account> accounts) async {
     valuePerExpenseCategoryState = GraphsLoadingState();
 
-    final date = MonthChanger.currentMonthAndYear;
+    var (:month, :year) = _monthStore.month;
 
     var result = await _usecase.valueOfEachExpenseCategory(
       accounts: accounts,
-      month: date.month,
-      year: date.year,
+      month: month,
+      year: year,
     );
 
     result.fold((map) {
@@ -55,12 +60,12 @@ abstract class _GraphsStoreBase with Store {
   Future<void> fetchIncomeCategoryGraphData(List<Account> accounts) async {
     valuePerIncomeCategoryState = GraphsLoadingState();
 
-    final date = MonthChanger.currentMonthAndYear;
+    var (:month, :year) = _monthStore.month;
 
     var result = await _usecase.valueOfEachIncomeCategory(
       accounts: accounts,
-      month: date.month,
-      year: date.year,
+      month: month,
+      year: year,
     );
 
     result.fold((map) {
@@ -74,12 +79,12 @@ abstract class _GraphsStoreBase with Store {
   Future<void> fetchExpenseStatusGraphData(List<Account> accounts) async {
     valueCastPerStatusState = GraphsLoadingState();
 
-    final date = MonthChanger.currentMonthAndYear;
+    var (:month, :year) = _monthStore.month;
 
     var result = await _usecase.valueForEachExpenseStatus(
       accounts: accounts,
-      month: date.month,
-      year: date.year,
+      month: month,
+      year: year,
     );
 
     result.fold((map) {
@@ -93,12 +98,12 @@ abstract class _GraphsStoreBase with Store {
   Future<void> fetchIncomeStatusGraphData(List<Account> accounts) async {
     valueReceivedPerStatusState = GraphsLoadingState();
 
-    final date = MonthChanger.currentMonthAndYear;
+    var (:month, :year) = _monthStore.month;
 
     var result = await _usecase.valueForEachIncomeStatus(
       accounts: accounts,
-      month: date.month,
-      year: date.year,
+      month: month,
+      year: year,
     );
 
     result.fold((map) {

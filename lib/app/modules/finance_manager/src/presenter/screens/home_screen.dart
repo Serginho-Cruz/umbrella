@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:umbrella_echonomics/app/modules/auth/src/domain/entities/user_state.dart';
+import 'package:umbrella_echonomics/app/modules/auth/src/presenter/stores/auth_store.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/account.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/list_scoped_builder.dart';
+import '../../../../bind_service_provider.dart';
 import '../../domain/entities/credit_card.dart';
 import '../../domain/models/expense_model.dart';
 import '../../domain/models/income_model.dart';
 import '../controllers/balance_store.dart';
+import '../controllers/month_store.dart';
 import '../utils/umbrella_palette.dart';
 import '../controllers/account_store.dart';
 import '../controllers/credit_card_store.dart';
 import '../controllers/expense_store.dart';
 import '../controllers/income_store.dart';
-import '../widgets/appbar/month_changer.dart';
 import '../widgets/cards/credit_card_widget.dart';
 import '../widgets/cards/expense_card.dart';
 import '../widgets/layout/horizontal_listview.dart';
@@ -26,6 +29,7 @@ import '../widgets/tappable/expense_tappable_options.dart';
 import '../widgets/tappable/income_tappable_options.dart';
 import '../widgets/tappable/tappable.dart';
 import '../widgets/texts/big_text.dart';
+import '../widgets/texts/medium_text.dart';
 import '../widgets/texts/title_text.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -77,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return ListScopedBuilder<AccountStore, List<Account>>(
       store: widget._accountStore,
       loadingWidget: UmbrellaScaffold(
-        appBar: const CustomAppBar(title: 'Home', showBalances: false),
+        appBar: CustomAppBar(title: 'Home', showBalances: false),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -115,8 +119,6 @@ class _HomeScreenState extends State<HomeScreen> {
             title: 'Home',
             showMonthChanger: true,
             onMonthChange: (_, __) => _fetchAll(accounts),
-            accountStore: widget._accountStore,
-            balanceStore: widget._balanceStore,
           ),
           child: RefreshIndicator(
             onRefresh: () => widget._accountStore.getAll(force: true),
@@ -135,9 +137,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       onSelected: widget._accountStore.changeSelectedAccount,
                     ),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 30.0, bottom: 30.0),
-                    child: BigText('Olá! Obrigado por Voltar'),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 30.0, bottom: 30.0),
+                    child: MediumText(
+                        'Olá! Obrigado por Voltar ${(BindServiceProvider.get<AuthStore>().state as SuccessState).user.name}'),
                   ),
                   _makeSection(
                     title: 'Receitas',
@@ -156,11 +159,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               store: widget._incomeStore,
                               accountStore: widget._accountStore,
                               onPop: () {
-                                final date = MonthChanger.currentMonthAndYear;
+                                var (:month, :year) =
+                                    BindServiceProvider.get<MonthStore>().month;
+
                                 widget._balanceStore.getForAll(
                                   accounts: accounts,
-                                  month: date.month,
-                                  year: date.year,
+                                  month: month,
+                                  year: year,
                                 );
                                 _fetchIncomes(accounts);
                               },
@@ -189,11 +194,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               store: widget._expenseStore,
                               accountStore: widget._accountStore,
                               onPop: () {
-                                final date = MonthChanger.currentMonthAndYear;
+                                var (:month, :year) =
+                                    BindServiceProvider.get<MonthStore>().month;
                                 widget._balanceStore.getForAll(
                                   accounts: accounts,
-                                  month: date.month,
-                                  year: date.year,
+                                  month: month,
+                                  year: year,
                                 );
                                 _fetchExpenses(accounts);
                               },
@@ -295,9 +301,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   (int month, int year) _getMonthAndYear() {
-    var date = MonthChanger.currentMonthAndYear;
-
-    return (date.month, date.year);
+    var (:month, :year) = BindServiceProvider.get<MonthStore>().month;
+    return (month, year);
   }
 
   Widget _makeSection({required String title, required Widget child}) {

@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:umbrella_echonomics/app/modules/bind_service_provider.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/tiles/finance_tile.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/round.dart';
 import '../../../domain/entities/account.dart';
 import '../../../domain/entities/category.dart';
+import '../../../domain/entities/date.dart';
 import '../../../domain/models/income_model.dart';
 import '../../../domain/models/status.dart';
 import '../../../domain/usecases/sorts/sort_expenses.dart';
 import '../../controllers/balance_store.dart';
+import '../../controllers/month_store.dart';
 import '../../utils/currency_format.dart';
 import '../../controllers/account_store.dart';
 import '../../controllers/income_category_store.dart';
 import '../../controllers/income_store.dart';
 import '../../widgets/appbar/custom_app_bar.dart';
-import '../../widgets/appbar/month_changer.dart';
 import '../../widgets/buttons/navigation_button.dart';
 import '../../widgets/buttons/navigation_icon_button.dart';
 import '../../widgets/layout/spaced.dart';
@@ -80,9 +82,9 @@ class _IncomesScreenState extends State<IncomesScreen> {
   Widget build(BuildContext context) {
     return ListScopedBuilder<AccountStore, List<Account>>(
       store: widget._accountStore,
-      loadingWidget: const UmbrellaScaffold(
+      loadingWidget: UmbrellaScaffold(
         appBar: CustomAppBar(title: 'Receitas', showBalances: false),
-        child: Column(
+        child: const Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
@@ -126,19 +128,17 @@ class _IncomesScreenState extends State<IncomesScreen> {
         return UmbrellaScaffold(
           appBar: CustomAppBar(
             title: 'Receitas',
-            accountStore: widget._accountStore,
-            balanceStore: widget._balanceStore,
             showMonthChanger: true,
             onMonthChange: (_, __) => _fetchIncomes(),
           ),
           floatingActionButton: NavigationIconButton(
             route: '/finance_manager/income/add',
             onPop: () {
-              final date = MonthChanger.currentMonthAndYear;
+              var (:month, :year) = BindServiceProvider.get<MonthStore>().month;
               widget._balanceStore.getForAll(
                 accounts: accounts,
-                month: date.month,
-                year: date.year,
+                month: month,
+                year: year,
               );
               _fetchIncomes();
             },
@@ -200,10 +200,14 @@ class _IncomesScreenState extends State<IncomesScreen> {
                         context,
                         fail.message,
                       );
-                      var month = MonthChanger.currentMonthAndYear.monthName;
+                      var (:month, :year) =
+                          BindServiceProvider.get<MonthStore>().month;
+
+                      String name =
+                          Date(day: 1, month: month, year: year).monthName;
                       return Center(
                         child: MediumText(
-                            'Erro ao obter as Receitas do Mês de $month'),
+                            'Erro ao obter as Receitas do Mês de $name'),
                       );
                     },
                     loadingWidget: Column(
@@ -218,14 +222,16 @@ class _IncomesScreenState extends State<IncomesScreen> {
                     ),
                     onEmptyState: () {
                       String text;
-                      String monthName =
-                          MonthChanger.currentMonthAndYear.monthName;
+                      var (:month, :year) =
+                          BindServiceProvider.get<MonthStore>().month;
+
+                      String name =
+                          Date(day: 1, month: month, year: year).monthName;
                       if (wasFiltered) {
                         text =
-                            'Nenhuma Receita com os filtros atuais para o mês de $monthName';
+                            'Nenhuma Receita com os filtros atuais para o mês de $name';
                       } else {
-                        text =
-                            'Nenhuma Receita encontrada para o mês de $monthName';
+                        text = 'Nenhuma Receita encontrada para o mês de $name';
                       }
 
                       return SizedBox(
@@ -253,11 +259,13 @@ class _IncomesScreenState extends State<IncomesScreen> {
                               store: widget._incomeStore,
                               accountStore: widget._accountStore,
                               onPop: () {
-                                final date = MonthChanger.currentMonthAndYear;
+                                var (:month, :year) =
+                                    BindServiceProvider.get<MonthStore>().month;
+
                                 widget._balanceStore.getForAll(
                                   accounts: accounts,
-                                  month: date.month,
-                                  year: date.year,
+                                  month: month,
+                                  year: year,
                                 );
                                 _fetchIncomes();
                               },
@@ -303,20 +311,20 @@ class _IncomesScreenState extends State<IncomesScreen> {
       return;
     }
 
-    var current = MonthChanger.currentMonthAndYear;
+    var (:month, :year) = BindServiceProvider.get<MonthStore>().month;
 
     wasFiltered = false;
 
     widget._accountStore.selectedAccount != null
         ? widget._incomeStore.getAllOf(
-            month: current.month,
-            year: current.year,
+            month: month,
+            year: year,
             account: widget._accountStore.selectedAccount!,
           )
         : widget._incomeStore.getForAll(
             accounts: widget._accountStore.state,
-            month: current.month,
-            year: current.year,
+            month: month,
+            year: year,
           );
   }
 

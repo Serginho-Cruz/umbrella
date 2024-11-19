@@ -14,7 +14,6 @@ import '../widgets/texts/medium_text.dart';
 
 class GraphicsScreen extends StatefulWidget {
   final GraphsStore _graphsStore;
-  final BalanceStore _balanceStore;
   final AccountStore _accountStore;
 
   const GraphicsScreen({
@@ -23,7 +22,6 @@ class GraphicsScreen extends StatefulWidget {
     required BalanceStore balanceStore,
     required AccountStore accountStore,
   })  : _graphsStore = graphsStore,
-        _balanceStore = balanceStore,
         _accountStore = accountStore;
 
   @override
@@ -69,8 +67,6 @@ class _GraphicsScreenState extends State<GraphicsScreen> {
       onRefresh: _fetchData,
       child: UmbrellaScaffold(
         appBar: CustomAppBar(
-          accountStore: widget._accountStore,
-          balanceStore: widget._balanceStore,
           showBalances: showAppBarFuncs,
           showMonthChanger: showAppBarFuncs,
           onMonthChange: (_, __) {},

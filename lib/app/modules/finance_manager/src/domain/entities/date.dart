@@ -176,6 +176,9 @@ class Date extends Equatable implements Comparable<Date> {
     return Date(day: datetime.day, month: datetime.month, year: datetime.year);
   }
 
+  static Date fromMonth(int month, int year) =>
+      Date(day: 1, month: month, year: year);
+
   @override
   String toString({
     DateFormat format = DateFormat.iso,

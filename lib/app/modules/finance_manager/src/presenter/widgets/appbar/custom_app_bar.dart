@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:umbrella_echonomics/app/modules/bind_service_provider.dart';
 import '../../../domain/entities/account.dart';
 import '../../controllers/account_store.dart';
-import '../../controllers/balance_store.dart';
+import '../../controllers/new_balance_store.dart';
 import '../../utils/umbrella_palette.dart';
 import '../../../domain/entities/date.dart';
 import '../icons/drawer_icon.dart';
@@ -10,26 +11,18 @@ import '../texts/title_text.dart';
 import 'balances_section.dart';
 import 'month_changer.dart';
 
+// ignore: must_be_immutable
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
-  const CustomAppBar({
+  CustomAppBar({
     super.key,
     this.title,
     this.onMonthChange,
     this.monthAndYear,
     this.showBalances = true,
     this.showMonthChanger = false,
-    this.balanceStore,
-    this.accountStore,
-  })  : assert(
-          (showMonthChanger && onMonthChange != null) || !showMonthChanger,
-          'onMonthChange must be provided if showMonthChanger is true',
-        ),
-        assert(
-          (showBalances && balanceStore != null && accountStore != null) ||
-              !showBalances,
-          'balance and account store must be provided if the balances will be shown',
-        );
-
+  }) {
+    _assignStores();
+  }
   final Date? monthAndYear;
   final String? title;
 
@@ -39,8 +32,8 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final bool showBalances;
   final bool showMonthChanger;
 
-  final BalanceStore? balanceStore;
-  final AccountStore? accountStore;
+  late NewBalanceStore _balanceStore;
+  late AccountStore _accountStore;
 
   @override
   State<CustomAppBar> createState() => _CustomAppBarState();
@@ -55,22 +48,24 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
 
     return Size.fromHeight(height - 20.0); //Margin
   }
+
+  void _assignStores() {
+    _balanceStore = BindServiceProvider.get();
+    _accountStore = BindServiceProvider.get();
+  }
 }
 
 class _CustomAppBarState extends State<CustomAppBar> {
-  late Date balanceVisualisationDate;
-
   @override
   void initState() {
     super.initState();
-    widget.accountStore?.addSelectedAccountListener(_onSelectedAccountChanged);
-    balanceVisualisationDate = MonthChanger.currentMonthAndYear;
+    widget._accountStore.addSelectedAccountListener(_onSelectedAccountChanged);
   }
 
   @override
   void dispose() {
-    widget.accountStore
-        ?.removeSelectedAccountListener(_onSelectedAccountChanged);
+    widget._accountStore
+        .removeSelectedAccountListener(_onSelectedAccountChanged);
     super.dispose();
   }
 
@@ -109,9 +104,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
             Padding(
               padding: const EdgeInsets.only(top: 15.0),
               child: BalancesSection(
-                accountStore: widget.accountStore!,
-                balanceStore: widget.balanceStore!,
-                visualisationDate: balanceVisualisationDate,
+                accountStore: widget._accountStore,
+                balanceStore: widget._balanceStore,
               ),
             ),
         ],
@@ -127,36 +121,22 @@ class _CustomAppBarState extends State<CustomAppBar> {
     Future(() {
       widget.onMonthChange!.call(month, year);
       _fetchBalance();
-
-      setState(() {
-        balanceVisualisationDate = Date(day: 1, month: month, year: year);
-      });
     });
   }
 
   void _fetchBalance() {
-    if (widget.accountStore == null) return;
-
-    var date = MonthChanger.currentMonthAndYear;
-
-    int month = date.month, year = date.year;
-
-    var selected = widget.accountStore?.selectedAccount;
+    var selected = widget._accountStore.selectedAccount;
 
     if (selected != null) {
-      widget.balanceStore?.get(
-        month: month,
-        year: year,
+      widget._balanceStore.get(
         account: selected,
       );
 
       return;
     }
 
-    widget.balanceStore?.getForAll(
-      month: month,
-      year: year,
-      accounts: widget.accountStore!.state,
+    widget._balanceStore.getForAll(
+      accounts: widget._accountStore.state,
     );
   }
 }

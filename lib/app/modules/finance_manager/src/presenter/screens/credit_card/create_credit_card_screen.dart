@@ -3,7 +3,6 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/wi
 
 import '../../../domain/entities/account.dart';
 import '../../../domain/entities/credit_card.dart';
-import '../../controllers/balance_store.dart';
 import '../../utils/umbrella_palette.dart';
 import '../../controllers/account_store.dart';
 import '../../controllers/credit_card_store.dart';
@@ -27,14 +26,11 @@ class CreateCreditCardScreen extends StatefulWidget {
   const CreateCreditCardScreen({
     super.key,
     required AccountStore accountStore,
-    required BalanceStore balanceStore,
     required CreditCardStore cardStore,
   })  : _accountStore = accountStore,
-        _balanceStore = balanceStore,
         _cardStore = cardStore;
 
   final AccountStore _accountStore;
-  final BalanceStore _balanceStore;
   final CreditCardStore _cardStore;
 
   @override
@@ -79,8 +75,6 @@ class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
     return UmbrellaScaffold(
       appBar: CustomAppBar(
         title: 'Novo Cartão',
-        accountStore: widget._accountStore,
-        balanceStore: widget._balanceStore,
       ),
       child: SingleChildScrollView(
         child: MyForm(

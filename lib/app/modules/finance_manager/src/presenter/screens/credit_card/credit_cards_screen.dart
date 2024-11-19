@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/credit_card.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/balance_store.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/appbar/custom_app_bar.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/tappable/credit_card_tappable_options.dart';
 
-import '../../controllers/account_store.dart';
 import '../../widgets/buttons/navigation_icon_button.dart';
 import '../../controllers/credit_card_store.dart';
 import '../../widgets/buttons/navigation_button.dart';
@@ -20,16 +18,10 @@ import '../../widgets/texts/medium_text.dart';
 class CreditCardsScreen extends StatefulWidget {
   const CreditCardsScreen({
     super.key,
-    required AccountStore accountStore,
-    required BalanceStore balanceStore,
     required CreditCardStore cardStore,
-  })  : _cardStore = cardStore,
-        _balanceStore = balanceStore,
-        _accountStore = accountStore;
+  }) : _cardStore = cardStore;
 
   final CreditCardStore _cardStore;
-  final AccountStore _accountStore;
-  final BalanceStore _balanceStore;
 
   @override
   State<CreditCardsScreen> createState() => _CreditCardsScreenState();
@@ -49,8 +41,6 @@ class _CreditCardsScreenState extends State<CreditCardsScreen> {
     return UmbrellaScaffold(
       appBar: CustomAppBar(
         title: 'Meus Cartões',
-        accountStore: widget._accountStore,
-        balanceStore: widget._balanceStore,
         showMonthChanger: true,
         onMonthChange: (_, __) {
           Future(_fetchCards);

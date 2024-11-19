@@ -58,7 +58,6 @@ abstract final class RegisterRoutes {
       UnmodularFormatFinanceRoutes.addIncome,
       child: (context) => CreateIncomeScreen(
         accountStore: _resolve(),
-        balanceStore: _resolve(),
         incomeStore: _resolve(),
         categoryStore: _resolve(),
       ),
@@ -70,8 +69,6 @@ abstract final class RegisterRoutes {
         income: r.args.data as Income,
         incomeStore: _resolve(),
         categoryStore: _resolve(),
-        accountStore: _resolve(),
-        balanceStore: _resolve(),
       ),
     );
 
@@ -104,7 +101,6 @@ abstract final class RegisterRoutes {
       UnmodularFormatFinanceRoutes.addExpense,
       child: (context) => CreateExpenseScreen(
         accountStore: _resolve(),
-        balanceStore: _resolve(),
         cardStore: _resolve(),
         expenseStore: _resolve(),
         categoryStore: _resolve(),
@@ -116,8 +112,6 @@ abstract final class RegisterRoutes {
       child: (ctx) => EditExpenseScreen(
         expenseStore: _resolve(),
         categoryStore: _resolve(),
-        accountStore: _resolve(),
-        balanceStore: _resolve(),
         expense: r.args.data as Expense,
       ),
     );
@@ -139,8 +133,6 @@ abstract final class RegisterRoutes {
       UnmodularFormatFinanceRoutes.cards,
       child: (context) => CreditCardsScreen(
         cardStore: _resolve(),
-        accountStore: _resolve(),
-        balanceStore: _resolve(),
       ),
       transition: TransitionType.scale,
     );
@@ -149,7 +141,6 @@ abstract final class RegisterRoutes {
       UnmodularFormatFinanceRoutes.addCard,
       child: (context) => CreateCreditCardScreen(
         accountStore: _resolve(),
-        balanceStore: _resolve(),
         cardStore: _resolve(),
       ),
     );
@@ -157,8 +148,6 @@ abstract final class RegisterRoutes {
       UnmodularFormatFinanceRoutes.updateCard,
       child: (ctx) => EditCreditCardScreen(
         card: r.args.data as CreditCard,
-        accountStore: _resolve(),
-        balanceStore: _resolve(),
         cardStore: _resolve(),
       ),
     );

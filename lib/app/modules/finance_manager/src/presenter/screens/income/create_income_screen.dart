@@ -6,7 +6,6 @@ import '../../../domain/entities/date.dart';
 import '../../../domain/entities/frequency.dart';
 import '../../../domain/entities/income.dart';
 import '../../../errors/api_errors.dart';
-import '../../controllers/balance_store.dart';
 import '../../utils/currency_input_formatter.dart';
 import '../../utils/umbrella_palette.dart';
 import '../../controllers/account_store.dart';
@@ -36,14 +35,11 @@ class CreateIncomeScreen extends StatefulWidget {
     required AccountStore accountStore,
     required IncomeStore incomeStore,
     required IncomeCategoryStore categoryStore,
-    required BalanceStore balanceStore,
   })  : _accountStore = accountStore,
-        _balanceStore = balanceStore,
         _incomeStore = incomeStore,
         _categoryStore = categoryStore;
 
   final AccountStore _accountStore;
-  final BalanceStore _balanceStore;
   final IncomeStore _incomeStore;
   final IncomeCategoryStore _categoryStore;
 
@@ -96,8 +92,6 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
   Widget build(BuildContext context) {
     return UmbrellaScaffold(
       appBar: CustomAppBar(
-        accountStore: widget._accountStore,
-        balanceStore: widget._balanceStore,
         title: 'Nova Receita',
       ),
       child: SingleChildScrollView(

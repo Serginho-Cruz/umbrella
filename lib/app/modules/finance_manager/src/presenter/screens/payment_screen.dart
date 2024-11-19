@@ -128,8 +128,6 @@ class _PaymentScreenState<E extends Paiyable> extends State<PaymentScreen> {
             title: widget.model is IncomeModel ? 'Recebimento' : 'Pagamento',
             showMonthChanger: true,
             onMonthChange: (_, __) {},
-            accountStore: widget.accountStore,
-            balanceStore: widget.balanceStore,
           ),
           child: ListView(
             physics: const ClampingScrollPhysics(),

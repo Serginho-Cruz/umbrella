@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_triple/flutter_triple.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/balance_store.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/expense_category_store.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/dialogs/umbrella_dialogs.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/forms/my_form.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/layout/spaced.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/list_segmented_state_widget.dart';
 import '../../../domain/entities/category.dart';
 import '../../../domain/entities/date.dart';
 import '../../../domain/entities/expense.dart';
 import '../../../domain/entities/frequency.dart';
-import '../../controllers/account_store.dart';
 import '../../controllers/expense_store.dart';
 import '../../widgets/appbar/custom_app_bar.dart';
 import '../../widgets/simple_information/account_name.dart';
@@ -29,19 +28,13 @@ class EditExpenseScreen extends StatefulWidget {
     super.key,
     required ExpenseStore expenseStore,
     required ExpenseCategoryStore categoryStore,
-    required AccountStore accountStore,
-    required BalanceStore balanceStore,
     required Expense expense,
   })  : _expenseStore = expenseStore,
         _categoryStore = categoryStore,
-        _accountStore = accountStore,
-        _balanceStore = balanceStore,
         _expense = expense;
 
   final ExpenseStore _expenseStore;
   final ExpenseCategoryStore _categoryStore;
-  final AccountStore _accountStore;
-  final BalanceStore _balanceStore;
   final Expense _expense;
 
   @override
@@ -97,8 +90,6 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
     return UmbrellaScaffold(
       appBar: CustomAppBar(
         title: 'Editar Despesa',
-        accountStore: widget._accountStore,
-        balanceStore: widget._balanceStore,
       ),
       child: SingleChildScrollView(
         child: MyForm(
@@ -161,32 +152,34 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                 },
               ),
             ),
-            ScopedBuilder<ExpenseCategoryStore, List<Category>>(
-              store: widget._categoryStore,
-              onState: (ctx, categories) => CategorySelector(
-                categories: categories,
-                onSelected: (cat) {
-                  setState(() {
-                    category = cat;
-                  });
-                },
-                child: CategoryRow(
+            Observer(
+              builder: (_) => ListSegmentedStateWidget<Category>(
+                state: widget._categoryStore.state,
+                onState: (ctx, categories) => CategorySelector(
+                  categories: categories,
+                  onSelected: (cat) {
+                    setState(() {
+                      category = cat;
+                    });
+                  },
+                  child: CategoryRow(
+                    category: category,
+                    padding: const EdgeInsets.only(
+                      top: 8.0,
+                      bottom: 8.0,
+                    ),
+                  ),
+                ),
+                onFail: (context, e) => CategoryRow(
                   category: category,
                   padding: const EdgeInsets.only(
                     top: 8.0,
                     bottom: 8.0,
                   ),
                 ),
+                onLoading: (context) =>
+                    const CircularProgressIndicator.adaptive(),
               ),
-              onError: (context, e) => CategoryRow(
-                category: category,
-                padding: const EdgeInsets.only(
-                  top: 8.0,
-                  bottom: 8.0,
-                ),
-              ),
-              onLoading: (context) =>
-                  const CircularProgressIndicator.adaptive(),
             ),
             DefaultTextField(
               height: 70.0,

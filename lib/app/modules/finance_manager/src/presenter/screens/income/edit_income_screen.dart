@@ -4,8 +4,6 @@ import '../../../domain/entities/category.dart';
 import '../../../domain/entities/date.dart';
 import '../../../domain/entities/frequency.dart';
 import '../../../domain/entities/income.dart';
-import '../../controllers/account_store.dart';
-import '../../controllers/balance_store.dart';
 import '../../controllers/income_store.dart';
 import '../../controllers/income_category_store.dart';
 import '../../widgets/appbar/custom_app_bar.dart';
@@ -31,19 +29,13 @@ class EditIncomeScreen extends StatefulWidget {
     required IncomeStore incomeStore,
     required IncomeCategoryStore categoryStore,
     required Income income,
-    required AccountStore accountStore,
-    required BalanceStore balanceStore,
   })  : _incomeStore = incomeStore,
         _categoryStore = categoryStore,
-        _accountStore = accountStore,
-        _balanceStore = balanceStore,
         _income = income;
 
   final IncomeStore _incomeStore;
   final IncomeCategoryStore _categoryStore;
   final Income _income;
-  final AccountStore _accountStore;
-  final BalanceStore _balanceStore;
 
   @override
   State<EditIncomeScreen> createState() => _EditIncomeScreenState();
@@ -97,8 +89,6 @@ class _EditIncomeScreenState extends State<EditIncomeScreen> {
     return UmbrellaScaffold(
       appBar: CustomAppBar(
         title: 'Editar Receita',
-        accountStore: widget._accountStore,
-        balanceStore: widget._balanceStore,
       ),
       child: SingleChildScrollView(
         child: MyForm(

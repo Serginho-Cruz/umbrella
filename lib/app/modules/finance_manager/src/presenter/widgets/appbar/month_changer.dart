@@ -1,18 +1,21 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:umbrella_echonomics/app/modules/bind_service_provider.dart';
 
 import '../../../domain/entities/date.dart';
+import '../../controllers/month_store.dart';
 import '../texts/big_text.dart';
 
 class MonthChanger extends StatefulWidget {
+  final MonthStore _monthStore = BindServiceProvider.get<MonthStore>();
+
   MonthChanger({super.key, required this.onMonthChange, Date? monthAndYear}) {
     if (monthAndYear != null) {
-      MonthChanger.currentMonthAndYear = monthAndYear;
+      _monthStore.set(monthAndYear);
     }
   }
-
-  static Date currentMonthAndYear = Date.today();
 
   final void Function(int, int) onMonthChange;
 
@@ -52,10 +55,7 @@ class _MonthChangerState extends State<MonthChanger>
       fadeController.reverse(),
     ]);
 
-    setState(() {
-      MonthChanger.currentMonthAndYear = MonthChanger.currentMonthAndYear
-          .copyWith(month: MonthChanger.currentMonthAndYear.month + 1);
-    });
+    widget._monthStore.moveToNext();
 
     slideController
       ..reset()
@@ -72,10 +72,7 @@ class _MonthChangerState extends State<MonthChanger>
       fadeController.reverse(),
     ]);
 
-    setState(() {
-      MonthChanger.currentMonthAndYear = MonthChanger.currentMonthAndYear
-          .copyWith(month: MonthChanger.currentMonthAndYear.month - 1);
-    });
+    widget._monthStore.moveToPrevious();
 
     slideController
       ..value = 1.0
@@ -102,23 +99,24 @@ class _MonthChangerState extends State<MonthChanger>
               toPreviousMonth();
               timer.cancel();
               timer = Timer(const Duration(milliseconds: 2000), () {
-                widget.onMonthChange(
-                  MonthChanger.currentMonthAndYear.month,
-                  MonthChanger.currentMonthAndYear.year,
-                );
+                var (:month, :year) = widget._monthStore.month;
+                widget.onMonthChange(month, year);
               });
             }
           },
         ),
-        FadeTransition(
-          opacity: fadeController,
-          child: SlideTransition(
-            position: slideAnimation,
-            child: BigText.bold(
-              '${MonthChanger.currentMonthAndYear.monthName} ${MonthChanger.currentMonthAndYear.year}',
+        Observer(builder: (_) {
+          var (:month, :year) = widget._monthStore.month;
+
+          String name = Date(day: 1, month: month, year: year).monthName;
+          return FadeTransition(
+            opacity: fadeController,
+            child: SlideTransition(
+              position: slideAnimation,
+              child: BigText.bold('$name $year'),
             ),
-          ),
-        ),
+          );
+        }),
         IconButton(
           icon: const Icon(
             Icons.arrow_forward_ios_rounded,
@@ -130,10 +128,8 @@ class _MonthChangerState extends State<MonthChanger>
               toNextMonth();
               timer.cancel();
               timer = Timer(const Duration(seconds: 2), () {
-                widget.onMonthChange(
-                  MonthChanger.currentMonthAndYear.month,
-                  MonthChanger.currentMonthAndYear.year,
-                );
+                var (:month, :year) = widget._monthStore.month;
+                widget.onMonthChange(month, year);
               });
             }
           },
@@ -145,10 +141,8 @@ class _MonthChangerState extends State<MonthChanger>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    widget.onMonthChange(
-      MonthChanger.currentMonthAndYear.month,
-      MonthChanger.currentMonthAndYear.year,
-    );
+    var (:month, :year) = widget._monthStore.month;
+    widget.onMonthChange(month, year);
   }
 
   @override

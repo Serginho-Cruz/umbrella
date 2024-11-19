@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/appbar/custom_app_bar.dart';
 
 import '../../../domain/entities/credit_card.dart';
-import '../../controllers/account_store.dart';
-import '../../controllers/balance_store.dart';
 import '../../utils/umbrella_palette.dart';
 import '../../controllers/credit_card_store.dart';
 import '../../widgets/simple_information/account_name.dart';
@@ -25,16 +23,10 @@ class EditCreditCardScreen extends StatefulWidget {
   const EditCreditCardScreen({
     super.key,
     required CreditCardStore cardStore,
-    required AccountStore accountStore,
-    required BalanceStore balanceStore,
     required CreditCard card,
   })  : _cardStore = cardStore,
-        _accountStore = accountStore,
-        _balanceStore = balanceStore,
         _card = card;
 
-  final AccountStore _accountStore;
-  final BalanceStore _balanceStore;
   final CreditCardStore _cardStore;
   final CreditCard _card;
 
@@ -87,8 +79,6 @@ class _EditCreditCardScreenState extends State<EditCreditCardScreen> {
     return UmbrellaScaffold(
       appBar: CustomAppBar(
         title: 'Editar Cartão',
-        accountStore: widget._accountStore,
-        balanceStore: widget._balanceStore,
       ),
       child: SingleChildScrollView(
         child: MyForm(
