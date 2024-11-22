@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:umbrella_echonomics/app/modules/bind_service_provider.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/list_segmented_state_widget.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/tiles/finance_tile.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/round.dart';
 import '../../../domain/entities/account.dart';
@@ -134,11 +135,8 @@ class _IncomesScreenState extends State<IncomesScreen> {
           floatingActionButton: NavigationIconButton(
             route: '/finance_manager/income/add',
             onPop: () {
-              var (:month, :year) = BindServiceProvider.get<MonthStore>().month;
               widget._balanceStore.getForAll(
                 accounts: accounts,
-                month: month,
-                year: year,
               );
               _fetchIncomes();
             },
@@ -185,11 +183,11 @@ class _IncomesScreenState extends State<IncomesScreen> {
                     },
                   ),
                   const SizedBox(height: 30.0),
-                  ScopedBuilder<IncomeCategoryStore, List<Category>>(
-                    store: widget._categoryStore,
+                  ListSegmentedStateWidget(
+                    state: widget._categoryStore.state,
                     onLoading: (ctx) =>
                         const CircularProgressIndicator.adaptive(),
-                    onError: (ctx, fail) => _mountFilter(),
+                    onFail: (ctx, fail) => _mountFilter(),
                     onState: (ctx, categories) => _mountFilter(categories),
                   ),
                   const SizedBox(height: 30.0),
@@ -259,13 +257,8 @@ class _IncomesScreenState extends State<IncomesScreen> {
                               store: widget._incomeStore,
                               accountStore: widget._accountStore,
                               onPop: () {
-                                var (:month, :year) =
-                                    BindServiceProvider.get<MonthStore>().month;
-
                                 widget._balanceStore.getForAll(
                                   accounts: accounts,
-                                  month: month,
-                                  year: year,
                                 );
                                 _fetchIncomes();
                               },

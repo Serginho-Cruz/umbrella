@@ -181,14 +181,16 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                     const CircularProgressIndicator.adaptive(),
               ),
             ),
-            DefaultTextField(
-              height: 70.0,
-              controller: personNameFieldController,
-              focusNode: personNameFocusNode,
-              labelText: 'A Quem você deve isso? (Opcional)',
-              maxLength: 20,
-              validator: (_) => null,
+            Padding(
               padding: const EdgeInsets.only(top: 30.0),
+              child: DefaultTextField(
+                height: 70.0,
+                controller: personNameFieldController,
+                focusNode: personNameFocusNode,
+                labelText: 'A Quem você deve isso? (Opcional)',
+                maxLength: 20,
+                validator: (_) => null,
+              ),
             ),
             Spaced(
               padding: const EdgeInsets.symmetric(vertical: 20.0),

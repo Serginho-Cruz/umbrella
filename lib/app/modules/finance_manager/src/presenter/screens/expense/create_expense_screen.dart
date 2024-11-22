@@ -289,9 +289,9 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                   },
                   children: [
                     const SizedBox(height: 30.0),
-                    ListScopedBuilder<CreditCardStore, List<CreditCard>>(
-                      store: widget._cardStore,
-                      loadingWidget: const Stack(
+                    ListSegmentedStateWidget(
+                      state: widget._cardStore.state,
+                      onLoading: (ctx) => const Stack(
                         children: [
                           ShimmerContainer(
                             width: 275,
@@ -299,6 +299,32 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                           ),
                           Text('Obtendo Cartões...'),
                         ],
+                      ),
+                      onFail: (ctx, error) => Container(
+                        width: 275,
+                        height: 150,
+                        color: Colors.grey,
+                        child: const MediumText(
+                          'Erro ao Obter os Cartões',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      onEmpty: (ctx) => Container(
+                        width: 275,
+                        height: 150,
+                        color: Colors.grey,
+                        child: const Column(
+                          children: [
+                            MediumText(
+                              'Nenhum Cartão Cadastrado',
+                              textAlign: TextAlign.center,
+                            ),
+                            TextLink(
+                              route: '/finance_manager/home',
+                              text: 'Cadastre um Agora',
+                            ),
+                          ],
+                        ),
                       ),
                       onState: (ctx, state) {
                         return Column(
@@ -350,32 +376,6 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                           ],
                         );
                       },
-                      onError: (ctx, error) => Container(
-                        width: 275,
-                        height: 150,
-                        color: Colors.grey,
-                        child: const MediumText(
-                          'Erro ao Obter os Cartões',
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      onEmptyState: () => Container(
-                        width: 275,
-                        height: 150,
-                        color: Colors.grey,
-                        child: const Column(
-                          children: [
-                            MediumText(
-                              'Nenhum Cartão Cadastrado',
-                              textAlign: TextAlign.center,
-                            ),
-                            TextLink(
-                              route: '/finance_manager/home',
-                              text: 'Cadastre um Agora',
-                            ),
-                          ],
-                        ),
-                      ),
                     ),
                     ExpansionTile(
                       title: const MediumText('Despesa Parcelada'),
@@ -437,14 +437,16 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                     ),
                   ],
                 ),
-                DefaultTextField(
-                  height: 70.0,
-                  controller: _personNameFieldController,
-                  focusNode: _personNameFocusNode,
-                  labelText: 'A Quem você deve isso? (Opcional)',
-                  maxLength: 20,
-                  validator: (_) => null,
+                Padding(
                   padding: const EdgeInsets.only(top: 30.0),
+                  child: DefaultTextField(
+                    height: 70.0,
+                    controller: _personNameFieldController,
+                    focusNode: _personNameFocusNode,
+                    labelText: 'A Quem você deve isso? (Opcional)',
+                    maxLength: 20,
+                    validator: (_) => null,
+                  ),
                 ),
               ],
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 
 import '../../../domain/entities/account.dart';
 import '../../../domain/entities/category.dart';
@@ -14,6 +15,7 @@ import '../../controllers/income_category_store.dart';
 import '../../widgets/appbar/custom_app_bar.dart';
 import '../../widgets/buttons/primary_button.dart';
 import '../../widgets/buttons/reset_button.dart';
+import '../../widgets/others/list_segmented_state_widget.dart';
 import '../../widgets/simple_information/category_row.dart';
 import '../../widgets/layout/umbrella_scaffold.dart';
 import '../../widgets/selectors/category_selector.dart';
@@ -176,63 +178,67 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
                 },
               ),
             ),
-            ListScopedBuilder<IncomeCategoryStore, List<Category>>(
-              store: widget._categoryStore,
-              loadingWidget: const CircularProgressIndicator.adaptive(),
-              onEmptyState: () {
-                UmbrellaDialogs.showError(
-                  context,
-                  "Não foi possível obter as Categorias. Por favor, aperte em 'Tentar novamente'",
-                  onRetry: () => widget._categoryStore.getAll(),
-                );
-                return const SizedBox.shrink();
-              },
-              onError: (ctx, fail) {
-                fail is NetworkFail
-                    ? UmbrellaDialogs.showNetworkProblem(context,
-                        onRetry: () => widget._categoryStore.getAll())
-                    : UmbrellaDialogs.showError(context, fail.message,
-                        onRetry: () => widget._categoryStore.getAll());
+            Observer(builder: (_) {
+              return ListSegmentedStateWidget(
+                state: widget._categoryStore.state,
+                onLoading: (ctx) => const CircularProgressIndicator.adaptive(),
+                onFail: (ctx, fail) {
+                  fail is NetworkFail
+                      ? UmbrellaDialogs.showNetworkProblem(context,
+                          onRetry: () => widget._categoryStore.getAll())
+                      : UmbrellaDialogs.showError(context, fail.message,
+                          onRetry: () => widget._categoryStore.getAll());
 
-                /*TODO Create a Widget that substitutes the category selector on fetch error and empty state */
-                return const SizedBox.shrink();
-              },
-              onState: (ctx, categories) => CategorySelector(
-                categories: categories,
-                onSelected: (newCategory) {
-                  setState(() {
-                    category = newCategory;
-                    if (logicalCategoryError != null) {
-                      logicalCategoryError = null;
-                    }
-                  });
+                  /*TODO Create a Widget that substitutes the category selector on fetch error and empty state */
+                  return const SizedBox.shrink();
                 },
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CategoryRow(
-                      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                      category: category,
-                    ),
-                    Visibility(
-                      visible: logicalCategoryError != null,
-                      child: SmallText(
-                        logicalCategoryError.toString(),
-                        color: UmbrellaPalette.errorColor,
+                onEmpty: (ctx) {
+                  UmbrellaDialogs.showError(
+                    context,
+                    "Não foi possível obter as Categorias. Por favor, aperte em 'Tentar novamente'",
+                    onRetry: () => widget._categoryStore.getAll(),
+                  );
+                  return const SizedBox.shrink();
+                },
+                onState: (ctx, st) => CategorySelector(
+                  categories: st,
+                  onSelected: (newCategory) {
+                    setState(() {
+                      category = newCategory;
+                      if (logicalCategoryError != null) {
+                        logicalCategoryError = null;
+                      }
+                    });
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CategoryRow(
+                        padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                        category: category,
                       ),
-                    ),
-                  ],
+                      Visibility(
+                        visible: logicalCategoryError != null,
+                        child: SmallText(
+                          logicalCategoryError.toString(),
+                          color: UmbrellaPalette.errorColor,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ),
-            DefaultTextField(
-              height: 70.0,
-              controller: personNameFieldController,
-              focusNode: personNameFocusNode,
-              labelText: 'Quem deve isso a você? (Opcional)',
-              maxLength: 20,
-              validator: (_) => null,
+              );
+            }),
+            Padding(
               padding: const EdgeInsets.only(top: 30.0),
+              child: DefaultTextField(
+                height: 70.0,
+                controller: personNameFieldController,
+                focusNode: personNameFocusNode,
+                labelText: 'Quem deve isso a você? (Opcional)',
+                maxLength: 20,
+                validator: (_) => null,
+              ),
             ),
             Spaced(
               padding: const EdgeInsets.symmetric(vertical: 20.0),

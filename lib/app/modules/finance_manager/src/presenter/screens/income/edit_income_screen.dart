@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/list_segmented_state_widget.dart';
 
 import '../../../domain/entities/category.dart';
 import '../../../domain/entities/date.dart';
@@ -19,7 +20,6 @@ import '../../widgets/dialogs/umbrella_dialogs.dart';
 import '../../widgets/forms/default_text_field.dart';
 import '../../widgets/selectors/frequency_selector.dart';
 import '../../widgets/forms/my_form.dart';
-import '../../widgets/others/list_scoped_builder.dart';
 import '../../widgets/texts/medium_text.dart';
 import '../../widgets/simple_information/value_row.dart';
 
@@ -151,14 +151,14 @@ class _EditIncomeScreenState extends State<EditIncomeScreen> {
                 },
               ),
             ),
-            ListScopedBuilder<IncomeCategoryStore, List<Category>>(
-              store: widget._categoryStore,
-              loadingWidget: const CircularProgressIndicator.adaptive(),
-              onEmptyState: () => CategoryRow(
+            ListSegmentedStateWidget(
+              state: widget._categoryStore.state,
+              onLoading: (ctx) => const CircularProgressIndicator.adaptive(),
+              onEmpty: (ctx) => CategoryRow(
                 padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
                 category: category,
               ),
-              onError: (ctx, fail) => CategoryRow(
+              onFail: (ctx, fail) => CategoryRow(
                 padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
                 category: category,
               ),
@@ -175,14 +175,16 @@ class _EditIncomeScreenState extends State<EditIncomeScreen> {
                 ),
               ),
             ),
-            DefaultTextField(
-              height: 70.0,
-              controller: personNameFieldController,
-              focusNode: personNameFocusNode,
-              labelText: 'Quem deve isso a você? (Opcional)',
-              maxLength: 20,
-              validator: (_) => null,
+            Padding(
               padding: const EdgeInsets.only(top: 30.0),
+              child: DefaultTextField(
+                height: 70.0,
+                controller: personNameFieldController,
+                focusNode: personNameFocusNode,
+                labelText: 'Quem deve isso a você? (Opcional)',
+                maxLength: 20,
+                validator: (_) => null,
+              ),
             ),
             Spaced(
               padding: const EdgeInsets.symmetric(vertical: 20.0),

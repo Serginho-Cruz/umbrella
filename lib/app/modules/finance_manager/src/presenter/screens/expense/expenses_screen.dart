@@ -137,12 +137,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           floatingActionButton: NavigationIconButton(
             route: '/finance_manager/expense/add',
             onPop: () {
-              var (:month, :year) = BindServiceProvider.get<MonthStore>().month;
-
               widget._balanceStore.getForAll(
                 accounts: accounts,
-                month: month,
-                year: year,
               );
               _fetchExpenses();
             },
@@ -268,14 +264,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                                 store: widget._expenseStore,
                                 accountStore: widget._accountStore,
                                 onPop: () {
-                                  var (:month, :year) =
-                                      BindServiceProvider.get<MonthStore>()
-                                          .month;
-
                                   widget._balanceStore.getForAll(
                                     accounts: accounts,
-                                    month: month,
-                                    year: year,
                                   );
                                   _fetchExpenses();
                                 },
