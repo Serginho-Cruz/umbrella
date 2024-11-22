@@ -62,7 +62,7 @@ class FinanceFilter<T extends FinanceModel> extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         UmbrellaSearchBar(
-          searchFunction: filterName,
+          onSubmitted: filterName,
           width: MediaQuery.sizeOf(context).width * 0.9 - 75.0,
           height: 50.0,
         ),

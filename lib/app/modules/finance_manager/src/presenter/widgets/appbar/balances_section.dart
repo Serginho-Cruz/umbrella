@@ -10,7 +10,7 @@ import '../../../domain/entities/account.dart';
 import '../../../domain/entities/date.dart';
 import '../../../domain/states/state.dart' as s;
 import '../../controllers/account_store.dart';
-import '../../controllers/new_balance_store.dart';
+import '../../controllers/balance_store.dart';
 import '../../utils/umbrella_palette.dart';
 import '../../utils/umbrella_sizes.dart';
 import '../layout/spaced.dart';
@@ -28,7 +28,7 @@ class BalancesSection extends StatefulWidget {
   });
 
   final AccountStore accountStore;
-  final NewBalanceStore balanceStore;
+  final BalanceStore balanceStore;
 
   @override
   State<BalancesSection> createState() => _BalancesSectionState();

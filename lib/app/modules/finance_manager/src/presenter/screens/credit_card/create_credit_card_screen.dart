@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/appbar/custom_app_bar.dart';
 
 import '../../../domain/entities/account.dart';
 import '../../../domain/entities/credit_card.dart';
+import '../../controllers/credit_card_store.dart';
 import '../../utils/umbrella_palette.dart';
 import '../../controllers/account_store.dart';
-import '../../controllers/credit_card_store.dart';
 import '../../widgets/buttons/primary_button.dart';
 import '../../widgets/buttons/reset_button.dart';
 import '../../widgets/others/card_preview_section.dart';
@@ -39,35 +40,14 @@ class CreateCreditCardScreen extends StatefulWidget {
 
 class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
   final GlobalKey<FormState> formKey = GlobalKey();
-  late final TextEditingController nameFieldController;
-
-  late final FocusNode nameFieldFocusNode;
-
-  Account? account;
-  int invoiceCloseDay = 1;
-  int invoiceDueDate = 10;
-
-  String hexColor = '';
-  String colorName = '';
 
   @override
   void initState() {
     super.initState();
-    nameFieldController = TextEditingController();
-
-    nameFieldFocusNode = FocusNode();
 
     var first = UmbrellaPalette.cardHexAndNames.keys.first;
-    hexColor = first;
-    colorName = UmbrellaPalette.cardHexAndNames[first]!;
-    account = widget._accountStore.state.firstWhere((acc) => acc.isDefault);
-  }
 
-  @override
-  void dispose() {
-    nameFieldController.dispose();
-    nameFieldFocusNode.dispose();
-    super.dispose();
+    widget._cardStore.setColor(first);
   }
 
   @override
@@ -91,86 +71,76 @@ class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
               onError: (ctx, fail) => Text(fail.message),
               onEmptyState: () => Container(),
               onState: (ctx, accounts) {
-                account =
-                    account ?? accounts.singleWhere((acc) => acc.isDefault);
+                Account acc = accounts.firstWhere((ac) => ac.isDefault);
+
+                widget._cardStore.setAccount(acc);
 
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 15.0),
                   child: AccountSelector(
                     accounts: accounts,
-                    selectedAccount: account!,
+                    selectedAccount: widget._cardStore.account,
                     label: 'Conta a debitar',
-                    onSelected: (acc) {
-                      setState(() {
-                        account = acc;
-                      });
-                    },
+                    onSelected: widget._cardStore.setAccount,
                   ),
                 );
               },
             ),
-            DefaultTextField(
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Preencha o campo Nome';
-                }
-
-                if (value.length < 5) {
-                  return 'O Nome deve conter pelo menos 5 letras';
-                }
-
-                return null;
-              },
-              controller: nameFieldController,
-              focusNode: nameFieldFocusNode,
-              maxLength: 30,
-              labelText: 'Nome',
-              onEditingComplete: () {
-                nameFieldFocusNode.unfocus();
-              },
-              padding: const EdgeInsets.only(bottom: 40),
-            ),
-            DaySelector(
-              bottomSheetText:
-                  'Selecione o Dia do Fechamento da fatura desse cartão',
-              onDaySelected: (day) {
-                setState(() => invoiceCloseDay = day);
-              },
-              child: Spaced(
-                padding: const EdgeInsets.symmetric(vertical: 10.0),
-                first: const BigText('Fecham. da Fatura'),
-                second: BigText('Dia $invoiceCloseDay'),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 40.0),
+              child: Observer(
+                builder: (_) => DefaultTextField(
+                  validator: widget._cardStore.validateName,
+                  maxLength: 30,
+                  labelText: 'Nome',
+                  onChanged: widget._cardStore.setName,
+                  readOnly: widget._cardStore.isLoading,
+                ),
               ),
             ),
-            DaySelector(
-              bottomSheetText:
-                  'Selecione o Dia do Vencimento da fatura desse cartão',
-              onDaySelected: (day) {
-                setState(() => invoiceDueDate = day);
+            Observer(builder: (_) {
+              return DaySelector(
+                bottomSheetText:
+                    'Selecione o Dia do Fechamento da fatura desse cartão',
+                onDaySelected: widget._cardStore.setCloseDay,
+                child: Spaced(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  first: const BigText('Fecham. da Fatura'),
+                  second: BigText('Dia ${widget._cardStore.invoiceCloseDay}'),
+                ),
+              );
+            }),
+            Observer(builder: (_) {
+              return DaySelector(
+                bottomSheetText:
+                    'Selecione o Dia do Vencimento da fatura desse cartão',
+                onDaySelected: widget._cardStore.setDueDay,
+                child: Spaced(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  first: const BigText('Vencim. da Fatura'),
+                  second: BigText('Dia ${widget._cardStore.invoiceDueDay}'),
+                ),
+              );
+            }),
+            Observer(
+              builder: (_) {
+                String hex = widget._cardStore.color;
+                return ColorSelector(
+                  onSelected: widget._cardStore.setColor,
+                  child: ColorRow(
+                    colorHex: widget._cardStore.color,
+                    colorName: UmbrellaPalette.cardHexAndNames[hex] ?? "",
+                    label: 'Cor do Cartão',
+                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  ),
+                );
               },
-              child: Spaced(
-                padding: const EdgeInsets.symmetric(vertical: 10.0),
-                first: const BigText('Vencim. da Fatura'),
-                second: BigText('Dia $invoiceDueDate'),
-              ),
             ),
-            ColorSelector(
-              onSelected: (hex) {
-                setState(() {
-                  hexColor = hex;
-                  colorName = UmbrellaPalette.cardHexAndNames[hex]!;
-                });
-              },
-              child: ColorRow(
-                colorHex: hexColor,
-                colorName: colorName,
-                label: 'Cor do Cartão',
-                padding: const EdgeInsets.symmetric(vertical: 10.0),
+            Observer(
+              builder: (_) => CardPreviewSection(
+                card: _mountCard(),
+                isToShow: widget._cardStore.showPreview,
               ),
-            ),
-            CardPreviewSection(
-              card: mountCard(),
-              isToShow: nameFieldController.text.trim().isNotEmpty,
             ),
             Spaced(
               padding: const EdgeInsets.symmetric(vertical: 20.0),
@@ -191,83 +161,47 @@ class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
     );
   }
 
-  CreditCard mountCard() {
-    String name = nameFieldController.text.trim();
-
+  CreditCard _mountCard() {
     return CreditCard(
       id: '',
-      name: name,
-      accountToDiscountInvoice: account!,
-      cardInvoiceClosingDay: invoiceCloseDay,
-      cardInvoiceDueDay: invoiceDueDate,
-      color: hexColor,
+      name: widget._cardStore.name,
+      accountToDiscountInvoice: widget._cardStore.account!,
+      cardInvoiceClosingDay: widget._cardStore.invoiceCloseDay,
+      cardInvoiceDueDay: widget._cardStore.invoiceDueDay,
+      color: widget._cardStore.color,
     );
   }
 
   void onFormSubmitted() {
-    var (isValid, error) = validateForm();
+    bool isValid = formKey.currentState!.validate();
 
     if (!isValid) {
-      UmbrellaDialogs.showError(context, error);
+      UmbrellaDialogs.showError(context,
+          'O formulário contém erros. Corrija-os para cadastrar seu cartão');
       return;
     }
 
-    CreditCard card = CreditCard(
-      id: '',
-      accountToDiscountInvoice: account!,
-      name: nameFieldController.text,
-      color: hexColor,
-      cardInvoiceClosingDay: invoiceCloseDay,
-      cardInvoiceDueDay: invoiceDueDate,
-    );
+    widget._cardStore.register().then((fail) {
+      if (!mounted) return;
 
-    widget._cardStore.register(card).then((result) {
-      result.fold((success) {
-        UmbrellaDialogs.showSuccess(
-          context,
-          title: 'Cartão Cadastrado',
-          message:
-              'Seu Cartão de Crédito foi cadastrada com sucesso. Iremos redireciona-lo para a Tela Anterior',
-        ).then((_) {
-          Navigator.pop(context);
-        });
-      }, (failure) {
-        UmbrellaDialogs.showError(context, failure.message);
-      });
+      fail == null
+          ? UmbrellaDialogs.showSuccess(
+              context,
+              title: 'Cartão Cadastrado',
+              message:
+                  'Seu Cartão de Crédito foi cadastrada com sucesso. Iremos redireciona-lo para a Tela Anterior',
+            ).then((_) {
+              widget._cardStore.resetFields();
+              if (mounted) Navigator.pop(context);
+            })
+          : UmbrellaDialogs.showError(context, fail.message);
     });
-  }
-
-  (bool, String) validateForm() {
-    bool areFieldsValid = formKey.currentState!.validate();
-
-    if (!areFieldsValid) {
-      return (
-        false,
-        'Parece que o formulário contém erros. Corrija-os e tente denovo'
-      );
-    }
-
-    if (account == null) {
-      return (false, 'Uma conta precisa ser selecionada');
-    }
-
-    if (invoiceCloseDay == invoiceDueDate) {
-      return (false, 'A Fatura não pode fechar no mesmo dia do vencimento');
-    }
-
-    return (true, '');
   }
 
   void resetForm() {
     String hex = UmbrellaPalette.cardHexAndNames.keys.first;
-    String name = UmbrellaPalette.cardHexAndNames[hex]!;
-
-    setState(() {
-      nameFieldController.clear();
-      invoiceCloseDay = 1;
-      invoiceDueDate = 10;
-      hexColor = hex;
-      colorName = name;
-    });
+    widget._cardStore
+      ..resetFields()
+      ..setColor(hex);
   }
 }

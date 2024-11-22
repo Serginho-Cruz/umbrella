@@ -71,7 +71,7 @@ class Back4AppCreditCardDatasource implements CreditCardDatasource {
 
     object.set('isDeleted', true);
 
-    var response = await object.save();
+    var response = await object.update();
 
     if (isResponseSuccesful(response)) {
       return;

@@ -2,14 +2,13 @@ import 'package:flutter_modular/flutter_modular.dart' show Injector;
 
 import '../src/presenter/controllers/implementations.dart';
 import '../src/presenter/controllers/month_store.dart';
-import '../src/presenter/controllers/new_balance_store.dart';
 
 abstract class ControllersBindings {
   static void bind(Injector i) {
     i.addSingleton<MonthStore>(MonthStore.new);
 
-    i.addLazySingleton<NewBalanceStore>(() {
-      return NewBalanceStore(monthStore: i(), usecase: i());
+    i.addLazySingleton<BalanceStore>(() {
+      return BalanceStore(monthStore: i(), usecase: i());
     });
 
     i.addLazySingleton<AccountStore>(
@@ -19,15 +18,12 @@ abstract class ControllersBindings {
       ),
     );
 
-    i.addLazySingleton(
-      () => BalanceStore(i()),
-    );
-
     i.addLazySingleton<CreditCardStore>(
       () => CreditCardStore(
         manageCreditCard: i(),
         authStore: i(),
-        filterCards: i(),
+        filterCreditCard: i(),
+        validate: i(),
       ),
     );
 

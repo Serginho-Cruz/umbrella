@@ -1,78 +1,102 @@
-import 'package:flutter_triple/flutter_triple.dart';
+import 'package:mobx/mobx.dart';
+import 'package:result_dart/result_dart.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/round.dart';
 
 import '../../domain/entities/account.dart';
+import '../../domain/states/state.dart';
 import '../../domain/usecases/gets/get_balance.dart';
+import '../../errors/errors.dart';
+import 'month_store.dart';
+part 'balance_store.g.dart';
 
-class BalanceStore
-    extends Store<(double initial, double expected, double last)> {
-  BalanceStore(this._getBalance) : super((0.00, 0.00, 0.00));
+class BalanceStore = _BalanceStoreBase with _$BalanceStore;
 
-  final GetBalance _getBalance;
+typedef _DoubleResult = Future<Result<double, Fail>>;
+
+abstract class _BalanceStoreBase with Store {
+  final GetBalance _usecase;
+  final MonthStore _monthStore;
+
+  @observable
+  State<double> initial = const InitialState<double>();
+
+  @observable
+  State<double> expected = const InitialState<double>();
+
+  @observable
+  State<double> last = const InitialState<double>();
+
+  _BalanceStoreBase({
+    required GetBalance usecase,
+    required MonthStore monthStore,
+  })  : _usecase = usecase,
+        _monthStore = monthStore;
 
   Future<void> get({
-    required int month,
-    required int year,
     required Account account,
   }) async {
-    if (isLoading) return;
-
-    setLoading(true);
-
-    var balances = await Future.wait([
-      _getBalance.initialOf(month: month, year: year, account: account),
-      _getBalance.expectedOf(month: month, year: year, account: account),
-      _getBalance.finalOf(month: month, year: year, account: account),
-    ]);
-
-    if (balances.any((result) => result.isError())) {
-      setError(balances.firstWhere((r) => r.isError()).exceptionOrNull()!);
-      return;
-    }
-
-    var [initialResult, expectedResult, finalResult] = balances;
-
-    var initial = initialResult.getOrDefault(0.00);
-    var expected = expectedResult.getOrDefault(0.00);
-    var last = finalResult.getOrDefault(0.00);
-
-    update((initial, expected, last), force: true);
-
-    setLoading(false);
+    getForAll(accounts: [account]);
   }
 
   Future<void> getForAll({
-    required int month,
-    required int year,
     required List<Account> accounts,
   }) async {
-    if (isLoading) return;
+    if (initial is! LoadingState) {
+      initial = const LoadingState();
 
-    setLoading(true);
+      _fetch(_usecase.initialOf, accs: accounts).then((details) {
+        var (initialSum, fail) = details;
 
-    double initial = 0.00, expected = 0.00, last = 0.00;
-
-    for (var account in accounts) {
-      var balances = await Future.wait([
-        _getBalance.initialOf(month: month, year: year, account: account),
-        _getBalance.expectedOf(month: month, year: year, account: account),
-        _getBalance.finalOf(month: month, year: year, account: account),
-      ]);
-
-      if (balances.any((result) => result.isError())) {
-        setError(balances.firstWhere((r) => r.isError()).exceptionOrNull());
-        setLoading(false);
-        return;
-      }
-
-      var [initialResult, expectedResult, finalResult] = balances;
-
-      initial += initialResult.getOrDefault(0.00);
-      expected += expectedResult.getOrDefault(0.00);
-      last += finalResult.getOrDefault(0.00);
+        initial = fail != null ? FailState(fail) : SuccessState(initialSum);
+      });
     }
 
-    update((initial, expected, last), force: true);
+    if (expected is! LoadingState) {
+      expected = const LoadingState();
 
-    setLoading(false);
+      _fetch(_usecase.expectedOf, accs: accounts).then((details) {
+        var (expectedSum, fail) = details;
+
+        expected = fail != null ? FailState(fail) : SuccessState(expectedSum);
+      });
+    }
+
+    if (last is! LoadingState) {
+      last = const LoadingState();
+
+      _fetch(_usecase.finalOf, accs: accounts).then((details) {
+        var (finalSum, fail) = details;
+
+        last = fail != null ? FailState(fail) : SuccessState(finalSum);
+      });
+    }
+  }
+
+  Future<(double, Fail?)> _fetch(
+    _DoubleResult Function({
+      required int month,
+      required int year,
+      required Account account,
+    }) func, {
+    required List<Account> accs,
+  }) async {
+    var (:month, :year) = _monthStore.month;
+
+    double sum = 0.00;
+    Fail? fail;
+
+    for (var account in accs) {
+      var res = await func(month: month, year: year, account: account);
+
+      res.fold((balance) {
+        sum = (sum + balance).roundToDecimal();
+      }, (f) {
+        fail = f;
+      });
+
+      if (fail != null) return (0.00, fail);
+    }
+
+    return (sum, null);
   }
 }

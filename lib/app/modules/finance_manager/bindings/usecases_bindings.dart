@@ -1,7 +1,9 @@
 import 'package:flutter_modular/flutter_modular.dart' show Injector;
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/usecases/validates/validate_credit_card_impl.dart';
 
 import '../src/data/usecases/implementations.dart';
 import '../src/domain/usecases/interfaces.dart';
+import '../src/domain/usecases/validates/validate_credit_card.dart';
 
 abstract class UsecasesBindings {
   static void bind(Injector i) {
@@ -47,6 +49,8 @@ abstract class UsecasesBindings {
 
     i.addLazySingleton<SortIncomes>(SortIncomesImpl.new);
     i.addLazySingleton<SortExpenses>(SortExpensesImpl.new);
+
+    i.addLazySingleton<ValidateCreditCard>(ValidateCreditCardImpl.new);
 
     i.addLazySingleton<ManageCreditCard>(
       () => ManageCreditCardImpl(

@@ -30,6 +30,7 @@ import '../../domain/entities/paiyable.dart';
 import '../../domain/entities/payment_record.dart';
 import '../../domain/entities/payment_method.dart';
 import '../../domain/models/paiyable_model.dart';
+import '../../domain/states/state.dart' as S;
 import '../../errors/api_errors.dart';
 import '../widgets/layout/spaced.dart';
 
@@ -362,9 +363,12 @@ class _PaymentScreenState<E extends Paiyable> extends State<PaymentScreen> {
         resolveFunctions(method);
 
     if (method.isCredit) {
+      var isSuccess = widget.cardStore.state is S.SuccessState;
       return PaymentCreditCard(
         accounts: widget.accountStore.state,
-        creditCards: widget.cardStore.state,
+        creditCards: isSuccess
+            ? (widget.cardStore.state as S.SuccessState<List<CreditCard>>).state
+            : [],
         initiallySelectedAccount: widget.model.account,
         onAccountChanged: onAccountChanged,
         onValueChanged: onValueChanged,

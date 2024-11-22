@@ -4,14 +4,13 @@ import 'package:umbrella_echonomics/app/modules/auth/src/presenter/stores/auth_s
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/account.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/list_scoped_builder.dart';
 import '../../../../bind_service_provider.dart';
-import '../../domain/entities/credit_card.dart';
 import '../../domain/models/expense_model.dart';
 import '../../domain/models/income_model.dart';
 import '../controllers/balance_store.dart';
 import '../controllers/month_store.dart';
+import '../controllers/credit_card_store.dart';
 import '../utils/umbrella_palette.dart';
 import '../controllers/account_store.dart';
-import '../controllers/credit_card_store.dart';
 import '../controllers/expense_store.dart';
 import '../controllers/income_store.dart';
 import '../widgets/cards/credit_card_widget.dart';
@@ -20,6 +19,7 @@ import '../widgets/layout/horizontal_listview.dart';
 import '../widgets/layout/horizontal_infinity_container.dart';
 import '../widgets/cards/income_card.dart';
 import '../widgets/layout/umbrella_scaffold.dart';
+import '../widgets/others/list_segmented_state_widget.dart';
 import '../widgets/selectors/account_selector.dart';
 import '../widgets/shimmer/shimmer_container.dart';
 import '../widgets/appbar/custom_app_bar.dart';
@@ -121,7 +121,10 @@ class _HomeScreenState extends State<HomeScreen> {
             onMonthChange: (_, __) => _fetchAll(accounts),
           ),
           child: RefreshIndicator(
-            onRefresh: () => widget._accountStore.getAll(force: true),
+            onRefresh: () async {
+              widget._accountStore.getAll(force: true);
+              widget._creditCardStore.getAll();
+            },
             child: SingleChildScrollView(
               physics: const ClampingScrollPhysics(),
               child: Column(
@@ -159,13 +162,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               store: widget._incomeStore,
                               accountStore: widget._accountStore,
                               onPop: () {
-                                var (:month, :year) =
-                                    BindServiceProvider.get<MonthStore>().month;
-
                                 widget._balanceStore.getForAll(
                                   accounts: accounts,
-                                  month: month,
-                                  year: year,
                                 );
                                 _fetchIncomes(accounts);
                               },
@@ -194,12 +192,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               store: widget._expenseStore,
                               accountStore: widget._accountStore,
                               onPop: () {
-                                var (:month, :year) =
-                                    BindServiceProvider.get<MonthStore>().month;
                                 widget._balanceStore.getForAll(
                                   accounts: accounts,
-                                  month: month,
-                                  year: year,
                                 );
                                 _fetchExpenses(accounts);
                               },
@@ -213,14 +207,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   _makeSection(
                     title: 'Cartões de Crédito',
-                    child: ListScopedBuilder<CreditCardStore, List<CreditCard>>(
-                      store: widget._creditCardStore,
-                      loadingWidget: _makeShimmerList(
+                    child: ListSegmentedStateWidget(
+                      state: widget._creditCardStore.state,
+                      onLoading: (ctx) => _makeShimmerList(
                         height: 240,
                         shimmerWidth: 275,
                         shimmerHeight: 150,
                       ),
-                      onError: (ctx, f) => Text(f.message),
+                      onFail: (ctx, f) => Text(f.message),
                       onState: (ctx, state) {
                         return HorizontalAnimatedList(
                           height: 240,
@@ -242,7 +236,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                         );
                       },
-                      onEmptyState: () => const SizedBox(height: 300),
+                      onEmpty: (ctx) => const SizedBox(height: 300),
                     ),
                   ),
                 ],

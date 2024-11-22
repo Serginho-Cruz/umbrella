@@ -7,12 +7,14 @@ class DefaultTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final int? maxLength;
   final String? Function(String? value) validator;
-  final void Function()? onEditingComplete;
+  final void Function(String?)? onChanged;
+  final void Function(String)? onSubmitted;
   final String labelText;
   final double? height;
   final double? width;
+  final bool readOnly;
+  final String? initialValue;
   final List<TextInputFormatter>? inputFormatters;
-  final EdgeInsetsGeometry padding;
 
   const DefaultTextField({
     super.key,
@@ -22,39 +24,37 @@ class DefaultTextField extends StatelessWidget {
     this.controller,
     this.keyboardType,
     this.maxLength,
+    this.readOnly = false,
     required this.validator,
-    this.onEditingComplete,
     required this.labelText,
     this.inputFormatters,
-    this.padding = EdgeInsets.zero,
+    this.onChanged,
+    this.initialValue,
+    this.onSubmitted,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: padding,
-      child: SizedBox(
-        height: height,
-        width: width,
-        child: TextFormField(
-          validator: validator,
-          controller: controller,
-          focusNode: focusNode,
-          maxLength: maxLength,
-          keyboardType: keyboardType,
-          inputFormatters: inputFormatters,
-          onEditingComplete: () {
-            focusNode?.unfocus();
-            onEditingComplete?.call();
-          },
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          onTapOutside: (_) => focusNode?.unfocus(),
-          decoration: InputDecoration(
-            labelText: labelText,
-            counterText: '',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12.0),
-            ),
+    return SizedBox(
+      height: height,
+      width: width,
+      child: TextFormField(
+        readOnly: readOnly,
+        validator: validator,
+        controller: controller,
+        initialValue: initialValue,
+        focusNode: focusNode,
+        maxLength: maxLength,
+        keyboardType: keyboardType,
+        inputFormatters: inputFormatters,
+        onChanged: onChanged,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        onFieldSubmitted: onSubmitted,
+        decoration: InputDecoration(
+          labelText: labelText,
+          counterText: '',
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12.0),
           ),
         ),
       ),

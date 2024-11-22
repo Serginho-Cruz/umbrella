@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:umbrella_echonomics/app/modules/bind_service_provider.dart';
 import '../../../domain/entities/account.dart';
 import '../../controllers/account_store.dart';
-import '../../controllers/new_balance_store.dart';
+import '../../controllers/balance_store.dart';
 import '../../utils/umbrella_palette.dart';
 import '../../../domain/entities/date.dart';
 import '../icons/drawer_icon.dart';
@@ -32,7 +32,7 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final bool showBalances;
   final bool showMonthChanger;
 
-  late NewBalanceStore _balanceStore;
+  late BalanceStore _balanceStore;
   late AccountStore _accountStore;
 
   @override
