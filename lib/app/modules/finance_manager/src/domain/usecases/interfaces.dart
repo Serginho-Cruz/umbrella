@@ -2,7 +2,6 @@ export './manage_account.dart';
 export './manage_credit_card.dart';
 export './manage_expense.dart';
 export './manage_income.dart';
-export './manage_installment.dart';
 export './manage_invoice.dart';
 export './pay_expense.dart';
 export './receive_income.dart';

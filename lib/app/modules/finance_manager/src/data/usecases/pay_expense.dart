@@ -1,7 +1,6 @@
 import 'package:result_dart/result_dart.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/credit_card.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/expense.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/installment.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/payment_record.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/pay_expense.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
@@ -27,17 +26,6 @@ class PayExpenseImpl implements PayExpense {
     required this.paymentRecordRepository,
     required this.balanceRepository,
   });
-
-  @override
-  Installment turnIntoInstallment({
-    required Expense expense,
-    required int parcelsNumber,
-    required CreditCard card,
-    double? parcelsValue,
-  }) {
-    // TODO: implement turnIntoInstallment
-    throw UnimplementedError();
-  }
 
   @override
   AsyncResult<Unit, Fail> withCredit(

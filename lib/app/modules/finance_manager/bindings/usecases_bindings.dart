@@ -14,7 +14,6 @@ abstract class UsecasesBindings {
           balanceRepository: i(),
           expenseRepository: i(),
           incomeRepository: i(),
-          installmentRepository: i(),
           invoiceRepository: i(),
         ));
 
@@ -33,8 +32,6 @@ abstract class UsecasesBindings {
 
     i.addLazySingleton<ManageIncome>(
         () => ManageIncomeImpl(incomeRepository: i(), balanceRepository: i()));
-
-    i.addLazySingleton<ManageInstallment>(() => ManageInstallmentImpl());
 
     i.addLazySingleton<ManageInvoice>(
       () => ManageInvoiceImpl(
