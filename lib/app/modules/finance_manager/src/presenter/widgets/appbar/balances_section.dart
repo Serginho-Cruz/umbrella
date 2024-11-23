@@ -14,9 +14,9 @@ import '../../controllers/balance_store.dart';
 import '../../utils/umbrella_palette.dart';
 import '../../utils/umbrella_sizes.dart';
 import '../layout/spaced.dart';
-import '../texts/big_text.dart';
 import '../texts/medium_text.dart';
 import '../texts/price.dart';
+import '../texts/small_text.dart';
 
 enum _Balances { initial, expected, last }
 
@@ -76,9 +76,9 @@ class _BalancesSectionState extends State<BalancesSection> {
                 leading: 'Saldo Inicial',
                 balanceVariable: _Balances.initial,
                 isBold: true,
-                isBig: true,
+                isMedium: true,
               ),
-            const SizedBox(height: 12.0),
+            const SizedBox(height: 8.0),
             if (showExpectedBalance)
               _buildBalanceRow(
                 leading: 'Saldo Esperado',
@@ -105,20 +105,20 @@ class _BalancesSectionState extends State<BalancesSection> {
 
   Widget _buildActualBalanceRow() {
     return Spaced(
-      first: const BigText.bold('Saldo Atual'),
+      first: const MediumText.bold('Saldo Atual'),
       second: ScopedBuilder<AccountStore, List<Account>>(
         store: widget.accountStore,
         onState: (context, accs) {
           var actualBalance = _resolveActualBalance(accs);
 
-          return Price.big(
+          return Price.medium(
             actualBalance,
             fontWeight: FontWeight.bold,
             color: _resolveBalanceColor(actualBalance),
           );
         },
-        onLoading: (ctx) => const BigText.bold('Obtendo...'),
-        onError: (ctx, fail) => const BigText.bold('Erro ao Obter'),
+        onLoading: (ctx) => const MediumText.bold('Obtendo...'),
+        onError: (ctx, fail) => const MediumText.bold('Erro ao Obter'),
       ),
     );
   }
@@ -129,25 +129,26 @@ class _BalancesSectionState extends State<BalancesSection> {
     String loadingText = 'Obtendo...',
     String errorText = 'Erro ao Obter',
     bool isBold = false,
-    bool isBig = false,
+    bool isMedium = false,
   }) {
+    Widget Function(String) constructor = switch (isMedium) {
+      true when isBold == true => MediumText.bold,
+      true => MediumText.new,
+      false when isBold == true => SmallText.bold,
+      false => SmallText.new,
+    };
+
     return Spaced(
-      first: Text(
-        leading,
-        style: TextStyle(
-          fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-          fontSize: isBig ? UmbrellaSizes.big : UmbrellaSizes.medium,
-        ),
-      ),
+      first: constructor(leading),
       second: Observer(builder: (_) {
         return SegmentedStateWidget(
           state: _resolve(balanceVariable),
-          onLoading: (_) => MediumText(loadingText),
-          onFail: (_, __) => MediumText(errorText),
+          onLoading: (_) => constructor(loadingText),
+          onFail: (_, __) => constructor(errorText),
           onState: (_, balance) => Price(
             balance,
             fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-            fontSize: isBig ? UmbrellaSizes.big : UmbrellaSizes.medium,
+            fontSize: isMedium ? UmbrellaSizes.medium : UmbrellaSizes.small,
             color: _resolveBalanceColor(balance),
           ),
         );

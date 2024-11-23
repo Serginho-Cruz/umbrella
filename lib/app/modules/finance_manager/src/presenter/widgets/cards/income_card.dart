@@ -1,4 +1,5 @@
 import '../../../domain/models/income_model.dart';
+import '../../utils/umbrella_palette.dart';
 import 'finance_card.dart';
 
 class IncomeCard extends FinanceCard {
@@ -11,5 +12,6 @@ class IncomeCard extends FinanceCard {
           remainingValue: model.remainingValue,
           status: model.status,
           totalValue: model.totalValue,
+          valueColor: UmbrellaPalette.incomeCardValueColor,
         );
 }

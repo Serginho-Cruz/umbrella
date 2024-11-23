@@ -22,7 +22,6 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/wi
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/payment/payment_card.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/payment/payment_credit_card.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/texts/big_text.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/texts/extrabig_text.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/texts/medium_text.dart';
 
 import '../../domain/entities/credit_card.dart';
@@ -148,7 +147,7 @@ class _PaymentScreenState<E extends Paiyable> extends State<PaymentScreen> {
               const SizedBox(height: 10.0),
               _buildTextValue('Atualmente Pagando: ', goingToPay),
               const SizedBox(height: 40.0),
-              const ExtrabigText.bold(
+              const BigText.bold(
                 'Seções de Pagamento',
                 textAlign: TextAlign.center,
               ),

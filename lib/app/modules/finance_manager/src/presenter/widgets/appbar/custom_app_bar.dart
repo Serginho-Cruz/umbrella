@@ -42,7 +42,7 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   Size get preferredSize {
     double height = 99.0; //Minimal
 
-    if (showBalances) height += 79.0;
+    if (showBalances) height += 60.0;
 
     if (showMonthChanger) height += 48.0;
 
@@ -73,15 +73,13 @@ class _CustomAppBarState extends State<CustomAppBar> {
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.sizeOf(context).width,
-      padding: const EdgeInsets.only(top: 10.0, bottom: 15.0),
+      padding: const EdgeInsets.only(top: 10.0, bottom: 0.0),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: UmbrellaPalette.appBarGradientColors,
-        ),
+        color: UmbrellaPalette.primaryColor,
         border: Border.all(width: 1.5),
         borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(12.0),
-          bottomRight: Radius.circular(12.0),
+          bottomLeft: Radius.circular(10.0),
+          bottomRight: Radius.circular(10.0),
         ),
       ),
       child: Column(
@@ -102,7 +100,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
             ),
           if (widget.showBalances)
             Padding(
-              padding: const EdgeInsets.only(top: 15.0),
+              padding: const EdgeInsets.only(top: 12.0),
               child: BalancesSection(
                 accountStore: widget._accountStore,
                 balanceStore: widget._balanceStore,

@@ -29,7 +29,6 @@ import '../widgets/tappable/expense_tappable_options.dart';
 import '../widgets/tappable/income_tappable_options.dart';
 import '../widgets/tappable/tappable.dart';
 import '../widgets/texts/big_text.dart';
-import '../widgets/texts/medium_text.dart';
 import '../widgets/texts/title_text.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -132,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(30.0, 20.0, 30.0, 10.0),
+                    padding: const EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 10.0),
                     child: AccountSelector(
                       label: 'Conta Atual',
                       accounts: accounts,
@@ -141,9 +140,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(left: 30.0, bottom: 30.0),
-                    child: MediumText(
-                        'Olá! Obrigado por Voltar ${(BindServiceProvider.get<AuthStore>().state as SuccessState).user.name}'),
+                    padding: const EdgeInsets.only(left: 15.0, bottom: 20.0),
+                    child: BigText('Olá $_getUserName!'),
                   ),
                   _makeSection(
                     title: 'Receitas',
@@ -152,23 +150,30 @@ class _HomeScreenState extends State<HomeScreen> {
                       loadingWidget: _makeShimmerList(),
                       onError: (ctx, f) => Text(f.message),
                       onState: (ctx, state) => HorizontalAnimatedList(
-                        height: 325,
+                        height: 260,
                         length: state.length,
                         itemBuilderFunction: (context, index) {
-                          return Tappable(
-                            options: IncomeTappableOptions.get(
-                              context: screenContext,
-                              model: state[index],
-                              store: widget._incomeStore,
-                              accountStore: widget._accountStore,
-                              onPop: () {
-                                widget._balanceStore.getForAll(
-                                  accounts: accounts,
-                                );
-                                _fetchIncomes(accounts);
-                              },
+                          return UnconstrainedBox(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 15.0,
+                              ),
+                              child: Tappable(
+                                options: IncomeTappableOptions.get(
+                                  context: screenContext,
+                                  model: state[index],
+                                  store: widget._incomeStore,
+                                  accountStore: widget._accountStore,
+                                  onPop: () {
+                                    widget._balanceStore.getForAll(
+                                      accounts: accounts,
+                                    );
+                                    _fetchIncomes(accounts);
+                                  },
+                                ),
+                                child: IncomeCard(model: state[index]),
+                              ),
                             ),
-                            child: IncomeCard(model: state[index]),
                           );
                         },
                       ),
@@ -182,23 +187,30 @@ class _HomeScreenState extends State<HomeScreen> {
                       loadingWidget: _makeShimmerList(),
                       onError: (ctx, f) => Text(f.message),
                       onState: (ctx, state) => HorizontalAnimatedList(
-                        height: 325,
+                        height: 260,
                         length: state.length,
                         itemBuilderFunction: (context, index) {
-                          return Tappable(
-                            options: ExpenseTappableOptions.get(
-                              context: screenContext,
-                              model: state[index],
-                              store: widget._expenseStore,
-                              accountStore: widget._accountStore,
-                              onPop: () {
-                                widget._balanceStore.getForAll(
-                                  accounts: accounts,
-                                );
-                                _fetchExpenses(accounts);
-                              },
+                          return UnconstrainedBox(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 15.0,
+                              ),
+                              child: Tappable(
+                                options: ExpenseTappableOptions.get(
+                                  context: screenContext,
+                                  model: state[index],
+                                  store: widget._expenseStore,
+                                  accountStore: widget._accountStore,
+                                  onPop: () {
+                                    widget._balanceStore.getForAll(
+                                      accounts: accounts,
+                                    );
+                                    _fetchExpenses(accounts);
+                                  },
+                                ),
+                                child: ExpenseCard(model: state[index]),
+                              ),
                             ),
-                            child: ExpenseCard(model: state[index]),
                           );
                         },
                       ),
@@ -210,33 +222,35 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: ListSegmentedStateWidget(
                       state: widget._creditCardStore.state,
                       onLoading: (ctx) => _makeShimmerList(
-                        height: 240,
-                        shimmerWidth: 275,
-                        shimmerHeight: 150,
+                        height: 220,
+                        shimmerWidth: 240,
+                        shimmerHeight: 140,
                       ),
                       onFail: (ctx, f) => Text(f.message),
                       onState: (ctx, state) {
                         return HorizontalAnimatedList(
-                          height: 240,
+                          height: 220,
                           length: state.length,
                           itemBuilderFunction: (context, index) {
-                            return Tappable(
-                              options: CreditCardTappableOptions.get(
-                                context: screenContext,
-                                card: state[index],
-                                onPop: widget._creditCardStore.getAll,
-                              ),
-                              child: CreditCardWidget(
-                                creditCard: state[index],
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 20.0,
+                            return UnconstrainedBox(
+                              child: Tappable(
+                                options: CreditCardTappableOptions.get(
+                                  context: screenContext,
+                                  card: state[index],
+                                  onPop: widget._creditCardStore.getAll,
+                                ),
+                                child: CreditCardWidget(
+                                  creditCard: state[index],
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 20.0,
+                                  ),
                                 ),
                               ),
                             );
                           },
                         );
                       },
-                      onEmpty: (ctx) => const SizedBox(height: 300),
+                      onEmpty: (ctx) => const SizedBox(height: 220),
                     ),
                   ),
                 ],
@@ -247,6 +261,9 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
   }
+
+  String get _getUserName =>
+      (BindServiceProvider.get<AuthStore>().state as SuccessState).user.name;
 
   void _onAccountChanged(Account? newSelected) {
     setState(() {});
@@ -303,16 +320,14 @@ class _HomeScreenState extends State<HomeScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 50.0),
       child: HorizontallyInfinityContainer(
-        padding: const EdgeInsets.only(top: 20.0),
         color: UmbrellaPalette.gray,
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 20.0),
-              child: TitleText.bold(title),
+              padding: const EdgeInsets.only(left: 20.0, top: 12.0),
+              child: TitleText(title),
             ),
             child,
           ],
@@ -322,9 +337,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _makeShimmerList({
-    double height = 325,
-    double shimmerWidth = 250,
-    double shimmerHeight = 300,
+    double height = 260,
+    double shimmerWidth = 230,
+    double shimmerHeight = 180,
   }) {
     return SizedBox(
       height: height,

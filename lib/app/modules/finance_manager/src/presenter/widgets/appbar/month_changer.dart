@@ -6,7 +6,7 @@ import 'package:umbrella_echonomics/app/modules/bind_service_provider.dart';
 
 import '../../../domain/entities/date.dart';
 import '../../controllers/month_store.dart';
-import '../texts/big_text.dart';
+import '../texts/medium_text.dart';
 
 class MonthChanger extends StatefulWidget {
   final MonthStore _monthStore = BindServiceProvider.get<MonthStore>();
@@ -86,13 +86,13 @@ class _MonthChangerState extends State<MonthChanger>
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_rounded,
             color: Colors.black,
-            size: 30.0,
+            size: 20.0,
           ),
           onPressed: () {
             if (!slideController.isAnimating) {
@@ -105,23 +105,26 @@ class _MonthChangerState extends State<MonthChanger>
             }
           },
         ),
-        Observer(builder: (_) {
-          var (:month, :year) = widget._monthStore.month;
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Observer(builder: (_) {
+            var (:month, :year) = widget._monthStore.month;
 
-          String name = Date(day: 1, month: month, year: year).monthName;
-          return FadeTransition(
-            opacity: fadeController,
-            child: SlideTransition(
-              position: slideAnimation,
-              child: BigText.bold('$name $year'),
-            ),
-          );
-        }),
+            String name = Date(day: 1, month: month, year: year).monthName;
+            return FadeTransition(
+              opacity: fadeController,
+              child: SlideTransition(
+                position: slideAnimation,
+                child: MediumText.bold('$name $year'),
+              ),
+            );
+          }),
+        ),
         IconButton(
           icon: const Icon(
             Icons.arrow_forward_ios_rounded,
             color: Colors.black,
-            size: 30.0,
+            size: 20.0,
           ),
           onPressed: () {
             if (!slideController.isAnimating) {

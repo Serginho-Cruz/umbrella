@@ -49,13 +49,6 @@ class Price extends StatelessWidget {
     this.color = Colors.black,
   }) : fontSize = UmbrellaSizes.big;
 
-  const Price.extrabig(
-    this.value, {
-    super.key,
-    this.fontWeight = FontWeight.normal,
-    this.color = Colors.black,
-  }) : fontSize = UmbrellaSizes.extrabig;
-
   const Price.title(
     this.value, {
     super.key,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../utils/umbrella_palette.dart';
-import '../texts/medium_text.dart';
+import '../texts/small_text.dart';
 import 'tappable_option.dart';
 
 enum TappableDispatcher { tap, doubleTap }
@@ -38,16 +38,15 @@ class _TappableState extends State<Tappable> {
       style: const MenuStyle(
         alignment: Alignment.center,
         side: WidgetStatePropertyAll(BorderSide()),
-        backgroundColor: WidgetStatePropertyAll(Colors.white),
+        backgroundColor: WidgetStatePropertyAll(UmbrellaPalette.gray),
         elevation: WidgetStatePropertyAll(4.0),
-        padding: WidgetStatePropertyAll(EdgeInsets.all(8.0)),
       ),
       controller: _menuController,
       menuChildren: widget.options.map(
         (option) {
           return MenuItemButton(
             style: ButtonStyle(
-              minimumSize: const WidgetStatePropertyAll(Size(180, 50.0)),
+              fixedSize: const WidgetStatePropertyAll(Size(180, 40.0)),
               backgroundColor: WidgetStateProperty.resolveWith((states) {
                 if (states.any((state) =>
                     state == WidgetState.pressed ||
@@ -59,7 +58,7 @@ class _TappableState extends State<Tappable> {
               }),
             ),
             onPressed: option.onPressed,
-            child: MediumText(option.name, fontWeight: FontWeight.normal),
+            child: SmallText(option.name, fontWeight: FontWeight.normal),
           );
         },
       ).toList(),

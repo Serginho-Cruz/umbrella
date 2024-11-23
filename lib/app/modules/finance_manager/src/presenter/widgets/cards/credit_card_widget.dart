@@ -9,8 +9,8 @@ class CreditCardWidget extends StatelessWidget {
   const CreditCardWidget({
     super.key,
     required this.creditCard,
-    this.width = 275,
-    this.height = 150,
+    this.width = 240,
+    this.height = 140,
     this.margin,
   });
 
@@ -27,8 +27,7 @@ class CreditCardWidget extends StatelessWidget {
       margin: margin,
       decoration: BoxDecoration(
         border: Border.all(width: 2.0),
-        borderRadius: BorderRadius.circular(10.0),
-        boxShadow: kElevationToShadow[4],
+        borderRadius: BorderRadius.circular(8.0),
         color: HexColor(creditCard.color),
       ),
       child: Column(
@@ -38,7 +37,7 @@ class CreditCardWidget extends StatelessWidget {
             padding: const EdgeInsets.all(10.0),
             child: BigText.bold(creditCard.name),
           ),
-          Container(height: 15.0, color: Colors.black),
+          const Divider(thickness: 15, color: Colors.black),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10.0),

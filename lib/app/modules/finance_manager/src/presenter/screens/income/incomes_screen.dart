@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:umbrella_echonomics/app/modules/bind_service_provider.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/list_segmented_state_widget.dart';
@@ -183,12 +184,16 @@ class _IncomesScreenState extends State<IncomesScreen> {
                     },
                   ),
                   const SizedBox(height: 30.0),
-                  ListSegmentedStateWidget(
-                    state: widget._categoryStore.state,
-                    onLoading: (ctx) =>
-                        const CircularProgressIndicator.adaptive(),
-                    onFail: (ctx, fail) => _mountFilter(),
-                    onState: (ctx, categories) => _mountFilter(categories),
+                  Observer(
+                    builder: (_) {
+                      return ListSegmentedStateWidget(
+                        state: widget._categoryStore.state,
+                        onLoading: (ctx) =>
+                            const CircularProgressIndicator.adaptive(),
+                        onFail: (ctx, fail) => _mountFilter(),
+                        onState: (ctx, categories) => _mountFilter(categories),
+                      );
+                    },
                   ),
                   const SizedBox(height: 30.0),
                   ListScopedBuilder<IncomeStore, List<IncomeModel>>(

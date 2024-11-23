@@ -194,97 +194,92 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                     );
                   }),
                   const SizedBox(height: 30.0),
-                  Observer(
-                    builder: (_) =>
-                        ListScopedBuilder<ExpenseStore, List<ExpenseModel>>(
-                      store: widget._expenseStore,
-                      onError: (ctx, fail) {
-                        UmbrellaDialogs.showError(
-                          context,
-                          fail.message,
-                        );
-                        var (:month, :year) =
-                            BindServiceProvider.get<MonthStore>().month;
+                  ListScopedBuilder<ExpenseStore, List<ExpenseModel>>(
+                    store: widget._expenseStore,
+                    onError: (ctx, fail) {
+                      UmbrellaDialogs.showError(
+                        context,
+                        fail.message,
+                      );
+                      var (:month, :year) =
+                          BindServiceProvider.get<MonthStore>().month;
 
-                        String name =
-                            Date(day: 1, month: month, year: year).monthName;
-                        return Center(
-                          child: MediumText(
-                              'Erro ao obter as Despesas do Mês de $name'),
-                        );
-                      },
-                      loadingWidget: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: List.generate(
-                          5,
-                          (i) => ShimmerListTile(
-                            roundedOnTop: i == 0,
-                            roundedOnBottom: i == 4,
-                          ),
+                      String name =
+                          Date(day: 1, month: month, year: year).monthName;
+                      return Center(
+                        child: MediumText(
+                            'Erro ao obter as Despesas do Mês de $name'),
+                      );
+                    },
+                    loadingWidget: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: List.generate(
+                        5,
+                        (i) => ShimmerListTile(
+                          roundedOnTop: i == 0,
+                          roundedOnBottom: i == 4,
                         ),
                       ),
-                      onEmptyState: () {
-                        String text;
-                        var (:month, :year) =
-                            BindServiceProvider.get<MonthStore>().month;
+                    ),
+                    onEmptyState: () {
+                      String text;
+                      var (:month, :year) =
+                          BindServiceProvider.get<MonthStore>().month;
 
-                        String name =
-                            Date(day: 1, month: month, year: year).monthName;
-                        if (wasFiltered) {
-                          text =
-                              'Nenhuma Despesa com os filtros atuais para o mês de $name';
-                        } else {
-                          text =
-                              'Nenhuma Despesa encontrada para o mês de $name';
-                        }
+                      String name =
+                          Date(day: 1, month: month, year: year).monthName;
+                      if (wasFiltered) {
+                        text =
+                            'Nenhuma Despesa com os filtros atuais para o mês de $name';
+                      } else {
+                        text = 'Nenhuma Despesa encontrada para o mês de $name';
+                      }
 
-                        return SizedBox(
-                          height: 200.0,
-                          width: MediaQuery.sizeOf(context).width * 0.8,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.money_off_rounded, size: 60.0),
-                              const SizedBox(height: 20.0),
-                              MediumText.bold(text,
-                                  textAlign: TextAlign.center),
-                            ],
-                          ),
-                        );
-                      },
-                      onState: (ctx, expenses) => Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          ...List.generate(
-                            expenses.length,
-                            (i) => Tappable(
-                              options: ExpenseTappableOptions.get(
-                                context: context,
-                                model: expenses[i],
-                                store: widget._expenseStore,
-                                accountStore: widget._accountStore,
-                                onPop: () {
-                                  widget._balanceStore.getForAll(
-                                    accounts: accounts,
-                                  );
-                                  _fetchExpenses();
-                                },
-                              ),
-                              openMenuDispatcher: TappableDispatcher.doubleTap,
-                              child: FinanceTile(
-                                model: expenses[i],
-                                roundedOnTop: i == 0,
-                              ),
+                      return SizedBox(
+                        height: 200.0,
+                        width: MediaQuery.sizeOf(context).width * 0.8,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.money_off_rounded, size: 60.0),
+                            const SizedBox(height: 20.0),
+                            MediumText.bold(text, textAlign: TextAlign.center),
+                          ],
+                        ),
+                      );
+                    },
+                    onState: (ctx, expenses) => Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ...List.generate(
+                          expenses.length,
+                          (i) => Tappable(
+                            options: ExpenseTappableOptions.get(
+                              context: context,
+                              model: expenses[i],
+                              store: widget._expenseStore,
+                              accountStore: widget._accountStore,
+                              onPop: () {
+                                widget._balanceStore.getForAll(
+                                  accounts: accounts,
+                                );
+                                _fetchExpenses();
+                              },
+                            ),
+                            openMenuDispatcher: TappableDispatcher.doubleTap,
+                            child: FinanceTile(
+                              model: expenses[i],
+                              roundedOnTop: i == 0,
                             ),
                           ),
-                          const FinanceStatusTile(),
-                          const SmallDisclaimer(
-                            'Aperte duas vezes em uma receita para abrir o menu de opções',
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                          ),
-                        ],
-                      ),
+                        ),
+                        const FinanceStatusTile(),
+                        const SmallDisclaimer(
+                          'Aperte duas vezes em uma receita para abrir o menu de opções',
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                        ),
+                      ],
                     ),
                   ),
                   Spaced(
