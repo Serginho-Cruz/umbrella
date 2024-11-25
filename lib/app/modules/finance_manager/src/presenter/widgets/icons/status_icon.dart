@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/utils/adapt_name.dart';
 
 import '../../../domain/models/status.dart';
+import '../../utils/umbrella_palette.dart';
+import '../../utils/umbrella_sizes.dart';
 
 class StatusIcon extends StatelessWidget {
   const StatusIcon({super.key, required this.status, this.size = 30.0});
@@ -28,15 +31,27 @@ class StatusIcon extends StatelessWidget {
         break;
     }
 
-    return Material(
-      color: iconBackgroundColor,
-      shape: const CircleBorder(
-        side: BorderSide(
-          width: 1.5,
-          strokeAlign: BorderSide.strokeAlignOutside,
-        ),
+    return Tooltip(
+      message: adaptStatusName(status),
+      padding: const EdgeInsets.all(8),
+      textStyle: const TextStyle(
+        color: Colors.black,
+        fontSize: UmbrellaSizes.small,
       ),
-      child: Icon(icon, color: Colors.white, size: size),
+      decoration: BoxDecoration(
+        color: UmbrellaPalette.primaryColor,
+        borderRadius: BorderRadius.circular(2),
+      ),
+      child: Material(
+        color: iconBackgroundColor,
+        shape: const CircleBorder(
+          side: BorderSide(
+            width: 1.5,
+            strokeAlign: BorderSide.strokeAlignOutside,
+          ),
+        ),
+        child: Icon(icon, color: Colors.white, size: size),
+      ),
     );
   }
 }

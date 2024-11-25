@@ -7,7 +7,6 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/wi
 
 import '../../controllers/credit_card_store.dart';
 import '../../widgets/buttons/navigation_icon_button.dart';
-import '../../widgets/buttons/navigation_button.dart';
 import '../../widgets/cards/credit_card_widget.dart';
 import '../../widgets/dialogs/umbrella_dialogs.dart';
 import '../../widgets/filters/umbrella_search_bar.dart';
@@ -30,16 +29,12 @@ class CreditCardsScreen extends StatefulWidget {
 }
 
 class _CreditCardsScreenState extends State<CreditCardsScreen> {
-  late final TextEditingController searchController;
-
   late final ReactionDisposer disposer;
 
   @override
   void initState() {
     super.initState();
-    searchController = TextEditingController(
-      text: widget._cardStore.searchString,
-    );
+
     disposer = reaction((_) => widget._cardStore.searchString, (_) {
       widget._cardStore.filterByName();
     });
@@ -58,6 +53,7 @@ class _CreditCardsScreenState extends State<CreditCardsScreen> {
       ),
       floatingActionButton: NavigationIconButton(
         route: '/finance_manager/card/add',
+        tooltipMessage: 'Ir para a Tela de Adicionar Cartões de Crédito',
         onPop: _fetchCards,
       ),
       child: Padding(
@@ -124,16 +120,6 @@ class _CreditCardsScreenState extends State<CreditCardsScreen> {
                   ),
                 );
               }),
-              Padding(
-                padding: const EdgeInsets.only(top: 40.0, bottom: 40.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    NavigationButton.toIncomes(context, height: 60.0),
-                    NavigationButton.toExpenses(context, height: 60.0),
-                  ],
-                ),
-              ),
             ],
           ),
         ),
@@ -143,7 +129,6 @@ class _CreditCardsScreenState extends State<CreditCardsScreen> {
 
   @override
   void dispose() {
-    searchController.dispose();
     widget._cardStore.setSearchString('');
     disposer();
     super.dispose();

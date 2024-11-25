@@ -11,7 +11,7 @@ class FilterButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: onPressed,
-      icon: const Icon(Icons.filter_alt_outlined, color: Colors.white),
+      icon: const Icon(Icons.filter_alt_rounded, color: Colors.black),
       iconSize: 30.0,
       style: ButtonStyle(
         fixedSize: const WidgetStatePropertyAll<Size>(Size(50, 50)),

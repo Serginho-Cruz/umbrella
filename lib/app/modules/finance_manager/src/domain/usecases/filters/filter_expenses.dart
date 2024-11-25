@@ -10,7 +10,7 @@ abstract interface class FilterExpenses {
   List<ExpenseModel> byRangeValue({
     required List<ExpenseModel> models,
     required double min,
-    required double max,
+    required double? max,
   });
   List<ExpenseModel> byStatus({
     required List<ExpenseModel> models,

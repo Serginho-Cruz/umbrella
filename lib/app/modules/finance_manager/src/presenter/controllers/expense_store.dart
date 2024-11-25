@@ -1,229 +1,598 @@
+import 'package:mobx/mobx.dart';
 import 'package:result_dart/result_dart.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/paiyable_store.dart';
+import 'package:umbrella_echonomics/app/modules/bind_service_provider.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/credit_card.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/payment_method.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/round.dart';
 
 import '../../domain/entities/account.dart';
 import '../../domain/entities/category.dart';
-import '../../domain/entities/credit_card.dart';
 import '../../domain/entities/date.dart';
 import '../../domain/entities/expense.dart';
+import '../../domain/entities/frequency.dart';
 import '../../domain/entities/payment_record.dart';
 import '../../domain/models/expense_model.dart';
 import '../../domain/models/status.dart';
+import '../../domain/states/state.dart';
 import '../../domain/usecases/filters/filter_expenses.dart';
 import '../../domain/usecases/manage_expense.dart';
 import '../../domain/usecases/pay_expense.dart';
 import '../../domain/usecases/sorts/sort_expenses.dart';
+import '../../domain/usecases/validates/validate_expense.dart';
 import '../../errors/errors.dart';
+import 'account_store.dart';
+import 'finance_filterable_store.dart';
+import 'month_store.dart';
+import 'paiyable_store.dart';
+part 'expense_store.g.dart';
 
-class ExpenseStore extends PaiyableStore<Expense, ExpenseModel> {
-  ExpenseStore({
+class ExpenseStore = _ExpenseStoreBase with _$ExpenseStore;
+
+abstract class _ExpenseStoreBase
+    with Store
+    implements FinanceFilterableStore, PaiyableStore<ExpenseModel, Expense> {
+  final MonthStore _monthStore;
+  final ManageExpense _manageExpense;
+  final FilterExpenses _filterExpenses;
+  final SortExpenses _sortExpenses;
+  final PayExpense _payExpense;
+  final ValidateExpense _validateExpense;
+
+  _ExpenseStoreBase({
+    required MonthStore monthStore,
     required ManageExpense manageExpense,
     required FilterExpenses filterExpenses,
     required SortExpenses sortExpenses,
     required PayExpense payExpense,
-  })  : _manageExpense = manageExpense,
+    required ValidateExpense validateExpense,
+  })  : _monthStore = monthStore,
+        _manageExpense = manageExpense,
         _filterExpenses = filterExpenses,
         _sortExpenses = sortExpenses,
-        _pay = payExpense,
-        super([]);
-
-  final ManageExpense _manageExpense;
-  final FilterExpenses _filterExpenses;
-  final SortExpenses _sortExpenses;
-  final PayExpense _pay;
-
-  final List<ExpenseModel> all = [];
-
-  @override
-  AsyncResult<String, Fail> register(Expense entity) async {
-    var result = await _manageExpense.register(entity);
-
-    return result;
+        _payExpense = payExpense,
+        _validateExpense = validateExpense {
+    _setUpReactions();
   }
 
-  @override
-  AsyncResult<void, Fail> updateValue(
-    ExpenseModel paiyable,
-    double newValue,
-  ) =>
-      _manageExpense.updateValue(paiyable.toEntity(), newValue);
+  late final ReactionDisposer _filteredExpensesUpdater;
+
+  @observable
+  State<List<ExpenseModel>> state = const InitialState();
+
+  ObservableList<ExpenseModel> filteredExpenses = ObservableList();
 
   @override
-  AsyncResult<void, Fail> switchAccount(
-    ExpenseModel paiyable,
-    Account newAccount,
-  ) =>
-      _manageExpense.switchAccount(paiyable.toEntity(), newAccount);
+  ObservableList<PaymentRecord<Expense>> paymentsToDo = ObservableList();
 
   @override
-  AsyncResult<void, Fail> edit({
-    required Expense oldPaiyable,
-    required Expense newPaiyable,
-  }) =>
-      _manageExpense.update(
-        oldExpense: oldPaiyable,
-        newExpense: newPaiyable,
+  ObservableList<PaymentMethod> remainingMethods = ObservableList()
+    ..addAll(PaymentMethod.all);
+
+  ///This observable stores the [ExpenseModel] selected to edit, delete or pay.
+  @observable
+  ExpenseModel? selectedModel;
+
+  @override
+  @computed
+  bool get wasFiltered {
+    if (filteredCategories.isNotEmpty) return true;
+    if (filteredStatus.isNotEmpty) return true;
+    if (filteredName.isNotEmpty) return true;
+    if (filteredRangeValue != minAndMax) return true;
+
+    return false;
+  }
+
+  @computed
+  double get totalToPay => filteredExpenses.fold(
+        0.00,
+        (v, expense) => (v + expense.totalValue).roundToDecimal(),
+      );
+
+  @computed
+  double get totalPaid => filteredExpenses.fold(
+        0.00,
+        (v, expense) => (v + expense.paidValue).roundToDecimal(),
       );
 
   @override
-  Future<void> getForAll({
-    required List<Account> accounts,
-    required int month,
-    required int year,
-  }) async {
-    if (accounts.isEmpty || isLoading) return;
+  @computed
+  double get totalPaying => paymentsToDo.fold(
+      0.00, (v, record) => (v + record.value).roundToDecimal());
 
-    setLoading(true);
+  @override
+  @computed
+  ({double min, double max}) get minAndMax {
+    if (state is! SuccessState<List<ExpenseModel>>) {
+      return (min: 0.00, max: 0.00);
+    }
 
-    var list = List.generate(
-      accounts.length,
-      (i) => _manageExpense.getAllOf(
-        month: month,
-        year: year,
-        account: accounts[i],
+    var list = (state as SuccessState<List<ExpenseModel>>).state;
+
+    if (list.isEmpty) return (min: 0.00, max: 0.00);
+
+    list.sort(
+        (model1, model2) => model1.totalValue.compareTo(model2.totalValue));
+
+    return (min: list.first.totalValue, max: list.last.totalValue);
+  }
+
+  @override
+  ObservableList<Category> filteredCategories = ObservableList();
+
+  @override
+  ObservableList<Status> filteredStatus = ObservableList();
+
+  @override
+  @observable
+  String filteredName = '';
+
+  @override
+  @observable
+  ({double min, double max}) filteredRangeValue = (min: 0.00, max: 0.00);
+
+  @override
+  @observable
+  PaiyableSortOption sortOption = PaiyableSortOption.byDueDate;
+
+  @override
+  @observable
+  bool isCrescentOrder = true;
+
+  @observable
+  String name = '';
+
+  @observable
+  double value = 0.00;
+
+  @override
+  @observable
+  Account? account;
+
+  @observable
+  Frequency frequency = Frequency.none;
+
+  @observable
+  Category? category;
+
+  @observable
+  Date dueDate = Date.today();
+
+  @observable
+  String? personName;
+
+  @observable
+  CreditCard? card;
+
+  final String _selectedForUpdateError =
+      'Despesa para atualizar não selecionada';
+
+  @action
+  Future<Fail?> register() async {
+    String? error = _validateFields();
+
+    if (error != null) return Fail(error);
+
+    state = const LoadingState();
+
+    var result = await _manageExpense.register(_mountExpense());
+
+    return result.fold((_) {
+      getAll(ignoreLoading: true);
+      return null;
+    }, (fail) {
+      state = FailState(fail);
+      return fail;
+    });
+  }
+
+  @action
+  Future<Fail?> edit() async {
+    if (selectedModel == null) return Fail(_selectedForUpdateError);
+
+    String? error = _validateFields();
+
+    if (error != null) return Fail(error);
+
+    state = const LoadingState();
+
+    var expense = selectedModel!.toEntity();
+
+    var result = await _manageExpense.update(
+      newExpense: _mountExpense(based: expense),
+      oldExpense: expense,
+    );
+
+    return result.fold((_) {
+      getAll(ignoreLoading: true);
+      return null;
+    }, (fail) {
+      state = FailState(fail);
+      return fail;
+    });
+  }
+
+  @override
+  @action
+  Future<Fail?> switchAccount() async {
+    if (selectedModel == null) return Fail(_selectedForUpdateError);
+
+    String? error = _validateExpense.validateAccount(account);
+    if (error != null) return Fail(error);
+
+    if (account == selectedModel?.account) return null;
+
+    state = const LoadingState();
+
+    var result =
+        await _manageExpense.switchAccount(selectedModel!.toEntity(), account!);
+
+    return result.fold((_) {
+      getAll(ignoreLoading: true);
+      return null;
+    }, (fail) {
+      state = FailState(fail);
+      return fail;
+    });
+  }
+
+  @override
+  @action
+  Future<Fail?> updateValue() async {
+    if (selectedModel == null) return Fail(_selectedForUpdateError);
+
+    String? error = _validateExpense.validateValue(value);
+    if (error != null) return Fail(error);
+
+    if (value == selectedModel?.totalValue) return null;
+
+    state = const LoadingState();
+
+    var result = await _manageExpense.updateValue(
+      selectedModel!.toEntity(),
+      value,
+    );
+
+    return result.fold((_) {
+      getAll(ignoreLoading: true);
+      return null;
+    }, (fail) {
+      state = FailState(fail);
+      return fail;
+    });
+  }
+
+  ///Fetches all Expenses of the month. If [ignoreLoading] is set to true, the
+  ///data will be fetched even in the case state is being loaded.
+  @action
+  Future<void> getAll({bool ignoreLoading = false}) async {
+    if (state is LoadingState && ignoreLoading == false) return;
+
+    state = const LoadingState();
+
+    var store = BindServiceProvider.get<AccountStore>();
+
+    List<Account> accountsList =
+        store.selectedAccount != null ? [store.selectedAccount!] : store.state;
+
+    var (:year, :month) = _monthStore.month;
+
+    var results = await Future.wait(
+      accountsList.map(
+        (acc) => _manageExpense.getAllOf(
+          month: month,
+          year: year,
+          account: acc,
+        ),
       ),
     );
 
-    var results = await Future.wait(list);
+    if (results.any((res) => res.isError())) {
+      Fail fail = results.firstWhere((res) => res.isError()).exceptionOrNull()!;
+      state = FailState(fail);
+      return;
+    }
 
-    var models = <ExpenseModel>[];
+    List<Expense> incomes = results.fold([], _appendExpensesFromResult);
 
-    for (int i = 0; i < accounts.length; i++) {
-      var result = results[i];
+    var models = incomes.map(_toModel).toList();
+
+    state = SuccessState(models);
+  }
+
+  @override
+  @action
+  Future<Fail?> pay() async {
+    if (paymentsToDo.isEmpty) return null;
+
+    state = const LoadingState();
+
+    paymentsToDo.removeWhere((rec) => rec.value == 0.00);
+
+    for (var payment in paymentsToDo) {
+      var result = await _payExpense.withoutCredit(payment);
 
       if (result.isError()) {
-        all.clear();
-        setError(result.exceptionOrNull()!);
-        setLoading(false);
+        state = FailState(result.exceptionOrNull()!);
+        return result.exceptionOrNull();
+      }
+    }
 
+    getAll(ignoreLoading: true);
+    return null;
+  }
+
+  @override
+  @action
+  void toggleCategory(Category category) {
+    filteredCategories.contains(category)
+        ? filteredCategories.remove(category)
+        : filteredCategories.add(category);
+  }
+
+  @override
+  @action
+  void toggleStatus(Status status) {
+    filteredStatus.contains(status)
+        ? filteredStatus.remove(status)
+        : filteredStatus.add(status);
+  }
+
+  @override
+  @action
+  void setFilterName(String name) {
+    filteredName = name;
+  }
+
+  @override
+  @action
+  void setMinValueRange(double min) {
+    if (min < 0.00) return;
+
+    var max = filteredRangeValue.max;
+
+    filteredRangeValue = (min: min, max: max);
+  }
+
+  @override
+  @action
+  void setMaxValueRange(double max) {
+    if (max > minAndMax.max) return;
+    var min = filteredRangeValue.min;
+
+    filteredRangeValue = (min: min, max: max);
+  }
+
+  @override
+  @action
+  void setSortOption(PaiyableSortOption? option) =>
+      sortOption = option ?? PaiyableSortOption.byDueDate;
+
+  @override
+  @action
+  void toggleCrescentOrder() => isCrescentOrder = !isCrescentOrder;
+
+  @override
+  @action
+  void clearFilters() {
+    filteredCategories.clear();
+    filteredStatus.clear();
+    filteredRangeValue = (min: 0.00, max: 0.00);
+    sortOption = PaiyableSortOption.byDueDate;
+    isCrescentOrder = true;
+  }
+
+  @override
+  @action
+  void addPayment({required PaymentMethod method, required Account account}) {
+    if (selectedModel == null) return;
+
+    var newRecord = PaymentRecord(
+      id: '',
+      usedAccount: account,
+      paiyable: selectedModel!.toEntity(),
+      paymentMethod: method,
+      value: 0.00,
+      date: Date.today(),
+    );
+
+    paymentsToDo.add(newRecord);
+    remainingMethods.remove(method);
+  }
+
+  @override
+  @action
+  void removePayment(PaymentMethod method) {
+    paymentsToDo.removeWhere((rec) => rec.paymentMethod == method);
+    remainingMethods.add(method);
+  }
+
+  @override
+  @action
+  void setPaymentAccount({
+    required PaymentMethod method,
+    required Account account,
+  }) {
+    int index = paymentsToDo.indexWhere((rec) => rec.paymentMethod == method);
+
+    if (index == -1) return;
+
+    paymentsToDo[index] = paymentsToDo[index].copyWith(usedAccount: account);
+  }
+
+  @override
+  @action
+  void setPaymentCreditCard(CreditCard? card) {
+    this.card = card;
+  }
+
+  @override
+  @action
+  void setPaymentValue({
+    required PaymentMethod method,
+    required double value,
+  }) {
+    int index = paymentsToDo.indexWhere((rec) => rec.paymentMethod == method);
+
+    if (index == -1) return;
+
+    paymentsToDo[index] = paymentsToDo[index].copyWith(value: value);
+  }
+
+  @override
+  @action
+  void filter() {
+    if (state is! SuccessState<List<ExpenseModel>>) return;
+
+    var models = (state as SuccessState<List<ExpenseModel>>).state;
+
+    models = _filterExpenses.byName(models: models, searchName: filteredName);
+
+    models = _filterExpenses.byCategory(
+      models: models,
+      categories: filteredCategories,
+    );
+
+    var filteredMin = filteredRangeValue.min;
+    var filteredMax = filteredRangeValue.max;
+
+    var (:min, :max) = minAndMax;
+
+    if (filteredMin == 0.00 && filteredMax == 0.00) {
+      filteredRangeValue = minAndMax;
+    }
+
+    if (filteredRangeValue.max > max) {
+      filteredRangeValue = (min: filteredRangeValue.min, max: max);
+    }
+
+    (:min, :max) = filteredRangeValue;
+
+    models = _filterExpenses.byRangeValue(models: models, min: min, max: max);
+
+    models = _filterExpenses.byStatus(models: models, status: filteredStatus);
+
+    models = _sort(models);
+
+    filteredExpenses.clear();
+    filteredExpenses.addAll(models);
+  }
+
+  @override
+  List<PaymentMethod> get allowedMethods => PaymentMethod.all;
+
+  @override
+  @action
+  void restartPayments() {
+    paymentsToDo.clear();
+    remainingMethods
+      ..clear()
+      ..addAll(allowedMethods);
+  }
+
+  @action
+  void setSelectedModel(ExpenseModel? model) => selectedModel = model;
+
+  @action
+  void setName(String? name) => this.name = name ?? '';
+
+  @override
+  @action
+  void setValue(double value) => this.value = value;
+
+  @override
+  @action
+  void setAccount(Account? account) => this.account = account;
+
+  @action
+  void setCategory(Category? category) => this.category = category;
+
+  @action
+  void setDueDate(Date date) => dueDate = date;
+
+  @action
+  void setPersonName(String? personName) => this.personName = personName;
+
+  @override
+  String? validateAccount(Account? _) =>
+      _validateExpense.validateAccount(account);
+
+  String? validateName(String? _) => _validateExpense.validateName(name);
+
+  @override
+  String? validateValue(_) => _validateExpense.validateValue(value);
+
+  String? validateDueDate(_) => _validateExpense.validateDueDate(dueDate);
+
+  String? validateCategory(_) => _validateExpense.validateCategory(category);
+
+  String? validatePersonName(String? _) =>
+      _validateExpense.validatePersonName(personName);
+
+  void dispose() {
+    _filteredExpensesUpdater();
+  }
+
+  void _setUpReactions() {
+    _filteredExpensesUpdater = reaction((_) => state, (state) {
+      if (state is! SuccessState) {
+        clearFilters();
         return;
       }
 
-      var expenses = result.getOrDefault([]);
-
-      models.addAll(expenses.map((e) => _toModel(e)));
-    }
-
-    models = sort(models, PaiyableSortOption.byDueDate, isCrescent: true);
-
-    all
-      ..clear()
-      ..addAll(models);
-
-    update(models, force: true);
-    setLoading(false);
-  }
-
-  @override
-  Future<void> getAllOf({
-    required int month,
-    required int year,
-    required Account account,
-  }) async {
-    if (isLoading) return;
-
-    setLoading(true);
-
-    var expensesResult = await _manageExpense.getAllOf(
-      month: month,
-      year: year,
-      account: account,
-    );
-
-    expensesResult.fold((expenses) {
-      var models = expenses.map((e) => _toModel(e)).toList();
-
-      models = sort(models, PaiyableSortOption.byDueDate, isCrescent: true);
-
-      all
-        ..clear()
-        ..addAll(models);
-
-      update(models, force: true);
-    }, (fail) {
-      all.clear();
-      setError(fail);
+      filter();
     });
-
-    setLoading(false);
   }
 
-  @override
-  AsyncResult<void, Fail> pay({
-    required List<PaymentRecord<Expense>> payments,
-    CreditCard? card,
-  }) async {
-    for (var payment in payments) {
-      var result = await _pay.withoutCredit(payment);
-
-      if (result.isError()) {
-        return result;
-      }
-    }
-    return const Success(2);
-  }
-
-  void filterByName(String name) {
-    var filtered = _filterExpenses.byName(models: all, searchName: name);
-
-    update(filtered);
-  }
-
-  List<ExpenseModel> filterByCategory(
-    List<ExpenseModel> models,
-    List<Category> categories,
-  ) {
-    return _filterExpenses.byCategory(models: models, categories: categories);
-  }
-
-  List<ExpenseModel> filterByStatus(
-    List<ExpenseModel> models,
-    List<Status> status,
-  ) {
-    return _filterExpenses.byStatus(models: models, status: status);
-  }
-
-  List<ExpenseModel> filterByRangeValue(
-    List<ExpenseModel> models,
-    double min,
-    double max,
-  ) {
-    return _filterExpenses.byRangeValue(models: models, min: min, max: max);
-  }
-
-  List<ExpenseModel> sort(
-    List<ExpenseModel> models,
-    PaiyableSortOption option, {
-    bool isCrescent = true,
-  }) {
-    return switch (option) {
-      PaiyableSortOption.byValue => _sortExpenses.byValue(
-          models,
-          isCrescent: isCrescent,
-        ),
-      PaiyableSortOption.byName => _sortExpenses.byName(
-          models,
-          isCrescent: isCrescent,
-        ),
-      PaiyableSortOption.byDueDate => _sortExpenses.byDueDate(
-          models,
-          isCrescent: isCrescent,
-        ),
+  List<ExpenseModel> _sort(List<ExpenseModel> list) {
+    var func = switch (sortOption) {
+      PaiyableSortOption.byName => _sortExpenses.byName,
+      PaiyableSortOption.byValue => _sortExpenses.byValue,
+      PaiyableSortOption.byDueDate => _sortExpenses.byDueDate,
     };
+
+    return func(list, isCrescent: isCrescentOrder);
   }
 
-  void updateState(List<ExpenseModel> newState) {
-    update(newState);
+  ///Mounts an Expense. This method may be called just once
+  ///all fields are valid, an error can be thrown otherwise.
+  Expense _mountExpense({Expense? based}) {
+    return Expense(
+      id: based?.id ?? '',
+      name: name,
+      totalValue: value,
+      paidValue: based?.paidValue ?? 0.00,
+      remainingValue: based?.remainingValue ?? 0.00,
+      dueDate: dueDate,
+      account: account!,
+      frequency: frequency,
+      category: category!,
+    );
   }
 
-  ExpenseModel _toModel(Expense e) {
-    return ExpenseModel.fromExpense(e, status: _determineExpenseStatus(e));
+  String? _validateFields() => _validateExpense.validateAll(
+        account: account,
+        name: name,
+        value: value,
+        dueDate: dueDate,
+        personName: personName,
+        category: category,
+      );
+
+  List<Expense> _appendExpensesFromResult(
+    List<Expense> list,
+    Result<List<Expense>, Fail> res,
+  ) =>
+      list..addAll(res.getOrDefault([]));
+
+  ExpenseModel _toModel(Expense i) {
+    return ExpenseModel.fromExpense(i, status: _determineStatus(i));
   }
 
-  Status _determineExpenseStatus(Expense e) {
-    if (e.remainingValue == 0.00) return Status.okay;
+  Status _determineStatus(Expense i) {
+    if (i.remainingValue == 0.00) return Status.okay;
 
-    if (e.dueDate.isBefore(Date.today())) {
+    if (i.dueDate.isBefore(Date.today())) {
       return Status.overdue;
     }
 

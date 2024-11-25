@@ -31,7 +31,7 @@ class NumberTextField extends StatelessWidget {
   final double? width;
   final double? height;
   final int? maxLength;
-  final void Function(double?)? onChange;
+  final void Function(double)? onChange;
 
   @override
   Widget build(BuildContext context) {
@@ -76,12 +76,9 @@ class NumberTextField extends StatelessWidget {
     String? numberText =
         isCurrency ? CurrencyInputFormatter.unformat(text!) : text;
 
-    double? value;
+    double value;
 
-    if (numberText != null) {
-      value = double.tryParse(numberText);
-    }
-
+    value = numberText != null ? double.tryParse(numberText) ?? 0.00 : 0.00;
     onChange?.call(value);
   }
 

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/account.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/date.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/income_model.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/account_store.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/balance_store.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/credit_card_store.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/paiyable_store.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/utils/currency_format.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/utils/resolve_paiyable_name.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/utils/umbrella_palette.dart';
@@ -26,11 +25,11 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/wi
 
 import '../../domain/entities/credit_card.dart';
 import '../../domain/entities/paiyable.dart';
-import '../../domain/entities/payment_record.dart';
 import '../../domain/entities/payment_method.dart';
 import '../../domain/models/paiyable_model.dart';
-import '../../domain/states/state.dart' as S;
+import '../../domain/states/state.dart' as s;
 import '../../errors/api_errors.dart';
+import '../controllers/paiyable_store.dart';
 import '../widgets/layout/spaced.dart';
 
 class PaymentScreen<E extends Paiyable, T extends PaiyableModel<E>>
@@ -39,19 +38,13 @@ class PaymentScreen<E extends Paiyable, T extends PaiyableModel<E>>
     super.key,
     required this.model,
     required this.store,
-    this.isCreditAllowed = true,
-    this.isBoletoAllowed = true,
-    this.unallowedCard,
     required this.accountStore,
     required this.balanceStore,
     required this.cardStore,
   });
 
   final T model;
-  final PaiyableStore<E, T> store;
-  final bool isCreditAllowed;
-  final bool isBoletoAllowed;
-  final CreditCard? unallowedCard;
+  final PaiyableStore<T, E> store;
   final AccountStore accountStore;
   final BalanceStore balanceStore;
   final CreditCardStore cardStore;
@@ -61,32 +54,12 @@ class PaymentScreen<E extends Paiyable, T extends PaiyableModel<E>>
 }
 
 class _PaymentScreenState<E extends Paiyable> extends State<PaymentScreen> {
-  List<PaymentMethod> remainingMethods = [];
-  List<PaymentMethod> sortedMethods = [];
-  List<Widget> paymentCards = [];
-
-  Map<PaymentMethod, PaymentRecord<E>> payments = {};
-  double goingToPay = 0.00;
-  CreditCard? selectedCard;
-
   late final GlobalKey<AnimatedListState> _listKey;
 
   @override
   void initState() {
     super.initState();
     _listKey = GlobalKey();
-
-    remainingMethods
-      ..clear()
-      ..addAll(PaymentMethod.all);
-
-    if (!widget.isCreditAllowed) {
-      remainingMethods.remove(const PaymentMethod.credit());
-    }
-
-    if (!widget.isBoletoAllowed) {
-      remainingMethods.remove(const PaymentMethod.boleto());
-    }
   }
 
   @override
@@ -145,44 +118,57 @@ class _PaymentScreenState<E extends Paiyable> extends State<PaymentScreen> {
                 widget.model.remainingValue,
               ),
               const SizedBox(height: 10.0),
-              _buildTextValue('Atualmente Pagando: ', goingToPay),
-              const SizedBox(height: 40.0),
-              const BigText.bold(
-                'Seções de Pagamento',
-                textAlign: TextAlign.center,
+              Observer(
+                builder: (_) => _buildTextValue(
+                  'Atualmente Pagando: ',
+                  widget.store.totalPaying,
+                ),
               ),
-              AnimatedList(
-                key: _listKey,
-                padding: const EdgeInsets.symmetric(vertical: 30.0),
-                shrinkWrap: true,
-                initialItemCount: payments.length,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (ctx, index, animation) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10.0),
-                      child: Dismissible(
-                        key: ValueKey(index),
-                        background: Container(
-                          color: UmbrellaPalette.errorColor,
-                          child: const Icon(Icons.delete, size: 40.0),
-                        ),
-                        onDismissed: (_) {
-                          removePaymentSection(sortedMethods[index]);
-                        },
-                        child: ScaleTransition(
-                          alignment: Alignment.topCenter,
-                          scale: CurvedAnimation(
-                            parent: animation,
-                            curve: Curves.easeInOut,
+              const SizedBox(height: 40.0),
+              Observer(
+                builder: (_) => Visibility(
+                  visible: widget.store.paymentsToDo.isNotEmpty,
+                  child: const BigText.bold(
+                    'Seções de Pagamento',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+              Observer(builder: (_) {
+                return AnimatedList(
+                  key: _listKey,
+                  padding: const EdgeInsets.symmetric(vertical: 30.0),
+                  shrinkWrap: true,
+                  initialItemCount: widget.store.paymentsToDo.length,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (ctx, index, animation) {
+                    var payment = widget.store.paymentsToDo[index];
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        child: Dismissible(
+                          key: ValueKey(index),
+                          background: Container(
+                            color: UmbrellaPalette.errorColor,
+                            child: const Icon(Icons.delete, size: 40.0),
                           ),
-                          child: paymentCards[index],
+                          onDismissed: (_) {
+                            removePaymentSection(payment.paymentMethod);
+                          },
+                          child: ScaleTransition(
+                            alignment: Alignment.topCenter,
+                            scale: CurvedAnimation(
+                              parent: animation,
+                              curve: Curves.easeInOut,
+                            ),
+                            child: buildCard(payment.paymentMethod),
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
+                    );
+                  },
+                );
+              }),
               UnconstrainedBox(
                 child: UmbrellaIconButton(
                   icon: const Icon(
@@ -190,6 +176,7 @@ class _PaymentScreenState<E extends Paiyable> extends State<PaymentScreen> {
                     color: Colors.black,
                     size: 35.0,
                   ),
+                  isPrimary: false,
                   onPressed: showRemainingPaymentMethods,
                 ),
               ),
@@ -212,6 +199,12 @@ class _PaymentScreenState<E extends Paiyable> extends State<PaymentScreen> {
     );
   }
 
+  @override
+  void dispose() {
+    widget.store.restartPayments();
+    super.dispose();
+  }
+
   void pay() {
     String? errorMsg = validatePayments();
 
@@ -220,11 +213,10 @@ class _PaymentScreenState<E extends Paiyable> extends State<PaymentScreen> {
       return;
     }
 
-    widget.store
-        .pay(payments: payments.values.toList(), card: selectedCard)
-        .then((result) {
-      result.fold((_) async {
+    widget.store.pay().then((fail) async {
+      if (fail == null && mounted) {
         String name = resolvePaiyableTypeName(widget.model);
+
         await UmbrellaDialogs.showSuccess(context,
             title: '$name paga com sucesso',
             message:
@@ -233,34 +225,34 @@ class _PaymentScreenState<E extends Paiyable> extends State<PaymentScreen> {
         if (mounted) {
           Navigator.pop(context);
         }
-      }, (fail) {
-        UmbrellaDialogs.showError(context, fail.message,
-            onRetry: fail is NetworkFail ? pay : null);
-      });
+        return;
+      } else {
+        if (mounted) {
+          UmbrellaDialogs.showError(
+            context,
+            fail!.message,
+            onRetry: fail is NetworkFail ? pay : null,
+          );
+        }
+      }
     });
   }
 
   String? validatePayments() {
+    var payments = widget.store.paymentsToDo;
     return switch (payments) {
       _ when payments.isEmpty =>
         'Adicione pelo menos uma seção para fazer o pagamento.',
-      _ when goingToPay <= 0.00 => 'O valor a pagar deve ser maior que 0.',
-      _ when goingToPay > widget.model.remainingValue =>
+      _ when widget.store.totalPaying <= 0.00 =>
+        'O valor a pagar deve ser maior que 0.',
+      _ when widget.store.totalPaying > widget.model.remainingValue =>
         'O valor a pagar é maior do que o valor restante da ${resolvePaiyableTypeName(widget.model)}.',
-      _
-          when payments.containsKey(const PaymentMethod.credit()) &&
-              !widget.isCreditAllowed =>
-        'Você não pode pagar esta despesa no Crédito.',
-      _
-          when payments.containsKey(const PaymentMethod.credit()) &&
-              selectedCard == null =>
-        'Selecione um Cartão na seção de Crédito.',
       _ => null,
     };
   }
 
   void resetPayments() {
-    for (var method in sortedMethods) {
+    for (var payment in widget.store.paymentsToDo) {
       _listKey.currentState!.removeItem(
         0,
         (ctx, animation) => ScaleTransition(
@@ -269,28 +261,13 @@ class _PaymentScreenState<E extends Paiyable> extends State<PaymentScreen> {
             parent: animation,
             curve: Curves.easeInOut,
           ),
-          child: buildCard(method),
+          child: buildCard(payment.paymentMethod),
         ),
         duration: const Duration(milliseconds: 700),
       );
     }
 
-    remainingMethods
-      ..clear()
-      ..addAll(PaymentMethod.all);
-
-    sortedMethods.clear();
-
-    if (!widget.isCreditAllowed) {
-      remainingMethods.remove(const PaymentMethod.credit());
-    }
-
-    paymentCards.clear();
-    payments.clear();
-    selectedCard = null;
-    goingToPay = 0.00;
-
-    setState(() {});
+    widget.store.restartPayments();
   }
 
   Widget _buildTextValue(String label, double value) {
@@ -312,49 +289,32 @@ class _PaymentScreenState<E extends Paiyable> extends State<PaymentScreen> {
   }
 
   void showRemainingPaymentMethods() {
-    if (remainingMethods.isEmpty) return;
+    if (widget.store.remainingMethods.isEmpty) return;
     showDialog(
       context: context,
       builder: (ctx) => PaymentMethodSelectorDialog(
         onSelected: addPaymentSection,
-        paymentMethods: remainingMethods,
+        paymentMethods: widget.store.remainingMethods,
       ),
     );
   }
 
   void addPaymentSection(PaymentMethod method) {
-    payments[method] = PaymentRecord<E>(
-      id: '',
-      usedAccount: widget.model.account,
-      paiyable: widget.model.toEntity() as E,
-      paymentMethod: method,
-      value: 0.00,
-      date: Date.today(),
-    );
+    widget.store.addPayment(method: method, account: widget.model.account);
 
-    sortedMethods.add(method);
-    remainingMethods.remove(method);
-
-    paymentCards.add(buildCard(method));
-    _listKey.currentState!.insertItem(sortedMethods.length - 1);
+    _listKey.currentState!.insertItem(widget.store.paymentsToDo.length - 1);
   }
 
   void removePaymentSection(PaymentMethod method) {
-    paymentCards.removeAt(sortedMethods.indexOf(method));
+    var index = widget.store.paymentsToDo
+        .indexWhere((rec) => rec.paymentMethod == method);
+
+    widget.store.removePayment(method);
 
     _listKey.currentState!.removeItem(
-      sortedMethods.indexOf(method),
+      index,
       (ctx, animation) => const SizedBox.shrink(),
     );
-
-    setState(() {
-      goingToPay -= payments[method]!.value;
-    });
-
-    payments.remove(method);
-    remainingMethods.add(method);
-
-    sortedMethods.remove(method);
   }
 
   Widget buildCard(PaymentMethod method) {
@@ -362,11 +322,11 @@ class _PaymentScreenState<E extends Paiyable> extends State<PaymentScreen> {
         resolveFunctions(method);
 
     if (method.isCredit) {
-      var isSuccess = widget.cardStore.state is S.SuccessState;
+      var isSuccess = widget.cardStore.state is s.SuccessState;
       return PaymentCreditCard(
         accounts: widget.accountStore.state,
         creditCards: isSuccess
-            ? (widget.cardStore.state as S.SuccessState<List<CreditCard>>).state
+            ? (widget.cardStore.state as s.SuccessState<List<CreditCard>>).state
             : [],
         initiallySelectedAccount: widget.model.account,
         onAccountChanged: onAccountChanged,
@@ -394,26 +354,15 @@ class _PaymentScreenState<E extends Paiyable> extends State<PaymentScreen> {
     void Function(CreditCard?) onCardChanged = (_) {};
 
     onAccountChanged = (Account acc) {
-      payments.update(
-        method,
-        (payment) => payment.copyWith(usedAccount: acc),
-      );
+      widget.store.setPaymentAccount(method: method, account: acc);
     };
     onValueChanged = (value) {
-      setState(() {
-        goingToPay = goingToPay - payments[method]!.value + value;
-      });
-      payments.update(
-        method,
-        (payment) => payment.copyWith(value: value),
-      );
+      widget.store.setPaymentValue(method: method, value: value);
     };
 
     if (method == const PaymentMethod.credit()) {
       onCardChanged = (c) {
-        setState(() {
-          selectedCard = c?.copyWith();
-        });
+        widget.store.setPaymentCreditCard(c);
       };
     }
     return (

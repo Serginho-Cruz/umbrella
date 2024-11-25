@@ -18,40 +18,53 @@ abstract class ExpenseTappableOptions {
         TappableOptionsUtils.navigateTo(
           route: '/expense/pay',
           context: context,
-          arguments: {
-            'model': model,
-            'store': store,
-          },
-        ).then((_) => onPop?.call());
+        ).then((_) {
+          store.setSelectedModel(null);
+          onPop?.call();
+        });
       }),
-      TappableOption('Parcelar', () {}),
-      TappableOption('Re-parcelar', () {}),
       TappableOption(
         'Editar Despesa',
-        () => TappableOptionsUtils.navigateTo(
-          context: context,
-          route: '/expense/update',
-          arguments: model.toEntity(),
-        ).then((_) => onPop?.call()),
+        () {
+          store.setSelectedModel(model);
+
+          TappableOptionsUtils.navigateTo(
+            context: context,
+            route: '/expense/update',
+          ).then((_) {
+            store.setSelectedModel(null);
+            onPop?.call();
+          });
+        },
       ),
-      TappableOption(
-        'Alterar Valor',
-        () => TappableOptionsUtils.handleChangeValue<ExpenseModel>(
+      TappableOption('Alterar Valor', () {
+        store.setSelectedModel(model);
+        TappableOptionsUtils.handleChangeValue<ExpenseModel>(
           context: context,
           model: model,
-          onValueChanged: store.updateValue,
-          onPop: onPop,
-        ),
-      ),
+          store: store,
+          onPop: () {
+            store.setSelectedModel(null);
+            onPop?.call();
+          },
+        );
+      }),
       TappableOption(
         'Trocar de Conta',
-        () => TappableOptionsUtils.handleSwitchAccount<ExpenseModel>(
-          context: context,
-          accounts: accountStore.state,
-          model: model,
-          onAccountChanged: store.switchAccount,
-          onPop: onPop,
-        ),
+        () {
+          store.setSelectedModel(model);
+
+          TappableOptionsUtils.handleSwitchAccount<ExpenseModel>(
+            context: context,
+            accounts: accountStore.state,
+            model: model,
+            store: store,
+            onPop: () {
+              store.setSelectedModel(null);
+              onPop?.call();
+            },
+          );
+        },
       ),
       TappableOption('Ver em detalhes', () {}),
       TappableOption('Estornar', () {}),

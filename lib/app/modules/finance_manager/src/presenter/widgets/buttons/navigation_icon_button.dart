@@ -6,24 +6,22 @@ class NavigationIconButton extends StatelessWidget {
   const NavigationIconButton({
     super.key,
     required this.route,
+    required this.tooltipMessage,
     this.backgroundColor = UmbrellaPalette.actionButtonColor,
     this.hoverColor = UmbrellaPalette.activePrimaryButton,
     this.icon = const Icon(
       Icons.add,
-      color: Colors.white,
-      size: 40.0,
+      color: Colors.black,
+      size: 30.0,
     ),
-    this.width = 60.0,
-    this.height = 60.0,
     this.onPop,
   });
 
-  final double width;
-  final double height;
   final String route;
   final Color backgroundColor;
   final Color hoverColor;
   final Icon icon;
+  final String tooltipMessage;
 
   final VoidCallback? onPop;
 
@@ -34,13 +32,8 @@ class NavigationIconButton extends StatelessWidget {
       elevation: 4.0,
       shape: const CircleBorder(side: BorderSide(width: 2.0)),
       child: IconButton(
+        tooltip: tooltipMessage,
         icon: icon,
-        constraints: BoxConstraints(
-          minWidth: width,
-          minHeight: height,
-          maxWidth: width,
-          maxHeight: height,
-        ),
         hoverColor: hoverColor,
         onPressed: () {
           Navigator.of(context).pushNamed(route).then((_) {

@@ -94,7 +94,7 @@ abstract class _CreditCardStoreBase with Store {
     );
 
     return result.fold((_) {
-      getAll();
+      getAll(ignoreLoading: true);
       return null;
     }, (f) {
       state = FailState(f);
@@ -123,7 +123,7 @@ abstract class _CreditCardStoreBase with Store {
     var result = await _manageCreditCard.update(oldCard, newCard);
 
     return result.fold((_) {
-      getAll();
+      getAll(ignoreLoading: true);
       return null;
     }, (f) {
       state = FailState(f);
@@ -132,8 +132,9 @@ abstract class _CreditCardStoreBase with Store {
   }
 
   @action
-  Future<void> getAll() async {
-    if (_authStore.state is! u.SuccessState || state is LoadingState) return;
+  Future<void> getAll({bool ignoreLoading = false}) async {
+    if (_authStore.state is! u.SuccessState ||
+        (state is LoadingState && ignoreLoading == false)) return;
 
     state = const LoadingState();
 

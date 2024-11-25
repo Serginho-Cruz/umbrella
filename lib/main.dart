@@ -11,7 +11,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Parse()
-      .initialize(Env.appId, Env.url, clientKey: Env.clientKey, debug: true);
+      .initialize(Env.appId, Env.url, clientKey: Env.clientKey, debug: false);
 
   runApp(
     ModularApp(

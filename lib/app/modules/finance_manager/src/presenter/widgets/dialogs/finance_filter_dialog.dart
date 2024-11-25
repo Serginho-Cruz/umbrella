@@ -1,10 +1,10 @@
-import 'dart:math' show pow;
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 
 import '../../../domain/entities/category.dart';
-import '../../../domain/models/finance_model.dart';
 import '../../../domain/models/status.dart';
 import '../../../domain/usecases/sorts/sort_expenses.dart';
+import '../../controllers/finance_filterable_store.dart';
 import '../../utils/adapt_name.dart';
 import '../buttons/primary_button.dart';
 import '../filters/category_filter.dart';
@@ -15,64 +15,27 @@ import '../texts/big_text.dart';
 import '../texts/medium_text.dart';
 import '../layout/dialog_layout.dart';
 
-class FinanceFilterDialog<T extends FinanceModel> extends StatefulWidget {
+class FinanceFilterDialog extends StatefulWidget {
   const FinanceFilterDialog({
     super.key,
     required this.categories,
-    required this.selectedValues,
-    required this.minAndMaxValues,
-    this.filteredCategories = const [],
-    this.statusFiltered = const [],
-    this.sortOption,
-    this.onFiltersApplied,
+    required this.filterableStore,
   });
 
-  final void Function({
-    required List<Category> categories,
-    required RangeValues range,
-    required List<Status> filteredStatus,
-    required PaiyableSortOption? sortOption,
-    required bool crescentSort,
-  })? onFiltersApplied;
-
+  final FinanceFilterableStore filterableStore;
   final List<Category> categories;
-  final List<Category> filteredCategories;
-  final RangeValues selectedValues;
-  final RangeValues minAndMaxValues;
-  final PaiyableSortOption? sortOption;
-  final List<Status> statusFiltered;
 
   @override
   State<FinanceFilterDialog> createState() => _FinanceFilterDialogState();
 }
 
 class _FinanceFilterDialogState extends State<FinanceFilterDialog> {
-  late RangeValues values;
-  late double minValue, maxValue;
-
-  final List<Category> selectedCategories = [];
-  final List<Status> selectedStatus = [];
-  PaiyableSortOption? sortOption;
-
-  bool crescentSort = true;
-
-  @override
-  void initState() {
-    super.initState();
-    values = _roundTo10Exponent(widget.selectedValues);
-    var rounded = _roundTo10Exponent(widget.minAndMaxValues);
-
-    minValue = rounded.start;
-    maxValue = rounded.end;
-
-    selectedCategories.addAll(widget.filteredCategories);
-    selectedStatus.addAll(widget.statusFiltered);
-
-    sortOption = widget.sortOption;
-  }
-
   @override
   Widget build(BuildContext context) {
+    var (:min, :max) = widget.filterableStore.minAndMax;
+
+    final RangeValues range = RangeValues(min, max);
+
     return DialogLayout(
       fullscreen: true,
       child: SingleChildScrollView(
@@ -108,81 +71,88 @@ class _FinanceFilterDialogState extends State<FinanceFilterDialog> {
               ...widget.categories.isNotEmpty
                   ? [
                       const BigText.bold('Categorias'),
-                      CategoryFilter(
-                        categories: widget.categories,
-                        initiallySelected: widget.filteredCategories,
-                        onSelected: (cat) {
-                          selectedCategories.contains(cat)
-                              ? selectedCategories.remove(cat)
-                              : selectedCategories.add(cat);
-                        },
+                      Observer(
+                        builder: (_) => CategoryFilter(
+                          categories: widget.categories,
+                          initiallySelected:
+                              widget.filterableStore.filteredCategories,
+                          onSelected: widget.filterableStore.toggleCategory,
+                        ),
                       ),
                     ]
                   : [],
               const BigText.bold('Valor'),
               const SizedBox(height: 20.0),
-              RangeValueFilter(
-                range: values,
-                min: minValue,
-                max: maxValue,
-                onNewRange: (newValues) {
-                  setState(() => values = newValues);
-                },
-              ),
+              Observer(builder: (ctx) {
+                (:min, :max) = widget.filterableStore.filteredRangeValue;
+
+                var filteredRange = RangeValues(min, max);
+
+                return RangeValueFilter(
+                  range: filteredRange,
+                  min: range.start,
+                  max: range.end,
+                  onNewRange: (newRange) {
+                    widget.filterableStore.setMinValueRange(newRange.start);
+                    widget.filterableStore.setMaxValueRange(newRange.end);
+                  },
+                );
+              }),
               const Padding(
                 padding: EdgeInsets.only(top: 18.0, bottom: 12.0),
                 child: BigText.bold('Status'),
               ),
               StatusFilter(
                 status: Status.values,
-                selectedStatus: selectedStatus,
-                onStatusChanged: (status) {
-                  selectedStatus.contains(status)
-                      ? selectedStatus.remove(status)
-                      : selectedStatus.add(status);
-
-                  setState(() {});
-                },
+                selectedStatus: widget.filterableStore.filteredStatus,
+                onStatusChanged: widget.filterableStore.toggleStatus,
               ),
               const Padding(
                 padding: EdgeInsets.only(top: 18.0, bottom: 12.0),
                 child: BigText.bold('Ordenar Por'),
               ),
-              ...PaiyableSortOption.values.map(
-                (option) => Row(
-                  children: [
-                    Radio<PaiyableSortOption>.adaptive(
-                      value: option,
-                      groupValue: sortOption,
-                      onChanged: (newOption) {
-                        setState(() => sortOption = newOption);
-                      },
-                    ),
-                    MediumText(adaptSortOptionName(option)),
-                  ],
+              Observer(
+                builder: (_) => Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: PaiyableSortOption.values
+                      .map(
+                        (option) => GestureDetector(
+                          onTap: () =>
+                              widget.filterableStore.setSortOption(option),
+                          child: Row(
+                            children: [
+                              Radio<PaiyableSortOption>.adaptive(
+                                value: option,
+                                groupValue: widget.filterableStore.sortOption,
+                                onChanged: widget.filterableStore.setSortOption,
+                              ),
+                              MediumText(adaptSortOptionName(option)),
+                            ],
+                          ),
+                        ),
+                      )
+                      .toList(),
                 ),
               ),
               const SizedBox(height: 20),
-              GestureDetector(
-                onTap: () {
-                  setState(() => crescentSort = !crescentSort);
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const MediumText.bold('Ordenamento Crescente'),
-                    Transform.scale(
-                      scale: 1.2,
-                      child: Checkbox.adaptive(
-                        value: crescentSort,
-                        onChanged: (newValue) {
-                          setState(() {
-                            crescentSort = newValue!;
-                          });
-                        },
+              Observer(
+                builder: (_) => GestureDetector(
+                  onTap: widget.filterableStore.toggleCrescentOrder,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const MediumText.bold('Ordenamento Crescente'),
+                      Transform.scale(
+                        scale: 1.2,
+                        child: Checkbox.adaptive(
+                          value: widget.filterableStore.isCrescentOrder,
+                          onChanged: (_) {
+                            widget.filterableStore.toggleCrescentOrder();
+                          },
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 40.0),
@@ -191,13 +161,7 @@ class _FinanceFilterDialogState extends State<FinanceFilterDialog> {
                 width: MediaQuery.sizeOf(context).width,
                 height: 60.0,
                 onPressed: () {
-                  widget.onFiltersApplied?.call(
-                    categories: selectedCategories,
-                    filteredStatus: selectedStatus,
-                    range: values,
-                    sortOption: sortOption,
-                    crescentSort: crescentSort,
-                  );
+                  widget.filterableStore.filter();
                   Navigator.pop(context);
                 },
               ),
@@ -206,27 +170,5 @@ class _FinanceFilterDialogState extends State<FinanceFilterDialog> {
         ),
       ),
     );
-  }
-
-  RangeValues _roundTo10Exponent(RangeValues range) {
-    double min = range.start;
-    double max = range.end;
-
-    int minPlaces = 0, maxPlaces = 0;
-
-    while (min > 9.0) {
-      min /= 10;
-      minPlaces++;
-    }
-
-    while (max > 9.0) {
-      max /= 10;
-      maxPlaces++;
-    }
-
-    min = min.floorToDouble() * pow(10, minPlaces);
-    max = max.ceilToDouble() * pow(10, maxPlaces);
-
-    return RangeValues(min, max);
   }
 }

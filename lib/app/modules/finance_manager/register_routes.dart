@@ -74,15 +74,18 @@ abstract final class RegisterRoutes {
 
     r.child(
       UnmodularFormatFinanceRoutes.payIncome,
-      child: (context) => PaymentScreen<Income, IncomeModel>(
-        model: r.args.data['model'] as IncomeModel,
-        store: r.args.data['store'] as IncomeStore,
-        accountStore: _resolve(),
-        balanceStore: _resolve(),
-        cardStore: _resolve(),
-        isCreditAllowed: false,
-        isBoletoAllowed: false,
-      ),
+      child: (context) {
+        IncomeModel model = r.args.data['model'];
+        BindServiceProvider.get<IncomeStore>().setSelectedModel(model);
+
+        return PaymentScreen<Income, IncomeModel>(
+          model: model,
+          store: BindServiceProvider.get<IncomeStore>(),
+          accountStore: _resolve(),
+          balanceStore: _resolve(),
+          cardStore: _resolve(),
+        );
+      },
     );
   }
 
@@ -116,16 +119,18 @@ abstract final class RegisterRoutes {
       ),
     );
 
-    r.child(
-      UnmodularFormatFinanceRoutes.payExpense,
-      child: (context) => PaymentScreen<Expense, ExpenseModel>(
-        model: r.args.data['model'] as ExpenseModel,
-        store: r.args.data['store'] as ExpenseStore,
+    r.child(UnmodularFormatFinanceRoutes.payExpense, child: (context) {
+      ExpenseModel model = r.args.data['model'];
+      BindServiceProvider.get<ExpenseStore>().setSelectedModel(model);
+
+      return PaymentScreen<Expense, ExpenseModel>(
+        model: model,
+        store: BindServiceProvider.get<ExpenseStore>(),
         accountStore: _resolve(),
         balanceStore: _resolve(),
         cardStore: _resolve(),
-      ),
-    );
+      );
+    });
   }
 
   static void _registerCardRoutes(RouteManager r) {
