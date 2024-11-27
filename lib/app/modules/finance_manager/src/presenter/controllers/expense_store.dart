@@ -1,6 +1,5 @@
 import 'package:mobx/mobx.dart';
 import 'package:result_dart/result_dart.dart';
-import 'package:umbrella_echonomics/app/modules/bind_service_provider.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/credit_card.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/payment_method.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/round.dart';
@@ -32,6 +31,7 @@ abstract class _ExpenseStoreBase
     with Store
     implements FinanceFilterableStore, PaiyableStore<ExpenseModel, Expense> {
   final MonthStore _monthStore;
+  final AccountStore _accountStore;
   final ManageExpense _manageExpense;
   final FilterExpenses _filterExpenses;
   final SortExpenses _sortExpenses;
@@ -40,12 +40,14 @@ abstract class _ExpenseStoreBase
 
   _ExpenseStoreBase({
     required MonthStore monthStore,
+    required AccountStore accountStore,
     required ManageExpense manageExpense,
     required FilterExpenses filterExpenses,
     required SortExpenses sortExpenses,
     required PayExpense payExpense,
     required ValidateExpense validateExpense,
   })  : _monthStore = monthStore,
+        _accountStore = accountStore,
         _manageExpense = manageExpense,
         _filterExpenses = filterExpenses,
         _sortExpenses = sortExpenses,
@@ -55,9 +57,15 @@ abstract class _ExpenseStoreBase
   }
 
   late final ReactionDisposer _filteredExpensesUpdater;
+  late final ReactionDisposer _accountsReaction;
+  late final ReactionDisposer _monthReaction;
 
   @observable
   State<List<ExpenseModel>> state = const InitialState();
+
+  @override
+  @computed
+  bool get isLoading => state is LoadingState;
 
   ObservableList<ExpenseModel> filteredExpenses = ObservableList();
 
@@ -270,10 +278,7 @@ abstract class _ExpenseStoreBase
 
     state = const LoadingState();
 
-    var store = BindServiceProvider.get<AccountStore>();
-
-    List<Account> accountsList =
-        store.selectedAccount != null ? [store.selectedAccount!] : store.state;
+    List<Account> accountsList = _accountStore.visualizingAccounts;
 
     var (:year, :month) = _monthStore.month;
 
@@ -505,13 +510,17 @@ abstract class _ExpenseStoreBase
   void setAccount(Account? account) => this.account = account;
 
   @action
+  void setFrequency(Frequency frequency) => this.frequency = frequency;
+
+  @action
   void setCategory(Category? category) => this.category = category;
 
   @action
   void setDueDate(Date date) => dueDate = date;
 
   @action
-  void setPersonName(String? personName) => this.personName = personName;
+  void setPersonName(String? personName) => this.personName =
+      personName == null || personName.isEmpty ? null : personName;
 
   @override
   String? validateAccount(Account? _) =>
@@ -531,6 +540,8 @@ abstract class _ExpenseStoreBase
 
   void dispose() {
     _filteredExpensesUpdater();
+    _accountsReaction();
+    _monthReaction();
   }
 
   void _setUpReactions() {
@@ -542,6 +553,12 @@ abstract class _ExpenseStoreBase
 
       filter();
     });
+
+    _monthReaction = reaction((_) => _monthStore.month, (_) => getAll());
+
+    _accountsReaction = reaction(
+        (_) => _accountStore.visualizingAccounts.iterator,
+        (_) => getAll(ignoreLoading: true));
   }
 
   List<ExpenseModel> _sort(List<ExpenseModel> list) {
@@ -562,7 +579,7 @@ abstract class _ExpenseStoreBase
       name: name,
       totalValue: value,
       paidValue: based?.paidValue ?? 0.00,
-      remainingValue: based?.remainingValue ?? 0.00,
+      remainingValue: based?.remainingValue ?? value,
       dueDate: dueDate,
       account: account!,
       frequency: frequency,

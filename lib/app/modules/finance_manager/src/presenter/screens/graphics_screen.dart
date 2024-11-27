@@ -14,16 +14,13 @@ import '../widgets/texts/medium_text.dart';
 
 class GraphicsScreen extends StatefulWidget {
   final GraphsStore _graphsStore;
-  final AccountStore _accountStore;
 
   const GraphicsScreen({
     super.key,
     required GraphsStore graphsStore,
     required BalanceStore balanceStore,
     required AccountStore accountStore,
-  })  : _graphsStore = graphsStore,
-        _accountStore = accountStore;
-
+  }) : _graphsStore = graphsStore;
   @override
   State<GraphicsScreen> createState() => _GraphicsScreenState();
 }
@@ -69,7 +66,9 @@ class _GraphicsScreenState extends State<GraphicsScreen> {
         appBar: CustomAppBar(
           showBalances: showAppBarFuncs,
           showMonthChanger: showAppBarFuncs,
-          onMonthChange: (_, __) {},
+          onMonthChange: (_, __) {
+            _fetchData();
+          },
           title: 'Gráficos',
         ),
         child: ListView(
@@ -329,12 +328,10 @@ class _GraphicsScreenState extends State<GraphicsScreen> {
   }
 
   Future<void> _fetchData() async {
-    final accounts = widget._accountStore.state;
-
-    widget._graphsStore.fetchExpenseCategoryGraphData(accounts);
-    widget._graphsStore.fetchIncomeCategoryGraphData(accounts);
-    widget._graphsStore.fetchExpenseStatusGraphData(accounts);
-    widget._graphsStore.fetchIncomeStatusGraphData(accounts);
+    widget._graphsStore.fetchExpenseCategoryGraphData();
+    widget._graphsStore.fetchIncomeCategoryGraphData();
+    widget._graphsStore.fetchExpenseStatusGraphData();
+    widget._graphsStore.fetchIncomeStatusGraphData();
   }
 
   Widget _graphTitle(String title) {

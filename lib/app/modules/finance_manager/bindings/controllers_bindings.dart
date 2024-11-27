@@ -7,10 +7,6 @@ abstract class ControllersBindings {
   static void bind(Injector i) {
     i.addSingleton<MonthStore>(MonthStore.new);
 
-    i.addLazySingleton<BalanceStore>(() {
-      return BalanceStore(monthStore: i(), usecase: i());
-    });
-
     i.addLazySingleton<AccountStore>(
       () => AccountStore(
         authStore: i(),
@@ -37,6 +33,7 @@ abstract class ControllersBindings {
         manageExpense: i(),
         sortExpenses: i(),
         payExpense: i(),
+        accountStore: i(),
       ),
     );
 
@@ -48,12 +45,23 @@ abstract class ControllersBindings {
         receiveIncome: i(),
         monthStore: i(),
         validateIncome: i(),
+        accountStore: i(),
       ),
     );
 
     i.addLazySingleton<IncomeCategoryStore>(() => IncomeCategoryStore(i()));
 
+    i.addLazySingleton<BalanceStore>(() {
+      return BalanceStore(
+        monthStore: i(),
+        usecase: i(),
+        accountStore: i(),
+        expenseStore: i(),
+        incomeStore: i(),
+      );
+    });
+
     i.addLazySingleton<GraphsStore>(
-        () => GraphsStore(usecase: i(), monthStore: i()));
+        () => GraphsStore(usecase: i(), monthStore: i(), accountStore: i()));
   }
 }

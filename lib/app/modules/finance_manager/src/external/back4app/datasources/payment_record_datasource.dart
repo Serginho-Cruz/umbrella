@@ -50,6 +50,8 @@ class Back4AppPaymentRecordDatasource implements PaymentRecordDatasource {
     query.whereGreaterThanOrEqualsTo('date', firstDay);
     query.whereLessThanOrEqualTo('date', lastDay);
 
+    query.orderByAscending('date');
+
     var response = await query.query();
 
     if (isResponseSuccesful(response)) {

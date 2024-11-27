@@ -3,10 +3,8 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:umbrella_echonomics/app/modules/bind_service_provider.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/list_segmented_state_widget.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/tiles/finance_tile.dart';
-import '../../../domain/entities/account.dart';
 import '../../../domain/entities/category.dart';
 import '../../../domain/entities/date.dart';
-import '../../controllers/balance_store.dart';
 import '../../controllers/month_store.dart';
 import '../../controllers/income_store.dart';
 import '../../utils/currency_format.dart';
@@ -24,7 +22,6 @@ import '../../widgets/texts/big_text.dart';
 import '../../widgets/texts/small_disclaimer.dart';
 import '../../widgets/texts/small_text.dart';
 import '../../widgets/layout/umbrella_scaffold.dart';
-import '../../widgets/others/list_scoped_builder.dart';
 import '../../widgets/texts/medium_text.dart';
 import '../../widgets/dialogs/umbrella_dialogs.dart';
 
@@ -34,16 +31,13 @@ class IncomesScreen extends StatefulWidget {
     required IncomeStore incomeStore,
     required AccountStore accountStore,
     required IncomeCategoryStore categoryStore,
-    required BalanceStore balanceStore,
   })  : _incomeStore = incomeStore,
         _categoryStore = categoryStore,
-        _accountStore = accountStore,
-        _balanceStore = balanceStore;
+        _accountStore = accountStore;
 
   final IncomeStore _incomeStore;
   final IncomeCategoryStore _categoryStore;
   final AccountStore _accountStore;
-  final BalanceStore _balanceStore;
 
   @override
   State<IncomesScreen> createState() => _IncomesScreenState();
@@ -51,23 +45,10 @@ class IncomesScreen extends StatefulWidget {
 
 class _IncomesScreenState extends State<IncomesScreen> {
   @override
-  void initState() {
-    super.initState();
-
-    widget._accountStore.addSelectedAccountListener(_onAccountChanged);
-  }
-
-  @override
-  void dispose() {
-    widget._accountStore.removeSelectedAccountListener(_onAccountChanged);
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return ListScopedBuilder<AccountStore, List<Account>>(
-      store: widget._accountStore,
-      loadingWidget: UmbrellaScaffold(
+    return ListSegmentedStateWidget(
+      state: widget._accountStore.state,
+      onLoading: (_) => UmbrellaScaffold(
         appBar: CustomAppBar(title: 'Receitas', showBalances: false),
         floatingActionButton: const NavigationIconButton(
           route: '/finance_manager/income/add',
@@ -85,22 +66,22 @@ class _IncomesScreenState extends State<IncomesScreen> {
           ],
         ),
       ),
-      onError: (ctx, fail) {
+      onFail: (ctx, fail) {
         UmbrellaDialogs.showError(
           context,
           fail.message,
-          onRetry: widget._accountStore.getAll,
-          onConfirmPressed: widget._accountStore.getAll,
+          onRetry: widget._accountStore.get,
+          onConfirmPressed: widget._accountStore.get,
         );
 
         return const SizedBox.shrink();
       },
-      onEmptyState: () {
+      onEmpty: (_) {
         UmbrellaDialogs.showError(
           context,
           'Um Erro inesperado aconteceu. Por favor, tente novamente',
-          onRetry: widget._accountStore.getAll,
-          onConfirmPressed: widget._accountStore.getAll,
+          onRetry: widget._accountStore.get,
+          onConfirmPressed: widget._accountStore.get,
         );
 
         return const SizedBox.shrink();
@@ -110,17 +91,10 @@ class _IncomesScreenState extends State<IncomesScreen> {
           appBar: CustomAppBar(
             title: 'Receitas',
             showMonthChanger: true,
-            onMonthChange: (_, __) {},
           ),
-          floatingActionButton: NavigationIconButton(
+          floatingActionButton: const NavigationIconButton(
             route: '/finance_manager/income/add',
             tooltipMessage: 'Ir para a Tela de Adicionar Receitas',
-            onPop: () {
-              widget._balanceStore.getForAll(
-                accounts: accounts,
-              );
-              _fetchIncomes();
-            },
           ),
           child: SingleChildScrollView(
             child: Padding(
@@ -163,60 +137,35 @@ class _IncomesScreenState extends State<IncomesScreen> {
                     },
                   ),
                   const SizedBox(height: 30.0),
-                  ListSegmentedStateWidget(
-                    state: widget._incomeStore.state,
-                    onLoading: (ctx) => Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: List.generate(
-                        5,
-                        (i) => ShimmerListTile(
-                          roundedOnTop: i == 0,
-                          roundedOnBottom: i == 4,
+                  Observer(
+                    builder: (_) => ListSegmentedStateWidget(
+                      state: widget._incomeStore.state,
+                      onLoading: (ctx) => Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: List.generate(
+                          5,
+                          (i) => ShimmerListTile(
+                            roundedOnTop: i == 0,
+                            roundedOnBottom: i == 4,
+                          ),
                         ),
                       ),
-                    ),
-                    onFail: (ctx, fail) {
-                      UmbrellaDialogs.showError(
-                        context,
-                        fail.message,
-                      );
-                      var (:month, :year) =
-                          BindServiceProvider.get<MonthStore>().month;
+                      onFail: (ctx, fail) {
+                        UmbrellaDialogs.showError(
+                          context,
+                          fail.message,
+                        );
+                        var (:month, :year) =
+                            BindServiceProvider.get<MonthStore>().month;
 
-                      String name =
-                          Date(day: 1, month: month, year: year).monthName;
-                      return Center(
-                        child: MediumText(
-                            'Erro ao obter as Receitas do Mês de $name'),
-                      );
-                    },
-                    onEmpty: (_) {
-                      String text;
-                      var (:month, :year) =
-                          BindServiceProvider.get<MonthStore>().month;
-
-                      String name =
-                          Date(day: 1, month: month, year: year).monthName;
-
-                      text = 'Nenhuma Receita encontrada para o mês de $name';
-
-                      return SizedBox(
-                        height: 200.0,
-                        width: MediaQuery.sizeOf(context).width * 0.8,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.money_off_rounded, size: 60.0),
-                            const SizedBox(height: 20.0),
-                            MediumText.bold(text, textAlign: TextAlign.center),
-                          ],
-                        ),
-                      );
-                    },
-                    onState: (ctx, incomes) => Observer(builder: (_) {
-                      var filtered = widget._incomeStore.filteredIncomes;
-
-                      if (filtered.isEmpty) {
+                        String name =
+                            Date(day: 1, month: month, year: year).monthName;
+                        return Center(
+                          child: MediumText(
+                              'Erro ao obter as Receitas do Mês de $name'),
+                        );
+                      },
+                      onEmpty: (_) {
                         String text;
                         var (:month, :year) =
                             BindServiceProvider.get<MonthStore>().month;
@@ -224,8 +173,7 @@ class _IncomesScreenState extends State<IncomesScreen> {
                         String name =
                             Date(day: 1, month: month, year: year).monthName;
 
-                        text =
-                            'Nenhuma Receita encontrada para o mês de $name com os filtros escolhidos';
+                        text = 'Nenhuma Receita encontrada para o mês de $name';
 
                         return SizedBox(
                           height: 200.0,
@@ -235,48 +183,75 @@ class _IncomesScreenState extends State<IncomesScreen> {
                             children: [
                               const Icon(Icons.money_off_rounded, size: 60.0),
                               const SizedBox(height: 20.0),
-                              MediumText.bold(
-                                text,
-                                textAlign: TextAlign.center,
-                              ),
+                              MediumText.bold(text,
+                                  textAlign: TextAlign.center),
                             ],
                           ),
                         );
-                      }
-                      return Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          ...List.generate(
-                            filtered.length,
-                            (i) => Tappable(
-                              options: IncomeTappableOptions.get(
-                                context: context,
-                                model: filtered[i],
-                                store: widget._incomeStore,
-                                accountStore: widget._accountStore,
-                                onPop: () {
-                                  widget._balanceStore.getForAll(
-                                    accounts: accounts,
-                                  );
-                                  _fetchIncomes();
-                                },
+                      },
+                      onState: (ctx, incomes) => Observer(
+                        builder: (_) {
+                          var filtered = widget._incomeStore.filteredIncomes;
+
+                          if (filtered.isEmpty) {
+                            String text;
+                            var (:month, :year) =
+                                BindServiceProvider.get<MonthStore>().month;
+
+                            String name = Date(day: 1, month: month, year: year)
+                                .monthName;
+
+                            text =
+                                'Nenhuma Receita encontrada para o mês de $name com os filtros escolhidos';
+
+                            return SizedBox(
+                              height: 200.0,
+                              width: MediaQuery.sizeOf(context).width * 0.8,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.money_off_rounded,
+                                      size: 60.0),
+                                  const SizedBox(height: 20.0),
+                                  MediumText.bold(
+                                    text,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
                               ),
-                              openMenuDispatcher: TappableDispatcher.doubleTap,
-                              child: FinanceTile(
-                                model: filtered[i],
-                                roundedOnTop: i == 0,
-                                roundedOnBottom: i == filtered.length - 1,
+                            );
+                          }
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              ...List.generate(
+                                filtered.length,
+                                (i) => Tappable(
+                                  options: IncomeTappableOptions.get(
+                                    context: context,
+                                    model: filtered[i],
+                                    store: widget._incomeStore,
+                                    accountStore: widget._accountStore,
+                                  ),
+                                  openMenuDispatcher:
+                                      TappableDispatcher.doubleTap,
+                                  child: FinanceTile(
+                                    model: filtered[i],
+                                    roundedOnTop: i == 0,
+                                    roundedOnBottom: i == filtered.length - 1,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                          const SmallDisclaimer(
-                            'Aperte duas vezes em uma receita para abrir o menu de opções',
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                          ),
-                        ],
-                      );
-                    }),
+                              const SmallDisclaimer(
+                                'Aperte duas vezes em uma receita para abrir o menu de opções',
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -285,20 +260,6 @@ class _IncomesScreenState extends State<IncomesScreen> {
         );
       },
     );
-  }
-
-  void _onAccountChanged(Account? newSelected) {
-    setState(() {});
-    _fetchIncomes();
-  }
-
-  void _fetchIncomes() {
-    if (widget._accountStore.state.isEmpty) {
-      Navigator.pushReplacementNamed(context, '/finance_manager/');
-      return;
-    }
-
-    widget._incomeStore.getAll();
   }
 
   Widget _mountTotalText({

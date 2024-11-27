@@ -10,6 +10,7 @@ class ListSegmentedStateWidget<T extends Object> extends StatelessWidget {
     required this.onLoading,
     required this.onFail,
     required this.onState,
+    this.onInitial,
     this.onEmpty,
   });
 
@@ -20,6 +21,7 @@ class ListSegmentedStateWidget<T extends Object> extends StatelessWidget {
 
   /// If not specified, a [SizedBox.shrink()] is used as default
   final Widget Function(BuildContext)? onEmpty;
+  final Widget Function(BuildContext)? onInitial;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +30,7 @@ class ListSegmentedStateWidget<T extends Object> extends StatelessWidget {
       onFail: onFail,
       onState: (ctx, st) =>
           st.isEmpty && onEmpty != null ? onEmpty!(ctx) : onState(ctx, st),
+      onInitial: onInitial,
       state: state,
     );
   }

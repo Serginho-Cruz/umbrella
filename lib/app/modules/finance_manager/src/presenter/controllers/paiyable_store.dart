@@ -12,6 +12,7 @@ abstract interface class PaiyableStore<P extends PaiyableModel<T>,
   List<PaymentRecord<T>> get paymentsToDo;
 
   double get totalPaying;
+  bool get isLoading;
 
   void addPayment({required PaymentMethod method, required Account account});
   void removePayment(PaymentMethod method);

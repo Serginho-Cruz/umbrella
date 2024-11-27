@@ -29,13 +29,13 @@ class CreditCardsScreen extends StatefulWidget {
 }
 
 class _CreditCardsScreenState extends State<CreditCardsScreen> {
-  late final ReactionDisposer disposer;
+  late final ReactionDisposer _disposer;
 
   @override
   void initState() {
     super.initState();
 
-    disposer = reaction((_) => widget._cardStore.searchString, (_) {
+    _disposer = reaction((_) => widget._cardStore.searchString, (_) {
       widget._cardStore.filterByName();
     });
     _fetchCards();
@@ -130,7 +130,7 @@ class _CreditCardsScreenState extends State<CreditCardsScreen> {
   @override
   void dispose() {
     widget._cardStore.setSearchString('');
-    disposer();
+    _disposer();
     super.dispose();
   }
 

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/account_store.dart';
+import '../../../domain/entities/account.dart';
+import '../../../domain/states/state.dart';
 import '../../controllers/income_store.dart';
 import 'tappable_option.dart';
 import 'tappable_options_utils.dart';
@@ -20,7 +22,10 @@ abstract class IncomeTappableOptions {
           context: context,
           route: '/income/pay',
           arguments: {'model': model},
-        ).then((_) => onPop?.call()),
+        ).then((_) {
+          store.setSelectedModel(null);
+          onPop?.call();
+        }),
       ),
       TappableOption(
         'Editar Receita',
@@ -30,8 +35,10 @@ abstract class IncomeTappableOptions {
           TappableOptionsUtils.navigateTo(
             context: context,
             route: '/income/update',
-            arguments: model.toEntity(),
-          ).then((_) => onPop?.call());
+          ).then((_) {
+            store.setSelectedModel(null);
+            onPop?.call();
+          });
         },
       ),
       TappableOption(
@@ -43,7 +50,10 @@ abstract class IncomeTappableOptions {
             context: context,
             model: model,
             store: store,
-            onPop: onPop,
+            onPop: () {
+              store.setSelectedModel(null);
+              onPop?.call();
+            },
           );
         },
       ),
@@ -54,10 +64,13 @@ abstract class IncomeTappableOptions {
 
           TappableOptionsUtils.handleSwitchAccount<IncomeModel>(
             context: context,
-            accounts: accountStore.state,
+            accounts: (accountStore.state as SuccessState<List<Account>>).state,
             model: model,
             store: store,
-            onPop: onPop,
+            onPop: () {
+              store.setSelectedModel(null);
+              onPop?.call();
+            },
           );
         },
       ),

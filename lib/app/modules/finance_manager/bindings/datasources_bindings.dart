@@ -30,9 +30,5 @@ abstract class DatasourcesBindings {
     i.addLazySingleton<PaymentRecordDatasource>(
       Back4AppPaymentRecordDatasource.new,
     );
-
-    i.addLazySingleton<PaymentMethodDatasource>(
-      TemporaryPaymentMethodDatasource.new,
-    );
   }
 }

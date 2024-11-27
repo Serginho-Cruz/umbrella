@@ -8,5 +8,4 @@ export './income_repository.dart';
 export './invoice_item_repository.dart';
 export './invoice_repository.dart';
 export './notifications_repository.dart';
-export './payment_method_repository.dart';
 export './payment_record_repository.dart';

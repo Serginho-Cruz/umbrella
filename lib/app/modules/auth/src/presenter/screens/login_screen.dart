@@ -171,8 +171,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             50.0,
                           ),
                           onPressed: () {
-                            debugPrint(
-                                '${widget._store.email} / ${widget._store.password}');
                             if (_formKey.currentState!.validate()) {
                               widget._store.login();
                             }

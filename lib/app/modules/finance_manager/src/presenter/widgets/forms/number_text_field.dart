@@ -18,6 +18,7 @@ class NumberTextField extends StatelessWidget {
     this.initialValue,
     this.maxLength,
     this.onChange,
+    this.readOnly = false,
   });
 
   final FocusNode? focusNode;
@@ -32,6 +33,7 @@ class NumberTextField extends StatelessWidget {
   final double? height;
   final int? maxLength;
   final void Function(double)? onChange;
+  final bool readOnly;
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +50,7 @@ class NumberTextField extends StatelessWidget {
               : null,
           controller: controller,
           maxLength: maxLength,
+          readOnly: readOnly,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           keyboardType: TextInputType.number,
           onChanged: onChange == null ? null : onChanged,

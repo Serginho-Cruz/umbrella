@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/appbar/custom_app_bar.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/list_segmented_state_widget.dart';
 
 import '../../../domain/entities/account.dart';
 import '../../../domain/entities/credit_card.dart';
@@ -18,7 +19,6 @@ import '../../widgets/dialogs/umbrella_dialogs.dart';
 import '../../widgets/selectors/account_selector.dart';
 import '../../widgets/forms/default_text_field.dart';
 import '../../widgets/forms/my_form.dart';
-import '../../widgets/others/list_scoped_builder.dart';
 import '../../widgets/selectors/color_selector.dart';
 import '../../widgets/selectors/day_selector.dart';
 import '../../widgets/texts/medium_text.dart';
@@ -65,26 +65,28 @@ class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
             right: MediaQuery.sizeOf(context).width * 0.05,
           ),
           children: [
-            ListScopedBuilder<AccountStore, List<Account>>(
-              store: widget._accountStore,
-              loadingWidget: const CircularProgressIndicator.adaptive(),
-              onError: (ctx, fail) => Text(fail.message),
-              onEmptyState: () => Container(),
-              onState: (ctx, accounts) {
-                Account acc = accounts.firstWhere((ac) => ac.isDefault);
+            Observer(
+              builder: (_) => ListSegmentedStateWidget(
+                state: widget._accountStore.state,
+                onLoading: (_) => const CircularProgressIndicator.adaptive(),
+                onFail: (ctx, fail) => Text(fail.message),
+                onEmpty: (_) => Container(),
+                onState: (ctx, accounts) {
+                  Account acc = accounts.firstWhere((ac) => ac.isDefault);
 
-                widget._cardStore.setAccount(acc);
+                  widget._cardStore.setAccount(acc);
 
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 15.0),
-                  child: AccountSelector(
-                    accounts: accounts,
-                    selectedAccount: widget._cardStore.account,
-                    label: 'Conta a debitar',
-                    onSelected: widget._cardStore.setAccount,
-                  ),
-                );
-              },
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 15.0),
+                    child: AccountSelector(
+                      accounts: accounts,
+                      selectedAccount: widget._cardStore.account,
+                      label: 'Conta a debitar',
+                      onSelected: widget._cardStore.setAccount,
+                    ),
+                  );
+                },
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 40.0),

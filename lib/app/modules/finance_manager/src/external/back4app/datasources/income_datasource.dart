@@ -42,6 +42,8 @@ class Back4AppIncomeDatasource implements IncomeDatasource {
 
     query.includeObject(['account', 'category']);
 
+    query.orderByAscending('overdueDate');
+
     var response = await query.query();
 
     if (isResponseSuccesful(response)) {
@@ -65,6 +67,8 @@ class Back4AppIncomeDatasource implements IncomeDatasource {
     query.whereEqualTo('account', AccountMapper.toParse(account));
 
     query.includeObject(['account', 'category']);
+
+    query.orderByAscending('overdueDate');
 
     var response = await query.query();
 
@@ -92,6 +96,8 @@ class Back4AppIncomeDatasource implements IncomeDatasource {
     query.whereEqualTo('account', AccountMapper.toParse(account));
     query.whereGreaterThanOrEqualsTo('overdueDate', inferiorLimit.toDateTime());
     query.whereLessThanOrEqualTo('overdueDate', upperLimit.toDateTime());
+
+    query.orderByAscending('overdueDate');
 
     query.includeObject(['account', 'category']);
 

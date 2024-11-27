@@ -29,7 +29,6 @@ class InvoiceModel extends PaiyableModel<Invoice> {
           remainingValue: invoice.remainingValue,
           overdueDate: invoice.dueDate,
           account: invoice.account,
-          paymentDate: invoice.paymentDate,
         );
 
   @override

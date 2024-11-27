@@ -1,38 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/credit_card_store.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/expense_category_store.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/dialogs/umbrella_dialogs.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/list_segmented_state_widget.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/selectors/account_selector.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/forms/my_form.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/layout/spaced.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/list_scoped_builder.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/shimmer/shimmer_container.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/utils/currency_input_formatter.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/round.dart';
-
-import '../../../domain/entities/account.dart';
 import '../../../domain/entities/category.dart';
-import '../../../domain/entities/credit_card.dart';
 import '../../../domain/entities/date.dart';
-import '../../../domain/entities/expense.dart';
 import '../../../domain/entities/frequency.dart';
+import '../../../errors/api_errors.dart';
 import '../../utils/umbrella_palette.dart';
 import '../../controllers/account_store.dart';
 import '../../controllers/expense_store.dart';
 import '../../widgets/appbar/custom_app_bar.dart';
 import '../../widgets/buttons/primary_button.dart';
 import '../../widgets/buttons/reset_button.dart';
-import '../../widgets/cards/credit_card_widget.dart';
 import '../../widgets/simple_information/category_row.dart';
 import '../../widgets/layout/umbrella_scaffold.dart';
-import '../../widgets/selectors/card_selector.dart';
 import '../../widgets/selectors/category_selector.dart';
 import '../../widgets/selectors/date_selector.dart';
 import '../../widgets/texts/small_text.dart';
-import '../../widgets/texts/text_link.dart';
 import '../../widgets/forms/default_text_field.dart';
 import '../../widgets/selectors/frequency_selector.dart';
 import '../../widgets/forms/number_text_field.dart';
@@ -41,17 +30,14 @@ import '../../widgets/texts/medium_text.dart';
 class CreateExpenseScreen extends StatefulWidget {
   const CreateExpenseScreen({
     super.key,
-    required CreditCardStore cardStore,
     required ExpenseStore expenseStore,
     required ExpenseCategoryStore categoryStore,
     required AccountStore accountStore,
-  })  : _cardStore = cardStore,
-        _expenseStore = expenseStore,
+  })  : _expenseStore = expenseStore,
         _categoryStore = categoryStore,
         _accountStore = accountStore;
 
   final AccountStore _accountStore;
-  final CreditCardStore _cardStore;
   final ExpenseStore _expenseStore;
   final ExpenseCategoryStore _categoryStore;
 
@@ -61,56 +47,21 @@ class CreateExpenseScreen extends StatefulWidget {
 
 class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
   late final GlobalKey<FormState> _formKey;
-  late final TextEditingController _nameFieldController;
-  late final TextEditingController _valueFieldController;
-  late final TextEditingController _parcelsNumberFieldController;
 
-  late final TextEditingController _personNameFieldController;
-
-  late final FocusNode _nameFieldFocusNode;
-  late final FocusNode _valueFieldFocusNode;
-  late final FocusNode _parcelsNumberFieldFocusNode;
-  late final FocusNode _personNameFocusNode;
-
-  Account? account;
-  Frequency frequency = Frequency.none;
-  Date date = Date.today();
-  Category? category;
-  bool willBePaidWithCredit = false;
-  CreditCard? cardSelected;
-  bool willBeTurntIntoInstallment = false;
-
-  String? logicalCardError;
-  String? logicalCategoryError;
-  double? parcelsValue;
+  late final TextEditingController _nameController;
+  late final TextEditingController _valueController;
+  late final TextEditingController _personNameController;
 
   @override
   void initState() {
     super.initState();
     _formKey = GlobalKey();
-    _nameFieldController = TextEditingController();
-    _valueFieldController = TextEditingController(text: 'R\$0,00');
-    _parcelsNumberFieldController = TextEditingController();
-    _personNameFieldController = TextEditingController();
+    _nameController = TextEditingController();
+    _valueController = TextEditingController();
 
-    _nameFieldFocusNode = FocusNode();
-    _valueFieldFocusNode = FocusNode();
-    _parcelsNumberFieldFocusNode = FocusNode();
-    _personNameFocusNode = FocusNode();
-  }
+    _personNameController = TextEditingController();
 
-  @override
-  void dispose() {
-    _nameFieldController.dispose();
-    _valueFieldController.dispose();
-    _personNameFieldController.dispose();
-    _parcelsNumberFieldController.dispose();
-
-    _nameFieldFocusNode.dispose();
-    _valueFieldFocusNode.dispose();
-    _parcelsNumberFieldFocusNode.dispose();
-    _personNameFocusNode.dispose();
-    super.dispose();
+    _setListeners();
   }
 
   @override
@@ -128,94 +79,66 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
             right: MediaQuery.sizeOf(context).width * 0.05,
           ),
           children: [
-            ListScopedBuilder<AccountStore, List<Account>>(
-              store: widget._accountStore,
-              loadingWidget: const CircularProgressIndicator.adaptive(),
-              onError: (ctx, fail) => Text(fail.message),
-              onEmptyState: () => Container(),
-              onState: (ctx, accounts) {
-                account =
-                    account ?? accounts.singleWhere((acc) => acc.isDefault);
+            Observer(
+              builder: (_) => ListSegmentedStateWidget(
+                state: widget._accountStore.state,
+                onLoading: (_) => const CircularProgressIndicator.adaptive(),
+                onFail: (ctx, fail) => Text(fail.message),
+                onEmpty: (_) => Container(),
+                onState: (ctx, accounts) {
+                  widget._expenseStore
+                      .setAccount(accounts.firstWhere((acc) => acc.isDefault));
 
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 15.0),
-                  child: AccountSelector(
-                    accounts: accounts,
-                    selectedAccount: account!,
-                    label: 'Conta a debitar',
-                    onSelected: (acc) {
-                      setState(() {
-                        account = acc;
-                      });
-                    },
-                  ),
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 15.0),
+                    child: Observer(
+                      builder: (_) => AccountSelector(
+                        accounts: accounts,
+                        selectedAccount: widget._expenseStore.account,
+                        label: 'Conta a debitar',
+                        onSelected: widget._expenseStore.setAccount,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Observer(
+              builder: (_) => DefaultTextField(
+                validator: widget._expenseStore.validateName,
+                controller: _nameController,
+                readOnly: widget._expenseStore.isLoading,
+                maxLength: 30,
+                labelText: 'Nome',
+              ),
+            ),
+            Observer(
+              builder: (_) {
+                return NumberTextField(
+                  controller: _valueController,
+                  padding: const EdgeInsets.symmetric(vertical: 20.0),
+                  isCurrency: true,
+                  label: 'Valor',
+                  validate: widget._expenseStore.validateValue,
+                  onChange: widget._expenseStore.setValue,
+                  readOnly: widget._expenseStore.isLoading,
                 );
               },
             ),
-            DefaultTextField(
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Preencha o campo Nome';
-                }
-
-                if (value.length < 5) {
-                  return 'O Nome deve conter pelo menos 5 letras';
-                }
-
-                return null;
-              },
-              controller: _nameFieldController,
-              focusNode: _nameFieldFocusNode,
-              maxLength: 30,
-              labelText: 'Nome',
-            ),
-            NumberTextField(
-              controller: _valueFieldController,
-              padding: const EdgeInsets.symmetric(vertical: 20.0),
-              isCurrency: true,
-              label: 'Valor',
-              focusNode: _valueFieldFocusNode,
-              validate: (number) {
-                if (number == 0.00) {
-                  return 'O Valor deve ser maior que 0';
-                }
-
-                return null;
-              },
-              onChange: (newValue) {
-                if (!willBeTurntIntoInstallment) return;
-
-                if (newValue == null ||
-                    _parcelsNumberFieldController.text.isEmpty) {
-                  setState(() => parcelsValue = null);
-                  return;
-                }
-
-                setState(() {
-                  parcelsValue =
-                      (newValue / int.parse(_parcelsNumberFieldController.text))
-                          .roundToDecimal();
-                });
-              },
-            ),
-            FrequencySelector(
-              title: 'Qual a Frequência dessa Despesa?',
-              selectedFrequency: frequency,
-              onSelected: (newFrequency) {
-                setState(() {
-                  frequency = newFrequency;
-                });
-              },
+            Observer(
+              builder: (_) => FrequencySelector(
+                title: 'Qual a Frequência dessa Despesa?',
+                selectedFrequency: widget._expenseStore.frequency,
+                onSelected: widget._expenseStore.setFrequency,
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
-              child: DateSelector(
-                date: date,
-                onDateSelected: (newDate) {
-                  setState(() {
-                    date = newDate;
-                  });
-                },
+              child: Observer(
+                builder: (_) => DateSelector(
+                  date: widget._expenseStore.dueDate,
+                  onDateSelected: widget._expenseStore.setDueDate,
+                ),
               ),
             ),
             Observer(
@@ -223,232 +146,55 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                 state: widget._categoryStore.state,
                 onState: (ctx, categories) => CategorySelector(
                   categories: categories,
-                  onSelected: (cat) {
-                    setState(() {
-                      category = cat;
-                      if (logicalCategoryError != null) {
-                        logicalCategoryError = null;
-                      }
-                    });
-                  },
+                  onSelected: widget._expenseStore.setCategory,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CategoryRow(
-                        category: category,
-                        padding: const EdgeInsets.only(
-                          top: 8.0,
-                          bottom: 8.0,
-                        ),
+                        category: widget._expenseStore.category,
+                        padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
                       ),
                       Visibility(
-                        visible: logicalCategoryError != null,
-                        child: SmallText(
-                          logicalCategoryError.toString(),
+                        visible: widget._expenseStore.category != null,
+                        child: const SmallText(
+                          'Uma categoria precisa ser selecionada',
                           color: UmbrellaPalette.errorColor,
                         ),
                       ),
                     ],
                   ),
                 ),
-                onFail: (context, e) {
-                  Fail error = e;
-                  return Text(error.message);
+                onEmpty: (ctx) {
+                  UmbrellaDialogs.showError(
+                    ctx,
+                    "Não foi possível obter as Categorias. Por favor, aperte em 'Tentar novamente'",
+                    onRetry: () => widget._categoryStore.getAll(),
+                  );
+                  return const SizedBox.shrink();
+                },
+                onFail: (context, fail) {
+                  fail is NetworkFail
+                      ? UmbrellaDialogs.showNetworkProblem(context,
+                          onRetry: () => widget._categoryStore.getAll())
+                      : UmbrellaDialogs.showError(context, fail.message,
+                          onRetry: () => widget._categoryStore.getAll());
+
+                  return const SizedBox.shrink();
                 },
                 onLoading: (context) =>
                     const CircularProgressIndicator.adaptive(),
               ),
             ),
-            ExpansionTile(
-              backgroundColor: Colors.transparent,
-              maintainState: true,
-              title: const Align(
-                alignment: Alignment.centerLeft,
-                child: MediumText.bold('Configurações Adicionais'),
+            Padding(
+              padding: const EdgeInsets.only(top: 30.0),
+              child: DefaultTextField(
+                controller: _personNameController,
+                height: 70.0,
+                labelText: 'Quem deve isso a você? (Opcional)',
+                maxLength: 20,
+                validator: widget._expenseStore.validatePersonName,
+                readOnly: widget._expenseStore.isLoading,
               ),
-              children: [
-                ExpansionTile(
-                  title: const MediumText('Despesa no Crédito'),
-                  trailing: IgnorePointer(
-                    child: Switch.adaptive(
-                      value: willBePaidWithCredit,
-                      inactiveThumbColor: Colors.black,
-                      trackOutlineColor:
-                          const WidgetStatePropertyAll(Colors.black),
-                      inactiveTrackColor: UmbrellaPalette.gray,
-                      activeColor: Colors.white,
-                      activeTrackColor: UmbrellaPalette.secondaryColor,
-                      onChanged: (_) {},
-                    ),
-                  ),
-                  onExpansionChanged: (newValue) {
-                    setState(() {
-                      willBePaidWithCredit = newValue;
-                      cardSelected = null;
-                    });
-                  },
-                  children: [
-                    const SizedBox(height: 30.0),
-                    ListSegmentedStateWidget(
-                      state: widget._cardStore.state,
-                      onLoading: (ctx) => const Stack(
-                        children: [
-                          ShimmerContainer(
-                            width: 275,
-                            height: 150,
-                          ),
-                          Text('Obtendo Cartões...'),
-                        ],
-                      ),
-                      onFail: (ctx, error) => Container(
-                        width: 275,
-                        height: 150,
-                        color: Colors.grey,
-                        child: const MediumText(
-                          'Erro ao Obter os Cartões',
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      onEmpty: (ctx) => Container(
-                        width: 275,
-                        height: 150,
-                        color: Colors.grey,
-                        child: const Column(
-                          children: [
-                            MediumText(
-                              'Nenhum Cartão Cadastrado',
-                              textAlign: TextAlign.center,
-                            ),
-                            TextLink(
-                              route: '/finance_manager/home',
-                              text: 'Cadastre um Agora',
-                            ),
-                          ],
-                        ),
-                      ),
-                      onState: (ctx, state) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CardSelector(
-                              cardSelected: cardSelected,
-                              cards: state,
-                              onCardSelected: (card) {
-                                setState(() {
-                                  cardSelected = card;
-                                  if (logicalCardError != null) {
-                                    logicalCardError = null;
-                                  }
-                                });
-                              },
-                              buildChild: (card) {
-                                return card != null
-                                    ? CreditCardWidget(
-                                        creditCard: card,
-                                        margin:
-                                            const EdgeInsets.only(top: 15.0),
-                                      )
-                                    : Container(
-                                        height: 150,
-                                        width: 275,
-                                        margin: const EdgeInsets.all(15.0),
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(20.0),
-                                          color: Colors.grey,
-                                        ),
-                                        child: const Center(
-                                          child: MediumText(
-                                            'Clique Aqui',
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      );
-                              },
-                            ),
-                            Visibility(
-                              visible: logicalCardError != null,
-                              child: SmallText(
-                                logicalCardError.toString(),
-                                color: UmbrellaPalette.errorColor,
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                    ExpansionTile(
-                      title: const MediumText('Despesa Parcelada'),
-                      trailing: Transform.scale(
-                        scale: 1.2,
-                        child: IgnorePointer(
-                          child: Checkbox.adaptive(
-                            value: willBeTurntIntoInstallment,
-                            onChanged: (_) {},
-                          ),
-                        ),
-                      ),
-                      onExpansionChanged: (newValue) {
-                        setState(() {
-                          willBeTurntIntoInstallment = newValue;
-                        });
-
-                        if (newValue == false) {
-                          _parcelsNumberFieldController.clear();
-                        }
-                      },
-                      expandedCrossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        NumberTextField(
-                          controller: _parcelsNumberFieldController,
-                          padding: const EdgeInsets.only(top: 8.0),
-                          validate: (number) {
-                            if (number > 100) {
-                              return 'O Máximo de Parcelas é 100';
-                            }
-
-                            return null;
-                          },
-                          onChange: (parcelsNumber) {
-                            if (parcelsNumber == null ||
-                                _valueFieldController.text.isEmpty) {
-                              setState(() => parcelsValue = null);
-                              return;
-                            }
-
-                            double value = double.parse(
-                                CurrencyInputFormatter.unformat(
-                                    _valueFieldController.text));
-                            setState(() {
-                              parcelsValue =
-                                  (value / parcelsNumber).roundToDecimal();
-                            });
-                          },
-                          label: 'Nº de Parcelas',
-                          maxLength: 3,
-                          focusNode: _parcelsNumberFieldFocusNode,
-                        ),
-                        const SizedBox(height: 20.0),
-                        MediumText(
-                          'Valor das Parcelas: ${parcelsValue != null ? 'R\$$parcelsValue' : 'Nenhum'}.',
-                        ),
-                        const SizedBox(height: 20.0),
-                      ],
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 30.0),
-                  child: DefaultTextField(
-                    height: 70.0,
-                    controller: _personNameFieldController,
-                    focusNode: _personNameFocusNode,
-                    labelText: 'A Quem você deve isso? (Opcional)',
-                    maxLength: 20,
-                    validator: (_) => null,
-                  ),
-                ),
-              ],
             ),
             Spaced(
               padding: const EdgeInsets.symmetric(vertical: 20.0),
@@ -469,95 +215,65 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
     );
   }
 
-  void _onFormSubmitted() {
-    var (isFormValid, message) = _validateForm();
+  @override
+  void dispose() {
+    widget._expenseStore.setAccount(null);
+    widget._expenseStore.setValue(0.00);
+    widget._expenseStore.setCategory(null);
+    widget._expenseStore.setDueDate(Date.today());
+    widget._expenseStore.setFrequency(Frequency.none);
 
-    if (!isFormValid) {
-      UmbrellaDialogs.showError(
-          context,
-          message ??
-              'Parece que o formulário contém erros. Corrija-os e tente denovo');
+    widget._expenseStore.setName(null);
+    widget._expenseStore.setPersonName(null);
+
+    _nameController.dispose();
+    _valueController.dispose();
+    _personNameController.dispose();
+
+    super.dispose();
+  }
+
+  void _onFormSubmitted() {
+    if (!_formKey.currentState!.validate()) {
+      UmbrellaDialogs.showError(context,
+          'Parece que o formulário contém erros. Corrija-os e tente denovo');
       return;
     }
 
-    String totalValueStr =
-        CurrencyInputFormatter.unformat(_valueFieldController.text);
+    widget._expenseStore.register().then((fail) async {
+      switch (fail) {
+        case Fail f when mounted:
+          UmbrellaDialogs.showError(context, f.message);
+          break;
+        case null when mounted:
+          await UmbrellaDialogs.showSuccess(
+            context,
+            title: 'Despesa Cadastrada',
+            message:
+                'Sua despesa foi cadastrada com sucesso. Iremos redireciona-lo para a Tela Anterior',
+          );
+          if (mounted) Navigator.pop(context);
+          break;
+      }
+    });
+  }
 
-    Expense newExpense = Expense(
-        id: '',
-        name: _nameFieldController.text,
-        totalValue: double.parse(totalValueStr),
-        paidValue: 0.00,
-        remainingValue: double.parse(totalValueStr),
-        dueDate: date,
-        category: category!,
-        frequency: frequency,
-        account: account!,
-        personName: _personNameFieldController.text.trim().isEmpty
-            ? null
-            : _personNameFieldController.text.trim());
+  void _setListeners() {
+    _nameController.addListener(() {
+      widget._expenseStore.setName(_nameController.text);
+    });
 
-    //TODO: Put logic to pay in credit or in installments
-    widget._expenseStore.register(newExpense).then((result) {
-      result.fold((success) async {
-        await UmbrellaDialogs.showSuccess(
-          context,
-          title: 'Despesa Cadastrada',
-          message:
-              'Sua despesa foi cadastrada com sucesso. Iremos redireciona-lo para a Tela Anterior',
-        );
-        if (mounted) Navigator.pop(context);
-      }, (failure) {
-        UmbrellaDialogs.showError(context, failure.message);
-      });
+    _personNameController.addListener(() {
+      widget._expenseStore.setPersonName(_personNameController.text);
     });
   }
 
   void _resetForm() {
-    setState(() {
-      _nameFieldController.clear();
-      _valueFieldController.text = 'R\$ 0,00';
-      _parcelsNumberFieldController.clear();
-      _personNameFieldController.clear();
-      frequency = Frequency.none;
-      date = Date.today();
-      category = null;
-      logicalCardError = null;
-      logicalCategoryError = null;
-      willBePaidWithCredit = false;
-      cardSelected = null;
-      willBeTurntIntoInstallment = false;
-      parcelsValue = 0.00;
-    });
-  }
-
-  (bool, String? message) _validateForm() {
-    bool areFieldsValid = _formKey.currentState!.validate();
-
-    if (!areFieldsValid) return (false, null);
-
-    if (account == null) {
-      return (
-        false,
-        'Por favor, selecione a conta onde a despesa será debitada'
-      );
-    }
-
-    if (category == null) {
-      setState(() {
-        logicalCategoryError = 'Uma Categoria deve ser selecionado';
-      });
-      return (false, null);
-    }
-
-    if (willBePaidWithCredit && cardSelected == null) {
-      setState(() {
-        logicalCardError =
-            'O Cartão que será usado no pagamento deve ser colocado';
-      });
-      return (false, null);
-    }
-
-    return (true, null);
+    _nameController.clear();
+    _valueController.text = 'R\$ 0,00';
+    widget._expenseStore.setFrequency(Frequency.none);
+    widget._expenseStore.setDueDate(Date.today());
+    widget._expenseStore.setCategory(null);
+    _personNameController.clear();
   }
 }

@@ -66,13 +66,11 @@ abstract class UsecasesBindings {
 
     i.addLazySingleton<ReceiveIncome>(() => ReceiveIncomeImpl(
         incomeRepository: i(),
-        paymentMethodRepository: i(),
         paymentRecordRepository: i(),
         balanceRepository: i()));
 
     i.addLazySingleton<PayExpense>(() => PayExpenseImpl(
         expenseRepository: i(),
-        paymentMethodRepository: i(),
         paymentRecordRepository: i(),
         balanceRepository: i()));
 

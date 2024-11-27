@@ -16,7 +16,6 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/wi
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/dialogs/payment_method_selector_dialog.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/dialogs/umbrella_dialogs.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/layout/umbrella_scaffold.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/list_scoped_builder.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/payment/paiyable_information_card.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/payment/payment_card.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/payment/payment_credit_card.dart';
@@ -31,6 +30,7 @@ import '../../domain/states/state.dart' as s;
 import '../../errors/api_errors.dart';
 import '../controllers/paiyable_store.dart';
 import '../widgets/layout/spaced.dart';
+import '../widgets/others/list_segmented_state_widget.dart';
 
 class PaymentScreen<E extends Paiyable, T extends PaiyableModel<E>>
     extends StatefulWidget {
@@ -64,138 +64,140 @@ class _PaymentScreenState<E extends Paiyable> extends State<PaymentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ListScopedBuilder<AccountStore, List<Account>>(
-      store: widget.accountStore,
-      loadingWidget: UmbrellaScaffold(
-        appBar: CustomAppBar(
-          title: widget.model is IncomeModel ? 'Recebimento' : 'Pagamento',
-          showBalances: false,
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox.square(
-                dimension: MediaQuery.sizeOf(context).width - 100.0,
-                child: const CircularProgressIndicator(),
-              ),
-              const SizedBox(height: 20.0),
-              const BigText.bold('Carregando Contas...')
-            ],
-          ),
-        ),
-      ),
-      //Implements Something when an error occurs on account store
-      onError: (ctx, fail) {
-        resetPayments();
-        return const SizedBox.shrink();
-      },
-      //Same here, users cannot have 0 accounts
-      onEmptyState: () {
-        resetPayments();
-        return const SizedBox.shrink();
-      },
-      onState: (ctx, accounts) {
-        return UmbrellaScaffold(
+    return Observer(
+      builder: (_) => ListSegmentedStateWidget(
+        state: widget.accountStore.state,
+        onLoading: (_) => UmbrellaScaffold(
           appBar: CustomAppBar(
             title: widget.model is IncomeModel ? 'Recebimento' : 'Pagamento',
-            showMonthChanger: true,
-            onMonthChange: (_, __) {},
+            showBalances: false,
           ),
-          child: ListView(
-            physics: const ClampingScrollPhysics(),
-            padding: EdgeInsets.symmetric(
-              horizontal: MediaQuery.sizeOf(context).width * 0.05,
-            ),
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 30.0),
-                child: PaiyableInformationCard(model: widget.model),
-              ),
-              const SizedBox(height: 10.0),
-              _buildTextValue(
-                'Necessário Pagar: ',
-                widget.model.remainingValue,
-              ),
-              const SizedBox(height: 10.0),
-              Observer(
-                builder: (_) => _buildTextValue(
-                  'Atualmente Pagando: ',
-                  widget.store.totalPaying,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox.square(
+                  dimension: MediaQuery.sizeOf(context).width - 100.0,
+                  child: const CircularProgressIndicator(),
                 ),
+                const SizedBox(height: 20.0),
+                const BigText.bold('Carregando Contas...')
+              ],
+            ),
+          ),
+        ),
+        //Implements Something when an error occurs on account store
+        onFail: (ctx, fail) {
+          resetPayments();
+          return const SizedBox.shrink();
+        },
+        //Same here, users cannot have 0 accounts
+        onEmpty: (_) {
+          resetPayments();
+          return const SizedBox.shrink();
+        },
+        onState: (ctx, accounts) {
+          return UmbrellaScaffold(
+            appBar: CustomAppBar(
+              title: widget.model is IncomeModel ? 'Recebimento' : 'Pagamento',
+              showMonthChanger: true,
+              onMonthChange: (_, __) {},
+            ),
+            child: ListView(
+              physics: const ClampingScrollPhysics(),
+              padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.sizeOf(context).width * 0.05,
               ),
-              const SizedBox(height: 40.0),
-              Observer(
-                builder: (_) => Visibility(
-                  visible: widget.store.paymentsToDo.isNotEmpty,
-                  child: const BigText.bold(
-                    'Seções de Pagamento',
-                    textAlign: TextAlign.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 30.0),
+                  child: PaiyableInformationCard(model: widget.model),
+                ),
+                const SizedBox(height: 10.0),
+                buildTextValue(
+                  'Necessário Pagar: ',
+                  widget.model.remainingValue,
+                ),
+                const SizedBox(height: 10.0),
+                Observer(
+                  builder: (_) => buildTextValue(
+                    'Atualmente Pagando: ',
+                    widget.store.totalPaying,
                   ),
                 ),
-              ),
-              Observer(builder: (_) {
-                return AnimatedList(
-                  key: _listKey,
-                  padding: const EdgeInsets.symmetric(vertical: 30.0),
-                  shrinkWrap: true,
-                  initialItemCount: widget.store.paymentsToDo.length,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (ctx, index, animation) {
-                    var payment = widget.store.paymentsToDo[index];
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        child: Dismissible(
-                          key: ValueKey(index),
-                          background: Container(
-                            color: UmbrellaPalette.errorColor,
-                            child: const Icon(Icons.delete, size: 40.0),
-                          ),
-                          onDismissed: (_) {
-                            removePaymentSection(payment.paymentMethod);
-                          },
-                          child: ScaleTransition(
-                            alignment: Alignment.topCenter,
-                            scale: CurvedAnimation(
-                              parent: animation,
-                              curve: Curves.easeInOut,
+                const SizedBox(height: 40.0),
+                Observer(
+                  builder: (_) => Visibility(
+                    visible: widget.store.paymentsToDo.isNotEmpty,
+                    child: const BigText.bold(
+                      'Seções de Pagamento',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                Observer(
+                  builder: (_) => AnimatedList(
+                    key: _listKey,
+                    padding: const EdgeInsets.symmetric(vertical: 30.0),
+                    shrinkWrap: true,
+                    initialItemCount: widget.store.paymentsToDo.length,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (ctx, index, animation) {
+                      var payment = widget.store.paymentsToDo[index];
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10.0),
+                          child: Dismissible(
+                            key: ValueKey(index),
+                            background: Container(
+                              color: UmbrellaPalette.errorColor,
+                              child: const Icon(Icons.delete, size: 40.0),
                             ),
-                            child: buildCard(payment.paymentMethod),
+                            onDismissed: (_) {
+                              removePaymentSection(payment.paymentMethod);
+                            },
+                            child: ScaleTransition(
+                              alignment: Alignment.topCenter,
+                              scale: CurvedAnimation(
+                                parent: animation,
+                                curve: Curves.easeInOut,
+                              ),
+                              child: buildCard(payment.paymentMethod),
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                );
-              }),
-              UnconstrainedBox(
-                child: UmbrellaIconButton(
-                  icon: const Icon(
-                    Icons.add,
-                    color: Colors.black,
-                    size: 35.0,
+                      );
+                    },
                   ),
-                  isPrimary: false,
-                  onPressed: showRemainingPaymentMethods,
                 ),
-              ),
-              Spaced(
-                padding: const EdgeInsets.symmetric(vertical: 20.0),
-                first: ResetButton(
-                  reset: resetPayments,
-                  label: const MediumText.bold('Limpar'),
+                UnconstrainedBox(
+                  child: UmbrellaIconButton(
+                    icon: const Icon(
+                      Icons.add,
+                      color: Colors.black,
+                      size: 35.0,
+                    ),
+                    isPrimary: false,
+                    onPressed: showRemainingPaymentMethods,
+                  ),
                 ),
-                second: PrimaryButton(
-                  label: MediumText.bold(
-                      widget.model is IncomeModel ? 'Receber' : 'Pagar'),
-                  onPressed: pay,
+                Spaced(
+                  padding: const EdgeInsets.symmetric(vertical: 20.0),
+                  first: ResetButton(
+                    reset: resetPayments,
+                    label: const MediumText.bold('Limpar'),
+                  ),
+                  second: PrimaryButton(
+                    label: MediumText.bold(
+                        widget.model is IncomeModel ? 'Receber' : 'Pagar'),
+                    onPressed: pay,
+                  ),
                 ),
-              ),
-            ],
-          ),
-        );
-      },
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -270,7 +272,7 @@ class _PaymentScreenState<E extends Paiyable> extends State<PaymentScreen> {
     widget.store.restartPayments();
   }
 
-  Widget _buildTextValue(String label, double value) {
+  Widget buildTextValue(String label, double value) {
     return RichText(
       text: TextSpan(
         children: [
@@ -321,10 +323,13 @@ class _PaymentScreenState<E extends Paiyable> extends State<PaymentScreen> {
     var (:onValueChanged, :onAccountChanged, :onCardChanged) =
         resolveFunctions(method);
 
+    var accs =
+        (widget.accountStore.state as s.SuccessState<List<Account>>).state;
+
     if (method.isCredit) {
       var isSuccess = widget.cardStore.state is s.SuccessState;
       return PaymentCreditCard(
-        accounts: widget.accountStore.state,
+        accounts: accs,
         creditCards: isSuccess
             ? (widget.cardStore.state as s.SuccessState<List<CreditCard>>).state
             : [],
@@ -336,7 +341,7 @@ class _PaymentScreenState<E extends Paiyable> extends State<PaymentScreen> {
     }
 
     return PaymentCard(
-      accounts: widget.accountStore.state,
+      accounts: accs,
       initiallySelectedAccount: widget.model.account,
       onAccountChanged: onAccountChanged,
       onValueChanged: onValueChanged,
@@ -361,9 +366,7 @@ class _PaymentScreenState<E extends Paiyable> extends State<PaymentScreen> {
     };
 
     if (method == const PaymentMethod.credit()) {
-      onCardChanged = (c) {
-        widget.store.setPaymentCreditCard(c);
-      };
+      onCardChanged = widget.store.setPaymentCreditCard;
     }
     return (
       onValueChanged: onValueChanged,

@@ -35,6 +35,7 @@ abstract class _IncomeStoreBase
     with Store
     implements FinanceFilterableStore, PaiyableStore<IncomeModel, Income> {
   final MonthStore _monthStore;
+  final AccountStore _accountStore;
   final ManageIncome _manageIncome;
   final FilterIncomes _filterIncomes;
   final SortIncomes _sortIncomes;
@@ -43,6 +44,7 @@ abstract class _IncomeStoreBase
 
   _IncomeStoreBase({
     required MonthStore monthStore,
+    required AccountStore accountStore,
     required ManageIncome manageIncome,
     required FilterIncomes filterIncomes,
     required SortIncomes sortIncomes,
@@ -53,14 +55,21 @@ abstract class _IncomeStoreBase
         _sortIncomes = sortIncomes,
         _receiveIncome = receiveIncome,
         _validateIncome = validateIncome,
+        _accountStore = accountStore,
         _monthStore = monthStore {
     _setUpReactions();
   }
 
   late final ReactionDisposer _filteredIncomesUpdater;
+  late final ReactionDisposer _accountsReaction;
+  late final ReactionDisposer _monthReaction;
 
   @observable
   State<List<IncomeModel>> state = const InitialState();
+
+  @override
+  @computed
+  bool get isLoading => state is LoadingState;
 
   ObservableList<IncomeModel> filteredIncomes = ObservableList();
 
@@ -279,8 +288,7 @@ abstract class _IncomeStoreBase
 
     var store = BindServiceProvider.get<AccountStore>();
 
-    List<Account> accountsList =
-        store.selectedAccount != null ? [store.selectedAccount!] : store.state;
+    List<Account> accountsList = store.visualizingAccounts;
 
     var (:year, :month) = _monthStore.month;
 
@@ -502,7 +510,7 @@ abstract class _IncomeStoreBase
   void setSelectedModel(IncomeModel? model) => selectedModel = model;
 
   @action
-  void setName(String name) => this.name = name;
+  void setName(String? name) => this.name = name ?? '';
 
   @override
   @action
@@ -513,13 +521,17 @@ abstract class _IncomeStoreBase
   void setAccount(Account? account) => this.account = account;
 
   @action
+  void setFrequency(Frequency frequency) => this.frequency = frequency;
+
+  @action
   void setCategory(Category? category) => this.category = category;
 
   @action
   void setDueDate(Date date) => dueDate = date;
 
   @action
-  void setPersonName(String? personName) => this.personName = personName;
+  void setPersonName(String? personName) => this.personName =
+      personName == null || personName.isEmpty ? null : personName;
 
   @override
   String? validateAccount(Account? _) =>
@@ -539,6 +551,8 @@ abstract class _IncomeStoreBase
 
   void dispose() {
     _filteredIncomesUpdater();
+    _accountsReaction();
+    _monthReaction();
   }
 
   List<IncomeModel> _sort(List<IncomeModel> list) {
@@ -560,6 +574,11 @@ abstract class _IncomeStoreBase
 
       filter();
     });
+
+    _monthReaction = reaction((_) => _monthStore.month, (_) => getAll());
+
+    _accountsReaction = reaction(
+        (_) => _accountStore.visualizingAccounts.iterator, (_) => getAll());
   }
 
   ///Mounts an Income. This method may be called just once
@@ -570,7 +589,7 @@ abstract class _IncomeStoreBase
       name: name,
       totalValue: value,
       paidValue: based?.paidValue ?? 0.00,
-      remainingValue: based?.remainingValue ?? 0.00,
+      remainingValue: based?.remainingValue ?? value,
       dueDate: dueDate,
       account: account!,
       frequency: frequency,

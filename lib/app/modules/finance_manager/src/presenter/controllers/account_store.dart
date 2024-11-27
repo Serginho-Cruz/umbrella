@@ -1,67 +1,161 @@
-import 'package:flutter_triple/flutter_triple.dart';
-import 'package:umbrella_echonomics/app/modules/auth/src/domain/entities/user_state.dart';
+import 'package:mobx/mobx.dart';
+import 'package:umbrella_echonomics/app/modules/auth/src/domain/entities/user_state.dart'
+    as user;
 import 'package:umbrella_echonomics/app/modules/auth/src/presenter/stores/auth_store.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/generic_messages.dart';
 
 import '../../domain/entities/account.dart';
+import '../../domain/states/state.dart';
 import '../../domain/usecases/manage_account.dart';
+import '../../errors/errors.dart';
+part 'account_store.g.dart';
 
-class AccountStore extends Store<List<Account>> {
-  AccountStore({
-    required ManageAccount manageAccount,
-    required AuthStore authStore,
-  })  : _manageAccount = manageAccount,
-        _authStore = authStore,
-        super([]);
+class AccountStore = _AccountStoreBase with _$AccountStore;
 
+abstract class _AccountStoreBase with Store {
   final ManageAccount _manageAccount;
   final AuthStore _authStore;
 
-  Account? _selectedAccount;
+  @observable
+  State<List<Account>> state = const InitialState<List<Account>>();
 
-  final List<void Function(Account?)> _selectedAccountListeners = [];
+  @observable
+  ObservableList<Account> visualizingAccounts = ObservableList();
 
-  Future<void> create(Account account) async {}
+  @observable
+  Account? selectedAccount;
 
-  Future<void> updateAccount(Account oldAccount, Account newAccount) async {}
+  ReactionDisposer? _autoUpdater;
+  ReactionDisposer? _userReaction;
 
-  Future<void> getAll({bool force = false}) async {
-    if (_authStore.state is! SuccessState) return;
+  @observable
+  bool _needsFetch = false;
 
-    if (force == false && state.isNotEmpty) return;
+  _AccountStoreBase({
+    required ManageAccount manageAccount,
+    required AuthStore authStore,
+  })  : _manageAccount = manageAccount,
+        _authStore = authStore {
+    _setUpReactions();
+  }
 
-    setLoading(true);
-    var user = (_authStore.state as SuccessState).user;
+  @action
+  Future<void> create() async {
+    _needsFetch = true;
+  }
 
-    var result = await _manageAccount.getAll(user);
+  @action
+  Future<void> updateAccount() async {
+    _needsFetch = true;
+  }
 
-    result.fold((success) {
-      update(success, force: true);
-    }, (failure) {
-      setError(failure);
+  @action
+  Future<void> get({bool force = false}) async {
+    if (state is SuccessState && !force) return;
+
+    state = const LoadingState();
+    await _fetchAccounts();
+    _needsFetch = false;
+  }
+
+  @action
+  void changeSelectedAccount(Account? account) {
+    if (state is! SuccessState) return;
+
+    selectedAccount = account;
+
+    if (account == null) {
+      visualizingAccounts
+        ..clear()
+        ..addAll((state as SuccessState<List<Account>>).state);
+      return;
+    }
+
+    visualizingAccounts
+      ..clear()
+      ..add(account);
+  }
+
+  @action
+  Future<void> delete() async {
+    _needsFetch = true;
+  }
+
+  @action
+  Future<void> _fetchAccounts() async {
+    if (_authStore.state is! user.SuccessState) {
+      state = const FailState(Fail(GenericMessages.userUnlogged));
+      return;
+    }
+
+    //Now is safe
+    var loggedUserState = _authStore.state as user.SuccessState;
+
+    var result = await _manageAccount.getAll(loggedUserState.user);
+
+    state = result.fold(
+      (accs) => SuccessState(accs),
+      (fail) => FailState(fail),
+    );
+
+    _updateVisualizingAccountsOnFetch();
+  }
+
+  @action
+  void _updateVisualizingAccountsOnFetch() {
+    if (state is! SuccessState) {
+      visualizingAccounts.clear();
+      return;
+    }
+
+    var stateAccs = state as SuccessState<List<Account>>;
+    if (visualizingAccounts.length != 1) {
+      visualizingAccounts
+        ..clear()
+        ..addAll(stateAccs.state);
+
+      return;
+    } else {
+      String accId = visualizingAccounts.first.id;
+
+      Account? found;
+
+      for (var acc in stateAccs.state) {
+        if (acc.id != accId) continue;
+        found = acc;
+        break;
+      }
+
+      if (found != visualizingAccounts.first && found != null) {
+        visualizingAccounts
+          ..clear()
+          ..add(found);
+      } else if (found == null) {
+        visualizingAccounts
+          ..clear()
+          ..addAll(stateAccs.state);
+      }
+    }
+  }
+
+  void _setUpReactions() {
+    _autoUpdater = autorun((_) {
+      if (_needsFetch == true) get(force: true);
     });
 
-    setLoading(false);
+    _userReaction = autorun((_) {
+      if (_authStore.state is! user.SuccessState) _restartStates();
+    });
   }
 
-  Future<void> delete() async {}
-
-  void addSelectedAccountListener(void Function(Account?) listener) {
-    _selectedAccountListeners.add(listener);
+  @action
+  void _restartStates() {
+    state = const InitialState();
+    visualizingAccounts.clear();
   }
 
-  void removeSelectedAccountListener(void Function(Account?) listener) {
-    _selectedAccountListeners.remove(listener);
-  }
-
-  Account? get selectedAccount => _selectedAccount?.copyWith();
-
-  void changeSelectedAccount(Account? account) {
-    if (_selectedAccount?.id == account?.id) return;
-
-    _selectedAccount = account?.copyWith();
-
-    for (var listener in _selectedAccountListeners) {
-      listener(account);
-    }
+  void dispose() {
+    _userReaction?.call();
+    _autoUpdater?.call();
   }
 }

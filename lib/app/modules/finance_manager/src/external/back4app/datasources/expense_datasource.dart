@@ -47,6 +47,7 @@ class Back4AppExpenseDatasource implements ExpenseDatasource {
     query.whereEqualTo('account', AccountMapper.toParse(account));
 
     query.includeObject(['account', 'category']);
+    query.orderByAscending('overdueDate');
 
     var response = await query.query();
 
@@ -70,6 +71,8 @@ class Back4AppExpenseDatasource implements ExpenseDatasource {
 
     query.whereEqualTo('frequency', frequency.toInt());
     query.whereEqualTo('account', AccountMapper.toParse(account));
+
+    query.orderByAscending('overdueDate');
 
     var response = await query.query();
 
@@ -97,6 +100,8 @@ class Back4AppExpenseDatasource implements ExpenseDatasource {
     query.whereEqualTo('account', AccountMapper.toParse(account));
     query.whereGreaterThanOrEqualsTo('overdueDate', inferiorLimit.toDateTime());
     query.whereLessThanOrEqualTo('overdueDate', upperLimit.toDateTime());
+
+    query.orderByAscending('overdueDate');
 
     var response = await query.query();
 

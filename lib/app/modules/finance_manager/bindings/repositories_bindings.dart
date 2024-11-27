@@ -33,8 +33,5 @@ abstract class RepositoriesBindings {
 
     i.addLazySingleton<PaymentRecordRepository>(
         () => PaymentRecordRepositoryImpl(i()));
-
-    i.addLazySingleton<PaymentMethodRepository>(
-        () => PaymentMethodRepositoryImpl(i()));
   }
 }

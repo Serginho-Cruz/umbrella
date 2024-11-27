@@ -14,7 +14,13 @@ class Date extends Equatable implements Comparable<Date> {
     required int month,
     required int year,
   }) {
-    int plusYears = (month / 12).truncate();
+    int plusYears;
+
+    if (month % 12 == 0) {
+      plusYears = (month / 12).truncate() - 1;
+    } else {
+      plusYears = (month / 12).truncate();
+    }
 
     year += plusYears;
     month = month % 12;

@@ -29,7 +29,6 @@ abstract final class RegisterRoutes {
         expenseStore: _resolve(),
         creditCardStore: _resolve(),
         accountStore: _resolve(),
-        balanceStore: _resolve(),
       ),
     );
 
@@ -50,7 +49,6 @@ abstract final class RegisterRoutes {
         incomeStore: _resolve(),
         accountStore: _resolve(),
         categoryStore: _resolve(),
-        balanceStore: _resolve(),
       ),
     );
 
@@ -66,7 +64,6 @@ abstract final class RegisterRoutes {
     r.child(
       UnmodularFormatFinanceRoutes.updateIncome,
       child: (ctx) => EditIncomeScreen(
-        income: r.args.data as Income,
         incomeStore: _resolve(),
         categoryStore: _resolve(),
       ),
@@ -94,7 +91,6 @@ abstract final class RegisterRoutes {
       UnmodularFormatFinanceRoutes.expenses,
       child: (context) => ExpensesScreen(
         accountStore: _resolve(),
-        balanceStore: _resolve(),
         categoryStore: _resolve(),
         expenseStore: _resolve(),
       ),
@@ -104,7 +100,6 @@ abstract final class RegisterRoutes {
       UnmodularFormatFinanceRoutes.addExpense,
       child: (context) => CreateExpenseScreen(
         accountStore: _resolve(),
-        cardStore: _resolve(),
         expenseStore: _resolve(),
         categoryStore: _resolve(),
       ),
@@ -115,13 +110,11 @@ abstract final class RegisterRoutes {
       child: (ctx) => EditExpenseScreen(
         expenseStore: _resolve(),
         categoryStore: _resolve(),
-        expense: r.args.data as Expense,
       ),
     );
 
     r.child(UnmodularFormatFinanceRoutes.payExpense, child: (context) {
       ExpenseModel model = r.args.data['model'];
-      BindServiceProvider.get<ExpenseStore>().setSelectedModel(model);
 
       return PaymentScreen<Expense, ExpenseModel>(
         model: model,

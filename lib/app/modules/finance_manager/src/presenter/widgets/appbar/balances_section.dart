@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:flutter_triple/flutter_triple.dart';
 import 'package:umbrella_echonomics/app/modules/bind_service_provider.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/month_store.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/segmented_state_widget.dart';
@@ -43,20 +42,10 @@ class _BalancesSectionState extends State<BalancesSection> {
   late String expectedBalanceLoadingLeading;
   late String expectedBalanceErrorLeading;
 
-  Account? selectedAccount;
-
   @override
   void initState() {
     super.initState();
-    widget.accountStore.addSelectedAccountListener(_onAccountChanged);
-    selectedAccount = widget.accountStore.selectedAccount;
     _resolveBalancesToShow();
-  }
-
-  @override
-  void dispose() {
-    widget.accountStore.removeSelectedAccountListener(_onAccountChanged);
-    super.dispose();
   }
 
   @override
@@ -97,29 +86,25 @@ class _BalancesSectionState extends State<BalancesSection> {
     );
   }
 
-  void _onAccountChanged(Account? newSelected) {
-    setState(() {
-      selectedAccount = newSelected;
-    });
-  }
-
   Widget _buildActualBalanceRow() {
     return Spaced(
       first: const MediumText.bold('Saldo Atual'),
-      second: ScopedBuilder<AccountStore, List<Account>>(
-        store: widget.accountStore,
-        onState: (context, accs) {
-          var actualBalance = _resolveActualBalance(accs);
+      second: Observer(builder: (_) {
+        return SegmentedStateWidget(
+          state: widget.accountStore.state,
+          onState: (context, accs) {
+            var actualBalance = _resolveActualBalance(accs);
 
-          return Price.medium(
-            actualBalance,
-            fontWeight: FontWeight.bold,
-            color: _resolveBalanceColor(actualBalance),
-          );
-        },
-        onLoading: (ctx) => const MediumText.bold('Obtendo...'),
-        onError: (ctx, fail) => const MediumText.bold('Erro ao Obter'),
-      ),
+            return Price.medium(
+              actualBalance,
+              fontWeight: FontWeight.bold,
+              color: _resolveBalanceColor(actualBalance),
+            );
+          },
+          onLoading: (ctx) => const MediumText.bold('Obtendo...'),
+          onFail: (ctx, fail) => const MediumText.bold('Erro ao Obter'),
+        );
+      }),
     );
   }
 
@@ -191,7 +176,7 @@ class _BalancesSectionState extends State<BalancesSection> {
   }
 
   double _resolveActualBalance(List<Account> accs) {
-    if (selectedAccount == null) {
+    if (widget.accountStore.selectedAccount == null) {
       double balance = 0.00;
 
       for (var acc in accs) {
@@ -200,7 +185,7 @@ class _BalancesSectionState extends State<BalancesSection> {
       return balance;
     }
 
-    return selectedAccount!.actualBalance;
+    return widget.accountStore.selectedAccount!.actualBalance;
   }
 
   Color _resolveBalanceColor(double balance) {

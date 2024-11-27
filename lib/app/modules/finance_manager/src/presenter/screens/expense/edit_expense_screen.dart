@@ -7,8 +7,8 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/wi
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/list_segmented_state_widget.dart';
 import '../../../domain/entities/category.dart';
 import '../../../domain/entities/date.dart';
-import '../../../domain/entities/expense.dart';
 import '../../../domain/entities/frequency.dart';
+import '../../../errors/errors.dart';
 import '../../controllers/expense_store.dart';
 import '../../widgets/appbar/custom_app_bar.dart';
 import '../../widgets/simple_information/account_name.dart';
@@ -28,61 +28,46 @@ class EditExpenseScreen extends StatefulWidget {
     super.key,
     required ExpenseStore expenseStore,
     required ExpenseCategoryStore categoryStore,
-    required Expense expense,
   })  : _expenseStore = expenseStore,
-        _categoryStore = categoryStore,
-        _expense = expense;
+        _categoryStore = categoryStore;
 
   final ExpenseStore _expenseStore;
   final ExpenseCategoryStore _categoryStore;
-  final Expense _expense;
 
   @override
   State<EditExpenseScreen> createState() => _EditExpenseScreenState();
 }
 
 class _EditExpenseScreenState extends State<EditExpenseScreen> {
-  late final GlobalKey<FormState> formKey;
-  late final TextEditingController nameFieldController;
+  late final GlobalKey<FormState> _formKey;
 
-  late final TextEditingController personNameFieldController;
-
-  late final FocusNode nameFieldFocusNode;
-  late final FocusNode personNameFocusNode;
-
-  late Frequency frequency;
-  late Date date;
-  late Category category;
+  late final TextEditingController _nameController;
+  late final TextEditingController _personNameController;
 
   @override
   void initState() {
     super.initState();
-    formKey = GlobalKey();
-    nameFieldController = TextEditingController();
-    personNameFieldController = TextEditingController();
+    _formKey = GlobalKey();
 
-    nameFieldFocusNode = FocusNode();
-    personNameFocusNode = FocusNode();
+    _nameController = TextEditingController();
+    _personNameController = TextEditingController();
 
-    setVariablesToOriginal();
+    _setListeners();
+
+    _setVariablesToOriginal();
   }
 
-  @override
-  void dispose() {
-    nameFieldController.dispose();
-    personNameFieldController.dispose();
+  void _setVariablesToOriginal() {
+    var model = widget._expenseStore.selectedModel!;
 
-    nameFieldFocusNode.dispose();
-    personNameFocusNode.dispose();
-    super.dispose();
-  }
+    widget._expenseStore.setAccount(model.account);
+    widget._expenseStore.setValue(model.totalValue);
+    widget._expenseStore.setCategory(model.category);
+    widget._expenseStore.setDueDate(model.overdueDate);
+    widget._expenseStore.setFrequency(model.frequency);
 
-  void setVariablesToOriginal() {
-    nameFieldController.text = widget._expense.name;
-    frequency = widget._expense.frequency;
-    date = widget._expense.dueDate.copyWith();
-    category = widget._expense.category;
-    personNameFieldController.text = widget._expense.personName ?? '';
+    _nameController.text = model.name;
+    _personNameController.text = model.personName ?? '';
   }
 
   @override
@@ -93,7 +78,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
       ),
       child: SingleChildScrollView(
         child: MyForm(
-          formKey: formKey,
+          formKey: _formKey,
           padding: EdgeInsets.only(
             top: 12.0,
             left: MediaQuery.sizeOf(context).width * 0.05,
@@ -104,52 +89,41 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
               padding: const EdgeInsets.symmetric(vertical: 25.0),
               child: AccountName(
                 trailingText: 'Debitando de',
-                account: widget._expense.account,
+                account: widget._expenseStore.selectedModel!.account,
               ),
             ),
-            DefaultTextField(
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Preencha o campo Nome';
-                }
-
-                if (value.length < 5) {
-                  return 'O Nome deve conter pelo menos 5 letras';
-                }
-
-                return null;
-              },
-              controller: nameFieldController,
-              focusNode: nameFieldFocusNode,
-              maxLength: 30,
-              labelText: 'Nome',
+            Observer(
+              builder: (_) => DefaultTextField(
+                validator: widget._expenseStore.validateName,
+                onChanged: widget._expenseStore.setName,
+                initialValue: widget._expenseStore.name,
+                readOnly: widget._expenseStore.isLoading,
+                maxLength: 30,
+                labelText: 'Nome',
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20.0, bottom: 12.0),
               child: ValueRow(
                 trailingText: 'Valor da Despesa',
                 alignment: MainAxisAlignment.spaceBetween,
-                value: widget._expense.totalValue,
+                value: widget._expenseStore.selectedModel!.totalValue,
               ),
             ),
-            FrequencySelector(
-              title: 'Qual a Frequência dessa Despesa?',
-              selectedFrequency: frequency,
-              onSelected: (newFrequency) {
-                setState(() {
-                  frequency = newFrequency;
-                });
-              },
+            Observer(
+              builder: (_) => FrequencySelector(
+                title: 'Qual a Frequência dessa Despesa?',
+                selectedFrequency: widget._expenseStore.frequency,
+                onSelected: widget._expenseStore.setFrequency,
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
-              child: DateSelector(
-                date: date,
-                onDateSelected: (newDate) {
-                  setState(() {
-                    date = newDate;
-                  });
-                },
+              child: Observer(
+                builder: (_) => DateSelector(
+                  date: widget._expenseStore.dueDate,
+                  onDateSelected: widget._expenseStore.setDueDate,
+                ),
               ),
             ),
             Observer(
@@ -157,25 +131,21 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                 state: widget._categoryStore.state,
                 onState: (ctx, categories) => CategorySelector(
                   categories: categories,
-                  onSelected: (cat) {
-                    setState(() {
-                      category = cat;
-                    });
-                  },
-                  child: CategoryRow(
-                    category: category,
-                    padding: const EdgeInsets.only(
-                      top: 8.0,
-                      bottom: 8.0,
+                  onSelected: widget._expenseStore.setCategory,
+                  child: Observer(
+                    builder: (_) => CategoryRow(
+                      category: widget._expenseStore.category,
+                      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
                     ),
                   ),
                 ),
+                onEmpty: (_) => CategoryRow(
+                  category: widget._expenseStore.selectedModel?.category,
+                  padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                ),
                 onFail: (context, e) => CategoryRow(
-                  category: category,
-                  padding: const EdgeInsets.only(
-                    top: 8.0,
-                    bottom: 8.0,
-                  ),
+                  category: widget._expenseStore.selectedModel?.category,
+                  padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
                 ),
                 onLoading: (context) =>
                     const CircularProgressIndicator.adaptive(),
@@ -183,13 +153,16 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
             ),
             Padding(
               padding: const EdgeInsets.only(top: 30.0),
-              child: DefaultTextField(
-                height: 70.0,
-                controller: personNameFieldController,
-                focusNode: personNameFocusNode,
-                labelText: 'A Quem você deve isso? (Opcional)',
-                maxLength: 20,
-                validator: (_) => null,
+              child: Observer(
+                builder: (_) => DefaultTextField(
+                  initialValue: widget._expenseStore.personName,
+                  height: 70.0,
+                  labelText: 'A Quem você deve isso? (Opcional)',
+                  maxLength: 20,
+                  onChanged: widget._expenseStore.setPersonName,
+                  validator: widget._expenseStore.validatePersonName,
+                  readOnly: widget._expenseStore.isLoading,
+                ),
               ),
             ),
             Spaced(
@@ -211,10 +184,34 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
     );
   }
 
-  void onFormSubmitted() {
-    bool isFormValid = validateForm();
+  @override
+  void dispose() {
+    widget._expenseStore.setAccount(null);
+    widget._expenseStore.setValue(0.00);
+    widget._expenseStore.setCategory(null);
+    widget._expenseStore.setDueDate(Date.today());
+    widget._expenseStore.setFrequency(Frequency.none);
 
-    if (!isFormValid) {
+    widget._expenseStore.setName(null);
+    widget._expenseStore.setPersonName(null);
+
+    _nameController.dispose();
+    _personNameController.dispose();
+    super.dispose();
+  }
+
+  void _setListeners() {
+    _nameController.addListener(() {
+      widget._expenseStore.setName(_nameController.text);
+    });
+
+    _personNameController.addListener(() {
+      widget._expenseStore.setPersonName(_personNameController.text);
+    });
+  }
+
+  void onFormSubmitted() {
+    if (!_formKey.currentState!.validate()) {
       UmbrellaDialogs.showError(
         context,
         'Parece que o formulário contém erros. Corrija-os e tente denovo',
@@ -222,42 +219,25 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
       return;
     }
 
-    update();
+    widget._expenseStore.edit().then((fail) {
+      switch (fail) {
+        case Fail f when mounted:
+          UmbrellaDialogs.showError(context, f.message);
+          break;
+        case null when mounted:
+          UmbrellaDialogs.showSuccess(
+            context,
+            title: 'Despesa Atualizada',
+            message:
+                'Sua despesa foi atualizada com sucesso. Iremos redireciona-lo de volta',
+          ).then((_) {
+            if (mounted) Navigator.pop(context);
+          });
+      }
+    });
   }
 
   void resetForm() {
-    setState(() {
-      setVariablesToOriginal();
-    });
-  }
-
-  bool validateForm() => formKey.currentState!.validate();
-
-  Future<void> update() async {
-    String personName = personNameFieldController.text.trim();
-
-    Expense newExpense = widget._expense.copyWith(
-      name: nameFieldController.text,
-      dueDate: date,
-      frequency: frequency,
-      category: category,
-      personName: personName.isEmpty ? null : personName,
-    );
-
-    widget._expenseStore
-        .edit(newPaiyable: newExpense, oldPaiyable: widget._expense)
-        .then((result) {
-      result.fold((success) {
-        UmbrellaDialogs.showSuccess(
-          context,
-          title: 'Despesa Atualizada',
-          message: 'Sua despesa foi atualizada com sucesso.',
-        ).then((_) {
-          Navigator.pop(context);
-        });
-      }, (failure) {
-        UmbrellaDialogs.showError(context, failure.message);
-      });
-    });
+    _setVariablesToOriginal();
   }
 }

@@ -6,23 +6,19 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/useca
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/round.dart';
 
-import '../../domain/entities/date.dart';
 import '../../domain/entities/payment_method.dart';
 import '../../errors/payment_error_messages.dart';
 import '../repositories/balance_repository.dart';
 import '../repositories/expense_repository.dart';
-import '../repositories/payment_method_repository.dart';
 import '../repositories/payment_record_repository.dart';
 
 class PayExpenseImpl implements PayExpense {
   final ExpenseRepository expenseRepository;
-  final PaymentMethodRepository paymentMethodRepository;
   final PaymentRecordRepository paymentRecordRepository;
   final BalanceRepository balanceRepository;
 
   PayExpenseImpl({
     required this.expenseRepository,
-    required this.paymentMethodRepository,
     required this.paymentRecordRepository,
     required this.balanceRepository,
   });
@@ -60,7 +56,6 @@ class PayExpenseImpl implements PayExpense {
     var updatedExpense = expense.copyWith(
       remainingValue: (expense.remainingValue - payment.value).roundToDecimal(),
       paidValue: (expense.paidValue + payment.value).roundToDecimal(),
-      paymentDate: Date.today(),
     );
 
     var updateExpenseRes = await expenseRepository.update(updatedExpense);
@@ -96,14 +91,6 @@ class PayExpenseImpl implements PayExpense {
     );
 
     if (registerRes.isError()) return registerRes.pure(unit);
-
-    var addPaymentRegister = await paymentMethodRepository.registerPayment(
-      paiyable: updatedExpense,
-      value: payment.value,
-      method: payment.paymentMethod,
-    );
-
-    if (addPaymentRegister.isError()) return addPaymentRegister;
 
     return const Success(unit);
   }

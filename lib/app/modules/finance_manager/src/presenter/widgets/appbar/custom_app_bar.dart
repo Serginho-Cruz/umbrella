@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:umbrella_echonomics/app/modules/bind_service_provider.dart';
-import '../../../domain/entities/account.dart';
 import '../../controllers/account_store.dart';
 import '../../controllers/balance_store.dart';
 import '../../utils/umbrella_palette.dart';
@@ -12,7 +11,7 @@ import 'balances_section.dart';
 import 'month_changer.dart';
 
 // ignore: must_be_immutable
-class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   CustomAppBar({
     super.key,
     this.title,
@@ -36,40 +35,6 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   late AccountStore _accountStore;
 
   @override
-  State<CustomAppBar> createState() => _CustomAppBarState();
-
-  @override
-  Size get preferredSize {
-    double height = 99.0; //Minimal
-
-    if (showBalances) height += 60.0;
-
-    if (showMonthChanger) height += 48.0;
-
-    return Size.fromHeight(height - 20.0); //Margin
-  }
-
-  void _assignStores() {
-    _balanceStore = BindServiceProvider.get();
-    _accountStore = BindServiceProvider.get();
-  }
-}
-
-class _CustomAppBarState extends State<CustomAppBar> {
-  @override
-  void initState() {
-    super.initState();
-    widget._accountStore.addSelectedAccountListener(_onSelectedAccountChanged);
-  }
-
-  @override
-  void dispose() {
-    widget._accountStore
-        .removeSelectedAccountListener(_onSelectedAccountChanged);
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.sizeOf(context).width,
@@ -89,21 +54,21 @@ class _CustomAppBarState extends State<CustomAppBar> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const HomeIcon(),
-              if (widget.title != null) TitleText.bold(widget.title!),
+              if (title != null) TitleText.bold(title!),
               const DrawerIcon(),
             ],
           ),
-          if (widget.showMonthChanger)
+          if (showMonthChanger)
             MonthChanger(
               onMonthChange: _onMonthChange,
-              monthAndYear: widget.monthAndYear,
+              monthAndYear: monthAndYear,
             ),
-          if (widget.showBalances)
+          if (showBalances)
             Padding(
               padding: const EdgeInsets.only(top: 12.0),
               child: BalancesSection(
-                accountStore: widget._accountStore,
-                balanceStore: widget._balanceStore,
+                accountStore: _accountStore,
+                balanceStore: _balanceStore,
               ),
             ),
         ],
@@ -111,30 +76,25 @@ class _CustomAppBarState extends State<CustomAppBar> {
     );
   }
 
-  void _onSelectedAccountChanged(Account? selected) {
-    _fetchBalance();
-  }
-
   void _onMonthChange(int month, int year) {
     Future(() {
-      widget.onMonthChange!.call(month, year);
-      _fetchBalance();
+      onMonthChange?.call(month, year);
     });
   }
 
-  void _fetchBalance() {
-    var selected = widget._accountStore.selectedAccount;
+  @override
+  Size get preferredSize {
+    double height = 99.0; //Minimal
 
-    if (selected != null) {
-      widget._balanceStore.get(
-        account: selected,
-      );
+    if (showBalances) height += 60.0;
 
-      return;
-    }
+    if (showMonthChanger) height += 48.0;
 
-    widget._balanceStore.getForAll(
-      accounts: widget._accountStore.state,
-    );
+    return Size.fromHeight(height - 20.0); //Margin
+  }
+
+  void _assignStores() {
+    _balanceStore = BindServiceProvider.get();
+    _accountStore = BindServiceProvider.get();
   }
 }

@@ -22,6 +22,10 @@ class ManageIncomeImpl implements ManageIncome {
 
   @override
   AsyncResult<String, Fail> register(Income income) async {
+    income = income.copyWith(
+      paidValue: 0.00,
+      remainingValue: income.totalValue,
+    );
     final result = await _incomeRepository.create(income);
 
     if (result.isError()) return result;
@@ -93,7 +97,6 @@ class ManageIncomeImpl implements ManageIncome {
           id: '',
           remainingValue: income.totalValue,
           paidValue: 0.00,
-          paymentDate: null,
           dueDate: income.dueDate.copyWith(
             day: requiredDate.totalDaysOfMonth < income.dueDate.day
                 ? requiredDate.totalDaysOfMonth
