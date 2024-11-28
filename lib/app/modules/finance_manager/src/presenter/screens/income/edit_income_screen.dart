@@ -5,8 +5,8 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/wi
 import '../../../domain/entities/date.dart';
 import '../../../domain/entities/frequency.dart';
 import '../../../errors/errors.dart';
-import '../../controllers/income_store.dart';
-import '../../controllers/income_category_store.dart';
+import '../../stores/income_store.dart';
+import '../../stores/income_category_store.dart';
 import '../../widgets/appbar/custom_app_bar.dart';
 import '../../widgets/simple_information/account_name.dart';
 import '../../widgets/buttons/primary_button.dart';

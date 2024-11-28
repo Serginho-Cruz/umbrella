@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/paiyable.dart';
 import '../../../domain/models/paiyable_model.dart';
-import '../../controllers/paiyable_store.dart';
+import '../../stores/paiyable_store.dart';
 import '../../utils/resolve_paiyable_name.dart';
 import '../buttons/primary_button.dart';
 import '../buttons/secondary_button.dart';

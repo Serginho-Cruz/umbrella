@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
-import '../controllers/account_store.dart';
-import '../controllers/balance_store.dart';
-import '../controllers/graphs_store.dart';
+import '../stores/account_store.dart';
+import '../stores/balance_store.dart';
+import '../stores/graphs_store.dart';
 import '../widgets/appbar/custom_app_bar.dart';
 import '../widgets/charts/column/category_column_chart.dart';
 import '../widgets/charts/pie/status_pie_chart.dart';

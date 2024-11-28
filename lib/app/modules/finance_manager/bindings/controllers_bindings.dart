@@ -1,7 +1,7 @@
 import 'package:flutter_modular/flutter_modular.dart' show Injector;
 
-import '../src/presenter/controllers/implementations.dart';
-import '../src/presenter/controllers/month_store.dart';
+import '../src/presenter/stores/implementations.dart';
+import '../src/presenter/stores/month_store.dart';
 
 abstract class ControllersBindings {
   static void bind(Injector i) {

@@ -4,7 +4,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import '../../../domain/entities/category.dart';
 import '../../../domain/models/status.dart';
 import '../../../domain/usecases/sorts/sort_expenses.dart';
-import '../../controllers/finance_filterable_store.dart';
+import '../../stores/finance_filterable_store.dart';
 import '../../utils/adapt_name.dart';
 import '../buttons/primary_button.dart';
 import '../filters/category_filter.dart';

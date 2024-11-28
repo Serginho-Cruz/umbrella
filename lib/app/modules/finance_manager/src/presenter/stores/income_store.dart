@@ -5,8 +5,8 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entit
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/frequency.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/manage_income.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/sorts/sort_expenses.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/month_store.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/paiyable_store.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/stores/month_store.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/stores/paiyable_store.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/round.dart';
 
 import '../../../../bind_service_provider.dart';

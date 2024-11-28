@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/finance_filterable_store.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/stores/finance_filterable_store.dart';
 
 import '../../../domain/entities/category.dart';
 import '../buttons/filter_button.dart';

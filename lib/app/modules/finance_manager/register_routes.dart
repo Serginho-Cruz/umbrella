@@ -8,8 +8,8 @@ import 'src/domain/entities/expense.dart';
 import 'src/domain/entities/income.dart';
 import 'src/domain/models/expense_model.dart';
 import 'src/domain/models/income_model.dart';
-import 'src/presenter/controllers/expense_store.dart';
-import 'src/presenter/controllers/income_store.dart';
+import 'src/presenter/stores/expense_store.dart';
+import 'src/presenter/stores/income_store.dart';
 import 'src/presenter/screens/screens.dart';
 
 abstract final class RegisterRoutes {

@@ -5,7 +5,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:umbrella_echonomics/app/modules/bind_service_provider.dart';
 
 import '../../../domain/entities/date.dart';
-import '../../controllers/month_store.dart';
+import '../../stores/month_store.dart';
 import '../texts/medium_text.dart';
 
 class MonthChanger extends StatefulWidget {

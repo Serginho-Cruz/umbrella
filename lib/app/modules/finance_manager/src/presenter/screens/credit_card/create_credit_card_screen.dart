@@ -5,9 +5,9 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/wi
 
 import '../../../domain/entities/account.dart';
 import '../../../domain/entities/credit_card.dart';
-import '../../controllers/credit_card_store.dart';
+import '../../stores/credit_card_store.dart';
 import '../../utils/umbrella_palette.dart';
-import '../../controllers/account_store.dart';
+import '../../stores/account_store.dart';
 import '../../widgets/buttons/primary_button.dart';
 import '../../widgets/buttons/reset_button.dart';
 import '../../widgets/others/card_preview_section.dart';

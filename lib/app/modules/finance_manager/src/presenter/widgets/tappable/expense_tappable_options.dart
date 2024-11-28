@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../domain/entities/account.dart';
 import '../../../domain/models/expense_model.dart';
 import '../../../domain/states/state.dart';
-import '../../controllers/account_store.dart';
-import '../../controllers/expense_store.dart';
+import '../../stores/account_store.dart';
+import '../../stores/expense_store.dart';
 import 'tappable_option.dart';
 import 'tappable_options_utils.dart';
 

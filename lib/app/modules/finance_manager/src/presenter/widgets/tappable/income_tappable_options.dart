@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/account_store.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/stores/account_store.dart';
 import '../../../domain/entities/account.dart';
 import '../../../domain/states/state.dart';
-import '../../controllers/income_store.dart';
+import '../../stores/income_store.dart';
 import 'tappable_option.dart';
 import 'tappable_options_utils.dart';
 import '../../../domain/models/income_model.dart';

@@ -5,7 +5,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entit
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/appbar/custom_app_bar.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/tappable/credit_card_tappable_options.dart';
 
-import '../../controllers/credit_card_store.dart';
+import '../../stores/credit_card_store.dart';
 import '../../widgets/buttons/navigation_icon_button.dart';
 import '../../widgets/cards/credit_card_widget.dart';
 import '../../widgets/dialogs/umbrella_dialogs.dart';

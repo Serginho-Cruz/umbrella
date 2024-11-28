@@ -5,11 +5,11 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/wi
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/tiles/finance_tile.dart';
 import '../../../domain/entities/category.dart';
 import '../../../domain/entities/date.dart';
-import '../../controllers/month_store.dart';
-import '../../controllers/income_store.dart';
+import '../../stores/month_store.dart';
+import '../../stores/income_store.dart';
 import '../../utils/currency_format.dart';
-import '../../controllers/account_store.dart';
-import '../../controllers/income_category_store.dart';
+import '../../stores/account_store.dart';
+import '../../stores/income_category_store.dart';
 import '../../widgets/appbar/custom_app_bar.dart';
 import '../../widgets/buttons/navigation_icon_button.dart';
 import '../../widgets/filters/finance_filter.dart';

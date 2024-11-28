@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:umbrella_echonomics/app/modules/bind_service_provider.dart';
-import '../../controllers/account_store.dart';
-import '../../controllers/balance_store.dart';
+import '../../stores/account_store.dart';
+import '../../stores/balance_store.dart';
 import '../../utils/umbrella_palette.dart';
 import '../../../domain/entities/date.dart';
 import '../icons/drawer_icon.dart';

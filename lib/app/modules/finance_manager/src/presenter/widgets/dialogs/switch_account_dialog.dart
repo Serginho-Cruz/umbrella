@@ -4,7 +4,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entit
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/paiyable_model.dart';
 
 import '../../../domain/entities/account.dart';
-import '../../controllers/paiyable_store.dart';
+import '../../stores/paiyable_store.dart';
 import '../../utils/umbrella_sizes.dart';
 import '../buttons/primary_button.dart';
 import '../buttons/secondary_button.dart';
