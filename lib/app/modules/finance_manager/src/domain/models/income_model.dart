@@ -1,7 +1,7 @@
 import '../entities/income.dart';
 import 'finance_model.dart';
 
- class IncomeModel extends FinanceModel<Income> {
+class IncomeModel extends FinanceModel<Income> {
   IncomeModel.fromIncome(
     Income income, {
     required super.status,
@@ -14,7 +14,6 @@ import 'finance_model.dart';
           totalValue: income.totalValue,
           category: income.category,
           frequency: income.frequency,
-          paymentDate: income.paymentDate,
           account: income.account,
           personName: income.personName,
         );
@@ -30,7 +29,6 @@ import 'finance_model.dart';
       dueDate: overdueDate,
       frequency: frequency,
       category: category,
-      paymentDate: paymentDate,
       account: account,
       personName: personName,
     );

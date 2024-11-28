@@ -5,12 +5,18 @@ import '../../utils/umbrella_palette.dart';
 class UmbrellaSearchBar extends StatelessWidget {
   const UmbrellaSearchBar({
     super.key,
-    required this.searchFunction,
+    this.onSubmitted,
+    this.onChanged,
+    this.enabled = true,
+    this.controller,
     this.width,
     this.height,
   });
 
-  final void Function(String) searchFunction;
+  final void Function(String)? onSubmitted;
+  final void Function(String)? onChanged;
+  final TextEditingController? controller;
+  final bool enabled;
   final double? width;
   final double? height;
 
@@ -22,8 +28,12 @@ class UmbrellaSearchBar extends StatelessWidget {
         minHeight: height ?? 60.0,
       ),
       backgroundColor: const WidgetStatePropertyAll(UmbrellaPalette.gray),
-      onSubmitted: searchFunction,
+      onSubmitted: onSubmitted,
+      onChanged: onChanged,
+      onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
       hintText: 'Pesquisar por Nome',
+      enabled: enabled,
+      controller: controller,
       shape: WidgetStatePropertyAll(
         RoundedRectangleBorder(
           side: const BorderSide(),

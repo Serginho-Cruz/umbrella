@@ -1,44 +1,44 @@
-import 'package:flutter_triple/flutter_triple.dart';
-import 'package:result_dart/result_dart.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/account.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/credit_card.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/payment_record.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/paiyable_model.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/paiyable.dart';
 
-import '../../domain/entities/paiyable.dart';
+import '../../domain/entities/account.dart';
+import '../../domain/entities/credit_card.dart';
+import '../../domain/entities/payment_method.dart';
+import '../../domain/entities/payment_record.dart';
+import '../../domain/models/paiyable_model.dart';
+import '../../errors/errors.dart';
 
-abstract class PaiyableStore<E extends Paiyable, T extends PaiyableModel<E>>
-    extends Store<List<T>> {
-  PaiyableStore(super.initialState);
+abstract interface class PaiyableStore<P extends PaiyableModel<T>,
+    T extends Paiyable> {
+  List<PaymentRecord<T>> get paymentsToDo;
 
-  AsyncResult<String, Fail> register(E entity);
-  AsyncResult<void, Fail> updateValue(T paiyable, double newValue);
+  double get totalPaying;
+  bool get isLoading;
 
-  AsyncResult<void, Fail> switchAccount(
-    T paiyable,
-    Account newAccount,
-  );
-
-  AsyncResult<void, Fail> edit({
-    required E oldPaiyable,
-    required E newPaiyable,
-  });
-
-  Future<void> getForAll({
-    required List<Account> accounts,
-    required int month,
-    required int year,
-  });
-
-  Future<void> getAllOf({
-    required int month,
-    required int year,
+  void addPayment({required PaymentMethod method, required Account account});
+  void removePayment(PaymentMethod method);
+  void setPaymentAccount({
+    required PaymentMethod method,
     required Account account,
   });
-
-  AsyncResult<void, Fail> pay({
-    required List<PaymentRecord<E>> payments,
-    CreditCard? card,
+  void setPaymentCreditCard(CreditCard? card);
+  void setPaymentValue({
+    required PaymentMethod method,
+    required double value,
   });
+
+  List<PaymentMethod> get allowedMethods;
+  List<PaymentMethod> get remainingMethods;
+  void restartPayments();
+
+  Future<Fail?> switchAccount();
+  Future<Fail?> updateValue();
+  Future<Fail?> pay();
+
+  void setValue(double value);
+  void setAccount(Account? acc);
+
+  Account? get account;
+
+  String? validateValue(double value);
+  String? validateAccount(Account? acc);
 }

@@ -23,6 +23,10 @@ class ManageExpenseImpl implements ManageExpense {
 
   @override
   AsyncResult<String, Fail> register(Expense expense) async {
+    expense = expense.copyWith(
+      paidValue: 0.00,
+      remainingValue: expense.totalValue,
+    );
     final result = await _expenseRepository.create(expense);
 
     if (result.isError()) return result;
@@ -94,7 +98,6 @@ class ManageExpenseImpl implements ManageExpense {
           id: '',
           remainingValue: expense.totalValue,
           paidValue: 0.00,
-          paymentDate: null,
           dueDate: expense.dueDate.copyWith(
             day: requiredDate.totalDaysOfMonth < expense.dueDate.day
                 ? requiredDate.totalDaysOfMonth

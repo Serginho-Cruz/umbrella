@@ -31,13 +31,7 @@ abstract class RepositoriesBindings {
     i.addLazySingleton<IncomeCategoryRepository>(
         () => IncomeCategoryRepositoryImpl(i()));
 
-    i.addLazySingleton<InstallmentRepository>(
-        () => InstallmentRepositoryImpl());
-
     i.addLazySingleton<PaymentRecordRepository>(
         () => PaymentRecordRepositoryImpl(i()));
-
-    i.addLazySingleton<PaymentMethodRepository>(
-        () => PaymentMethodRepositoryImpl(i()));
   }
 }

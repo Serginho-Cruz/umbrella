@@ -15,7 +15,6 @@ class ExpenseModel extends FinanceModel<Expense> {
           frequency: expense.frequency,
           personName: expense.personName,
           overdueDate: expense.dueDate,
-          paymentDate: expense.paymentDate,
           account: expense.account,
         );
 
@@ -30,7 +29,6 @@ class ExpenseModel extends FinanceModel<Expense> {
       dueDate: overdueDate,
       category: category,
       frequency: frequency,
-      paymentDate: paymentDate,
       account: account,
       personName: personName,
     );

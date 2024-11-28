@@ -15,14 +15,12 @@ import '../../../domain/usecases/gets/get_balance.dart';
 import '../../../errors/errors.dart';
 
 import '../../repositories/balance_repository.dart';
-import '../../repositories/installment_repository.dart';
 
 class GetBalanceImpl implements GetBalance {
   final BalanceRepository balanceRepository;
   final IncomeRepository incomeRepository;
   final ExpenseRepository expenseRepository;
   final InvoiceRepository invoiceRepository;
-  final InstallmentRepository installmentRepository;
   final AccountRepository accountRepository;
 
   GetBalanceImpl({
@@ -30,7 +28,6 @@ class GetBalanceImpl implements GetBalance {
     required this.expenseRepository,
     required this.incomeRepository,
     required this.invoiceRepository,
-    required this.installmentRepository,
     required this.accountRepository,
   });
 

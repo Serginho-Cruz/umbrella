@@ -1,11 +1,11 @@
 import 'package:mobx/mobx.dart';
 
-import '../../domain/entities/account.dart';
 import '../../domain/entities/category.dart';
 import '../../domain/models/status.dart';
 import '../../domain/states/graphs_state.dart';
 import '../../domain/usecases/gets/get_graphs_data.dart';
-import '../widgets/appbar/month_changer.dart';
+import 'account_store.dart';
+import 'month_store.dart';
 part 'graphs_store.g.dart';
 
 // ignore: library_private_types_in_public_api
@@ -13,8 +13,16 @@ class GraphsStore = _GraphsStoreBase with _$GraphsStore;
 
 abstract class _GraphsStoreBase with Store {
   final GetGraphsData _usecase;
+  final MonthStore _monthStore;
+  final AccountStore _accountStore;
 
-  _GraphsStoreBase(this._usecase);
+  _GraphsStoreBase({
+    required GetGraphsData usecase,
+    required MonthStore monthStore,
+    required AccountStore accountStore,
+  })  : _usecase = usecase,
+        _monthStore = monthStore,
+        _accountStore = accountStore;
 
   @observable
   GraphsState<Map<Category, double>> valuePerExpenseCategoryState =
@@ -33,15 +41,19 @@ abstract class _GraphsStoreBase with Store {
       GraphsSuccessState({});
 
   @action
-  Future<void> fetchExpenseCategoryGraphData(List<Account> accounts) async {
+  Future<void> fetchExpenseCategoryGraphData() async {
+    var accounts = _accountStore.visualizingAccounts;
+
+    if (accounts.isEmpty) return;
+
     valuePerExpenseCategoryState = GraphsLoadingState();
 
-    final date = MonthChanger.currentMonthAndYear;
+    var (:month, :year) = _monthStore.month;
 
     var result = await _usecase.valueOfEachExpenseCategory(
       accounts: accounts,
-      month: date.month,
-      year: date.year,
+      month: month,
+      year: year,
     );
 
     result.fold((map) {
@@ -52,15 +64,18 @@ abstract class _GraphsStoreBase with Store {
   }
 
   @action
-  Future<void> fetchIncomeCategoryGraphData(List<Account> accounts) async {
+  Future<void> fetchIncomeCategoryGraphData() async {
+    var accounts = _accountStore.visualizingAccounts;
+
+    if (accounts.isEmpty) return;
     valuePerIncomeCategoryState = GraphsLoadingState();
 
-    final date = MonthChanger.currentMonthAndYear;
+    var (:month, :year) = _monthStore.month;
 
     var result = await _usecase.valueOfEachIncomeCategory(
       accounts: accounts,
-      month: date.month,
-      year: date.year,
+      month: month,
+      year: year,
     );
 
     result.fold((map) {
@@ -71,15 +86,18 @@ abstract class _GraphsStoreBase with Store {
   }
 
   @action
-  Future<void> fetchExpenseStatusGraphData(List<Account> accounts) async {
+  Future<void> fetchExpenseStatusGraphData() async {
+    var accounts = _accountStore.visualizingAccounts;
+
+    if (accounts.isEmpty) return;
     valueCastPerStatusState = GraphsLoadingState();
 
-    final date = MonthChanger.currentMonthAndYear;
+    var (:month, :year) = _monthStore.month;
 
     var result = await _usecase.valueForEachExpenseStatus(
       accounts: accounts,
-      month: date.month,
-      year: date.year,
+      month: month,
+      year: year,
     );
 
     result.fold((map) {
@@ -90,15 +108,17 @@ abstract class _GraphsStoreBase with Store {
   }
 
   @action
-  Future<void> fetchIncomeStatusGraphData(List<Account> accounts) async {
-    valueReceivedPerStatusState = GraphsLoadingState();
+  Future<void> fetchIncomeStatusGraphData() async {
+    var accounts = _accountStore.visualizingAccounts;
 
-    final date = MonthChanger.currentMonthAndYear;
+    if (accounts.isEmpty) return;
+
+    var (:month, :year) = _monthStore.month;
 
     var result = await _usecase.valueForEachIncomeStatus(
       accounts: accounts,
-      month: date.month,
-      year: date.year,
+      month: month,
+      year: year,
     );
 
     result.fold((map) {
@@ -106,5 +126,13 @@ abstract class _GraphsStoreBase with Store {
     }, (fail) {
       valueReceivedPerStatusState = GraphsErrorState(fail);
     });
+  }
+
+  @action
+  void clearData() {
+    valueCastPerStatusState = GraphsSuccessState({});
+    valuePerExpenseCategoryState = GraphsSuccessState({});
+    valuePerIncomeCategoryState = GraphsSuccessState({});
+    valueReceivedPerStatusState = GraphsSuccessState({});
   }
 }

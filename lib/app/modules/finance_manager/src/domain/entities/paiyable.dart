@@ -8,7 +8,6 @@ abstract class Paiyable extends Equatable {
   final double paidValue;
   final double remainingValue;
   final Date dueDate;
-  final Date? paymentDate;
   final double totalValue;
 
   const Paiyable({
@@ -17,7 +16,6 @@ abstract class Paiyable extends Equatable {
     required this.paidValue,
     required this.remainingValue,
     required this.dueDate,
-    this.paymentDate,
     required this.totalValue,
   });
 }

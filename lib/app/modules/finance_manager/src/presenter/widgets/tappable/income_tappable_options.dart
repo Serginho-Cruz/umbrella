@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/controllers/account_store.dart';
+import '../../../domain/entities/account.dart';
+import '../../../domain/states/state.dart';
+import '../../controllers/income_store.dart';
 import 'tappable_option.dart';
 import 'tappable_options_utils.dart';
 import '../../../domain/models/income_model.dart';
-import '../../controllers/income_store.dart';
 
 abstract class IncomeTappableOptions {
   static List<TappableOption> get({
@@ -19,35 +21,58 @@ abstract class IncomeTappableOptions {
         () => TappableOptionsUtils.navigateTo(
           context: context,
           route: '/income/pay',
-          arguments: {'model' : model, 'store': store},
-        ).then((_) => onPop?.call()),
+          arguments: {'model': model},
+        ).then((_) {
+          store.setSelectedModel(null);
+          onPop?.call();
+        }),
       ),
       TappableOption(
         'Editar Receita',
-        () => TappableOptionsUtils.navigateTo(
-          context: context,
-          route: '/income/update',
-          arguments: model.toEntity(),
-        ).then((_) => onPop?.call()),
+        () {
+          store.setSelectedModel(model);
+
+          TappableOptionsUtils.navigateTo(
+            context: context,
+            route: '/income/update',
+          ).then((_) {
+            store.setSelectedModel(null);
+            onPop?.call();
+          });
+        },
       ),
       TappableOption(
         'Alterar Valor',
-        () => TappableOptionsUtils.handleChangeValue<IncomeModel>(
-          context: context,
-          model: model,
-          onValueChanged: store.updateValue,
-          onPop: onPop,
-        ),
+        () {
+          store.setSelectedModel(model);
+
+          TappableOptionsUtils.handleChangeValue<IncomeModel>(
+            context: context,
+            model: model,
+            store: store,
+            onPop: () {
+              store.setSelectedModel(null);
+              onPop?.call();
+            },
+          );
+        },
       ),
       TappableOption(
         'Trocar de Conta',
-        () => TappableOptionsUtils.handleSwitchAccount<IncomeModel>(
-          context: context,
-          accounts: accountStore.state,
-          model: model,
-          onAccountChanged: store.switchAccount,
-          onPop: onPop,
-        ),
+        () {
+          store.setSelectedModel(model);
+
+          TappableOptionsUtils.handleSwitchAccount<IncomeModel>(
+            context: context,
+            accounts: (accountStore.state as SuccessState<List<Account>>).state,
+            model: model,
+            store: store,
+            onPop: () {
+              store.setSelectedModel(null);
+              onPop?.call();
+            },
+          );
+        },
       ),
       TappableOption('Ver em detalhes', () {}),
       TappableOption('Estornar', () {}),

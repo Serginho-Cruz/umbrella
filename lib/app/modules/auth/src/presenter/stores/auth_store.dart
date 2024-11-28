@@ -10,7 +10,6 @@ import '../../common/errors/fail.dart';
 import '../../domain/usecases/validate.dart';
 part 'auth_store.g.dart';
 
-// ignore: library_private_types_in_public_api
 class AuthStore = _AuthStoreBase with _$AuthStore;
 
 abstract class _AuthStoreBase with Store {

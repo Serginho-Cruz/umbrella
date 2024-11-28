@@ -7,5 +7,3 @@ export './income_category_datasource.dart';
 export './income_datasource.dart';
 export './invoice_datasource.dart';
 export './payment_record_datasource.dart';
-
-export './payment_method_datasource.dart';

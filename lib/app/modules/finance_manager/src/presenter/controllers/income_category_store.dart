@@ -1,28 +1,29 @@
-import 'package:flutter_triple/flutter_triple.dart';
-
 import '../../domain/entities/category.dart';
-import '../../domain/usecases/gets/get_income_categories.dart';
 
-class IncomeCategoryStore extends Store<List<Category>> {
-  IncomeCategoryStore(GetIncomeCategories usecase)
-      : _usecase = usecase,
-        super([]) {
+import 'package:mobx/mobx.dart';
+
+import '../../domain/states/state.dart';
+import '../../domain/usecases/gets/get_income_categories.dart';
+part 'income_category_store.g.dart';
+
+class IncomeCategoryStore = _IncomeCategoryStoreBase with _$IncomeCategoryStore;
+
+abstract class _IncomeCategoryStoreBase with Store {
+  final GetIncomeCategories _usecase;
+
+  @observable
+  State<List<Category>> state = const InitialState();
+
+  _IncomeCategoryStoreBase(this._usecase) {
     getAll();
   }
 
-  final GetIncomeCategories _usecase;
-
+  @action
   Future<void> getAll() async {
-    if (state.isNotEmpty) return;
-    setLoading(true);
+    state = const LoadingState();
+
     var result = await _usecase();
 
-    result.fold((list) {
-      update(list);
-    }, (fail) {
-      setError(fail);
-    });
-
-    setLoading(false);
+    state = result.fold((s) => SuccessState(s), (f) => FailState(f));
   }
 }

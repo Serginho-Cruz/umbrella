@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/buttons/primary_button.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/layout/dialog_layout.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/texts/extrabig_text.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/texts/medium_text.dart';
 
 import '../../../domain/entities/payment_method.dart';
+import '../texts/big_text.dart';
 
 class PaymentMethodSelectorDialog extends StatefulWidget {
   const PaymentMethodSelectorDialog({
@@ -33,7 +33,7 @@ class _PaymentMethodSelectorDialogState
         children: [
           const Padding(
             padding: EdgeInsets.only(bottom: 30.0),
-            child: ExtrabigText.bold(
+            child: BigText.bold(
               'Escolha o Método de Pagamento',
               textAlign: TextAlign.center,
             ),

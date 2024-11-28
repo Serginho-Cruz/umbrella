@@ -29,7 +29,6 @@ abstract final class RegisterRoutes {
         expenseStore: _resolve(),
         creditCardStore: _resolve(),
         accountStore: _resolve(),
-        balanceStore: _resolve(),
       ),
     );
 
@@ -50,7 +49,6 @@ abstract final class RegisterRoutes {
         incomeStore: _resolve(),
         accountStore: _resolve(),
         categoryStore: _resolve(),
-        balanceStore: _resolve(),
       ),
     );
 
@@ -58,7 +56,6 @@ abstract final class RegisterRoutes {
       UnmodularFormatFinanceRoutes.addIncome,
       child: (context) => CreateIncomeScreen(
         accountStore: _resolve(),
-        balanceStore: _resolve(),
         incomeStore: _resolve(),
         categoryStore: _resolve(),
       ),
@@ -67,25 +64,25 @@ abstract final class RegisterRoutes {
     r.child(
       UnmodularFormatFinanceRoutes.updateIncome,
       child: (ctx) => EditIncomeScreen(
-        income: r.args.data as Income,
         incomeStore: _resolve(),
         categoryStore: _resolve(),
-        accountStore: _resolve(),
-        balanceStore: _resolve(),
       ),
     );
 
     r.child(
       UnmodularFormatFinanceRoutes.payIncome,
-      child: (context) => PaymentScreen<Income, IncomeModel>(
-        model: r.args.data['model'] as IncomeModel,
-        store: r.args.data['store'] as IncomeStore,
-        accountStore: _resolve(),
-        balanceStore: _resolve(),
-        cardStore: _resolve(),
-        isCreditAllowed: false,
-        isBoletoAllowed: false,
-      ),
+      child: (context) {
+        IncomeModel model = r.args.data['model'];
+        BindServiceProvider.get<IncomeStore>().setSelectedModel(model);
+
+        return PaymentScreen<Income, IncomeModel>(
+          model: model,
+          store: BindServiceProvider.get<IncomeStore>(),
+          accountStore: _resolve(),
+          balanceStore: _resolve(),
+          cardStore: _resolve(),
+        );
+      },
     );
   }
 
@@ -94,7 +91,6 @@ abstract final class RegisterRoutes {
       UnmodularFormatFinanceRoutes.expenses,
       child: (context) => ExpensesScreen(
         accountStore: _resolve(),
-        balanceStore: _resolve(),
         categoryStore: _resolve(),
         expenseStore: _resolve(),
       ),
@@ -104,8 +100,6 @@ abstract final class RegisterRoutes {
       UnmodularFormatFinanceRoutes.addExpense,
       child: (context) => CreateExpenseScreen(
         accountStore: _resolve(),
-        balanceStore: _resolve(),
-        cardStore: _resolve(),
         expenseStore: _resolve(),
         categoryStore: _resolve(),
       ),
@@ -116,22 +110,20 @@ abstract final class RegisterRoutes {
       child: (ctx) => EditExpenseScreen(
         expenseStore: _resolve(),
         categoryStore: _resolve(),
-        accountStore: _resolve(),
-        balanceStore: _resolve(),
-        expense: r.args.data as Expense,
       ),
     );
 
-    r.child(
-      UnmodularFormatFinanceRoutes.payExpense,
-      child: (context) => PaymentScreen<Expense, ExpenseModel>(
-        model: r.args.data['model'] as ExpenseModel,
-        store: r.args.data['store'] as ExpenseStore,
+    r.child(UnmodularFormatFinanceRoutes.payExpense, child: (context) {
+      ExpenseModel model = r.args.data['model'];
+
+      return PaymentScreen<Expense, ExpenseModel>(
+        model: model,
+        store: BindServiceProvider.get<ExpenseStore>(),
         accountStore: _resolve(),
         balanceStore: _resolve(),
         cardStore: _resolve(),
-      ),
-    );
+      );
+    });
   }
 
   static void _registerCardRoutes(RouteManager r) {
@@ -139,8 +131,6 @@ abstract final class RegisterRoutes {
       UnmodularFormatFinanceRoutes.cards,
       child: (context) => CreditCardsScreen(
         cardStore: _resolve(),
-        accountStore: _resolve(),
-        balanceStore: _resolve(),
       ),
       transition: TransitionType.scale,
     );
@@ -149,7 +139,6 @@ abstract final class RegisterRoutes {
       UnmodularFormatFinanceRoutes.addCard,
       child: (context) => CreateCreditCardScreen(
         accountStore: _resolve(),
-        balanceStore: _resolve(),
         cardStore: _resolve(),
       ),
     );
@@ -157,8 +146,6 @@ abstract final class RegisterRoutes {
       UnmodularFormatFinanceRoutes.updateCard,
       child: (ctx) => EditCreditCardScreen(
         card: r.args.data as CreditCard,
-        accountStore: _resolve(),
-        balanceStore: _resolve(),
         cardStore: _resolve(),
       ),
     );

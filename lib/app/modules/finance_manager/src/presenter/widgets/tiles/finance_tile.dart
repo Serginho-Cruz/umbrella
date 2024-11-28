@@ -1,109 +1,115 @@
 import 'package:flutter/material.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/texts/medium_text.dart';
 
 import '../../../domain/entities/date.dart';
-import '../../../domain/entities/payment_method.dart';
 import '../../../domain/models/expense_model.dart';
 import '../../../domain/models/finance_model.dart';
 import '../../utils/umbrella_palette.dart';
-import '../texts/big_text.dart';
-import '../texts/medium_text.dart';
+import '../../utils/umbrella_sizes.dart';
 import '../texts/price.dart';
 import '../simple_information/category_row.dart';
 import '../layout/spaced.dart';
 import '../icons/status_icon.dart';
+import '../texts/small_text.dart';
 
 class FinanceTile extends StatelessWidget {
   const FinanceTile({
     super.key,
     required this.model,
-    this.methodUsed,
     this.roundedOnTop = false,
+    this.roundedOnBottom = false,
   });
 
   final FinanceModel model;
-  final PaymentMethod? methodUsed;
   final bool roundedOnTop;
+  final bool roundedOnBottom;
 
   @override
   Widget build(BuildContext context) {
-    var radius = const Radius.circular(8.0);
-    var onTop = roundedOnTop;
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: UmbrellaPalette.gradientColors),
-        border: _getBorder(),
-        borderRadius: BorderRadius.only(
-          topLeft: onTop ? radius : Radius.zero,
-          topRight: onTop ? radius : Radius.zero,
-        ),
-      ),
-      child: ExpansionTile(
-        leading: StatusIcon(status: model.status, size: 40.0),
-        title: BigText.bold(
-          model.name,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        iconColor: Colors.black,
-        collapsedIconColor: Colors.black,
-        subtitle: Price.medium(
-          model.totalValue,
-          fontWeight: FontWeight.bold,
-        ),
-        tilePadding: const EdgeInsets.symmetric(
-          horizontal: 10.0,
-          vertical: 4.0,
-        ),
-        childrenPadding: const EdgeInsets.all(10.0),
-        shape: const Border(),
-        collapsedShape: const Border(),
-        expansionAnimationStyle: AnimationStyle(
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeIn,
-          reverseCurve: Curves.easeOut,
-        ),
+    return ExpansionTile(
+      backgroundColor: UmbrellaPalette.secondaryColor,
+      collapsedBackgroundColor: UmbrellaPalette.secondaryColor,
+      leading: StatusIcon(status: model.status, size: 30.0),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Wrap(
-            runSpacing: 15.0,
-            children: [
-              Spaced(
-                first: const MediumText('Vencimento'),
-                second: MediumText.bold(
-                  model.overdueDate.toString(format: DateFormat.ddmmyyyy),
-                ),
-              ),
-              Spaced(
-                first: const MediumText('Valor Pago'),
-                second: Price.medium(
-                  model.paidValue,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Spaced(
-                first: const MediumText('Valor Restante'),
-                second: Price.medium(
-                  model.remainingValue,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              if (model.personName != null)
-                Spaced(
-                  first: MediumText(
-                    model is ExpenseModel ? 'Devedor' : 'Devo isso a',
-                  ),
-                  second: MediumText.bold(model.personName!),
-                ),
-            ],
+          MediumText.bold(
+            model.name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-          CategoryRow(category: model.category),
+          Price.medium(
+            model.totalValue,
+            fontWeight: FontWeight.bold,
+          ),
         ],
       ),
+      iconColor: Colors.black,
+      collapsedIconColor: Colors.black,
+      tilePadding: const EdgeInsets.symmetric(horizontal: 10.0),
+      childrenPadding: const EdgeInsets.all(10.0),
+      shape: _resolveBorder(roundedOnTop, roundedOnBottom),
+      collapsedShape: _resolveBorder(roundedOnTop, roundedOnBottom),
+      expansionAnimationStyle: AnimationStyle(
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeIn,
+        reverseCurve: Curves.easeOut,
+      ),
+      children: [
+        Wrap(
+          runSpacing: 12.0,
+          children: [
+            Spaced(
+              first: const SmallText('Vencimento'),
+              second: SmallText.bold(
+                model.overdueDate.toString(format: DateFormat.ddmmyyyy),
+              ),
+            ),
+            Spaced(
+              first: const SmallText('Valor Pago'),
+              second: Price.small(
+                model.paidValue,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Spaced(
+              first: const SmallText('Valor Restante'),
+              second: Price.small(
+                model.remainingValue,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            if (model.personName != null)
+              Spaced(
+                first: SmallText(
+                  model is ExpenseModel ? 'Devedor' : 'Devo isso a',
+                ),
+                second: SmallText.bold(model.personName!),
+              ),
+            CategoryRow(
+              category: model.category,
+              iconSize: 30,
+              textSize: UmbrellaSizes.small,
+            ),
+          ],
+        ),
+      ],
     );
   }
 
-  BoxBorder _getBorder() {
-    const side = BorderSide(width: 2.0);
-    return const Border(left: side, right: side, top: side);
+  ShapeBorder _resolveBorder(bool roundedOnTop, bool roundedOnBottom) {
+    var radius = const Radius.circular(4.0);
+
+    return RoundedRectangleBorder(
+      borderRadius: BorderRadius.only(
+        topLeft: roundedOnTop ? radius : Radius.zero,
+        topRight: roundedOnTop ? radius : Radius.zero,
+        bottomLeft: roundedOnBottom ? radius : Radius.zero,
+        bottomRight: roundedOnBottom ? radius : Radius.zero,
+      ),
+      side: _getBorderSide(),
+    );
   }
+
+  BorderSide _getBorderSide() => const BorderSide(width: 1.0);
 }

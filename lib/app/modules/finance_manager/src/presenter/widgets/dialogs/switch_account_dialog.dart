@@ -1,9 +1,10 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/paiyable.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/paiyable_model.dart';
 
 import '../../../domain/entities/account.dart';
+import '../../controllers/paiyable_store.dart';
 import '../../utils/umbrella_sizes.dart';
 import '../buttons/primary_button.dart';
 import '../buttons/secondary_button.dart';
@@ -16,29 +17,28 @@ import '../texts/medium_text.dart';
 import '../texts/title_text.dart';
 import 'umbrella_dialogs.dart';
 
-class SwitchAccountDialog<P extends PaiyableModel> extends StatefulWidget {
+class SwitchAccountDialog<P extends PaiyableModel<T>, T extends Paiyable>
+    extends StatefulWidget {
   const SwitchAccountDialog({
     super.key,
-    required this.onAccountChanged,
     required this.model,
     required this.accounts,
+    required this.store,
   });
 
   final P model;
-  final Future<String?> Function(Account) onAccountChanged;
   final List<Account> accounts;
+  final PaiyableStore<P, T> store;
 
   @override
   State<SwitchAccountDialog> createState() => _SwitchAccountDialogState();
 }
 
 class _SwitchAccountDialogState extends State<SwitchAccountDialog> {
-  late Account accountSelected;
-
   @override
   void initState() {
     super.initState();
-    accountSelected = widget.model.account.copyWith();
+    widget.store.setAccount(widget.model.account.copyWith());
   }
 
   @override
@@ -59,17 +59,15 @@ class _SwitchAccountDialogState extends State<SwitchAccountDialog> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 20.0),
-            child: AccountSelector(
-              accounts: widget.accounts,
-              onSelected: (account) {
-                setState(() {
-                  accountSelected = account!;
-                });
-              },
-              label: ('Conta Destino:'),
-              fontSize: UmbrellaSizes.medium,
-              canSelectNull: false,
-              selectedAccount: accountSelected,
+            child: Observer(
+              builder: (_) => AccountSelector(
+                accounts: widget.accounts,
+                onSelected: widget.store.setAccount,
+                label: ('Conta Destino:'),
+                fontSize: UmbrellaSizes.medium,
+                canSelectNull: false,
+                selectedAccount: widget.store.account,
+              ),
             ),
           ),
           Spaced(
@@ -97,16 +95,12 @@ class _SwitchAccountDialogState extends State<SwitchAccountDialog> {
   }
 
   void switchAccount() {
-    if (accountSelected.id == widget.model.account.id) {
-      Navigator.pop(context);
-      return;
-    }
-
-    widget.onAccountChanged(accountSelected).then((error) {
+    widget.store.switchAccount().then((error) {
+      if (!mounted) return;
       error != null
           ? UmbrellaDialogs.showError(
               context,
-              error,
+              error.message,
               onRetry: switchAccount,
               onConfirmPressed: () => Navigator.pop(context),
             )

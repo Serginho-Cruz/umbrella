@@ -1,6 +1,8 @@
 abstract class GenericMessages {
   static const String genericFail =
       'Um problema inesperado aconteceu. Por favor, tente novamente mais tarde';
+  static const String userUnlogged =
+      "Você deve realizar o Log In antes de usar o aplicativo";
   static const String userHasNotAccounts =
       'Suas contas não foram encontradas. Se o problema persistir, contate os desenvolvedores';
   static const invalidNumber = 'O Valor precisa ser maior que 0';

@@ -2,6 +2,13 @@ import 'package:flutter_modular/flutter_modular.dart' show Injector;
 
 import '../src/data/usecases/implementations.dart';
 import '../src/domain/usecases/interfaces.dart';
+import '../src/domain/usecases/validates/validate_credit_card.dart';
+import '../src/domain/usecases/validates/validate_income.dart';
+import '../src/domain/usecases/validates/validate_expense.dart';
+
+import '../src/data/usecases/validates/validate_credit_card_impl.dart';
+import '../src/data/usecases/validates/validate_income_impl.dart';
+import '../src/data/usecases/validates/validate_expense_impl.dart';
 
 abstract class UsecasesBindings {
   static void bind(Injector i) {
@@ -12,7 +19,6 @@ abstract class UsecasesBindings {
           balanceRepository: i(),
           expenseRepository: i(),
           incomeRepository: i(),
-          installmentRepository: i(),
           invoiceRepository: i(),
         ));
 
@@ -32,8 +38,6 @@ abstract class UsecasesBindings {
     i.addLazySingleton<ManageIncome>(
         () => ManageIncomeImpl(incomeRepository: i(), balanceRepository: i()));
 
-    i.addLazySingleton<ManageInstallment>(() => ManageInstallmentImpl());
-
     i.addLazySingleton<ManageInvoice>(
       () => ManageInvoiceImpl(
         balanceRepository: i(),
@@ -48,6 +52,10 @@ abstract class UsecasesBindings {
     i.addLazySingleton<SortIncomes>(SortIncomesImpl.new);
     i.addLazySingleton<SortExpenses>(SortExpensesImpl.new);
 
+    i.addLazySingleton<ValidateCreditCard>(ValidateCreditCardImpl.new);
+    i.addLazySingleton<ValidateIncome>(ValidateIncomeImpl.new);
+    i.addLazySingleton<ValidateExpense>(ValidateExpenseImpl.new);
+
     i.addLazySingleton<ManageCreditCard>(
       () => ManageCreditCardImpl(
         cardRepository: i(),
@@ -58,13 +66,11 @@ abstract class UsecasesBindings {
 
     i.addLazySingleton<ReceiveIncome>(() => ReceiveIncomeImpl(
         incomeRepository: i(),
-        paymentMethodRepository: i(),
         paymentRecordRepository: i(),
         balanceRepository: i()));
 
     i.addLazySingleton<PayExpense>(() => PayExpenseImpl(
         expenseRepository: i(),
-        paymentMethodRepository: i(),
         paymentRecordRepository: i(),
         balanceRepository: i()));
 

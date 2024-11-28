@@ -1,7 +1,6 @@
 import 'package:result_dart/result_dart.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/balance_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/income_repository.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/payment_method_repository.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/data/repositories/payment_record_repository.dart';
 
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/income.dart';
@@ -12,18 +11,15 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/error
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/payment_error_messages.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/round.dart';
 
-import '../../domain/entities/date.dart';
 import '../../domain/usecases/receive_income.dart';
 
 class ReceiveIncomeImpl implements ReceiveIncome {
   final IncomeRepository incomeRepository;
-  final PaymentMethodRepository paymentMethodRepository;
   final PaymentRecordRepository paymentRecordRepository;
   final BalanceRepository balanceRepository;
 
   ReceiveIncomeImpl({
     required this.incomeRepository,
-    required this.paymentMethodRepository,
     required this.paymentRecordRepository,
     required this.balanceRepository,
   });
@@ -51,7 +47,6 @@ class ReceiveIncomeImpl implements ReceiveIncome {
     var updatedIncome = income.copyWith(
       remainingValue: (income.remainingValue - payment.value).roundToDecimal(),
       paidValue: (income.paidValue + payment.value).roundToDecimal(),
-      paymentDate: Date.today(),
     );
 
     var updateIncomeRes = await incomeRepository.update(updatedIncome);
@@ -84,14 +79,6 @@ class ReceiveIncomeImpl implements ReceiveIncome {
     );
 
     if (registerRes.isError()) return registerRes.pure(unit);
-
-    var addPaymentRegister = await paymentMethodRepository.registerPayment(
-      paiyable: updatedIncome,
-      value: payment.value,
-      method: payment.paymentMethod,
-    );
-
-    if (addPaymentRegister.isError()) return addPaymentRegister;
 
     return const Success(unit);
   }

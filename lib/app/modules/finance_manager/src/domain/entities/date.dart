@@ -14,7 +14,13 @@ class Date extends Equatable implements Comparable<Date> {
     required int month,
     required int year,
   }) {
-    int plusYears = (month / 12).truncate();
+    int plusYears;
+
+    if (month % 12 == 0) {
+      plusYears = (month / 12).truncate() - 1;
+    } else {
+      plusYears = (month / 12).truncate();
+    }
 
     year += plusYears;
     month = month % 12;
@@ -175,6 +181,9 @@ class Date extends Equatable implements Comparable<Date> {
   static Date fromDateTime(DateTime datetime) {
     return Date(day: datetime.day, month: datetime.month, year: datetime.year);
   }
+
+  static Date fromMonth(int month, int year) =>
+      Date(day: 1, month: month, year: year);
 
   @override
   String toString({

@@ -46,7 +46,6 @@ abstract class UmbrellaButton extends StatelessWidget {
               state == WidgetState.hovered || state == WidgetState.pressed)) {
             return hoverColor;
           }
-
           return backgroundColor;
         }),
       ),

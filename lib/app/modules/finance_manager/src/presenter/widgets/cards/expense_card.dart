@@ -1,4 +1,5 @@
 import '../../../domain/models/expense_model.dart';
+import '../../utils/umbrella_palette.dart';
 import 'finance_card.dart';
 
 class ExpenseCard extends FinanceCard {
@@ -11,5 +12,6 @@ class ExpenseCard extends FinanceCard {
           remainingValue: model.remainingValue,
           status: model.status,
           totalValue: model.totalValue,
+          valueColor: UmbrellaPalette.expenseCardValueColor,
         );
 }

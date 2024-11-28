@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 
 import '../../../domain/models/status.dart';
 import '../texts/medium_text.dart';
@@ -18,23 +19,28 @@ class StatusFilter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: status
-          .map(
-            (s) => Row(
-              children: [
-                Checkbox.adaptive(
-                  value: selectedStatus.contains(s),
-                  onChanged: (_) {
-                    onStatusChanged(s);
-                  },
+    return Observer(
+      builder: (_) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: status
+            .map(
+              (s) => GestureDetector(
+                onTap: () => onStatusChanged(s),
+                child: Row(
+                  children: [
+                    Checkbox.adaptive(
+                      value: selectedStatus.contains(s),
+                      onChanged: (_) {
+                        onStatusChanged(s);
+                      },
+                    ),
+                    MediumText(s.adaptedName),
+                  ],
                 ),
-                MediumText(s.adaptedName),
-              ],
-            ),
-          )
-          .toList(),
+              ),
+            )
+            .toList(),
+      ),
     );
   }
 }

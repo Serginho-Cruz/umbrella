@@ -4,13 +4,12 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entit
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/income.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/paiyable_model.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/utils/resolve_paiyable_name.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/utils/umbrella_palette.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/layout/spaced.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/texts/big_text.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/texts/medium_text.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/texts/price.dart';
 
 import '../../../domain/entities/invoice.dart';
+import '../texts/small_text.dart';
 
 class PaiyableInformationCard extends StatelessWidget {
   const PaiyableInformationCard({super.key, required this.model});
@@ -30,22 +29,18 @@ class PaiyableInformationCard extends StatelessWidget {
 
     return Container(
       width: MediaQuery.sizeOf(context).width * 0.8,
-      height: 230.0,
+      height: 200.0,
       padding: const EdgeInsets.all(12.0),
       decoration: BoxDecoration(
         border: Border.all(width: 2.0),
         boxShadow: kElevationToShadow[4],
         borderRadius: BorderRadius.circular(8.0),
-        gradient: const LinearGradient(
-          colors: UmbrellaPalette.gradientColors,
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
+        color: Colors.white,
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          BigText.bold(resolvePaiyableName(model)),
+          MediumText.bold(resolvePaiyableName(model)),
           ...informations,
         ],
       ),
@@ -61,8 +56,8 @@ class PaiyableInformationCard extends StatelessWidget {
       if (person == null) return [];
 
       var widget = Spaced(
-        first: const MediumText('Devendo a'),
-        second: MediumText(person),
+        first: const SmallText('Devendo a'),
+        second: SmallText(person),
       );
 
       return [(5, widget)];
@@ -74,8 +69,8 @@ class PaiyableInformationCard extends StatelessWidget {
       if (person == null) return [];
 
       var widget = Spaced(
-        first: const MediumText('Devedor'),
-        second: MediumText(person),
+        first: const SmallText('Devedor'),
+        second: SmallText(person),
       );
 
       return [(5, widget)];
@@ -83,13 +78,13 @@ class PaiyableInformationCard extends StatelessWidget {
 
     paiyable = paiyable as Invoice;
     var cardRow = Spaced(
-      first: const MediumText('Cartão'),
-      second: MediumText(paiyable.card.name),
+      first: const SmallText('Cartão'),
+      second: SmallText(paiyable.card.name),
     );
 
     var closeRow = Spaced(
-      first: const MediumText('Fechamento'),
-      second: MediumText(
+      first: const SmallText('Fechamento'),
+      second: SmallText(
         paiyable.closingDate.toString(format: DateFormat.ddmmyyyy),
       ),
     );
@@ -100,24 +95,24 @@ class PaiyableInformationCard extends StatelessWidget {
   List<Widget> _getCommomInformations() {
     return [
       Spaced(
-        first: const MediumText('Pertence a'),
-        second: MediumText(model.account.name),
+        first: const SmallText('Pertence a'),
+        second: SmallText(model.account.name),
       ),
       Spaced(
-        first: const MediumText('Total'),
-        second: Price.medium(model.totalValue),
+        first: const SmallText('Total'),
+        second: Price.small(model.totalValue),
       ),
       Spaced(
-        first: const MediumText('Já Pago'),
-        second: Price.medium(model.paidValue),
+        first: const SmallText('Já Pago'),
+        second: Price.small(model.paidValue),
       ),
       Spaced(
-        first: const MediumText('Valor Restante'),
-        second: Price.medium(model.remainingValue),
+        first: const SmallText('Valor Restante'),
+        second: Price.small(model.remainingValue),
       ),
       Spaced(
-        first: const MediumText('Data de Vencimento'),
-        second: MediumText(
+        first: const SmallText('Data de Vencimento'),
+        second: SmallText(
           model.overdueDate.toString(
             format: DateFormat.ddmmyyyy,
           ),

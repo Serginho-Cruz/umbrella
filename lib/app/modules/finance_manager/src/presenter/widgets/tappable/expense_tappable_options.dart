@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../../domain/entities/account.dart';
 import '../../../domain/models/expense_model.dart';
+import '../../../domain/states/state.dart';
 import '../../controllers/account_store.dart';
 import '../../controllers/expense_store.dart';
 import 'tappable_option.dart';
@@ -15,43 +17,61 @@ abstract class ExpenseTappableOptions {
   }) {
     return [
       TappableOption('Pagar', () {
+        store.setSelectedModel(model);
+
         TappableOptionsUtils.navigateTo(
           route: '/expense/pay',
           context: context,
-          arguments: {
-            'model': model,
-            'store': store,
-          },
-        ).then((_) => onPop?.call());
+          arguments: {'model': model},
+        ).then((_) {
+          store.setSelectedModel(null);
+          onPop?.call();
+        });
       }),
-      TappableOption('Parcelar', () {}),
-      TappableOption('Re-parcelar', () {}),
       TappableOption(
         'Editar Despesa',
-        () => TappableOptionsUtils.navigateTo(
-          context: context,
-          route: '/expense/update',
-          arguments: model.toEntity(),
-        ).then((_) => onPop?.call()),
+        () {
+          store.setSelectedModel(model);
+
+          TappableOptionsUtils.navigateTo(
+            context: context,
+            route: '/expense/update',
+          ).then((_) {
+            store.setSelectedModel(null);
+            onPop?.call();
+          });
+        },
       ),
-      TappableOption(
-        'Alterar Valor',
-        () => TappableOptionsUtils.handleChangeValue<ExpenseModel>(
+      TappableOption('Alterar Valor', () {
+        store.setSelectedModel(model);
+        TappableOptionsUtils.handleChangeValue<ExpenseModel>(
           context: context,
           model: model,
-          onValueChanged: store.updateValue,
-          onPop: onPop,
-        ),
-      ),
+          store: store,
+          onPop: () {
+            store.setSelectedModel(null);
+            store.setValue(0.00);
+            onPop?.call();
+          },
+        );
+      }),
       TappableOption(
         'Trocar de Conta',
-        () => TappableOptionsUtils.handleSwitchAccount<ExpenseModel>(
-          context: context,
-          accounts: accountStore.state,
-          model: model,
-          onAccountChanged: store.switchAccount,
-          onPop: onPop,
-        ),
+        () {
+          store.setSelectedModel(model);
+
+          TappableOptionsUtils.handleSwitchAccount<ExpenseModel>(
+            context: context,
+            accounts: (accountStore.state as SuccessState<List<Account>>).state,
+            model: model,
+            store: store,
+            onPop: () {
+              store.setSelectedModel(null);
+              store.setAccount(null);
+              onPop?.call();
+            },
+          );
+        },
       ),
       TappableOption('Ver em detalhes', () {}),
       TappableOption('Estornar', () {}),

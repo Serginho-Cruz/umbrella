@@ -10,7 +10,7 @@ abstract interface class FilterIncomes {
   List<IncomeModel> byRangeValue({
     required List<IncomeModel> models,
     required double min,
-    required double max,
+    required double? max,
   });
   List<IncomeModel> byStatus({
     required List<IncomeModel> models,

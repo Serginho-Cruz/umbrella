@@ -4,7 +4,6 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entit
 
 import '../../errors/errors.dart';
 import '../entities/credit_card.dart';
-import '../entities/installment.dart';
 
 abstract interface class PayExpense {
   AsyncResult<Unit, Fail> withoutCredit(PaymentRecord<Expense> expense);
@@ -12,10 +11,4 @@ abstract interface class PayExpense {
     PaymentRecord<Expense> expense,
     CreditCard card,
   );
-  Installment turnIntoInstallment({
-    required Expense expense,
-    required int parcelsNumber,
-    required CreditCard card,
-    double? parcelsValue,
-  });
 }
