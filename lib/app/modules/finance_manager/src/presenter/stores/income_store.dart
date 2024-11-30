@@ -594,6 +594,7 @@ abstract class _IncomeStoreBase
       account: account!,
       frequency: frequency,
       category: category!,
+      personName: based?.personName ?? personName,
     );
   }
 

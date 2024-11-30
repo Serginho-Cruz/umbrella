@@ -1,11 +1,11 @@
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/paiyable.dart';
+
+import '../../../domain/entities/expense.dart';
+import '../../../domain/entities/income.dart';
 import '../../../domain/entities/payment_record.dart';
 import '../../../domain/usecases/sorts/sort_payment_records.dart';
 
 class SortPaymentRecordsImpl implements SortPaymentRecords {
-  @override
-  List<PaymentRecord> byID(List<PaymentRecord> records) =>
-      List.from(records)..sort((a, b) => a.id.compareTo(b.id));
-
   @override
   List<PaymentRecord> byValue({
     required List<PaymentRecord> records,
@@ -28,8 +28,26 @@ class SortPaymentRecordsImpl implements SortPaymentRecords {
       );
 
   @override
-  List<PaymentRecord> revertSort(List<PaymentRecord> records) =>
-      records.reversed.toList();
+  List<PaymentRecord<Paiyable>> byName({
+    required List<PaymentRecord<Paiyable>> records,
+    bool isCrescent = true,
+  }) {
+    int Function(PaymentRecord, PaymentRecord) sort;
+
+    sort = switch (records) {
+      <PaymentRecord<Income>>[] => (a, b) =>
+          (a.paiyable as Income).name.compareTo((b.paiyable as Income).name),
+      <PaymentRecord<Expense>>[] => (a, b) =>
+          (a.paiyable as Expense).name.compareTo((b.paiyable as Expense).name),
+      _ => (a, b) => a.date.compareTo(b.date),
+    };
+
+    return _sortList(
+      sortFunction: sort,
+      records: records,
+      isCrescent: isCrescent,
+    );
+  }
 
   List<PaymentRecord> _sortList({
     required int Function(PaymentRecord, PaymentRecord) sortFunction,

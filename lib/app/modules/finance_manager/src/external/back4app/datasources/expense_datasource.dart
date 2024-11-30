@@ -63,6 +63,26 @@ class Back4AppExpenseDatasource implements ExpenseDatasource {
   }
 
   @override
+  Future<List<String>> getPersons() async {
+    var query = QueryBuilder(ExpenseObject());
+
+    query.whereValueExists('personName', true);
+    query.keysToReturn(['personName']);
+
+    var response = await query.distinct('Expense');
+
+    if (isResponseSuccesful(response)) {
+      if (response.results == null) return [];
+
+      return (response.results! as List<ParseObject>)
+          .map((person) => person.get<String>('personName')!)
+          .toList();
+    }
+
+    throw extractFail(response);
+  }
+
+  @override
   Future<List<Expense>> getByFrequency(
     Frequency frequency,
     Account account,

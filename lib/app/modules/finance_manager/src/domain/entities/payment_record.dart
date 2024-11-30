@@ -57,4 +57,9 @@ class PaymentRecord<T extends Paiyable> extends Equatable {
       date: date ?? this.date,
     );
   }
+
+  @override
+  String toString() {
+    return 'ID: ${paiyable.id}';
+  }
 }

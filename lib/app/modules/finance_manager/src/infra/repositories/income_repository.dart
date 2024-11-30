@@ -62,6 +62,18 @@ class IncomeRepositoryImpl implements IncomeRepository {
   }
 
   @override
+  AsyncResult<List<String>, Fail> getPersons() async {
+    try {
+      var persons = await _datasource.getPersons();
+      return Success(persons);
+    } on Fail catch (f) {
+      return Failure(f);
+    } catch (e) {
+      return const Failure(GenericError());
+    }
+  }
+
+  @override
   AsyncResult<List<Income>, Fail> getByFrequency(
     Frequency frequency,
     Account account,

@@ -15,7 +15,7 @@ import '../texts/big_text.dart';
 import '../texts/medium_text.dart';
 import '../layout/dialog_layout.dart';
 
-class FinanceFilterDialog extends StatefulWidget {
+class FinanceFilterDialog extends StatelessWidget {
   const FinanceFilterDialog({
     super.key,
     required this.categories,
@@ -26,13 +26,8 @@ class FinanceFilterDialog extends StatefulWidget {
   final List<Category> categories;
 
   @override
-  State<FinanceFilterDialog> createState() => _FinanceFilterDialogState();
-}
-
-class _FinanceFilterDialogState extends State<FinanceFilterDialog> {
-  @override
   Widget build(BuildContext context) {
-    var (:min, :max) = widget.filterableStore.minAndMax;
+    var (:min, :max) = filterableStore.minAndMax;
 
     final RangeValues range = RangeValues(min, max);
 
@@ -68,15 +63,14 @@ class _FinanceFilterDialogState extends State<FinanceFilterDialog> {
                   ),
                 ),
               ),
-              ...widget.categories.isNotEmpty
+              ...categories.isNotEmpty
                   ? [
                       const BigText.bold('Categorias'),
                       Observer(
                         builder: (_) => CategoryFilter(
-                          categories: widget.categories,
-                          initiallySelected:
-                              widget.filterableStore.filteredCategories,
-                          onSelected: widget.filterableStore.toggleCategory,
+                          categories: categories,
+                          initiallySelected: filterableStore.filteredCategories,
+                          onSelected: filterableStore.toggleCategory,
                         ),
                       ),
                     ]
@@ -84,7 +78,7 @@ class _FinanceFilterDialogState extends State<FinanceFilterDialog> {
               const BigText.bold('Valor'),
               const SizedBox(height: 20.0),
               Observer(builder: (ctx) {
-                (:min, :max) = widget.filterableStore.filteredRangeValue;
+                (:min, :max) = filterableStore.filteredRangeValue;
 
                 var filteredRange = RangeValues(min, max);
 
@@ -93,8 +87,8 @@ class _FinanceFilterDialogState extends State<FinanceFilterDialog> {
                   min: range.start,
                   max: range.end,
                   onNewRange: (newRange) {
-                    widget.filterableStore.setMinValueRange(newRange.start);
-                    widget.filterableStore.setMaxValueRange(newRange.end);
+                    filterableStore.setMinValueRange(newRange.start);
+                    filterableStore.setMaxValueRange(newRange.end);
                   },
                 );
               }),
@@ -104,8 +98,8 @@ class _FinanceFilterDialogState extends State<FinanceFilterDialog> {
               ),
               StatusFilter(
                 status: Status.values,
-                selectedStatus: widget.filterableStore.filteredStatus,
-                onStatusChanged: widget.filterableStore.toggleStatus,
+                selectedStatus: filterableStore.filteredStatus,
+                onStatusChanged: filterableStore.toggleStatus,
               ),
               const Padding(
                 padding: EdgeInsets.only(top: 18.0, bottom: 12.0),
@@ -117,14 +111,13 @@ class _FinanceFilterDialogState extends State<FinanceFilterDialog> {
                   children: PaiyableSortOption.values
                       .map(
                         (option) => GestureDetector(
-                          onTap: () =>
-                              widget.filterableStore.setSortOption(option),
+                          onTap: () => filterableStore.setSortOption(option),
                           child: Row(
                             children: [
                               Radio<PaiyableSortOption>.adaptive(
                                 value: option,
-                                groupValue: widget.filterableStore.sortOption,
-                                onChanged: widget.filterableStore.setSortOption,
+                                groupValue: filterableStore.sortOption,
+                                onChanged: filterableStore.setSortOption,
                               ),
                               MediumText(adaptSortOptionName(option)),
                             ],
@@ -137,7 +130,7 @@ class _FinanceFilterDialogState extends State<FinanceFilterDialog> {
               const SizedBox(height: 20),
               Observer(
                 builder: (_) => GestureDetector(
-                  onTap: widget.filterableStore.toggleCrescentOrder,
+                  onTap: filterableStore.toggleCrescentOrder,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -145,9 +138,9 @@ class _FinanceFilterDialogState extends State<FinanceFilterDialog> {
                       Transform.scale(
                         scale: 1.2,
                         child: Checkbox.adaptive(
-                          value: widget.filterableStore.isCrescentOrder,
+                          value: filterableStore.isCrescentOrder,
                           onChanged: (_) {
-                            widget.filterableStore.toggleCrescentOrder();
+                            filterableStore.toggleCrescentOrder();
                           },
                         ),
                       ),
@@ -161,7 +154,7 @@ class _FinanceFilterDialogState extends State<FinanceFilterDialog> {
                 width: MediaQuery.sizeOf(context).width,
                 height: 60.0,
                 onPressed: () {
-                  widget.filterableStore.filter();
+                  filterableStore.filter();
                   Navigator.pop(context);
                 },
               ),

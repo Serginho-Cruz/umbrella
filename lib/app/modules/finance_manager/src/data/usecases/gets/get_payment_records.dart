@@ -6,10 +6,10 @@ import '../../../domain/usecases/gets/get_payment_records.dart';
 import '../../../errors/errors.dart';
 import '../../repositories/payment_record_repository.dart';
 
-class GetPaymentRecordsOfImpl implements GetPaymentRecordsOf {
+class GetPaymentRecordsImpl implements GetPaymentRecords {
   final PaymentRecordRepository repository;
 
-  GetPaymentRecordsOfImpl(this.repository);
+  GetPaymentRecordsImpl(this.repository);
 
   @override
   AsyncResult<List<PaymentRecord>, Fail> call({

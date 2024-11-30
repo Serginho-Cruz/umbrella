@@ -48,14 +48,6 @@ class InvoiceItemObject extends ParseObject {
   InvoiceItemObject() : super('InvoiceItem');
 }
 
-class InstallmentObject extends ParseObject {
-  InstallmentObject() : super('Installment');
-}
-
-class ParcelObject extends ParseObject {
-  ParcelObject() : super('Parcel');
-}
-
 class PaymentMethodObject extends ParseObject {
   PaymentMethodObject() : super('PaymentMethod');
 }

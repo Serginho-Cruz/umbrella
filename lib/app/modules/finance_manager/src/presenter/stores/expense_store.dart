@@ -584,6 +584,7 @@ abstract class _ExpenseStoreBase
       account: account!,
       frequency: frequency,
       category: category!,
+      personName: based?.personName ?? personName,
     );
   }
 

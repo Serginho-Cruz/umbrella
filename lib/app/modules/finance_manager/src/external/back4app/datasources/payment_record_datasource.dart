@@ -6,6 +6,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/infra/dataso
 
 import '../../../domain/entities/date.dart';
 import '../functions.dart';
+import '../mappers/account_mapper.dart';
 import '../mappers/payment_record_mapper.dart';
 import '../parse_objects.dart';
 
@@ -35,12 +36,16 @@ class Back4AppPaymentRecordDatasource implements PaymentRecordDatasource {
     var query = QueryBuilder(PaymentRecordObject());
 
     query.includeObject([
-      "Expense",
-      "Income",
-      "Invoice",
-      "CreditCard",
-      "Account",
-      "PaymentMethod",
+      "expense",
+      'expense.category',
+      'income.account',
+      'expense.account',
+      'income.category',
+      "income",
+      "invoice",
+      "creditCard",
+      "account",
+      "paymentMethod",
     ]);
 
     DateTime firstDay = DateTime(year, month);
@@ -49,12 +54,14 @@ class Back4AppPaymentRecordDatasource implements PaymentRecordDatasource {
 
     query.whereGreaterThanOrEqualsTo('date', firstDay);
     query.whereLessThanOrEqualTo('date', lastDay);
+    query.whereEqualTo('account', AccountMapper.toParse(account));
 
     query.orderByAscending('date');
 
     var response = await query.query();
 
     if (isResponseSuccesful(response)) {
+      if (response.results == null) return [];
       return (response.results as List<ParseObject>)
           .map(PaymentRecordMapper.fromParse)
           .toList();

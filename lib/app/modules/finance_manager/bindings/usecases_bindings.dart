@@ -1,6 +1,8 @@
 import 'package:flutter_modular/flutter_modular.dart' show Injector;
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/obtain_persons_debts.dart';
 
 import '../src/data/usecases/implementations.dart';
+import '../src/data/usecases/obtain_persons_debts_impl.dart';
 import '../src/domain/usecases/interfaces.dart';
 import '../src/domain/usecases/validates/validate_credit_card.dart';
 import '../src/domain/usecases/validates/validate_income.dart';
@@ -28,6 +30,8 @@ abstract class UsecasesBindings {
     i.addLazySingleton<GetIncomeCategories>(
         () => RemoteGetIncomeCategories(i()));
 
+    i.addLazySingleton<GetPaymentRecords>(() => GetPaymentRecordsImpl(i()));
+
     i.addLazySingleton<ManageExpense>(
       () => ManageExpenseImpl(
         expenseRepository: i(),
@@ -48,9 +52,11 @@ abstract class UsecasesBindings {
     i.addLazySingleton<FilterExpenses>(FilterExpensesImpl.new);
     i.addLazySingleton<FilterIncomes>(FilterIncomesImpl.new);
     i.addLazySingleton<FilterCreditCard>(FilterCreditCardsImpl.new);
+    i.addLazySingleton<FilterPaymentRecords>(FilterPaymentRecordsImpl.new);
 
     i.addLazySingleton<SortIncomes>(SortIncomesImpl.new);
     i.addLazySingleton<SortExpenses>(SortExpensesImpl.new);
+    i.addLazySingleton<SortPaymentRecords>(SortPaymentRecordsImpl.new);
 
     i.addLazySingleton<ValidateCreditCard>(ValidateCreditCardImpl.new);
     i.addLazySingleton<ValidateIncome>(ValidateIncomeImpl.new);
@@ -81,5 +87,10 @@ abstract class UsecasesBindings {
         recordRepository: i(),
       ),
     );
+
+    i.addLazySingleton<GetPersons>(
+        () => GetPersonsImpl(expenseRepository: i(), incomeRepository: i()));
+
+    i.addLazySingleton<ObtainPersonsDebts>(() => ObtainPersonsDebtsImpl(i()));
   }
 }

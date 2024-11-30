@@ -10,7 +10,6 @@ import '../texts/title_text.dart';
 import 'balances_section.dart';
 import 'month_changer.dart';
 
-// ignore: must_be_immutable
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   CustomAppBar({
     super.key,
@@ -31,8 +30,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showBalances;
   final bool showMonthChanger;
 
-  late BalanceStore _balanceStore;
-  late AccountStore _accountStore;
+  late final BalanceStore _balanceStore;
+  late final AccountStore _accountStore;
 
   @override
   Widget build(BuildContext context) {

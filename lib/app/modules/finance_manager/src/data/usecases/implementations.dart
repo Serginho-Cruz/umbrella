@@ -17,7 +17,7 @@ export './gets/get_expense_categories.dart';
 export './gets/get_graphs_data.dart';
 export './gets/get_income_categories.dart';
 export './gets/get_payment_records.dart';
-export './gets/get_persons.dart';
+export 'gets/get_persons_impl.dart';
 
 export './sorts/sort_expenses.dart';
 export './sorts/sort_incomes.dart';

@@ -44,9 +44,21 @@ class MyDrawer extends StatelessWidget {
           ),
           _makeDrawerOption(
             context,
+            icon: const Icon(Icons.person),
+            title: 'Pessoas',
+            routeName: '/persons',
+          ),
+          _makeDrawerOption(
+            context,
             icon: const Icon(Icons.bar_chart),
             title: 'Gráficos',
             routeName: '/graphics',
+          ),
+          _makeDrawerOption(
+            context,
+            icon: const Icon(Icons.receipt),
+            title: 'Registros',
+            routeName: '/records',
           ),
         ],
       ),

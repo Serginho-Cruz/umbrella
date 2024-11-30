@@ -6,6 +6,8 @@ abstract final class FinanceRoutes {
 
   static const String home = '$_module/';
   static const String charts = '$_module/graphics';
+  static const String persons = '$_module/persons';
+  static const String records = '$_module/records';
 
   static const String incomes = '$_module$_incomes';
   static const String addIncome = '$_module$_incomes/add';
@@ -39,4 +41,7 @@ abstract final class UnmodularFormatFinanceRoutes {
   static const String cards = '/card';
   static const String addCard = '$cards/add';
   static const String updateCard = '$cards/update';
+
+  static const String persons = '/persons';
+  static const String records = '/records';
 }

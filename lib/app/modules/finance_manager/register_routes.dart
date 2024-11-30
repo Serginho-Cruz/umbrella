@@ -1,5 +1,7 @@
 import 'package:flutter_modular/flutter_modular.dart'
     show RouteManageExt, TransitionType, RouteManager;
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/screens/payment_record_screen.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/screens/persons_screen.dart';
 
 import '../bind_service_provider.dart';
 import 'routes.dart';
@@ -32,12 +34,28 @@ abstract final class RegisterRoutes {
       ),
     );
 
+    r.child(UnmodularFormatFinanceRoutes.persons, child: (context) {
+      return PersonsScreen(
+        accountStore: _resolve(),
+        personStore: _resolve(),
+      );
+    });
+
     r.child(
       UnmodularFormatFinanceRoutes.charts,
       child: (context) => GraphicsScreen(
         graphsStore: _resolve(),
         accountStore: _resolve(),
         balanceStore: _resolve(),
+      ),
+    );
+
+    r.child(
+      UnmodularFormatFinanceRoutes.records,
+      child: (context) => PaymentRecordScreen(
+        accountStore: _resolve(),
+        monthStore: _resolve(),
+        recordStore: _resolve(),
       ),
     );
   }

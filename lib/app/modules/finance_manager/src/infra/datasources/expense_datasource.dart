@@ -11,6 +11,7 @@ abstract interface class ExpenseDatasource {
     required int year,
     required Account account,
   });
+  Future<List<String>> getPersons();
   Future<List<Expense>> getByFrequency(Frequency frequency, Account account);
   Future<List<Expense>> getByFrequencyInRange({
     required Frequency frequency,

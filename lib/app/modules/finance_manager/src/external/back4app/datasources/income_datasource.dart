@@ -57,6 +57,26 @@ class Back4AppIncomeDatasource implements IncomeDatasource {
   }
 
   @override
+  Future<List<String>> getPersons() async {
+    var query = QueryBuilder(IncomeObject());
+
+    query.whereValueExists('personName', true);
+    query.keysToReturn(['personName']);
+
+    var response = await query.distinct('Income');
+
+    if (isResponseSuccesful(response)) {
+      if (response.results == null) return [];
+
+      return (response.results! as List<ParseObject>)
+          .map((person) => person.get<String>('personName')!)
+          .toList();
+    }
+
+    throw extractFail(response);
+  }
+
+  @override
   Future<List<Income>> getByFrequency(
     Frequency frequency,
     Account account,

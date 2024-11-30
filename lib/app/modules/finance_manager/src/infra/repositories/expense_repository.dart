@@ -63,6 +63,18 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   }
 
   @override
+  AsyncResult<List<String>, Fail> getPersons() async {
+    try {
+      var persons = await _datasource.getPersons();
+      return Success(persons);
+    } on Fail catch (f) {
+      return Failure(f);
+    } catch (e) {
+      return const Failure(GenericError());
+    }
+  }
+
+  @override
   AsyncResult<List<Expense>, Fail> getByFrequency(
     Frequency frequency,
     Account account,

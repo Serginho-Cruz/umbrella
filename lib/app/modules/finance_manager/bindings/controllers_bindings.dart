@@ -1,7 +1,9 @@
-import 'package:flutter_modular/flutter_modular.dart' show Injector;
+import 'package:flutter_modular/flutter_modular.dart' show Injector, BindConfig;
 
 import '../src/presenter/stores/implementations.dart';
 import '../src/presenter/stores/month_store.dart';
+import '../src/presenter/stores/payment_record_store.dart';
+import '../src/presenter/stores/person_store.dart';
 
 abstract class ControllersBindings {
   static void bind(Injector i) {
@@ -12,6 +14,9 @@ abstract class ControllersBindings {
         authStore: i(),
         manageAccount: i(),
       ),
+      config: BindConfig(onDispose: (store) {
+        store.dispose();
+      }),
     );
 
     i.addLazySingleton<CreditCardStore>(
@@ -21,6 +26,9 @@ abstract class ControllersBindings {
         filterCreditCard: i(),
         validate: i(),
       ),
+      config: BindConfig(onDispose: (store) {
+        store.dispose();
+      }),
     );
 
     i.addLazySingleton<ExpenseCategoryStore>(() => ExpenseCategoryStore(i()));
@@ -35,6 +43,9 @@ abstract class ControllersBindings {
         payExpense: i(),
         accountStore: i(),
       ),
+      config: BindConfig(onDispose: (store) {
+        store.dispose();
+      }),
     );
 
     i.addLazySingleton<IncomeStore>(
@@ -47,21 +58,47 @@ abstract class ControllersBindings {
         validateIncome: i(),
         accountStore: i(),
       ),
+      config: BindConfig(onDispose: (store) {
+        store.dispose();
+      }),
     );
 
     i.addLazySingleton<IncomeCategoryStore>(() => IncomeCategoryStore(i()));
 
-    i.addLazySingleton<BalanceStore>(() {
-      return BalanceStore(
+    i.addLazySingleton<BalanceStore>(
+      () => BalanceStore(
         monthStore: i(),
         usecase: i(),
         accountStore: i(),
         expenseStore: i(),
         incomeStore: i(),
-      );
-    });
+      ),
+      config: BindConfig(onDispose: (store) {
+        store.dispose();
+      }),
+    );
 
     i.addLazySingleton<GraphsStore>(
-        () => GraphsStore(usecase: i(), monthStore: i(), accountStore: i()));
+      () => GraphsStore(usecase: i(), monthStore: i(), accountStore: i()),
+    );
+
+    i.addLazySingleton<PersonStore>(
+      () => PersonStore(
+        get: i(),
+        obtainDebts: i(),
+        expenseStore: i(),
+        incomeStore: i(),
+      ),
+    );
+
+    i.addLazySingleton<PaymentRecordStore>(
+      () => PaymentRecordStore(
+        accountStore: i(),
+        filterUsecase: i(),
+        getUsecase: i(),
+        monthStore: i(),
+        sort: i(),
+      ),
+    );
   }
 }

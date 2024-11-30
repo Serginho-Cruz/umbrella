@@ -14,6 +14,7 @@ abstract interface class ExpenseRepository {
     required int month,
     required Account account,
   });
+  AsyncResult<List<String>, Fail> getPersons();
   AsyncResult<List<Expense>, Fail> getByFrequency(
     Frequency frequency,
     Account account,
