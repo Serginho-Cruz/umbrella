@@ -20,8 +20,13 @@ sealed class UmbrellaPalette {
   static const Color shimmerHighlightColor = Color(0xFFEEEEEE);
   static const Color negativeBalanceColor = Color(0xFFBF0000);
   static const Color gray = Color(0xFFFAFAFA);
-  static const Color incomeCardValueColor = Color(0xFF1B5E20);
-  static const Color expenseCardValueColor = Color(0xFFB71C1C);
+
+  static const Color neutralValue = Colors.black;
+  static const Color positiveValue = Color(0xFF1B5E20);
+  static const Color negativeValue = Color(0xFFB71C1C);
+
+  static const Color letterColor = Color(0xFFF5F5F5);
+  static const Color letterBorderColor = Color(0xFF757575);
 
   static const List<Color> statusChartsColors = [
     Colors.indigo,
@@ -38,6 +43,10 @@ sealed class UmbrellaPalette {
     Colors.lime,
     Colors.teal,
   ];
+
+  static const Color balanceChartLineColor = Colors.green;
+  static const Color filtersColor = primaryButtonHoverColor;
+  static const Color sliderFilterColor = Colors.green;
 
   static const Map<String, String> cardHexAndNames = {
     'FFFFFFFF': 'Branco',

@@ -12,7 +12,11 @@ class SortPaymentRecordsImpl implements SortPaymentRecords {
     bool isCrescent = true,
   }) =>
       _sortList(
-        sortFunction: (a, b) => a.value.compareTo(b.value),
+        sortFunction: (a, b) {
+          double valueA = a.paiyable is Income ? a.value : -a.value;
+          double valueB = b.paiyable is Income ? b.value : -b.value;
+          return valueA.compareTo(valueB);
+        },
         records: records,
         isCrescent: isCrescent,
       );

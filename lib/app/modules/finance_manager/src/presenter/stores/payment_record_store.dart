@@ -88,7 +88,7 @@ abstract class _PaymentRecordStoreBase with Store {
   bool areDatesInCrescentOrder = true;
 
   @observable
-  PaymentRecordSortOption sortOption = PaymentRecordSortOption.byPaymentDate;
+  PaymentRecordSortOption sortOption = PaymentRecordSortOption.byName;
 
   @observable
   bool isCrescentOrder = true;
@@ -155,8 +155,8 @@ abstract class _PaymentRecordStoreBase with Store {
   }
 
   @action
-  void setCrescentOrder(bool crescentOrder) {
-    isCrescentOrder = crescentOrder;
+  void toggleCrescentOrder() {
+    isCrescentOrder = !isCrescentOrder;
   }
 
   @action
@@ -233,7 +233,11 @@ abstract class _PaymentRecordStoreBase with Store {
     filteredMethods.clear();
     filteredOrigin = null;
     filteredName = '';
-    sortOption = PaymentRecordSortOption.byPaymentDate;
+
+    isCrescentOrder = true;
+    sortOption = PaymentRecordSortOption.byName;
+
+    areDatesInCrescentOrder = false;
 
     var today = Date.today();
     firstDateRange = today.copyWith(day: 1);

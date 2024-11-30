@@ -7,6 +7,7 @@ import '../stores/account_store.dart';
 import '../stores/person_store.dart';
 import '../utils/umbrella_palette.dart';
 import '../widgets/appbar/custom_app_bar.dart';
+import '../widgets/others/person_letter_widget.dart';
 import '../widgets/dialogs/umbrella_dialogs.dart';
 import '../widgets/layout/spaced.dart';
 import '../widgets/layout/umbrella_scaffold.dart';
@@ -156,8 +157,19 @@ class _PersonsScreenState extends State<PersonsScreen> {
                           itemCount: debts.keys.length,
                           itemBuilder: (_, index) {
                             var name = debts.keys.elementAt(index);
+                            double value = debts[name]!;
                             return UnconstrainedBox(
-                              child: _mountPersonCard(name, debts[name]!),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 20.0),
+                                child: PersonLetterWidget(
+                                  personName: name,
+                                  personStatus: _resolveDebtStatus(value),
+                                  value: value,
+                                  valueColor: resolveValueColor(value),
+                                ),
+                              ),
+                              // child: _mountPersonCard(name, debts[name]!),
                             );
                           },
                           shrinkWrap: true,

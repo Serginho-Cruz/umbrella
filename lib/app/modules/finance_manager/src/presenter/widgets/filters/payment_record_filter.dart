@@ -16,8 +16,14 @@ class PaymentRecordFilter extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         UmbrellaSearchBar(
-          onSubmitted: recordStore.setNameFilter,
-          onChanged: recordStore.setNameFilter,
+          onSubmitted: (text) {
+            recordStore.setNameFilter(text);
+            recordStore.filter();
+          },
+          onChanged: (text) {
+            recordStore.setNameFilter(text);
+            recordStore.filter();
+          },
           width: MediaQuery.sizeOf(context).width * 0.9 - 75.0,
           height: 50.0,
         ),

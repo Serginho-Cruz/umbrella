@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../utils/currency_format.dart';
+import '../../utils/umbrella_palette.dart';
 import '../../utils/umbrella_sizes.dart';
 
 class RangeValueFilter extends StatelessWidget {
@@ -43,6 +44,7 @@ class RangeValueFilter extends StatelessWidget {
         RangeSlider(
           values: range,
           min: min,
+          activeColor: UmbrellaPalette.sliderFilterColor,
           max: max,
           onChanged: (newValues) {
             onNewRange(_roundTo10Divisor(newValues));

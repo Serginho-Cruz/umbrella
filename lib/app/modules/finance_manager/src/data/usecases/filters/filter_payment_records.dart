@@ -15,15 +15,20 @@ class FilterPaymentRecordsImpl implements FilterPaymentRecords {
     required String name,
   }) {
     if (name.isEmpty) return records;
-    bool Function(PaymentRecord) hasName = switch (records) {
-      <PaymentRecord<Expense>>[] => (r) =>
-          (r.paiyable as Expense).name.contains(name),
-      <PaymentRecord<Income>>[] => (r) =>
-          (r.paiyable as Income).name.contains(name),
-      <PaymentRecord<Invoice>>[] => (r) =>
-          (r.paiyable as Invoice).card.name.contains(name),
-      _ => (_) => false,
-    };
+
+    name = name.toLowerCase();
+
+    bool Function(PaymentRecord) hasName;
+
+    hasName = (record) => switch (record) {
+          PaymentRecord r when r.paiyable is Expense =>
+            (r.paiyable as Expense).name.toLowerCase().contains(name),
+          PaymentRecord r when r.paiyable is Income =>
+            (r.paiyable as Income).name.toLowerCase().contains(name),
+          PaymentRecord r when r.paiyable is Invoice =>
+            (r.paiyable as Invoice).card.name.toLowerCase().contains(name),
+          _ => false,
+        };
 
     return records.where(hasName).toList();
   }

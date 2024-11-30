@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../texts/small_text.dart';
+import 'umbrella_segmented_button.dart';
 
 class SegmentedSortButton extends StatelessWidget {
   const SegmentedSortButton({
@@ -14,7 +15,7 @@ class SegmentedSortButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SegmentedButton(
+    return UmbrellaSegmentedButton(
       segments: const [
         ButtonSegment(
           value: true,

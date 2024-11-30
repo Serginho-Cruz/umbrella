@@ -12,6 +12,6 @@ class IncomeCard extends FinanceCard {
           remainingValue: model.remainingValue,
           status: model.status,
           totalValue: model.totalValue,
-          valueColor: UmbrellaPalette.incomeCardValueColor,
+          valueColor: UmbrellaPalette.positiveValue,
         );
 }

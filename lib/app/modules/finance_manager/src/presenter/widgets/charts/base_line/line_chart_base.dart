@@ -29,7 +29,7 @@ class LineChartBase<X, Y> extends StatelessWidget {
     this.linesWidth = 1,
     this.curvedLines = true,
     this.showSpot,
-    this.lineColor = UmbrellaPalette.primaryColor,
+    this.lineColor = UmbrellaPalette.balanceChartLineColor,
   });
 
   final double minX, minY;

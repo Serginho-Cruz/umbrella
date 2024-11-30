@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../domain/usecases/filters/filter_payment_records.dart';
 import '../texts/small_text.dart';
+import 'umbrella_segmented_button.dart';
 
 class SegmentedOriginButton extends StatelessWidget {
   const SegmentedOriginButton({
@@ -15,7 +16,7 @@ class SegmentedOriginButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SegmentedButton(
+    return UmbrellaSegmentedButton(
       segments: const [
         ButtonSegment(
           value: PaymentRecordType.income,

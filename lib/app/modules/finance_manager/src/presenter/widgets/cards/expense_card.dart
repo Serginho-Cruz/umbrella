@@ -12,6 +12,6 @@ class ExpenseCard extends FinanceCard {
           remainingValue: model.remainingValue,
           status: model.status,
           totalValue: model.totalValue,
-          valueColor: UmbrellaPalette.expenseCardValueColor,
+          valueColor: UmbrellaPalette.negativeValue,
         );
 }

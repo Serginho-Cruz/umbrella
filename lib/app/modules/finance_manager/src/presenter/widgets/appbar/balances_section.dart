@@ -92,14 +92,17 @@ class _BalancesSectionState extends State<BalancesSection> {
       second: Observer(builder: (_) {
         return SegmentedStateWidget(
           state: widget.accountStore.state,
-          onState: (context, accs) {
-            var actualBalance = _resolveActualBalance(accs);
+          onState: (context, _) {
+            return Observer(builder: (_) {
+              var actualBalance = _resolveActualBalance(
+                  widget.accountStore.visualizingAccounts);
 
-            return Price.medium(
-              actualBalance,
-              fontWeight: FontWeight.bold,
-              color: _resolveBalanceColor(actualBalance),
-            );
+              return Price.medium(
+                actualBalance,
+                fontWeight: FontWeight.bold,
+                color: _resolveBalanceColor(actualBalance),
+              );
+            });
           },
           onLoading: (ctx) => const MediumText.bold('Obtendo...'),
           onFail: (ctx, fail) => const MediumText.bold('Erro ao Obter'),

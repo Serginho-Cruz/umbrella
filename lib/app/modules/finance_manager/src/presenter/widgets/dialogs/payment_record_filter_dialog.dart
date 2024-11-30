@@ -56,15 +56,21 @@ class PaymentRecordFilterDialog extends StatelessWidget {
                   ),
                 ),
               ),
-              const BigText.bold('Origem'),
-              Observer(
-                builder: (_) => SegmentedOriginButton(
-                  selected: recordStore.filteredOrigin,
-                  onChanged: recordStore.setOriginFilter,
+              const Padding(
+                padding: EdgeInsets.only(bottom: 12),
+                child: BigText.bold('Origem'),
+              ),
+              Align(
+                alignment: Alignment.center,
+                child: Observer(
+                  builder: (_) => SegmentedOriginButton(
+                    selected: recordStore.filteredOrigin,
+                    onChanged: recordStore.setOriginFilter,
+                  ),
                 ),
               ),
               const Padding(
-                padding: EdgeInsets.only(top: 18.0, bottom: 12),
+                padding: EdgeInsets.only(top: 25.0, bottom: 15),
                 child: BigText.bold('Valor'),
               ),
               Observer(builder: (_) {
@@ -95,7 +101,7 @@ class PaymentRecordFilterDialog extends StatelessWidget {
                 );
               }),
               const Padding(
-                padding: EdgeInsets.only(top: 18.0, bottom: 12),
+                padding: EdgeInsets.only(top: 18.0, bottom: 15),
                 child: BigText.bold('Data'),
               ),
               Observer(
@@ -116,7 +122,7 @@ class PaymentRecordFilterDialog extends StatelessWidget {
                 },
               ),
               const Padding(
-                padding: EdgeInsets.only(top: 18.0, bottom: 12),
+                padding: EdgeInsets.only(top: 30, bottom: 20),
                 child: BigText.bold('Forma de Pagamento'),
               ),
               Observer(
@@ -127,17 +133,20 @@ class PaymentRecordFilterDialog extends StatelessWidget {
                 ),
               ),
               const Padding(
-                padding: EdgeInsets.only(top: 18.0, bottom: 12),
+                padding: EdgeInsets.symmetric(vertical: 20),
                 child: BigText.bold('Ordem das datas dos registros'),
               ),
-              Observer(
-                builder: (_) => SegmentedSortButton(
-                  isCrescentOrder: recordStore.areDatesInCrescentOrder,
-                  onChanged: recordStore.setDatesCrescentOrder,
+              Align(
+                alignment: Alignment.center,
+                child: Observer(
+                  builder: (_) => SegmentedSortButton(
+                    isCrescentOrder: recordStore.areDatesInCrescentOrder,
+                    onChanged: recordStore.setDatesCrescentOrder,
+                  ),
                 ),
               ),
               const Padding(
-                padding: EdgeInsets.only(top: 18.0, bottom: 12),
+                padding: EdgeInsets.only(top: 50.0, bottom: 12),
                 child: BigText.bold('Ordem dos registros'),
               ),
               Observer(
@@ -164,6 +173,28 @@ class PaymentRecordFilterDialog extends StatelessWidget {
                   }).toList(),
                 ),
               ),
+              const SizedBox(height: 20),
+              Observer(
+                builder: (_) => GestureDetector(
+                  onTap: recordStore.toggleCrescentOrder,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const MediumText.bold('Ordenamento Crescente'),
+                      Transform.scale(
+                        scale: 1.2,
+                        child: Checkbox.adaptive(
+                          value: recordStore.isCrescentOrder,
+                          onChanged: (_) {
+                            recordStore.toggleCrescentOrder();
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 30),
               PrimaryButton(
                 height: 60,
                 width: MediaQuery.sizeOf(context).width,
