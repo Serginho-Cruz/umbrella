@@ -5,22 +5,39 @@ sealed class UmbrellaPalette {
   static const Color secondaryColor = Color(0xFFA7EAFF);
   static const Color errorColor = Colors.red;
   static const Color successColor = Colors.green;
-  static const Color actionButtonColor = primaryColor;
-  static const Color secondaryButtonColor = secondaryColor;
   static const Color resetButtonColor = Colors.yellow;
-  static const Color activePrimaryButton = Color(0xFFBF6DFF);
-  static const Color activeSecondaryButton = Color(0xFFA8D8E8);
-  static const Color activeResetButton = Color(0xFFC9B81A);
+
+  static const Color primaryButtonHoverColor = Color(0xFF8CEB93);
+  static const Color primaryButtonPressColor = Color(0xFF76D580);
+  static const Color primaryButtonHighlightColor = Color(0xFFB0FFC0);
+
+  static const Color secondaryButtonColor = Color(0xFFFFD700);
+  static const Color secondaryButtonHoverColor = Color(0xFFFFC400);
+  static const Color secondaryButtonPressColor = Color(0xFFFFB200);
+  static const Color secondaryButtonHighlightColor = Color(0xFFFFE58F);
+
   static const Color shimmerBaseColor = Color(0xFFBDBDBD);
   static const Color shimmerHighlightColor = Color(0xFFEEEEEE);
   static const Color negativeBalanceColor = Color(0xFFBF0000);
   static const Color gray = Color(0xFFFAFAFA);
-  static const List<Color> gradientColors = [
-    Color(0xFF9BE4FF),
-    Color(0xFFDAADFF),
-  ];
   static const Color incomeCardValueColor = Color(0xFF1B5E20);
   static const Color expenseCardValueColor = Color(0xFFB71C1C);
+
+  static const List<Color> statusChartsColors = [
+    Colors.indigo,
+    Colors.pink,
+    Colors.green,
+    Colors.lightBlue,
+    Colors.orange,
+    Colors.purpleAccent,
+    Colors.redAccent,
+    Colors.cyan,
+    Colors.yellow,
+    Colors.brown,
+    Colors.deepPurple,
+    Colors.lime,
+    Colors.teal,
+  ];
 
   static const Map<String, String> cardHexAndNames = {
     'FFFFFFFF': 'Branco',

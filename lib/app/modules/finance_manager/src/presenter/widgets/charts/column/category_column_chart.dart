@@ -8,7 +8,7 @@ import '../../../utils/umbrella_palette.dart';
 import '../../../utils/umbrella_sizes.dart';
 import '../../icons/category_icon.dart';
 import '../../texts/small_text.dart';
-import '../base_column/axis_config.dart';
+import '../charts_utils/axis_config.dart';
 import '../base_column/column_chart.dart';
 import '../base_column/column_config.dart';
 import '../base_column/touch_tooltip_data.dart';
@@ -31,10 +31,12 @@ class CategoryColumnChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
 
+    double dataBasedWidth = data.keys.length * 60 + 100;
+
     return ColumnChart<Category, double>(
       data: data,
       transform: _transformCategoryData,
-      width: width > 600 ? width - 24 : 600,
+      width: width > dataBasedWidth ? width - 24 : dataBasedWidth,
       height: 400,
       padding: padding,
       leftAxisConfig: _getLeftAxis(),
@@ -84,10 +86,11 @@ class CategoryColumnChart extends StatelessWidget {
       resolveColor: (_) => UmbrellaPalette.primaryColor,
       padding: const EdgeInsets.all(10.0),
       borderRadius: 4,
-      buildTooltipText: (_, __, columnData) {
+      buildTooltipText: (groupData, __, columnData) {
         String value = CurrencyFormat.format(columnData.toY);
+        String categoryName = data.entries.elementAt(groupData.x - 1).key.name;
         return BarTooltipItem(
-          value,
+          '$categoryName: $value',
           const TextStyle(
             fontSize: UmbrellaSizes.small,
             color: Colors.black,

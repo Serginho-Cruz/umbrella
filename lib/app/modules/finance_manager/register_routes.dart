@@ -45,8 +45,7 @@ abstract final class RegisterRoutes {
       UnmodularFormatFinanceRoutes.charts,
       child: (context) => GraphicsScreen(
         graphsStore: _resolve(),
-        accountStore: _resolve(),
-        balanceStore: _resolve(),
+        monthStore: _resolve(),
       ),
     );
 

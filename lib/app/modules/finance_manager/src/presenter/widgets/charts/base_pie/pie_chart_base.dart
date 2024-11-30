@@ -89,7 +89,7 @@ class _PieChartBaseState<T> extends State<PieChartBase<T>> {
           SizedBox(
             width: widget.legendSize ?? widget.graphSize,
             child: Wrap(
-              alignment: WrapAlignment.spaceBetween,
+              alignment: WrapAlignment.spaceEvenly,
               direction: Axis.horizontal,
               children: widget.data.entries.map(widget.buildLegend!).toList(),
             ),

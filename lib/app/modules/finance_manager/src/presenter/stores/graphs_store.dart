@@ -1,9 +1,11 @@
 import 'package:mobx/mobx.dart';
 
 import '../../domain/entities/category.dart';
+import '../../domain/entities/date.dart';
 import '../../domain/models/status.dart';
 import '../../domain/states/graphs_state.dart';
 import '../../domain/usecases/gets/get_graphs_data.dart';
+import '../../errors/errors.dart';
 import 'account_store.dart';
 import 'month_store.dart';
 part 'graphs_store.g.dart';
@@ -39,6 +41,9 @@ abstract class _GraphsStoreBase with Store {
   @observable
   GraphsState<Map<Status, double>> valueReceivedPerStatusState =
       GraphsSuccessState({});
+
+  @observable
+  GraphsState<Map<int, double>> balanceEvolutionState = GraphsSuccessState({});
 
   @action
   Future<void> fetchExpenseCategoryGraphData() async {
@@ -126,6 +131,31 @@ abstract class _GraphsStoreBase with Store {
     }, (fail) {
       valueReceivedPerStatusState = GraphsErrorState(fail);
     });
+  }
+
+  @action
+  Future<void> fetchBalanceEvolutionGraphData() async {
+    var (:month, :year) = _monthStore.month;
+    var accounts = _accountStore.visualizingAccounts;
+
+    var requiredMonth = Date(day: 1, month: month, year: year);
+
+    if (Date.today().isMonthBefore(requiredMonth)) {
+      balanceEvolutionState = GraphsErrorState(const Fail(
+          'Este gráfico apenas exibirá dados caso o mês de visualização seja o atual ou antes'));
+      return;
+    }
+
+    var result = await _usecase.balanceEvolution(
+      accounts: accounts,
+      month: month,
+      year: year,
+    );
+
+    balanceEvolutionState = result.fold(
+      (map) => GraphsSuccessState(map),
+      (fail) => GraphsErrorState(fail),
+    );
   }
 
   @action

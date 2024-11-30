@@ -7,12 +7,6 @@ import '../../entities/payment_method.dart';
 import '../../models/status.dart';
 
 abstract interface class GetGraphsData {
-  AsyncResult<Map<String, double>, Fail> valueOfEachPerson({
-    required List<Account> accounts,
-    required int month,
-    required int year,
-  });
-
   AsyncResult<Map<Category, double>, Fail> valueOfEachExpenseCategory({
     required List<Account> accounts,
     required int month,
@@ -38,6 +32,12 @@ abstract interface class GetGraphsData {
   });
 
   AsyncResult<Map<Status, double>, Fail> valueForEachIncomeStatus({
+    required List<Account> accounts,
+    required int month,
+    required int year,
+  });
+
+  AsyncResult<Map<int, double>, Fail> balanceEvolution({
     required List<Account> accounts,
     required int month,
     required int year,

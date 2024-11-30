@@ -85,6 +85,8 @@ abstract class UsecasesBindings {
         expenseRepository: i(),
         incomeRepository: i(),
         recordRepository: i(),
+        getBalance: i(),
+        sortRecords: i(),
       ),
     );
 

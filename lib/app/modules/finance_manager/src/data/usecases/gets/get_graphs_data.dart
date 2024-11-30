@@ -9,11 +9,15 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entit
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/round.dart';
 
+import '../../../domain/entities/date.dart';
 import '../../../domain/entities/expense.dart';
 import '../../../domain/entities/income.dart';
 import '../../../domain/entities/paiyable.dart';
+import '../../../domain/entities/payment_record.dart';
 import '../../../domain/models/status.dart';
+import '../../../domain/usecases/gets/get_balance.dart';
 import '../../../domain/usecases/gets/get_graphs_data.dart';
+import '../../../domain/usecases/sorts/sort_payment_records.dart';
 import '../../repositories/expense_repository.dart';
 import '../../repositories/income_repository.dart';
 import '../../repositories/payment_record_repository.dart';
@@ -21,14 +25,20 @@ import '../../repositories/payment_record_repository.dart';
 class GetGraphsDataImpl implements GetGraphsData {
   final ExpenseRepository _expenseRepository;
   final IncomeRepository _incomeRepository;
+  final GetBalance _getBalance;
+  final SortPaymentRecords _sortRecords;
   final PaymentRecordRepository _recordRepository;
 
   GetGraphsDataImpl({
     required ExpenseRepository expenseRepository,
     required IncomeRepository incomeRepository,
+    required GetBalance getBalance,
+    required SortPaymentRecords sortRecords,
     required PaymentRecordRepository recordRepository,
   })  : _expenseRepository = expenseRepository,
         _incomeRepository = incomeRepository,
+        _getBalance = getBalance,
+        _sortRecords = sortRecords,
         _recordRepository = recordRepository;
 
   @override
@@ -104,16 +114,6 @@ class GetGraphsDataImpl implements GetGraphsData {
   }
 
   @override
-  AsyncResult<Map<String, double>, Fail> valueOfEachPerson({
-    required List<Account> accounts,
-    required int month,
-    required int year,
-  }) {
-    // TODO: implement valueOfEachPerson
-    throw UnimplementedError();
-  }
-
-  @override
   AsyncResult<Map<PaymentMethod, double>, Fail> valuePaidWithEachMethod({
     required List<Account> accounts,
     required int month,
@@ -121,6 +121,56 @@ class GetGraphsDataImpl implements GetGraphsData {
   }) {
     // TODO: implement valuePaidWithEachMethod
     throw UnimplementedError();
+  }
+
+  @override
+  AsyncResult<Map<int, double>, Fail> balanceEvolution({
+    required List<Account> accounts,
+    required int month,
+    required int year,
+  }) async {
+    double initialBalance = 0;
+    List<PaymentRecord> records = [];
+
+    for (var account in accounts) {
+      var recordsResult = await _recordRepository.getAllOf(
+        month: month,
+        year: year,
+        account: account,
+      );
+
+      var balanceResult = await _getBalance.initialOf(
+        month: month,
+        year: year,
+        account: account,
+      );
+
+      if (balanceResult.isError()) return balanceResult.pure({});
+      if (recordsResult.isError()) return recordsResult.pure({});
+
+      initialBalance += balanceResult.getOrDefault(0.00);
+      records.addAll(recordsResult.getOrDefault([]));
+    }
+
+    int todayDay = Date.today().day;
+
+    List<PaymentRecord> sorted = _sortRecords.byPaymentDate(records: records);
+
+    var balancePerDay = <int, double>{};
+    double balance = initialBalance;
+
+    for (int i = 1; i <= todayDay; i++) {
+      Date day = Date(day: i, month: month, year: year);
+      var dayRecords = sorted.where((rec) => rec.date == day).toList();
+
+      for (var record in dayRecords) {
+        balance += record.paiyable is Income ? record.value : -record.value;
+      }
+
+      balancePerDay[i] = balance;
+    }
+
+    return Success(balancePerDay);
   }
 
   AsyncResult<List<T>, Fail> _fetchPaiyables<T extends Paiyable>(

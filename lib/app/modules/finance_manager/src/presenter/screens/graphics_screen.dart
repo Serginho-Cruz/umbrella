@@ -1,54 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:mobx/mobx.dart';
 
-import '../stores/account_store.dart';
-import '../stores/balance_store.dart';
 import '../stores/graphs_store.dart';
+import '../stores/month_store.dart';
+import '../utils/umbrella_palette.dart';
 import '../widgets/appbar/custom_app_bar.dart';
 import '../widgets/charts/column/category_column_chart.dart';
+import '../widgets/charts/line/balance_evolution_chart.dart';
 import '../widgets/charts/pie/status_pie_chart.dart';
 import '../widgets/layout/umbrella_scaffold.dart';
 import '../widgets/others/segmented_graphs_state.dart';
 import '../widgets/texts/big_text.dart';
 import '../widgets/texts/medium_text.dart';
+import '../widgets/texts/small_disclaimer.dart';
 
 class GraphicsScreen extends StatefulWidget {
   final GraphsStore _graphsStore;
+  final MonthStore _monthStore;
 
   const GraphicsScreen({
     super.key,
     required GraphsStore graphsStore,
-    required BalanceStore balanceStore,
-    required AccountStore accountStore,
-  }) : _graphsStore = graphsStore;
+    required MonthStore monthStore,
+  })  : _graphsStore = graphsStore,
+        _monthStore = monthStore;
   @override
   State<GraphicsScreen> createState() => _GraphicsScreenState();
 }
 
 class _GraphicsScreenState extends State<GraphicsScreen> {
-  final List<Color> _colors = const [
-    Colors.indigo,
-    Colors.pink,
-    Colors.green,
-    Colors.lightBlue,
-    Colors.orange,
-    Colors.purpleAccent,
-    Colors.redAccent,
-    Colors.cyan,
-    Colors.yellow,
-    Colors.brown,
-    Colors.deepPurple,
-    Colors.lime,
-    Colors.teal,
-  ];
-
   int? touchedIndex;
   Offset? touchedOffset;
+
+  ReactionDisposer? _monthReaction;
 
   @override
   void initState() {
     super.initState();
-    _fetchData();
+
+    _monthReaction = reaction((_) => widget._monthStore.month, (_) {
+      _fetchData();
+    }, fireImmediately: true);
   }
 
   bool _shouldShowAppBarFunctionalities(Orientation orientation) {
@@ -56,9 +49,17 @@ class _GraphicsScreenState extends State<GraphicsScreen> {
   }
 
   @override
+  void dispose() {
+    _monthReaction?.call();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final showAppBarFuncs =
         _shouldShowAppBarFunctionalities(MediaQuery.orientationOf(context));
+
+    final screenWidth = MediaQuery.sizeOf(context).width;
 
     return RefreshIndicator(
       onRefresh: _fetchData,
@@ -66,9 +67,6 @@ class _GraphicsScreenState extends State<GraphicsScreen> {
         appBar: CustomAppBar(
           showBalances: showAppBarFuncs,
           showMonthChanger: showAppBarFuncs,
-          onMonthChange: (_, __) {
-            _fetchData();
-          },
           title: 'Gráficos',
         ),
         child: ListView(
@@ -100,7 +98,7 @@ class _GraphicsScreenState extends State<GraphicsScreen> {
                   onSuccess: (_, successState) => CategoryColumnChart(
                     data: successState.data,
                     bottomAxisName: 'Categorias de Despesa',
-                    colors: _colors,
+                    colors: UmbrellaPalette.statusChartsColors,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 15.0,
                       vertical: 25.0,
@@ -135,7 +133,7 @@ class _GraphicsScreenState extends State<GraphicsScreen> {
                   onSuccess: (_, successState) => CategoryColumnChart(
                     data: successState.data,
                     bottomAxisName: 'Categorias de Receita',
-                    colors: _colors,
+                    colors: UmbrellaPalette.statusChartsColors,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 15.0,
                       vertical: 25.0,
@@ -205,122 +203,45 @@ class _GraphicsScreenState extends State<GraphicsScreen> {
               },
             ),
             const SizedBox(height: 40.0),
-            // _graphTitle('Evolução do Saldo nesse Mês'),
-            // const SizedBox(height: 20),
-            // LimitedBox(
-            //   maxWidth: screenWidth - 60,
-            //   child: const SmallDisclaimer(
-            //     'Vire a Tela para o Modo Paisagem para uma melhor visualização',
-            //     fontWeight: FontWeight.bold,
-            //     textAlign: TextAlign.center,
-            //     maxLines: 2,
-            //   ),
-            // ),
-            // const SizedBox(height: 10),
-            //   SingleChildScrollView(
-            //     scrollDirection: Axis.horizontal,
-            //     padding: const EdgeInsets.symmetric(horizontal: 10),
-            //     physics: const BouncingScrollPhysics(),
-            //     child: SizedBox(
-            //       height: 300,
-            //       width: screenWidth - 20,
-            //       child: LineChart(
-            //         LineChartData(
-            //           minX: 0,
-            //           maxX: 32,
-            //           lineTouchData: LineTouchData(
-            //             touchTooltipData: LineTouchTooltipData(
-            //               fitInsideHorizontally: true,
-            //               fitInsideVertically: true,
-            //               tooltipPadding: const EdgeInsets.all(8),
-            //               tooltipRoundedRadius: 2,
-            //               tooltipMargin: 20,
-            //               getTooltipColor: (_) => UmbrellaPalette.primaryColor,
-            //               tooltipBorder: const BorderSide(),
-            //               getTooltipItems: (spots) => spots
-            //                   .map(
-            //                     (spot) => LineTooltipItem(
-            //                       'Dia ${spot.x.toInt()}: ${CurrencyFormat.format(spot.y)}',
-            //                       const TextStyle(
-            //                         color: Colors.black,
-            //                         fontSize: UmbrellaSizes.small,
-            //                         fontWeight: FontWeight.bold,
-            //                       ),
-            //                     ),
-            //                   )
-            //                   .toList(),
-            //             ),
-            //           ),
-            //           titlesData: TitlesData(
-            //             leftConfig: AxisConfig(
-            //               reservedColumnSize: 60,
-            //               axisTitleBuilder: (value, _) {
-            //                 return SmallText(CurrencyFormat.format(value));
-            //               },
-            //             ),
-            //             bottomConfig: AxisConfig(
-            //               axisNameSize: 40,
-            //               axisName: 'Dias',
-            //               reservedColumnSize: 20,
-            //               axisTitleBuilder: (value, _) {
-            //                 return SmallText(value.toInt().toString());
-            //               },
-            //             ),
-            //           ),
-            //           lineBarsData: [
-            //             LineChartBarData(
-            //               barWidth: 2,
-            //               isCurved: true,
-            //               dotData: FlDotData(
-            //                 checkToShowDot: (spot, barData) {
-            //                   final isFirst = barData.spots.first.x == spot.x;
-            //                   final isLast = barData.spots.last.x == spot.x;
-
-            //                   return isFirst || isLast || spot.x % 2 == 0;
-            //                 },
-            //               ),
-            //               color: Colors.lightGreen,
-            //               preventCurveOverShooting: true,
-            //               spots: [
-            //                 const FlSpot(1, 0),
-            //                 const FlSpot(2, 3.5),
-            //                 const FlSpot(3, 3.5),
-            //                 const FlSpot(4, 6.4),
-            //                 const FlSpot(5, 10.12),
-            //                 const FlSpot(6, 20),
-            //                 const FlSpot(7, 5),
-            //                 const FlSpot(8, -4.09),
-            //                 const FlSpot(9, -5.67),
-            //                 const FlSpot(10, 3),
-            //                 const FlSpot(11, 7),
-            //                 const FlSpot(12, 6.45),
-            //                 const FlSpot(13, 24.50),
-            //                 const FlSpot(14, 50.99),
-            //                 const FlSpot(15, 26.71),
-            //                 const FlSpot(16, 0),
-            //                 const FlSpot(17, 2.5),
-            //                 const FlSpot(18, -4.4),
-            //                 const FlSpot(19, 3.90),
-            //                 const FlSpot(20, 0.5),
-            //                 const FlSpot(21, 3.20),
-            //                 const FlSpot(22, 9.21),
-            //                 const FlSpot(23, 6.65),
-            //                 const FlSpot(24, 24.25),
-            //                 const FlSpot(25, 50.05),
-            //                 const FlSpot(26, 26.1),
-            //                 const FlSpot(27, 0.4),
-            //                 const FlSpot(28, 2.75),
-            //                 const FlSpot(29, -4),
-            //                 const FlSpot(30, 3.99),
-            //                 const FlSpot(31, 0),
-            //               ],
-            //             ),
-            //           ],
-            //         ),
-            //       ),
-            //     ),
-            //   ),
-            // ],
+            _graphTitle('Evolução do Saldo nesse Mês'),
+            const SizedBox(height: 20),
+            LimitedBox(
+              maxWidth: screenWidth - 60,
+              child: const SmallDisclaimer(
+                'Vire a Tela para o Modo Paisagem para uma melhor visualização',
+                fontWeight: FontWeight.bold,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Observer(
+              builder: (_) => SegmentedGraphsState(
+                observable: widget._graphsStore.balanceEvolutionState,
+                onFail: (ctx, failState) => SizedBox(
+                  height: 200,
+                  child: MediumText.bold(failState.fail.message),
+                ),
+                onLoading: (ctx) => const SizedBox(
+                  height: 200.0,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      MediumText.bold('Buscando dados...'),
+                      CircularProgressIndicator.adaptive(
+                        semanticsLabel:
+                            'Carregando Dados do Gráfico de Evolução do Saldo no mês',
+                      ),
+                    ],
+                  ),
+                ),
+                onSuccess: (ctx, success) => BalanceEvolutionChart(
+                  data: success.data,
+                  height: 300,
+                  padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -332,6 +253,7 @@ class _GraphicsScreenState extends State<GraphicsScreen> {
     widget._graphsStore.fetchIncomeCategoryGraphData();
     widget._graphsStore.fetchExpenseStatusGraphData();
     widget._graphsStore.fetchIncomeStatusGraphData();
+    widget._graphsStore.fetchBalanceEvolutionGraphData();
   }
 
   Widget _graphTitle(String title) {

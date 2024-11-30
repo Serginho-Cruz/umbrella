@@ -2,9 +2,9 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 import '../../texts/medium_text.dart';
-import 'axis_config.dart';
+import '../charts_utils/axis_config.dart';
 import 'column_config.dart';
-import 'titles_data.dart';
+import '../charts_utils/titles_data.dart';
 import 'touch_tooltip_data.dart';
 
 class ColumnChart<Line, Column> extends StatelessWidget {
@@ -24,7 +24,6 @@ class ColumnChart<Line, Column> extends StatelessWidget {
     this.bottomAxisConfig,
     this.bottomAxisNameSize,
     this.columnTitleSize,
-    this.bottomAxisNameWidget,
     this.bottomAxisName,
   }) : assert((columnTitleSize == null) == (buildColumnTitle == null),
             "Both [bottomAxisNameSize] and [buildColumnTitle] must be set together");
@@ -40,10 +39,9 @@ class ColumnChart<Line, Column> extends StatelessWidget {
   final AxisConfig rightAxisConfig;
   final AxisConfig? bottomAxisConfig;
   final Widget Function(Line)? buildColumnTitle;
-  final double? bottomAxisNameSize;
   final double? columnTitleSize;
+  final double? bottomAxisNameSize;
   final String? bottomAxisName;
-  final Widget? bottomAxisNameWidget;
   final ColumnConfig Function(int index, MapEntry<Line, Column>) transform;
 
   @override

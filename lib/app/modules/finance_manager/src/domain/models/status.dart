@@ -11,18 +11,18 @@ extension StatusUtils on Status {
       };
 
   static Status resolveForPaiyable(Paiyable p) {
-    if (_isInTime(p) && p.remainingValue == 0) {
+    if (p.remainingValue == 0) {
       return Status.okay;
     }
 
-    if (_isInTime(p) && p.remainingValue != 0) return Status.inTime;
+    if (!_isInTime(p)) return Status.overdue;
 
-    return Status.overdue;
+    return Status.inTime;
   }
 
   static bool _isInTime(Paiyable p) {
     var today = Date.today();
 
-    return (p.dueDate.isBefore(today) || p.dueDate.difference(today) == 0);
+    return (p.dueDate.isAfter(today) || p.dueDate.difference(today) == 0);
   }
 }
