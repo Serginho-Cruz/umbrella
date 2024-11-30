@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/utils/round.dart';
 
 import '../../../../domain/models/status.dart';
 import '../../../utils/currency_format.dart';
@@ -63,11 +64,30 @@ class StatusPieChart extends StatelessWidget {
             child: const SizedBox.square(dimension: 24),
           ),
           const SizedBox(width: 10),
-          SmallText.bold(entry.key.adaptedName),
+          SmallText.bold(
+              '${entry.key.adaptedName} (${_formatToPercentage(_calcPercentage(entry.value))})'),
         ],
       ),
       centerRadius: 20.0,
       legendSize: legendSize,
     );
+  }
+
+  String _formatToPercentage(double number) {
+    String withDecimals = number.toStringAsFixed(2);
+
+    String withCommas = withDecimals.replaceAll('.', ',');
+
+    return '$withCommas%';
+  }
+
+  double _calcPercentage(double value) {
+    return (value / _determineTotalValue()).roundToDecimal() * 100;
+  }
+
+  double _determineTotalValue() {
+    return List<double>.from(data.values)
+        .reduce((a, b) => (a + b))
+        .roundToDecimal();
   }
 }

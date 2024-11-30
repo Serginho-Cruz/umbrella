@@ -75,9 +75,7 @@ class _FlippableCategoryIconState extends State<FlippableCategoryIcon>
                     height: 70.0,
                     decoration: const ShapeDecoration(
                       shape: CircleBorder(),
-                      gradient: RadialGradient(
-                        colors: UmbrellaPalette.gradientColors,
-                      ),
+                      color: UmbrellaPalette.primaryColor,
                     ),
                     child: Transform.flip(
                       flipX: true,

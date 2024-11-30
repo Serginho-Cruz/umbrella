@@ -8,6 +8,8 @@ abstract class UmbrellaButton extends StatelessWidget {
     required this.onPressed,
     required this.backgroundColor,
     required this.hoverColor,
+    required this.highlightColor,
+    required this.pressColor,
     this.width,
     this.height,
   });
@@ -19,6 +21,8 @@ abstract class UmbrellaButton extends StatelessWidget {
   final VoidCallback onPressed;
   final Color backgroundColor;
   final Color hoverColor;
+  final Color highlightColor;
+  final Color pressColor;
 
   @override
   Widget build(BuildContext context) {
@@ -41,13 +45,21 @@ abstract class UmbrellaButton extends StatelessWidget {
         ),
         elevation: const WidgetStatePropertyAll(4.0),
         side: const WidgetStatePropertyAll(BorderSide(width: 1.0)),
-        backgroundColor: WidgetStateColor.resolveWith((states) {
-          if (states.any((state) =>
-              state == WidgetState.hovered || state == WidgetState.pressed)) {
-            return hoverColor;
+        overlayColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.hovered)) {
+            return highlightColor;
           }
-          return backgroundColor;
+          return null;
         }),
+        backgroundColor: WidgetStateProperty.resolveWith(
+          (st) {
+            return switch (st) {
+              Set s when s.contains(WidgetState.hovered) => hoverColor,
+              Set s when s.contains(WidgetState.pressed) => pressColor,
+              _ => backgroundColor,
+            };
+          },
+        ),
       ),
     );
   }

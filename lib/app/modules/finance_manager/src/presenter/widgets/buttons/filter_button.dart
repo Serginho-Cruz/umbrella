@@ -21,14 +21,21 @@ class FilterButton extends StatelessWidget {
             side: const BorderSide(),
           ),
         ),
+        overlayColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.hovered)) {
+            return UmbrellaPalette.primaryButtonHighlightColor;
+          }
+          return null;
+        }),
         backgroundColor: WidgetStateProperty.resolveWith(
           (st) {
-            if (st.any(
-                (s) => s == WidgetState.pressed || s == WidgetState.hovered)) {
-              return UmbrellaPalette.activePrimaryButton;
-            }
-
-            return UmbrellaPalette.actionButtonColor;
+            return switch (st) {
+              Set s when s.contains(WidgetState.hovered) =>
+                UmbrellaPalette.primaryButtonHoverColor,
+              Set s when s.contains(WidgetState.pressed) =>
+                UmbrellaPalette.primaryButtonPressColor,
+              _ => UmbrellaPalette.primaryColor,
+            };
           },
         ),
       ),

@@ -7,8 +7,8 @@ class NavigationIconButton extends StatelessWidget {
     super.key,
     required this.route,
     required this.tooltipMessage,
-    this.backgroundColor = UmbrellaPalette.actionButtonColor,
-    this.hoverColor = UmbrellaPalette.activePrimaryButton,
+    this.backgroundColor = UmbrellaPalette.primaryColor,
+    this.hoverColor = UmbrellaPalette.primaryButtonHoverColor,
     this.icon = const Icon(
       Icons.add,
       color: Colors.black,

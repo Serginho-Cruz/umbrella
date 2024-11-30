@@ -16,7 +16,7 @@ import '../../stores/account_store.dart';
 import '../../stores/expense_store.dart';
 import '../../widgets/appbar/custom_app_bar.dart';
 import '../../widgets/buttons/primary_button.dart';
-import '../../widgets/buttons/reset_button.dart';
+import '../../widgets/buttons/secondary_button.dart';
 import '../../widgets/simple_information/category_row.dart';
 import '../../widgets/layout/umbrella_scaffold.dart';
 import '../../widgets/selectors/category_selector.dart';
@@ -198,7 +198,7 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
             ),
             Spaced(
               padding: const EdgeInsets.symmetric(vertical: 20.0),
-              first: ResetButton(reset: _resetForm),
+              first: SecondaryButton(onPressed: _resetForm),
               second: PrimaryButton(
                 label: const MediumText.bold('Adicionar'),
                 onPressed: _onFormSubmitted,

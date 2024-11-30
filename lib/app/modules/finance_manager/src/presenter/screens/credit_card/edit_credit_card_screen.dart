@@ -7,7 +7,7 @@ import '../../../domain/entities/credit_card.dart';
 import '../../utils/umbrella_palette.dart';
 import '../../widgets/simple_information/account_name.dart';
 import '../../widgets/buttons/primary_button.dart';
-import '../../widgets/buttons/reset_button.dart';
+import '../../widgets/buttons/secondary_button.dart';
 import '../../widgets/others/card_preview_section.dart';
 import '../../widgets/simple_information/color_row.dart';
 import '../../widgets/layout/umbrella_scaffold.dart';
@@ -131,9 +131,9 @@ class _EditCreditCardScreenState extends State<EditCreditCardScreen> {
             ),
             Spaced(
               padding: const EdgeInsets.symmetric(vertical: 20.0),
-              first: ResetButton(
-                reset: _resetForm,
-                label: const MediumText.bold('Reiniciar'),
+              first: SecondaryButton(
+                onPressed: _resetForm,
+                label: const MediumText.bold('Limpar'),
               ),
               second: PrimaryButton(
                 icon: const Icon(

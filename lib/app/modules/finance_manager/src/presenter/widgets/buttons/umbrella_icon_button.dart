@@ -9,15 +9,23 @@ class UmbrellaIconButton extends StatelessWidget {
     required this.onPressed,
     bool isPrimary = true,
   })  : backgroundColor = isPrimary
-            ? UmbrellaPalette.actionButtonColor
+            ? UmbrellaPalette.primaryColor
             : UmbrellaPalette.secondaryButtonColor,
         hoverColor = isPrimary
-            ? UmbrellaPalette.activePrimaryButton
-            : UmbrellaPalette.activeSecondaryButton;
+            ? UmbrellaPalette.primaryButtonHoverColor
+            : UmbrellaPalette.secondaryButtonHoverColor,
+        highlightColor = isPrimary
+            ? UmbrellaPalette.primaryButtonHighlightColor
+            : UmbrellaPalette.secondaryButtonHighlightColor,
+        pressColor = isPrimary
+            ? UmbrellaPalette.primaryButtonPressColor
+            : UmbrellaPalette.secondaryButtonPressColor;
 
   final Icon icon;
   final Color backgroundColor;
   final Color hoverColor;
+  final Color highlightColor;
+  final Color pressColor;
   final VoidCallback onPressed;
 
   @override
@@ -29,14 +37,23 @@ class UmbrellaIconButton extends StatelessWidget {
         animationDuration: const Duration(milliseconds: 400),
         elevation: const WidgetStatePropertyAll(4.0),
         side: const WidgetStatePropertyAll(BorderSide(width: 1.0)),
-        backgroundColor: WidgetStateColor.resolveWith((states) {
-          if (states.any((state) =>
-              state == WidgetState.hovered || state == WidgetState.pressed)) {
-            return hoverColor;
+        overlayColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.hovered)) {
+            return UmbrellaPalette.primaryButtonHighlightColor;
           }
-
-          return backgroundColor;
+          return null;
         }),
+        backgroundColor: WidgetStateProperty.resolveWith(
+          (st) {
+            return switch (st) {
+              Set s when s.contains(WidgetState.hovered) =>
+                UmbrellaPalette.primaryButtonHoverColor,
+              Set s when s.contains(WidgetState.pressed) =>
+                UmbrellaPalette.primaryButtonPressColor,
+              _ => UmbrellaPalette.primaryColor,
+            };
+          },
+        ),
       ),
     );
   }

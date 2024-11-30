@@ -9,7 +9,7 @@ import '../../stores/credit_card_store.dart';
 import '../../utils/umbrella_palette.dart';
 import '../../stores/account_store.dart';
 import '../../widgets/buttons/primary_button.dart';
-import '../../widgets/buttons/reset_button.dart';
+import '../../widgets/buttons/secondary_button.dart';
 import '../../widgets/others/card_preview_section.dart';
 import '../../widgets/simple_information/color_row.dart';
 import '../../widgets/layout/umbrella_scaffold.dart';
@@ -146,7 +146,7 @@ class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
             ),
             Spaced(
               padding: const EdgeInsets.symmetric(vertical: 20.0),
-              first: ResetButton(reset: resetForm),
+              first: SecondaryButton(onPressed: resetForm),
               second: PrimaryButton(
                 icon: const Icon(
                   Icons.add_circle_rounded,

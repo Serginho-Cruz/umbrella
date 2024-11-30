@@ -11,7 +11,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/ut
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/utils/umbrella_sizes.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/appbar/custom_app_bar.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/buttons/primary_button.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/buttons/reset_button.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/buttons/secondary_button.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/buttons/umbrella_icon_button.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/dialogs/payment_method_selector_dialog.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/dialogs/umbrella_dialogs.dart';
@@ -183,8 +183,8 @@ class _PaymentScreenState<E extends Paiyable> extends State<PaymentScreen> {
                 ),
                 Spaced(
                   padding: const EdgeInsets.symmetric(vertical: 20.0),
-                  first: ResetButton(
-                    reset: resetPayments,
+                  first: SecondaryButton(
+                    onPressed: resetPayments,
                     label: const MediumText.bold('Limpar'),
                   ),
                   second: PrimaryButton(

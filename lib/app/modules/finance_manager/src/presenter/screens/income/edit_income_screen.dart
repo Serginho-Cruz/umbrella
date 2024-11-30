@@ -10,7 +10,7 @@ import '../../stores/income_category_store.dart';
 import '../../widgets/appbar/custom_app_bar.dart';
 import '../../widgets/simple_information/account_name.dart';
 import '../../widgets/buttons/primary_button.dart';
-import '../../widgets/buttons/reset_button.dart';
+import '../../widgets/buttons/secondary_button.dart';
 import '../../widgets/simple_information/category_row.dart';
 import '../../widgets/layout/umbrella_scaffold.dart';
 import '../../widgets/selectors/category_selector.dart';
@@ -164,7 +164,7 @@ class _EditIncomeScreenState extends State<EditIncomeScreen> {
             ),
             Spaced(
               padding: const EdgeInsets.symmetric(vertical: 20.0),
-              first: ResetButton(reset: resetForm),
+              first: SecondaryButton(onPressed: resetForm),
               second: PrimaryButton(
                 icon: const Icon(
                   Icons.add_circle_rounded,

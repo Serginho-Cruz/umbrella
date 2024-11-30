@@ -10,7 +10,9 @@ class PrimaryButton extends UmbrellaButton {
     super.height,
     super.icon,
   }) : super(
-          backgroundColor: UmbrellaPalette.actionButtonColor,
-          hoverColor: UmbrellaPalette.activePrimaryButton,
+          backgroundColor: UmbrellaPalette.primaryColor,
+          hoverColor: UmbrellaPalette.primaryButtonHoverColor,
+          highlightColor: UmbrellaPalette.primaryButtonHighlightColor,
+          pressColor: UmbrellaPalette.primaryButtonPressColor,
         );
 }
