@@ -43,7 +43,6 @@ dependencies:
   email_validator: ^3.0.0
   envied: ^0.5.4+1
   parse_server_sdk_flutter: ^8.0.0
-  flutter_secure_storage: ^9.2.2
   mobx: ^2.3.3+2
   flutter_mobx: ^2.2.1+1
   fl_chart: ^0.69.0
@@ -59,7 +58,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^4.0.0
   envied_generator: ^0.5.4+1
-  build_runner: ^2.4.12
+  build_runner: ^2.4.11
   mobx_codegen: ^2.6.1
 
 # For information on the generic Dart part of this file, see the

@@ -38,7 +38,7 @@ class AuthModule extends Module {
   @override
   void binds(Injector i) {
     super.binds(i);
-    i.addLazySingleton<LocalStorageService>(TokenStorage.new);
+    i.addSingleton<LocalStorageService>(TokenStorage.new);
     i.addLazySingleton<UserDatasource>(Back4AppUserDatasource.new);
     i.addLazySingleton<UserRepository>(
       () => UserRepositoryImpl(i()),

@@ -6,6 +6,7 @@ import '../../../domain/models/status.dart';
 import '../../../domain/usecases/sorts/sort_expenses.dart';
 import '../../stores/finance_filterable_store.dart';
 import '../../utils/adapt_name.dart';
+import '../../utils/umbrella_palette.dart';
 import '../buttons/primary_button.dart';
 import '../filters/category_filter.dart';
 import '../filters/status_filter.dart';
@@ -116,6 +117,7 @@ class FinanceFilterDialog extends StatelessWidget {
                             children: [
                               Radio<PaiyableSortOption>.adaptive(
                                 value: option,
+                                activeColor: UmbrellaPalette.sliderFilterColor,
                                 groupValue: filterableStore.sortOption,
                                 onChanged: filterableStore.setSortOption,
                               ),
@@ -139,6 +141,7 @@ class FinanceFilterDialog extends StatelessWidget {
                         scale: 1.2,
                         child: Checkbox.adaptive(
                           value: filterableStore.isCrescentOrder,
+                          activeColor: UmbrellaPalette.sliderFilterColor,
                           onChanged: (_) {
                             filterableStore.toggleCrescentOrder();
                           },

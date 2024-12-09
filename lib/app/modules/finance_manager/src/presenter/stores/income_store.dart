@@ -432,7 +432,8 @@ abstract class _IncomeStoreBase
       }
     }
 
-    getAll(ignoreLoading: true);
+    state = const InitialState();
+    _accountStore.get(force: true);
     return null;
   }
 
@@ -578,7 +579,8 @@ abstract class _IncomeStoreBase
     _monthReaction = reaction((_) => _monthStore.month, (_) => getAll());
 
     _accountsReaction = reaction(
-        (_) => _accountStore.visualizingAccounts.iterator, (_) => getAll());
+        (_) => _accountStore.visualizingAccounts.iterator, (_) => getAll(),
+        equals: (_, __) => false);
   }
 
   ///Mounts an Income. This method may be called just once

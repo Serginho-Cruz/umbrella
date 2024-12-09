@@ -150,15 +150,19 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CategoryRow(
-                        category: widget._expenseStore.category,
-                        padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                      Observer(
+                        builder: (_) => CategoryRow(
+                          category: widget._expenseStore.category,
+                          padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                        ),
                       ),
-                      Visibility(
-                        visible: widget._expenseStore.category != null,
-                        child: const SmallText(
-                          'Uma categoria precisa ser selecionada',
-                          color: UmbrellaPalette.errorColor,
+                      Observer(
+                        builder: (_) => Visibility(
+                          visible: widget._expenseStore.category != null,
+                          child: const SmallText(
+                            'Uma categoria precisa ser selecionada',
+                            color: UmbrellaPalette.errorColor,
+                          ),
                         ),
                       ),
                     ],

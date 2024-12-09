@@ -148,12 +148,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         state: widget._incomeStore.state,
                         onLoading: (_) => makeShimmerList(),
                         onFail: (ctx, f) => SizedBox(
-                          height: 260,
+                          height: 240,
                           width: 300,
                           child: Center(child: MediumText(f.message)),
                         ),
                         onState: (ctx, state) => HorizontalAnimatedList(
-                          height: 260,
+                          height: 240,
                           length: state.length,
                           itemBuilderFunction: (context, index) =>
                               UnconstrainedBox(
@@ -184,12 +184,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         state: widget._expenseStore.state,
                         onLoading: (_) => makeShimmerList(),
                         onFail: (ctx, f) => SizedBox(
-                          height: 260,
+                          height: 240,
                           width: 300,
                           child: Center(child: MediumText(f.message)),
                         ),
                         onState: (ctx, state) => HorizontalAnimatedList(
-                          height: 260,
+                          height: 240,
                           length: state.length,
                           itemBuilderFunction: (context, index) {
                             return UnconstrainedBox(
@@ -220,13 +220,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       builder: (_) => ListSegmentedStateWidget(
                         state: widget._creditCardStore.state,
                         onLoading: (ctx) => makeShimmerList(
-                          height: 220,
+                          height: 180,
                           shimmerWidth: 240,
                           shimmerHeight: 140,
                         ),
                         onFail: (ctx, f) => Text(f.message),
                         onState: (ctx, state) => HorizontalAnimatedList(
-                          height: 220,
+                          height: 180,
                           length: state.length,
                           itemBuilderFunction: (context, index) =>
                               UnconstrainedBox(
@@ -262,7 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget makeSection({required String title, required Widget child}) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 50.0),
+      padding: const EdgeInsets.only(bottom: 40.0),
       child: HorizontallyInfinityContainer(
         color: UmbrellaPalette.gray,
         child: Column(
@@ -281,7 +281,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget makeShimmerList({
-    double height = 260,
+    double height = 240,
     double shimmerWidth = 230,
     double shimmerHeight = 180,
   }) {

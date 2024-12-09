@@ -31,16 +31,16 @@ class ObtainPersonsDebtsImpl implements ObtainPersonsDebts {
     for (var income in filteredIncomes) {
       map.update(
         income.personName!,
-        (value) => (value + income.remainingValue).roundToDecimal(),
-        ifAbsent: () => income.remainingValue.roundToDecimal(),
+        (value) => (value - income.remainingValue).roundToDecimal(),
+        ifAbsent: () => -income.remainingValue.roundToDecimal(),
       );
     }
 
     for (var expense in filteredExpenses) {
       map.update(
         expense.personName!,
-        (value) => (value - expense.remainingValue).roundToDecimal(),
-        ifAbsent: () => -expense.remainingValue.roundToDecimal(),
+        (value) => (value + expense.remainingValue).roundToDecimal(),
+        ifAbsent: () => expense.remainingValue.roundToDecimal(),
       );
     }
 

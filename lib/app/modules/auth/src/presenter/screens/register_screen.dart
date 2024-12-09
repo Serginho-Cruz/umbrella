@@ -50,81 +50,74 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: DecoratedBox(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF6FDCFF), Color(0xFFB172FF)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          resizeToAvoidBottomInset: false,
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Align(
-                alignment: Alignment.topLeft,
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    left: MediaQuery.sizeOf(context).width * 0.1,
-                  ),
-                  child: const Text(
-                    'Criar Conta',
-                    style: TextStyle(fontSize: 24.0),
-                  ),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        resizeToAvoidBottomInset: false,
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Align(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  left: MediaQuery.sizeOf(context).width * 0.1,
+                ),
+                child: const Text(
+                  'Criar Conta',
+                  style: TextStyle(fontSize: 24.0),
                 ),
               ),
-              Form(
-                key: _formKey,
-                child: SizedBox(
-                  width: MediaQuery.sizeOf(context).width * 0.8,
-                  child: Column(
-                    children: [
-                      Observer(builder: (_) {
-                        return AuthTextField(
-                          padding: const EdgeInsets.only(bottom: 20.0),
-                          keyboardType: TextInputType.name,
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          icon: Icons.person_rounded,
-                          focusNode: _nameFocusNode,
-                          label: 'Nome',
-                          readOnly: widget._store.state is LoadingState,
-                          onChanged: widget._store.setName,
-                          onSubmitted: (_) {
-                            if (widget._store.email.isEmpty) {
-                              _emailFocusNode.requestFocus();
-                            }
-                          },
-                          onTapOutside: (_) {
-                            _nameFocusNode.unfocus();
-                          },
-                          validate: widget._store.validateName,
-                        );
-                      }),
-                      Observer(builder: (_) {
-                        return AuthTextField(
-                          padding: const EdgeInsets.only(bottom: 20.0),
-                          focusNode: _emailFocusNode,
-                          icon: Icons.email,
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          label: 'E-mail',
-                          onChanged: widget._store.setEmail,
-                          keyboardType: TextInputType.emailAddress,
-                          readOnly: widget._store.state is LoadingState,
-                          onSubmitted: (_) {
-                            if (widget._store.password.isEmpty) {
-                              _passwordFocusNode.requestFocus();
-                            }
-                          },
-                          onTapOutside: (_) {
-                            _emailFocusNode.unfocus();
-                          },
-                          validate: widget._store.validateEmail,
-                        );
-                      }),
-                      AuthTextField(
+            ),
+            Form(
+              key: _formKey,
+              child: SizedBox(
+                width: MediaQuery.sizeOf(context).width * 0.8,
+                child: Column(
+                  children: [
+                    Observer(builder: (_) {
+                      return AuthTextField(
+                        padding: const EdgeInsets.only(bottom: 20.0),
+                        keyboardType: TextInputType.name,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        icon: Icons.person_rounded,
+                        focusNode: _nameFocusNode,
+                        label: 'Nome',
+                        readOnly: widget._store.state is LoadingState,
+                        onChanged: widget._store.setName,
+                        onSubmitted: (_) {
+                          if (widget._store.email.isEmpty) {
+                            _emailFocusNode.requestFocus();
+                          }
+                        },
+                        onTapOutside: (_) {
+                          _nameFocusNode.unfocus();
+                        },
+                        validate: widget._store.validateName,
+                      );
+                    }),
+                    Observer(builder: (_) {
+                      return AuthTextField(
+                        padding: const EdgeInsets.only(bottom: 20.0),
+                        focusNode: _emailFocusNode,
+                        icon: Icons.email,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        label: 'E-mail',
+                        onChanged: widget._store.setEmail,
+                        keyboardType: TextInputType.emailAddress,
+                        readOnly: widget._store.state is LoadingState,
+                        onSubmitted: (_) {
+                          if (widget._store.password.isEmpty) {
+                            _passwordFocusNode.requestFocus();
+                          }
+                        },
+                        onTapOutside: (_) {
+                          _emailFocusNode.unfocus();
+                        },
+                        validate: widget._store.validateEmail,
+                      );
+                    }),
+                    Observer(
+                      builder: (_) => AuthTextField(
                         padding: const EdgeInsets.only(bottom: 20.0),
                         focusNode: _passwordFocusNode,
                         icon: Icons.lock,
@@ -160,7 +153,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           );
                         },
                       ),
-                      AuthTextField(
+                    ),
+                    Observer(
+                      builder: (_) => AuthTextField(
                         padding: const EdgeInsets.only(bottom: 40.0),
                         focusNode: _confirmPasswordFocusNode,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -186,22 +181,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         onChanged: widget._store.setConfirmPassword,
                         validate: widget._store.validateConfirmPassword,
                       ),
-                      AuthButton(
-                        text: 'Cadastrar-se',
-                        size:
-                            Size(MediaQuery.sizeOf(context).width * 0.8, 60.0),
-                        onPressed: _register,
-                      ),
-                    ],
-                  ),
+                    ),
+                    AuthButton(
+                      text: 'Cadastrar-se',
+                      size: Size(MediaQuery.sizeOf(context).width * 0.8, 60.0),
+                      onPressed: _register,
+                    ),
+                  ],
                 ),
               ),
-              const Link(
-                destinyRoute: './',
-                text: 'Já possui uma conta? Clique aqui!',
-              ),
-            ],
-          ),
+            ),
+            const Link(
+              destinyRoute: './',
+              text: 'Já possui uma conta? Clique aqui!',
+            ),
+          ],
         ),
       ),
     );

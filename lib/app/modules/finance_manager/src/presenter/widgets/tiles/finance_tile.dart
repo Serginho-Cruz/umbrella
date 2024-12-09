@@ -26,6 +26,7 @@ class FinanceTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textMaxWidth = MediaQuery.sizeOf(context).width * 0.35;
     return ExpansionTile(
       backgroundColor: UmbrellaPalette.secondaryColor,
       collapsedBackgroundColor: UmbrellaPalette.secondaryColor,
@@ -33,10 +34,13 @@ class FinanceTile extends StatelessWidget {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MediumText.bold(
-            model.name,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+          LimitedBox(
+            maxWidth: textMaxWidth,
+            child: MediumText.bold(
+              model.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
           Price.medium(
             model.totalValue,
@@ -82,7 +86,7 @@ class FinanceTile extends StatelessWidget {
             if (model.personName != null)
               Spaced(
                 first: SmallText(
-                  model is ExpenseModel ? 'Devedor' : 'Devo isso a',
+                  model is ExpenseModel ? 'Devo isso a' : 'Quem me deve isso',
                 ),
                 second: SmallText.bold(model.personName!),
               ),

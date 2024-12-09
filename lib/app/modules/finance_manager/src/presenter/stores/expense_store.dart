@@ -323,7 +323,8 @@ abstract class _ExpenseStoreBase
       }
     }
 
-    getAll(ignoreLoading: true);
+    state = const InitialState();
+    _accountStore.get(force: true);
     return null;
   }
 
@@ -557,8 +558,9 @@ abstract class _ExpenseStoreBase
     _monthReaction = reaction((_) => _monthStore.month, (_) => getAll());
 
     _accountsReaction = reaction(
-        (_) => _accountStore.visualizingAccounts.iterator,
-        (_) => getAll(ignoreLoading: true));
+      (_) => _accountStore.visualizingAccounts.iterator,
+      (_) => getAll(ignoreLoading: true),
+    );
   }
 
   List<ExpenseModel> _sort(List<ExpenseModel> list) {

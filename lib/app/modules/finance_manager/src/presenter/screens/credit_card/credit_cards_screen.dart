@@ -38,7 +38,6 @@ class _CreditCardsScreenState extends State<CreditCardsScreen> {
     _disposer = reaction((_) => widget._cardStore.searchString, (_) {
       widget._cardStore.filterByName();
     });
-    _fetchCards();
   }
 
   @override
@@ -47,9 +46,6 @@ class _CreditCardsScreenState extends State<CreditCardsScreen> {
       appBar: CustomAppBar(
         title: 'Meus Cartões',
         showMonthChanger: true,
-        onMonthChange: (_, __) {
-          Future(_fetchCards);
-        },
       ),
       floatingActionButton: NavigationIconButton(
         route: '/finance_manager/card/add',
@@ -60,67 +56,71 @@ class _CreditCardsScreenState extends State<CreditCardsScreen> {
         padding: EdgeInsets.symmetric(
           horizontal: MediaQuery.sizeOf(context).width * 0.05,
         ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 30.0),
-              UmbrellaSearchBar(
-                onChanged: (text) => widget._cardStore.setSearchString(text),
-              ),
-              const SizedBox(height: 20.0),
-              Observer(builder: (_) {
-                return ListSegmentedStateWidget(
-                  state: widget._cardStore.state,
-                  onLoading: (ctx) => Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: List.generate(
-                      5,
-                      (_) => const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10.0),
-                        child: ShimmerCard(),
-                      ),
-                    ),
-                  ),
-                  onFail: (ctx, fail) {
-                    UmbrellaDialogs.showError(
-                      context,
-                      fail.message,
-                    );
-                    return const Center(
-                      child: MediumText(
-                        'Erro ao obter os seus cartões de crédito',
-                      ),
-                    );
-                  },
-                  onEmpty: (ctx) => SizedBox(
-                    height: 200.0,
-                    width: MediaQuery.sizeOf(context).width * 0.8,
-                    child: const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.credit_card, size: 60.0),
-                        SizedBox(height: 20.0),
-                        MediumText.bold(
-                          'Nenhum Cartão encontrado. Que tal cadastrar um agora mesmo?',
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
+        child: RefreshIndicator.adaptive(
+          onRefresh: widget._cardStore.getAll,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 30.0),
+                UmbrellaSearchBar(
+                  onChanged: (text) => widget._cardStore.setSearchString(text),
+                ),
+                const SizedBox(height: 20.0),
+                Observer(builder: (_) {
+                  return ListSegmentedStateWidget(
+                    state: widget._cardStore.state,
+                    onLoading: (ctx) => Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: List.generate(
+                        5,
+                        (_) => const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10.0),
+                          child: ShimmerCard(),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                  onState: (ctx, _) => Observer(
-                    builder: (_) {
-                      var filtered = widget._cardStore.filteredCards;
-                      return widget._cardStore.filteredCards.isEmpty
-                          ? _mountEmptyCase(
-                              'Nenhum Cartão encontrado com o nome filtrado')
-                          : _mountStateCase(filtered);
+                    onFail: (ctx, fail) {
+                      UmbrellaDialogs.showError(
+                        context,
+                        fail.message,
+                      );
+                      return const Center(
+                        child: MediumText(
+                          'Erro ao obter os seus cartões de crédito',
+                        ),
+                      );
                     },
-                  ),
-                );
-              }),
-            ],
+                    onEmpty: (ctx) => SizedBox(
+                      height: 200.0,
+                      width: MediaQuery.sizeOf(context).width * 0.8,
+                      child: const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.credit_card, size: 60.0),
+                          SizedBox(height: 20.0),
+                          MediumText.bold(
+                            'Nenhum Cartão encontrado. Que tal cadastrar um agora mesmo?',
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                          ),
+                        ],
+                      ),
+                    ),
+                    onState: (ctx, _) => Observer(
+                      builder: (_) {
+                        var filtered = widget._cardStore.filteredCards;
+                        return widget._cardStore.filteredCards.isEmpty
+                            ? _mountEmptyCase(
+                                'Nenhum Cartão encontrado com o nome filtrado')
+                            : _mountStateCase(filtered);
+                      },
+                    ),
+                  );
+                }),
+              ],
+            ),
           ),
         ),
       ),
@@ -154,6 +154,7 @@ class _CreditCardsScreenState extends State<CreditCardsScreen> {
   }
 
   Widget _mountStateCase(List<CreditCard> cards) {
+    final cardsWidth = MediaQuery.sizeOf(context).width * 0.7;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: List.generate(cards.length, (i) {
@@ -165,6 +166,7 @@ class _CreditCardsScreenState extends State<CreditCardsScreen> {
           ),
           child: CreditCardWidget(
             creditCard: cards[i],
+            width: cardsWidth,
             margin: const EdgeInsets.symmetric(vertical: 20.0),
           ),
         );

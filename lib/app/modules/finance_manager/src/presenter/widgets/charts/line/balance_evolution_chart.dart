@@ -3,6 +3,7 @@ import 'dart:math' show pow, log;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../domain/entities/date.dart';
 import '../../../utils/currency_format.dart';
 import '../../../utils/umbrella_palette.dart';
 import '../../../utils/umbrella_sizes.dart';
@@ -35,7 +36,7 @@ class BalanceEvolutionChart extends StatelessWidget {
           transformData: (entry) => (entry.key.toDouble(), entry.value),
           minX: 0,
           minY: 0.00,
-          maxX: 32,
+          maxX: Date.today().day + 1,
           leftAxisConfig: AxisConfig(
             reservedColumnSize: 100,
             axisTitleBuilder: (value, _) {

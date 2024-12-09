@@ -6,11 +6,13 @@ class HorizontalAnimatedList extends StatefulWidget {
     required this.itemBuilderFunction,
     required this.length,
     required this.height,
+    this.padding = EdgeInsets.zero,
   });
 
   final Widget Function(BuildContext, int) itemBuilderFunction;
   final int length;
   final double height;
+  final EdgeInsetsGeometry padding;
 
   @override
   State<HorizontalAnimatedList> createState() => _HorizontalAnimatedListState();
@@ -38,14 +40,16 @@ class _HorizontalAnimatedListState extends State<HorizontalAnimatedList> {
       height: widget.height,
       child: AnimatedList(
         key: _key,
+        padding: widget.padding,
         initialItemCount: 0,
-        padding: const EdgeInsets.symmetric(vertical: 40.0),
         physics: const BouncingScrollPhysics(),
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index, animation) {
           return ScaleTransition(
             scale: CurvedAnimation(
-                parent: animation, curve: Curves.linearToEaseOut),
+              parent: animation,
+              curve: Curves.linearToEaseOut,
+            ),
             child: widget.itemBuilderFunction(context, index),
           );
         },

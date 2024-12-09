@@ -7,6 +7,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/wi
 
 import '../../../domain/usecases/sorts/sort_payment_records.dart';
 import '../../stores/payment_record_store.dart';
+import '../../utils/umbrella_palette.dart';
 import '../buttons/primary_button.dart';
 import '../buttons/segmented_origin_button.dart';
 import '../filters/date_range_filter.dart';
@@ -159,6 +160,7 @@ class PaymentRecordFilterDialog extends StatelessWidget {
                         children: [
                           Radio.adaptive(
                             value: option,
+                            activeColor: UmbrellaPalette.sliderFilterColor,
                             groupValue: recordStore.sortOption,
                             onChanged: (newOption) {
                               if (newOption != null) {
@@ -184,6 +186,11 @@ class PaymentRecordFilterDialog extends StatelessWidget {
                       Transform.scale(
                         scale: 1.2,
                         child: Checkbox.adaptive(
+                          activeColor: UmbrellaPalette.sliderFilterColor,
+                          mouseCursor: SystemMouseCursors.click,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(2),
+                          ),
                           value: recordStore.isCrescentOrder,
                           onChanged: (_) {
                             recordStore.toggleCrescentOrder();

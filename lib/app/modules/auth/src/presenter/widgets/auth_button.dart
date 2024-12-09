@@ -16,7 +16,7 @@ class AuthButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FilledButton(
       style: ButtonStyle(
-        animationDuration: const Duration(milliseconds: 500),
+        animationDuration: const Duration(milliseconds: 1000),
         elevation: const WidgetStatePropertyAll(6.0),
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(
@@ -25,14 +25,21 @@ class AuthButton extends StatelessWidget {
           ),
         ),
         fixedSize: WidgetStatePropertyAll(size),
+        overlayColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.hovered)) {
+            return const Color(0xFFB0FFC0);
+          }
+          return null;
+        }),
         backgroundColor: WidgetStateProperty.resolveWith(
-          (states) {
-            if (states.contains(WidgetState.pressed) ||
-                states.contains(WidgetState.hovered)) {
-              return const Color(0xFF6FDCFF);
-            }
-
-            return const Color(0xFFC786F9);
+          (st) {
+            return switch (st) {
+              Set s when s.contains(WidgetState.hovered) =>
+                const Color(0xFF8CEB93),
+              Set s when s.contains(WidgetState.pressed) =>
+                const Color(0xFF76D580),
+              _ => const Color(0xFF9EFFA5),
+            };
           },
         ),
       ),

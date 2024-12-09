@@ -82,7 +82,7 @@ abstract class FinanceCard extends StatelessWidget {
         Positioned(
           top: 12,
           right: 12,
-          child: StatusIcon(status: status, size: 32.0),
+          child: StatusIcon(status: status, size: 28.0),
         ),
       ],
     );

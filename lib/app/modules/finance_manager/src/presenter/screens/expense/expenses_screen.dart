@@ -6,6 +6,7 @@ import '../../../domain/entities/date.dart';
 import '../../stores/expense_store.dart';
 import '../../stores/month_store.dart';
 import '../../utils/currency_format.dart';
+import '../../utils/umbrella_palette.dart';
 import '../../widgets/filters/finance_filter.dart';
 import '../../widgets/others/list_segmented_state_widget.dart';
 import '../../widgets/others/segmented_state_widget.dart';
@@ -97,161 +98,179 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
               route: '/finance_manager/expense/add',
               tooltipMessage: 'Ir para a Tela de Adicionar Despesas',
             ),
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: MediaQuery.sizeOf(context).width * 0.05,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const SizedBox(height: 20.0),
-                    Observer(builder: (_) {
-                      return AccountSelector(
-                        accounts: accounts,
-                        selectedAccount: widget._accountStore.selectedAccount,
-                        onSelected: widget._accountStore.changeSelectedAccount,
-                      );
-                    }),
-                    const SizedBox(height: 20.0),
-                    Observer(
-                      builder: (_) => mountTotalText(
-                        text: 'Total em Despesas: ',
-                        value: widget._expenseStore.totalToPay,
-                      ),
-                    ),
-                    const SizedBox(height: 10.0),
-                    Observer(
-                      builder: (_) => mountTotalText(
-                        text: 'Total Pago: ',
-                        value: widget._expenseStore.totalPaid,
-                      ),
-                    ),
-                    const SizedBox(height: 30.0),
-                    Observer(
-                      builder: (_) {
-                        return ListSegmentedStateWidget<Category>(
-                          state: widget._categoryStore.state,
-                          onLoading: (ctx) =>
-                              const CircularProgressIndicator.adaptive(),
-                          onFail: (ctx, fail) => mountFilter(),
-                          onState: (ctx, categories) => mountFilter(categories),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 30.0),
-                    ListSegmentedStateWidget(
-                      state: widget._expenseStore.state,
-                      onLoading: (ctx) => Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: List.generate(
-                          5,
-                          (i) => ShimmerListTile(
-                            roundedOnTop: i == 0,
-                            roundedOnBottom: i == 4,
-                          ),
+            child: RefreshIndicator.adaptive(
+              onRefresh: widget._expenseStore.getAll,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.sizeOf(context).width * 0.05,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(height: 20.0),
+                      Observer(
+                        builder: (_) => AccountSelector(
+                          accounts: accounts,
+                          selectedAccount: widget._accountStore.selectedAccount,
+                          onSelected:
+                              widget._accountStore.changeSelectedAccount,
                         ),
                       ),
-                      onFail: (ctx, fail) {
-                        UmbrellaDialogs.showError(
-                          context,
-                          fail.message,
-                        );
-                        var (:month, :year) =
-                            BindServiceProvider.get<MonthStore>().month;
-
-                        String name =
-                            Date(day: 1, month: month, year: year).monthName;
-                        return Center(
-                          child: MediumText(
-                              'Erro ao obter as Despesas do Mês de $name'),
-                        );
-                      },
-                      onEmpty: (_) {
-                        String text;
-                        var (:month, :year) =
-                            BindServiceProvider.get<MonthStore>().month;
-
-                        String name =
-                            Date(day: 1, month: month, year: year).monthName;
-
-                        text = 'Nenhuma Despesa encontrada para o mês de $name';
-
-                        return SizedBox(
-                          height: 200.0,
-                          width: MediaQuery.sizeOf(context).width * 0.8,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.money_off_rounded, size: 60.0),
-                              const SizedBox(height: 20.0),
-                              MediumText.bold(text,
-                                  textAlign: TextAlign.center),
-                            ],
+                      const SizedBox(height: 20.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Observer(
+                            builder: (_) => _mountTotalWidget(
+                              text: 'Total em Despesas',
+                              value: widget._expenseStore.totalToPay,
+                            ),
                           ),
-                        );
-                      },
-                      onState: (ctx, expenses) => Observer(builder: (_) {
-                        var filtered = widget._expenseStore.filteredExpenses;
-
-                        if (filtered.isEmpty) {
-                          String text;
-                          var (:month, :year) =
-                              BindServiceProvider.get<MonthStore>().month;
-
-                          String name =
-                              Date(day: 1, month: month, year: year).monthName;
-
-                          text =
-                              'Nenhuma Receita encontrada para o mês de $name com os filtros escolhidos';
-
-                          return SizedBox(
-                            height: 200.0,
-                            width: MediaQuery.sizeOf(context).width * 0.8,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.money_off_rounded, size: 60.0),
-                                const SizedBox(height: 20.0),
-                                MediumText.bold(
-                                  text,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
+                          Observer(
+                            builder: (_) => _mountTotalWidget(
+                              text: 'Total Pago',
+                              value: widget._expenseStore.totalPaid,
                             ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 30.0),
+                      Observer(
+                        builder: (_) {
+                          return ListSegmentedStateWidget<Category>(
+                            state: widget._categoryStore.state,
+                            onLoading: (ctx) =>
+                                const CircularProgressIndicator.adaptive(),
+                            onFail: (ctx, fail) => _mountFilter(),
+                            onState: (ctx, categories) =>
+                                _mountFilter(categories),
                           );
-                        }
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const SmallDisclaimer(
-                              'Aperte duas vezes em uma receita para abrir o menu de opções',
-                              textAlign: TextAlign.center,
-                              maxLines: 2,
-                            ),
-                            ...List.generate(
-                              filtered.length,
-                              (i) => Tappable(
-                                options: ExpenseTappableOptions.get(
-                                  context: context,
-                                  model: filtered[i],
-                                  store: widget._expenseStore,
-                                  accountStore: widget._accountStore,
-                                ),
-                                openMenuDispatcher:
-                                    TappableDispatcher.doubleTap,
-                                child: FinanceTile(
-                                  model: filtered[i],
-                                  roundedOnTop: i == 0,
-                                  roundedOnBottom: i == filtered.length - 1,
-                                ),
+                        },
+                      ),
+                      const SizedBox(height: 30.0),
+                      Observer(
+                        builder: (_) => ListSegmentedStateWidget(
+                          state: widget._expenseStore.state,
+                          onLoading: (ctx) => Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: List.generate(
+                              5,
+                              (i) => ShimmerListTile(
+                                height: 75,
+                                roundedOnTop: i == 0,
+                                roundedOnBottom: i == 4,
                               ),
                             ),
-                          ],
-                        );
-                      }),
-                    ),
-                  ],
+                          ),
+                          onFail: (ctx, fail) {
+                            UmbrellaDialogs.showError(
+                              context,
+                              fail.message,
+                            );
+                            var (:month, :year) =
+                                BindServiceProvider.get<MonthStore>().month;
+
+                            String name = Date(day: 1, month: month, year: year)
+                                .monthName;
+                            return Center(
+                              child: MediumText(
+                                  'Erro ao obter as Despesas do Mês de $name'),
+                            );
+                          },
+                          onEmpty: (_) {
+                            String text;
+                            var (:month, :year) =
+                                BindServiceProvider.get<MonthStore>().month;
+
+                            String name = Date(day: 1, month: month, year: year)
+                                .monthName;
+
+                            text =
+                                'Nenhuma Despesa encontrada para o mês de $name';
+
+                            return SizedBox(
+                              height: 200.0,
+                              width: MediaQuery.sizeOf(context).width * 0.8,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.money_off_rounded,
+                                      size: 60.0),
+                                  const SizedBox(height: 20.0),
+                                  MediumText.bold(text,
+                                      textAlign: TextAlign.center),
+                                ],
+                              ),
+                            );
+                          },
+                          onState: (ctx, expenses) => Observer(builder: (_) {
+                            var filtered =
+                                widget._expenseStore.filteredExpenses;
+
+                            if (filtered.isEmpty) {
+                              String text;
+                              var (:month, :year) =
+                                  BindServiceProvider.get<MonthStore>().month;
+
+                              String name =
+                                  Date(day: 1, month: month, year: year)
+                                      .monthName;
+
+                              text =
+                                  'Nenhuma Receita encontrada para o mês de $name com os filtros escolhidos';
+
+                              return SizedBox(
+                                height: 200.0,
+                                width: MediaQuery.sizeOf(context).width * 0.8,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.money_off_rounded,
+                                        size: 60.0),
+                                    const SizedBox(height: 20.0),
+                                    MediumText.bold(
+                                      text,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const SmallDisclaimer(
+                                  'Aperte duas vezes em uma receita para abrir o menu de opções',
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                ),
+                                ...List.generate(
+                                  filtered.length,
+                                  (i) => Tappable(
+                                    options: ExpenseTappableOptions.get(
+                                      context: context,
+                                      model: filtered[i],
+                                      store: widget._expenseStore,
+                                      accountStore: widget._accountStore,
+                                    ),
+                                    openMenuDispatcher:
+                                        TappableDispatcher.doubleTap,
+                                    child: FinanceTile(
+                                      model: filtered[i],
+                                      roundedOnTop: i == 0,
+                                      roundedOnBottom: i == filtered.length - 1,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -261,25 +280,40 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     });
   }
 
-  Widget mountTotalText({
+  Widget _mountTotalWidget({
     required String text,
     required double value,
   }) {
-    return Row(
-      children: [
-        MediumText(text),
-        const SizedBox(width: 10.0),
-        ListSegmentedStateWidget(
-          state: widget._expenseStore.state,
-          onLoading: (_) => const SmallText.bold('Carregando...'),
-          onFail: (ctx, _) => const MediumText.bold('Erro'),
-          onState: (ctx, __) => MediumText.bold(CurrencyFormat.format(value)),
-        ),
-      ],
+    final cardWidth = MediaQuery.sizeOf(context).width * 0.4;
+    return Container(
+      decoration: BoxDecoration(
+        color: UmbrellaPalette.secondaryColor,
+        border: Border.all(),
+        boxShadow: kElevationToShadow[2],
+        borderRadius: BorderRadius.circular(2),
+      ),
+      padding: const EdgeInsets.all(10),
+      width: cardWidth,
+      height: 80,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          LimitedBox(maxWidth: cardWidth * 0.9, child: SmallText(text)),
+          ListSegmentedStateWidget(
+            state: widget._expenseStore.state,
+            onLoading: (_) => const MediumText.bold('Carregando...'),
+            onFail: (ctx, _) => const MediumText.bold('Erro'),
+            onState: (ctx, __) => MediumText.bold(
+              CurrencyFormat.format(value),
+              decoration: TextDecoration.underline,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget mountFilter([List<Category> categories = const []]) {
+  Widget _mountFilter([List<Category> categories = const []]) {
     return SegmentedStateWidget(
       state: widget._expenseStore.state,
       onLoading: (ctx) => const CircularProgressIndicator(),

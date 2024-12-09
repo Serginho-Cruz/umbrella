@@ -43,7 +43,7 @@ class AuthTextField extends StatelessWidget {
         decoration: InputDecoration(
           labelText: label,
           filled: true,
-          fillColor: Colors.white,
+          fillColor: Colors.grey.withOpacity(0.1),
           prefixIcon: Icon(icon, color: Colors.black, size: 20.0),
           border: OutlineInputBorder(
             borderSide: const BorderSide(),

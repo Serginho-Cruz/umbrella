@@ -14,7 +14,12 @@ class SecondaryButton extends UmbrellaButton {
     Icon? icon,
   }) : super(
           label: label ?? const MediumText.bold('Limpar'),
-          icon: icon ?? const Icon(Icons.refresh_rounded, size: 24.0),
+          icon: icon ??
+              const Icon(
+                Icons.refresh_rounded,
+                size: 24.0,
+                color: Colors.black,
+              ),
           backgroundColor: UmbrellaPalette.secondaryButtonColor,
           hoverColor: UmbrellaPalette.secondaryButtonHoverColor,
           highlightColor: UmbrellaPalette.secondaryButtonHighlightColor,
