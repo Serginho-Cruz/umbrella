@@ -13,11 +13,10 @@ class DrawerLogoutItem extends StatelessWidget {
       title: const Text('Logout'),
       leading: const Icon(Icons.logout, color: Colors.black),
       style: ListTileStyle.drawer,
-      onTap: () {
-        BindServiceProvider.get<AuthStore>().logout().then((_) async {
-          Navigator.popUntil(context, (r) => r.isFirst);
-          Navigator.pushReplacementNamed(context, '/');
-        });
+      onTap: () async {
+        Navigator.popUntil(context, (r) => r.isFirst);
+        Navigator.pushReplacementNamed(context, '/auth');
+        BindServiceProvider.get<AuthStore>().logout();
       },
     );
   }

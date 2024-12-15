@@ -22,7 +22,7 @@ class MyDrawer extends StatelessWidget {
     return Drawer(
       elevation: 12.0,
       backgroundColor: Colors.white,
-      child: ListView(
+      child: Column(
         children: [
           CustomDrawerHeader(username: _user.name, userEmail: _user.email),
           ..._itensData.map((data) => DrawerItem(
@@ -30,7 +30,12 @@ class MyDrawer extends StatelessWidget {
                 route: data.route,
                 title: data.title,
               )),
-          const DrawerLogoutItem(),
+          const Expanded(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: DrawerLogoutItem(),
+            ),
+          ),
         ],
       ),
     );

@@ -125,9 +125,29 @@ class ManageExpenseImpl implements ManageExpense {
   }
 
   @override
-  AsyncResult<Unit, Fail> delete(Expense expense) {
-    // TODO: implement delete
-    throw UnimplementedError();
+  AsyncResult<Unit, Fail> delete(Expense expense) async {
+    if (expense.id.isEmpty) {
+      return const Failure(
+        Fail('Despesa não registrada. Impossível completar a ação'),
+      );
+    }
+
+    var result = await _expenseRepository.delete(expense);
+
+    if (result.isError()) return result;
+
+    if (expense.dueDate.isOfActualMonth) {
+      await _balanceRepository.addToExpected(
+        expense.totalValue,
+        expense.account,
+      );
+    }
+
+    if (expense.paidValue != 0.00) {
+      await _balanceRepository.addToActual(expense.paidValue, expense.account);
+    }
+
+    return const Success(unit);
   }
 
   @override

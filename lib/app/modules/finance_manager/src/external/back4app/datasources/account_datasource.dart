@@ -47,6 +47,7 @@ class Back4AppAccountDatasource implements AccountDatasource {
     var query = QueryBuilder(AccountObject());
 
     query.whereEqualTo('user', parseUser.toPointer());
+    query.whereEqualTo('isDeleted', false);
 
     var response = await query.query();
 
@@ -69,7 +70,7 @@ class Back4AppAccountDatasource implements AccountDatasource {
 
     object.set('isDeleted', true);
 
-    var response = await object.save();
+    var response = await object.update();
 
     if (isResponseSuccesful(response)) {
       return;

@@ -7,6 +7,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/gener
 import '../../domain/entities/account.dart';
 import '../../domain/states/state.dart';
 import '../../domain/usecases/manage_account.dart';
+import '../../domain/usecases/validates/validate_account.dart';
 import '../../errors/errors.dart';
 part 'account_store.g.dart';
 
@@ -14,6 +15,7 @@ class AccountStore = _AccountStoreBase with _$AccountStore;
 
 abstract class _AccountStoreBase with Store {
   final ManageAccount _manageAccount;
+  final ValidateAccount _validateAccount;
   final AuthStore _authStore;
 
   @observable
@@ -25,6 +27,12 @@ abstract class _AccountStoreBase with Store {
   @observable
   Account? selectedAccount;
 
+  @observable
+  String name = '';
+
+  @observable
+  double balance = 0.00;
+
   ReactionDisposer? _autoUpdater;
   ReactionDisposer? _userReaction;
 
@@ -33,20 +41,107 @@ abstract class _AccountStoreBase with Store {
 
   _AccountStoreBase({
     required ManageAccount manageAccount,
+    required ValidateAccount validateAccount,
     required AuthStore authStore,
   })  : _manageAccount = manageAccount,
+        _validateAccount = validateAccount,
         _authStore = authStore {
     _setUpReactions();
   }
 
   @action
   Future<void> create() async {
-    _needsFetch = true;
+    var nameError = validateName('');
+    var balanceError = validateBalance(0.00);
+
+    if (_authStore.state is! user.SuccessState) {
+      state = const FailState(Fail('Usuário não logado'));
+      return;
+    }
+
+    if (nameError != null) {
+      state = FailState(Fail(nameError));
+      return;
+    }
+
+    if (balanceError != null) {
+      state = FailState(Fail(balanceError));
+      return;
+    }
+
+    state = const LoadingState();
+
+    Account acc = Account(id: '', actualBalance: balance, name: name);
+
+    var result = await _manageAccount.register(
+      acc,
+      (_authStore.state as user.SuccessState).user,
+    );
+
+    result.fold((_) {
+      _needsFetch = true;
+      return;
+    }, (fail) {
+      state = FailState(fail);
+      return;
+    });
   }
 
   @action
-  Future<void> updateAccount() async {
-    _needsFetch = true;
+  Future<void> updateAccount(Account oldAccount) async {
+    var nameError = validateName('');
+    var balanceError = validateBalance(0.00);
+
+    if (_authStore.state is! user.SuccessState) {
+      state = const FailState(Fail('Usuário não logado'));
+      return;
+    }
+
+    if (nameError != null) {
+      state = FailState(Fail(nameError));
+      return;
+    }
+
+    if (balanceError != null) {
+      state = FailState(Fail(balanceError));
+      return;
+    }
+
+    state = const LoadingState();
+
+    Account acc = oldAccount.copyWith(name: name, actualBalance: balance);
+
+    var result = await _manageAccount.update(oldAccount, acc);
+
+    result.fold((_) {
+      selectedAccount = null;
+
+      _needsFetch = true;
+      return;
+    }, (fail) {
+      state = FailState(fail);
+      return;
+    });
+  }
+
+  @action
+  Future<void> setDefault(Account acc) async {
+    if (acc.isDefault) return;
+
+    var accs = (state as SuccessState<List<Account>>).state;
+
+    state = const LoadingState();
+    var result = await _manageAccount.setDefault(accs, acc);
+
+    result.fold((_) {
+      selectedAccount = null;
+
+      _needsFetch = true;
+      return;
+    }, (fail) {
+      state = FailState(fail);
+      return;
+    });
   }
 
   @action
@@ -77,9 +172,39 @@ abstract class _AccountStoreBase with Store {
   }
 
   @action
-  Future<void> delete() async {
+  Future<void> delete(Account acc) async {
+    if (state is! SuccessState) return;
+
+    state = const LoadingState();
+
+    var result = await _manageAccount.delete(acc);
+
+    result.fold((_) {
+      selectedAccount = null;
+      _needsFetch = true;
+      return;
+    }, (fail) {
+      state = FailState(fail);
+      return;
+    });
+
     _needsFetch = true;
   }
+
+  @action
+  void setName(String? name) {
+    this.name = name ?? '';
+  }
+
+  @action
+  void setBalance(double balance) {
+    this.balance = balance;
+  }
+
+  String? validateName(String? _) => _validateAccount.validateName(name);
+
+  String? validateBalance(double _) =>
+      _validateAccount.validateBalance(balance);
 
   @action
   Future<void> _fetchAccounts() async {
@@ -109,7 +234,7 @@ abstract class _AccountStoreBase with Store {
     }
 
     var stateAccs = state as SuccessState<List<Account>>;
-    if (visualizingAccounts.length != 1) {
+    if (selectedAccount == null) {
       visualizingAccounts
         ..clear()
         ..addAll(stateAccs.state);

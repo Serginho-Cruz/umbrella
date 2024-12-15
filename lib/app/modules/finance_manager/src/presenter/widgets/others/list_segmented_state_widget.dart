@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../domain/states/state.dart' as S;
+import '../../../domain/states/state.dart' as s;
 import '../../../errors/errors.dart';
 import 'segmented_state_widget.dart';
 
@@ -14,7 +14,7 @@ class ListSegmentedStateWidget<T extends Object> extends StatelessWidget {
     this.onEmpty,
   });
 
-  final S.State<List<T>> state;
+  final s.State<List<T>> state;
   final Widget Function(BuildContext, List<T>) onState;
   final Widget Function(BuildContext, Fail) onFail;
   final Widget Function(BuildContext) onLoading;

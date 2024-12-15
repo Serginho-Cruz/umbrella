@@ -25,9 +25,17 @@ class Back4AppExpenseDatasource implements ExpenseDatasource {
   }
 
   @override
-  Future<void> delete(Expense expense) {
-    // TODO: implement delete
-    throw UnimplementedError();
+  Future<void> delete(Expense expense) async {
+    var object = ExpenseMapper.toParse(expense);
+
+    object.set('isDeleted', true);
+    var response = await object.update();
+
+    if (isResponseSuccesful(response)) {
+      return;
+    }
+
+    throw extractFail(response);
   }
 
   @override
@@ -44,6 +52,7 @@ class Back4AppExpenseDatasource implements ExpenseDatasource {
 
     query.whereGreaterThanOrEqualsTo('overdueDate', firstDay);
     query.whereLessThanOrEqualTo('overdueDate', lastDay);
+    query.whereEqualTo('isDeleted', false);
     query.whereEqualTo('account', AccountMapper.toParse(account));
 
     query.includeObject(['account', 'category']);
@@ -91,6 +100,7 @@ class Back4AppExpenseDatasource implements ExpenseDatasource {
 
     query.whereEqualTo('frequency', frequency.toInt());
     query.whereEqualTo('account', AccountMapper.toParse(account));
+    query.whereEqualTo('isDeleted', false);
 
     query.orderByAscending('overdueDate');
 
@@ -120,6 +130,7 @@ class Back4AppExpenseDatasource implements ExpenseDatasource {
     query.whereEqualTo('account', AccountMapper.toParse(account));
     query.whereGreaterThanOrEqualsTo('overdueDate', inferiorLimit.toDateTime());
     query.whereLessThanOrEqualTo('overdueDate', upperLimit.toDateTime());
+    query.whereEqualTo('isDeleted', false);
 
     query.orderByAscending('overdueDate');
 

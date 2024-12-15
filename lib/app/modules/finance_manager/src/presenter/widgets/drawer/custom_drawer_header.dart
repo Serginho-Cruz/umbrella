@@ -19,6 +19,7 @@ class CustomDrawerHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 180,
+      width: MediaQuery.sizeOf(context).width,
       decoration: const BoxDecoration(
         color: UmbrellaPalette.secondaryColor,
         border: Border(bottom: BorderSide()),

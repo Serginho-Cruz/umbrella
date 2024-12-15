@@ -141,12 +141,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.only(left: 15.0, bottom: 20.0),
                     child: BigText('Olá $_getUserName!'),
                   ),
-                  makeSection(
+                  _makeSection(
                     title: 'Receitas',
                     child: Observer(
                       builder: (_) => ListSegmentedStateWidget(
                         state: widget._incomeStore.state,
-                        onLoading: (_) => makeShimmerList(),
+                        onLoading: (_) => _makeShimmerList(),
                         onFail: (ctx, f) => SizedBox(
                           height: 240,
                           width: 300,
@@ -177,12 +177,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                  makeSection(
+                  _makeSection(
                     title: 'Despesas',
                     child: Observer(
                       builder: (_) => ListSegmentedStateWidget(
                         state: widget._expenseStore.state,
-                        onLoading: (_) => makeShimmerList(),
+                        onLoading: (_) => _makeShimmerList(),
                         onFail: (ctx, f) => SizedBox(
                           height: 240,
                           width: 300,
@@ -214,15 +214,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                  makeSection(
+                  _makeSection(
                     title: 'Cartões de Crédito',
                     child: Observer(
                       builder: (_) => ListSegmentedStateWidget(
                         state: widget._creditCardStore.state,
-                        onLoading: (ctx) => makeShimmerList(
+                        onLoading: (ctx) => _makeShimmerList(
                           height: 180,
                           shimmerWidth: 240,
-                          shimmerHeight: 140,
+                          shimmerHeight: 180,
                         ),
                         onFail: (ctx, f) => Text(f.message),
                         onState: (ctx, state) => HorizontalAnimatedList(
@@ -234,6 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               options: CreditCardTappableOptions.get(
                                 context: screenContext,
                                 card: state[index],
+                                store: widget._creditCardStore,
                               ),
                               child: CreditCardWidget(
                                 creditCard: state[index],
@@ -260,7 +261,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String get _getUserName =>
       (BindServiceProvider.get<AuthStore>().state as SuccessState).user.name;
 
-  Widget makeSection({required String title, required Widget child}) {
+  Widget _makeSection({required String title, required Widget child}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 40.0),
       child: HorizontallyInfinityContainer(
@@ -280,19 +281,20 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget makeShimmerList({
-    double height = 240,
+  Widget _makeShimmerList({
+    double height = 250,
     double shimmerWidth = 230,
-    double shimmerHeight = 180,
+    double shimmerHeight = 170,
   }) {
     return SizedBox(
       height: height,
       child: HorizontalListView(
         itemCount: 4,
-        padding: const EdgeInsets.symmetric(vertical: 40.0),
-        itemCallback: (i) => ShimmerContainer(
-          height: shimmerHeight,
-          width: shimmerWidth,
+        itemCallback: (i) => UnconstrainedBox(
+          child: ShimmerContainer(
+            height: shimmerHeight,
+            width: shimmerWidth,
+          ),
         ),
       ),
     );

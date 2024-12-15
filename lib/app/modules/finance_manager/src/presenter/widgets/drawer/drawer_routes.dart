@@ -20,6 +20,11 @@ List<_DrawerItemData> get _itensData {
       route: FinanceRoutes.home,
     ),
     _DrawerItemData(
+      title: 'Minhas Contas',
+      iconData: Icons.wallet,
+      route: FinanceRoutes.myAccounts,
+    ),
+    _DrawerItemData(
       title: 'Receitas',
       iconData: Icons.attach_money,
       route: FinanceRoutes.incomes,

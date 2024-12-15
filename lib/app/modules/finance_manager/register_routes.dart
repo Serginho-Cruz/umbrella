@@ -10,6 +10,7 @@ import 'src/domain/entities/expense.dart';
 import 'src/domain/entities/income.dart';
 import 'src/domain/models/expense_model.dart';
 import 'src/domain/models/income_model.dart';
+import 'src/presenter/screens/accounts/accounts_screen.dart';
 import 'src/presenter/stores/expense_store.dart';
 import 'src/presenter/stores/income_store.dart';
 import 'src/presenter/screens/screens.dart';
@@ -31,6 +32,14 @@ abstract final class RegisterRoutes {
         expenseStore: _resolve(),
         creditCardStore: _resolve(),
         accountStore: _resolve(),
+      ),
+    );
+
+    r.child(
+      UnmodularFormatFinanceRoutes.myAccounts,
+      child: (context) => AccountsScreen(
+        accountStore: _resolve(),
+        authStore: _resolve(),
       ),
     );
 

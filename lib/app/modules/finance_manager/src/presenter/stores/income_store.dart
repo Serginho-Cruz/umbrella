@@ -64,6 +64,7 @@ abstract class _IncomeStoreBase
   late final ReactionDisposer _accountsReaction;
   late final ReactionDisposer _monthReaction;
 
+  @override
   @observable
   State<List<IncomeModel>> state = const InitialState();
 
@@ -412,6 +413,32 @@ abstract class _IncomeStoreBase
 
     filteredIncomes.clear();
     filteredIncomes.addAll(models);
+  }
+
+  @override
+  @action
+  Future<Fail?> delete() async {
+    if (selectedModel == null) {
+      const fail = Fail('Receita não selecionada');
+      state = const FailState(fail);
+      return fail;
+    }
+
+    IncomeModel model = selectedModel!;
+
+    Income income = model.toEntity();
+
+    state = const LoadingState();
+
+    var result = await _manageIncome.delete(income);
+
+    return result.fold((_) {
+      getAll(ignoreLoading: true);
+      return null;
+    }, (f) {
+      state = FailState(f);
+      return f;
+    });
   }
 
   @override

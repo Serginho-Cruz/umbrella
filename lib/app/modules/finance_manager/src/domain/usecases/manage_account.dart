@@ -7,6 +7,7 @@ import '../../errors/errors.dart';
 abstract interface class ManageAccount {
   AsyncResult<String, Fail> register(Account account, User user);
   AsyncResult<Unit, Fail> update(Account oldAccount, Account newAccount);
+  AsyncResult<Unit, Fail> setDefault(List<Account> all, Account account);
   AsyncResult<List<Account>, Fail> getAll(User user);
   AsyncResult<Unit, Fail> delete(Account account);
 }

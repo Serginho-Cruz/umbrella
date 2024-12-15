@@ -160,6 +160,7 @@ class _CreditCardsScreenState extends State<CreditCardsScreen> {
       children: List.generate(cards.length, (i) {
         return Tappable(
           options: CreditCardTappableOptions.get(
+            store: widget._cardStore,
             context: context,
             card: cards[i],
             onPop: _fetchCards,

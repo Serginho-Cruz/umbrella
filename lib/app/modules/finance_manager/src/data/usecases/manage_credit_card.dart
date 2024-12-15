@@ -24,59 +24,12 @@ class ManageCreditCardImpl implements ManageCreditCard {
   AsyncResult<String, Fail> register(CreditCard card, User user) async {
     final cardCreateResult = await cardRepository.create(card, user);
 
-    if (cardCreateResult.isError()) {
-      return cardCreateResult;
-    }
-
-    CreditCard cardRegistered = card.copyWith(id: cardCreateResult.getOrNull());
-
-    final invoiceCreateResult =
-        await invoiceRepository.generateOfCard(cardRegistered);
-
-    if (invoiceCreateResult.isError()) {
-      return invoiceCreateResult.map((id) => id.toString());
-    }
-
     return cardCreateResult;
   }
 
   @override
-  AsyncResult<Unit, Fail> update(
-    CreditCard oldCard,
-    CreditCard newCard,
-  ) async {
+  AsyncResult<Unit, Fail> update(CreditCard oldCard, CreditCard newCard) async {
     var cardUpdate = await cardRepository.update(newCard);
-
-    if (cardUpdate.isError()) return cardUpdate;
-
-    var invoicesFetch = await invoiceRepository.getAllOfCard(oldCard);
-
-    if (invoicesFetch.isError()) return invoicesFetch.pure(unit);
-
-    var invoices = invoicesFetch.getOrDefault([]);
-
-    for (var invoice in invoices) {
-      if (!invoice.isClosed) {
-        int monthsToAdd = 0;
-
-        if (newCard.cardInvoiceClosingDay > newCard.cardInvoiceDueDay) {
-          monthsToAdd++;
-        }
-
-        manageInvoice.update(
-          oldInvoice: invoice,
-          newInvoice: invoice.copyWith(
-            closingDate: invoice.closingDate.copyWith(
-              day: newCard.cardInvoiceClosingDay,
-            ),
-            dueDate: invoice.dueDate.copyWith(
-              day: newCard.cardInvoiceDueDay,
-              month: invoice.dueDate.month + monthsToAdd,
-            ),
-          ),
-        );
-      }
-    }
 
     return cardUpdate;
   }
@@ -116,20 +69,6 @@ class ManageCreditCardImpl implements ManageCreditCard {
     var updatedCard = card.copyWith(accountToDiscountInvoice: newAccount);
 
     var cardUpdateRes = await cardRepository.update(updatedCard);
-
-    if (cardUpdateRes.isError()) return cardUpdateRes;
-
-    var invoicesResult = await invoiceRepository.getAllOfCard(updatedCard);
-
-    if (invoicesResult.isError()) return invoicesResult.pure(unit);
-
-    for (var invoice in invoicesResult.getOrDefault([])) {
-      if (!invoice.isClosed) {
-        var switchRes = await manageInvoice.switchAccount(invoice, newAccount);
-
-        if (switchRes.isError()) return switchRes;
-      }
-    }
 
     return cardUpdateRes;
   }

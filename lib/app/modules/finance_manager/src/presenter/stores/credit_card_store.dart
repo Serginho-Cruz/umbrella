@@ -29,6 +29,9 @@ abstract class _CreditCardStoreBase with Store {
   ObservableList<CreditCard> filteredCards = ObservableList();
 
   @observable
+  CreditCard? selectedCard;
+
+  @observable
   String searchString = '';
 
   @observable
@@ -145,6 +148,25 @@ abstract class _CreditCardStoreBase with Store {
   }
 
   @action
+  Future<Fail?> delete() async {
+    if (selectedCard == null) {
+      return const Fail('Cartão de Crédito não selecionado para deletar');
+    }
+
+    state = const LoadingState();
+
+    var result = await _manageCreditCard.cancel(selectedCard!);
+
+    return result.fold((_) {
+      getAll(ignoreLoading: true);
+      return null;
+    }, (f) {
+      state = FailState(f);
+      return f;
+    });
+  }
+
+  @action
   void filterByName() {
     if (state is! SuccessState) return;
 
@@ -190,6 +212,11 @@ abstract class _CreditCardStoreBase with Store {
   @action
   void setAccount(Account? acc) {
     account = acc;
+  }
+
+  @action
+  void setCreditCard(CreditCard? card) {
+    selectedCard = card;
   }
 
   @action

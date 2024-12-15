@@ -60,6 +60,7 @@ abstract class _ExpenseStoreBase
   late final ReactionDisposer _accountsReaction;
   late final ReactionDisposer _monthReaction;
 
+  @override
   @observable
   State<List<ExpenseModel>> state = const InitialState();
 
@@ -303,6 +304,29 @@ abstract class _ExpenseStoreBase
     var models = incomes.map(_toModel).toList();
 
     state = SuccessState(models);
+  }
+
+  @override
+  @action
+  Future<Fail?> delete() async {
+    if (selectedModel == null) {
+      return const Fail('Despesa não selecionada');
+    }
+
+    ExpenseModel model = selectedModel!;
+
+    Expense expense = model.toEntity();
+
+    state = const LoadingState();
+
+    var result = await _manageExpense.delete(expense);
+
+    return result.fold((_) {
+      getAll(ignoreLoading: true);
+      return null;
+    }, (f) {
+      return f;
+    });
   }
 
   @override

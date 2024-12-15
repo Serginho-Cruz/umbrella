@@ -3,7 +3,9 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/useca
 
 import '../src/data/usecases/implementations.dart';
 import '../src/data/usecases/obtain_persons_debts_impl.dart';
+import '../src/data/usecases/validates/validate_account_impl.dart';
 import '../src/domain/usecases/interfaces.dart';
+import '../src/domain/usecases/validates/validate_account.dart';
 import '../src/domain/usecases/validates/validate_credit_card.dart';
 import '../src/domain/usecases/validates/validate_income.dart';
 import '../src/domain/usecases/validates/validate_expense.dart';
@@ -61,6 +63,7 @@ abstract class UsecasesBindings {
     i.addLazySingleton<ValidateCreditCard>(ValidateCreditCardImpl.new);
     i.addLazySingleton<ValidateIncome>(ValidateIncomeImpl.new);
     i.addLazySingleton<ValidateExpense>(ValidateExpenseImpl.new);
+    i.addLazySingleton<ValidateAccount>(ValidateAccountImpl.new);
 
     i.addLazySingleton<ManageCreditCard>(
       () => ManageCreditCardImpl(

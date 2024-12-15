@@ -5,10 +5,12 @@ import '../../domain/entities/credit_card.dart';
 import '../../domain/entities/payment_method.dart';
 import '../../domain/entities/payment_record.dart';
 import '../../domain/models/paiyable_model.dart';
+import '../../domain/states/state.dart';
 import '../../errors/errors.dart';
 
 abstract interface class PaiyableStore<P extends PaiyableModel<T>,
     T extends Paiyable> {
+  State<List<PaiyableModel<T>>> get state;
   List<PaymentRecord<T>> get paymentsToDo;
 
   double get totalPaying;
@@ -32,6 +34,7 @@ abstract interface class PaiyableStore<P extends PaiyableModel<T>,
 
   Future<Fail?> switchAccount();
   Future<Fail?> updateValue();
+  Future<Fail?> delete();
   Future<Fail?> pay();
 
   void setValue(double value);

@@ -39,4 +39,22 @@ class ManageAccountImpl implements ManageAccount {
     var result = await _repository.delete(account);
     return result;
   }
+
+  @override
+  AsyncResult<Unit, Fail> setDefault(List<Account> all, Account account) async {
+    if (account.isDefault) return const Success(unit);
+
+    Account defaultAcc = all.firstWhere((acc) => acc.isDefault);
+
+    var updateResult =
+        await _repository.update(defaultAcc.copyWith(isDefault: false));
+
+    if (updateResult.isError()) return updateResult;
+
+    updateResult = await _repository.update(account.copyWith(isDefault: true));
+
+    if (updateResult.isError()) return updateResult;
+
+    return const Success(unit);
+  }
 }

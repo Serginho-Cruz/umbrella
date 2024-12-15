@@ -39,6 +39,7 @@ class Back4AppIncomeDatasource implements IncomeDatasource {
     query.whereGreaterThanOrEqualsTo('overdueDate', firstDay);
     query.whereLessThanOrEqualTo('overdueDate', lastDay);
     query.whereEqualTo('account', AccountMapper.toParse(account));
+    query.whereEqualTo('isDeleted', false);
 
     query.includeObject(['account', 'category']);
 
@@ -85,6 +86,7 @@ class Back4AppIncomeDatasource implements IncomeDatasource {
 
     query.whereEqualTo('frequency', frequency.toInt());
     query.whereEqualTo('account', AccountMapper.toParse(account));
+    query.whereEqualTo('isDeleted', false);
 
     query.includeObject(['account', 'category']);
 
@@ -116,6 +118,7 @@ class Back4AppIncomeDatasource implements IncomeDatasource {
     query.whereEqualTo('account', AccountMapper.toParse(account));
     query.whereGreaterThanOrEqualsTo('overdueDate', inferiorLimit.toDateTime());
     query.whereLessThanOrEqualTo('overdueDate', upperLimit.toDateTime());
+    query.whereEqualTo('isDeleted', false);
 
     query.orderByAscending('overdueDate');
 
@@ -147,8 +150,16 @@ class Back4AppIncomeDatasource implements IncomeDatasource {
   }
 
   @override
-  Future<void> delete(Income income) {
-    // TODO: implement delete
-    throw UnimplementedError();
+  Future<void> delete(Income income) async {
+    var object = IncomeMapper.toParse(income);
+
+    object.set('isDeleted', true);
+    var response = await object.update();
+
+    if (isResponseSuccesful(response)) {
+      return;
+    }
+
+    throw extractFail(response);
   }
 }

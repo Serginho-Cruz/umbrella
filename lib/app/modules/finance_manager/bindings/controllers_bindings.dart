@@ -12,6 +12,7 @@ abstract class ControllersBindings {
     i.addLazySingleton<AccountStore>(
       () => AccountStore(
         authStore: i(),
+        validateAccount: i(),
         manageAccount: i(),
       ),
       config: BindConfig(onDispose: (store) {

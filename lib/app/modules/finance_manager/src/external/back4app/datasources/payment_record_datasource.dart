@@ -72,7 +72,6 @@ class Back4AppPaymentRecordDatasource implements PaymentRecordDatasource {
 
   @override
   Future<void> deleteAllOf(Paiyable paiyable) {
-    // TODO: implement deleteAllOf
     throw UnimplementedError();
   }
 }

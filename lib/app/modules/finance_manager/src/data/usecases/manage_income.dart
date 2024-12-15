@@ -124,9 +124,32 @@ class ManageIncomeImpl implements ManageIncome {
   }
 
   @override
-  AsyncResult<Unit, Fail> delete(Income income) {
-    // TODO: implement delete
-    throw UnimplementedError();
+  AsyncResult<Unit, Fail> delete(Income income) async {
+    if (income.id.isEmpty) {
+      return const Failure(
+        Fail('Receita não registrada. Impossível completar a ação'),
+      );
+    }
+
+    var result = await _incomeRepository.delete(income);
+
+    if (result.isError()) return result;
+
+    if (income.dueDate.isOfActualMonth) {
+      await _balanceRepository.subtractFromExpected(
+        income.totalValue,
+        income.account,
+      );
+    }
+
+    if (income.paidValue != 0.00) {
+      await _balanceRepository.subtractFromActual(
+        income.paidValue,
+        income.account,
+      );
+    }
+
+    return const Success(unit);
   }
 
   @override

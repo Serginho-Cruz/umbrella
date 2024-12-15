@@ -4,6 +4,7 @@ import '../../../domain/models/expense_model.dart';
 import '../../../domain/states/state.dart';
 import '../../stores/account_store.dart';
 import '../../stores/expense_store.dart';
+import '../dialogs/delete_paiyable_dialog.dart';
 import 'tappable_option.dart';
 import 'tappable_options_utils.dart';
 
@@ -75,7 +76,20 @@ abstract class ExpenseTappableOptions {
       ),
       TappableOption('Ver em detalhes', () {}),
       TappableOption('Estornar', () {}),
-      TappableOption('Deletar Despesa', () {}),
+      TappableOption('Deletar Despesa', () {
+        store.setSelectedModel(model);
+
+        showDialog(
+          context: context,
+          builder: (ctx) => DeletePaiyableDialog(
+            store: store,
+            model: model,
+          ),
+        ).then((_) {
+          store.setSelectedModel(null);
+          onPop?.call();
+        });
+      }),
     ];
   }
 }

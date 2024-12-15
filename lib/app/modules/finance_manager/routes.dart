@@ -2,9 +2,12 @@ abstract final class FinanceRoutes {
   static const String _module = '/finance_manager';
   static const String _incomes = '/income';
   static const String _expenses = '/expense';
+
   static const String _cards = '/card';
 
   static const String home = '$_module/';
+  static const String myAccounts = '$_module/accounts';
+
   static const String charts = '$_module/graphics';
   static const String persons = '$_module/persons';
   static const String records = '$_module/records';
@@ -26,6 +29,7 @@ abstract final class FinanceRoutes {
 
 abstract final class UnmodularFormatFinanceRoutes {
   static const String home = '/';
+  static const String myAccounts = '/accounts';
   static const String charts = '/graphics';
 
   static const String incomes = '/income';

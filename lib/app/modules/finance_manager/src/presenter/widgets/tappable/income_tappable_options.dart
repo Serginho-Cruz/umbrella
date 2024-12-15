@@ -3,6 +3,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/st
 import '../../../domain/entities/account.dart';
 import '../../../domain/states/state.dart';
 import '../../stores/income_store.dart';
+import '../dialogs/delete_paiyable_dialog.dart';
 import 'tappable_option.dart';
 import 'tappable_options_utils.dart';
 import '../../../domain/models/income_model.dart';
@@ -76,7 +77,20 @@ abstract class IncomeTappableOptions {
       ),
       TappableOption('Ver em detalhes', () {}),
       TappableOption('Estornar', () {}),
-      TappableOption('Deletar Receita', () {}),
+      TappableOption('Deletar Receita', () {
+        store.setSelectedModel(model);
+
+        showDialog(
+          context: context,
+          builder: (ctx) => DeletePaiyableDialog(
+            store: store,
+            model: model,
+          ),
+        ).then((_) {
+          store.setSelectedModel(null);
+          onPop?.call();
+        });
+      }),
     ];
   }
 }
