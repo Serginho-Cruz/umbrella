@@ -47,6 +47,7 @@ class Back4AppCreditCardDatasource implements CreditCardDatasource {
     var query = QueryBuilder(CreditCardObject());
 
     query.whereEqualTo('user', parseUser);
+    query.whereEqualTo('isDeleted', false);
     query.includeObject(['account']);
 
     var response = await query.query();

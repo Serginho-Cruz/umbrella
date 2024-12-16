@@ -25,5 +25,6 @@ abstract interface class ExpenseRepository {
     required Frequency frequency,
     required Account account,
   });
+  AsyncResult<List<Expense>, Fail> getWhereHasPersons(Account account);
   AsyncResult<Unit, Fail> delete(Expense expense);
 }

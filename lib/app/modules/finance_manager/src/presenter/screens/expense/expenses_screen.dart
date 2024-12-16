@@ -7,6 +7,8 @@ import '../../stores/expense_store.dart';
 import '../../stores/month_store.dart';
 import '../../utils/currency_format.dart';
 import '../../utils/umbrella_palette.dart';
+import '../../widgets/animations/loading_animation.dart';
+import '../../widgets/buttons/primary_button.dart';
 import '../../widgets/filters/finance_filter.dart';
 import '../../widgets/others/list_segmented_state_widget.dart';
 import '../../widgets/others/segmented_state_widget.dart';
@@ -20,7 +22,6 @@ import '../../widgets/layout/umbrella_scaffold.dart';
 import '../../widgets/selectors/account_selector.dart';
 import '../../widgets/shimmer/shimmer_list_tile.dart';
 import '../../widgets/tappable/tappable.dart';
-import '../../widgets/texts/big_text.dart';
 import '../../widgets/texts/medium_text.dart';
 import '../../widgets/texts/small_disclaimer.dart';
 import '../../widgets/texts/small_text.dart';
@@ -56,16 +57,12 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             route: '/finance_manager/expense/add',
             tooltipMessage: 'Ir para a Tela de Adicionar Despesas',
           ),
-          child: const Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: 100,
-                height: 100,
-                child: CircularProgressIndicator.adaptive(),
-              ),
-              BigText.bold('Carregando Contas...')
-            ],
+          child: Center(
+            child: LoadingAnimation(
+              width: MediaQuery.sizeOf(context).width * 0.8,
+              height: 400,
+              message: 'Carregando Contas...',
+            ),
           ),
         ),
         onFail: (ctx, fail) {
@@ -76,7 +73,18 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             onConfirmPressed: widget._accountStore.get,
           );
 
-          return const SizedBox.shrink();
+          return Center(
+            child: Column(
+              children: [
+                const MediumText('Houve um erro ao obter suas contas'),
+                const SizedBox(height: 30),
+                PrimaryButton(
+                  label: const MediumText.bold('Tentar novamente'),
+                  onPressed: widget._accountStore.get,
+                ),
+              ],
+            ),
+          );
         },
         onEmpty: (_) {
           UmbrellaDialogs.showError(
@@ -86,7 +94,18 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             onConfirmPressed: widget._accountStore.get,
           );
 
-          return const SizedBox.shrink();
+          return Center(
+            child: Column(
+              children: [
+                const MediumText('Houve um erro ao obter suas contas'),
+                const SizedBox(height: 30),
+                PrimaryButton(
+                  label: const MediumText.bold('Tentar novamente'),
+                  onPressed: widget._accountStore.get,
+                ),
+              ],
+            ),
+          );
         },
         onState: (ctx, accounts) {
           return UmbrellaScaffold(
@@ -175,8 +194,18 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                             String name = Date(day: 1, month: month, year: year)
                                 .monthName;
                             return Center(
-                              child: MediumText(
-                                  'Erro ao obter as Despesas do Mês de $name'),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  MediumText(
+                                    'Erro ao obter as Despesas do Mês de $name',
+                                  ),
+                                  PrimaryButton(
+                                    label: const MediumText('Tentar novamente'),
+                                    onPressed: widget._expenseStore.getAll,
+                                  ),
+                                ],
+                              ),
                             );
                           },
                           onEmpty: (_) {
@@ -190,19 +219,22 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                             text =
                                 'Nenhuma Despesa encontrada para o mês de $name';
 
-                            return SizedBox(
-                              height: 200.0,
-                              width: MediaQuery.sizeOf(context).width * 0.8,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(Icons.money_off_rounded,
-                                      size: 60.0),
-                                  const SizedBox(height: 20.0),
-                                  MediumText.bold(text,
-                                      textAlign: TextAlign.center),
-                                ],
-                              ),
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width:
+                                      MediaQuery.sizeOf(context).width * 0.75,
+                                  child: Image.asset(
+                                    'assets/images/no_data_found.png',
+                                    fit: BoxFit.fitWidth,
+                                  ),
+                                ),
+                                MediumText.bold(
+                                  text,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
                             );
                           },
                           onState: (ctx, expenses) => Observer(builder: (_) {
@@ -221,21 +253,22 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                               text =
                                   'Nenhuma Receita encontrada para o mês de $name com os filtros escolhidos';
 
-                              return SizedBox(
-                                height: 200.0,
-                                width: MediaQuery.sizeOf(context).width * 0.8,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Icon(Icons.money_off_rounded,
-                                        size: 60.0),
-                                    const SizedBox(height: 20.0),
-                                    MediumText.bold(
-                                      text,
-                                      textAlign: TextAlign.center,
+                              return Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    width:
+                                        MediaQuery.sizeOf(context).width * 0.75,
+                                    child: Image.asset(
+                                      'assets/images/no_data_found.png',
+                                      fit: BoxFit.fitWidth,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  MediumText.bold(
+                                    text,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
                               );
                             }
                             return Column(
@@ -269,6 +302,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                           }),
                         ),
                       ),
+                      const SizedBox(height: 60),
                     ],
                   ),
                 ),
@@ -314,20 +348,22 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   }
 
   Widget _mountFilter([List<Category> categories = const []]) {
-    return SegmentedStateWidget(
-      state: widget._expenseStore.state,
-      onLoading: (ctx) => const CircularProgressIndicator(),
-      onFail: (ctx, fail) => SizedBox(
-        height: 40.0,
-        width: MediaQuery.sizeOf(ctx).width * 0.8,
-        child: MediumText(
-          fail.message,
-          textAlign: TextAlign.center,
+    return Observer(
+      builder: (_) => SegmentedStateWidget(
+        state: widget._expenseStore.state,
+        onLoading: (ctx) => const CircularProgressIndicator(),
+        onFail: (ctx, fail) => SizedBox(
+          height: 40.0,
+          width: MediaQuery.sizeOf(ctx).width * 0.8,
+          child: MediumText(
+            fail.message,
+            textAlign: TextAlign.center,
+          ),
         ),
-      ),
-      onState: (ctx, _) => FinanceFilter(
-        filterableStore: widget._expenseStore,
-        categories: categories,
+        onState: (ctx, _) => FinanceFilter(
+          filterableStore: widget._expenseStore,
+          categories: categories,
+        ),
       ),
     );
   }

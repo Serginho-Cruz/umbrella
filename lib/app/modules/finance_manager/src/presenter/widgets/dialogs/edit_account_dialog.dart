@@ -5,6 +5,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/state
     as s;
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/buttons/primary_button.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/forms/default_text_field.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/loading_animation_crossfade.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/texts/big_text.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/texts/medium_text.dart';
 
@@ -34,7 +35,6 @@ class _EditAccountDialogState extends State<EditAccountDialog> {
   final TextEditingController _balanceController = TextEditingController();
 
   late final ReactionDisposer _disposer;
-  bool _isLoading = false;
 
   @override
   void initState() {
@@ -48,89 +48,73 @@ class _EditAccountDialogState extends State<EditAccountDialog> {
 
     _disposer = reaction((_) => widget.accountStore.state, (st) async {
       switch (st) {
-        case s.LoadingState():
-          _isLoading = true;
-          showDialog(
-            context: context,
-            builder: (ctx) {
-              return const DialogLayout(
-                child: SizedBox.square(
-                  dimension: 250,
-                  child: CircularProgressIndicator.adaptive(),
-                ),
-              );
-            },
-          ).then((_) => _isLoading = false);
-          break;
         case s.SuccessState():
-          if (_isLoading) Navigator.pop(context);
           await UmbrellaDialogs.showSuccess(
             context,
             title: 'Conta Atualizada',
             message: 'Sua conta foi atualizada com sucesso!',
           );
-          // ignore: use_build_context_synchronously
-          Navigator.pop(context);
+
+          if (mounted) Navigator.pop(context);
           break;
         case s.FailState failState:
-          if (_isLoading) Navigator.pop(context);
-          UmbrellaDialogs.showError(context, failState.fail.message);
+          await UmbrellaDialogs.showError(context, failState.fail.message);
+          break;
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width * 0.8;
     return DialogLayout(
-      child: SizedBox(
-        width: MediaQuery.sizeOf(context).width * 0.8,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Align(
-              alignment: Alignment.center,
-              child: Padding(
-                padding: EdgeInsets.only(bottom: 40.0),
-                child: BigText.bold('Editar Conta'),
-              ),
-            ),
-            Observer(
-              builder: (_) => DefaultTextField(
-                validator: widget.accountStore.validateName,
-                controller: _nameController,
-                onChanged: widget.accountStore.setName,
-                onSubmitted: widget.accountStore.setName,
-                labelText: 'Nome',
-                readOnly: widget.accountStore.state is s.LoadingState,
-                maxLength: 20,
-              ),
-            ),
-            const SizedBox(height: 30),
-            Observer(
-              builder: (_) => NumberTextField(
-                validate: widget.accountStore.validateBalance,
-                controller: _balanceController,
-                onChange: widget.accountStore.setBalance,
-                isCurrency: true,
-                label: 'Saldo Inicial',
-                readOnly: widget.accountStore.state is s.LoadingState,
-                maxLength: 9 + 4,
-              ),
-            ),
-            const SizedBox(height: 30),
-            Align(
-              alignment: Alignment.center,
-              child: Observer(
-                builder: (_) => PrimaryButton(
-                  label: const MediumText('Atualizar'),
-                  onPressed: widget.accountStore.state is s.LoadingState
-                      ? () {}
-                      : _update,
+      child: Observer(
+        builder: (_) => LoadingAnimationCrossfade(
+          animationWidth: width,
+          animationHeight: 400,
+          animationText: 'Atualizando Conta...',
+          state: widget.accountStore.state,
+          child: SizedBox(
+            width: width,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Align(
+                  alignment: Alignment.center,
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: 40.0),
+                    child: BigText.bold('Editar Conta'),
+                  ),
                 ),
-              ),
+                DefaultTextField(
+                  validator: widget.accountStore.validateName,
+                  controller: _nameController,
+                  onChanged: widget.accountStore.setName,
+                  onSubmitted: widget.accountStore.setName,
+                  labelText: 'Nome',
+                  maxLength: 20,
+                ),
+                const SizedBox(height: 30),
+                NumberTextField(
+                  validate: widget.accountStore.validateBalance,
+                  controller: _balanceController,
+                  onChange: widget.accountStore.setBalance,
+                  isCurrency: true,
+                  label: 'Saldo Inicial',
+                  maxLength: 9 + 4,
+                ),
+                const SizedBox(height: 30),
+                Align(
+                  alignment: Alignment.center,
+                  child: PrimaryButton(
+                    label: const MediumText('Atualizar'),
+                    onPressed: _update,
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

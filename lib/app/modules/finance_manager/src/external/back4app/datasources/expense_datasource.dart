@@ -159,4 +159,27 @@ class Back4AppExpenseDatasource implements ExpenseDatasource {
 
     throw extractFail(response);
   }
+
+  @override
+  Future<List<Expense>> getWhereHasPerson(Account account) async {
+    var query = QueryBuilder(ExpenseObject());
+
+    query.whereEqualTo('isDeleted', false);
+    query.whereEqualTo('account', AccountMapper.toParse(account));
+    query.whereValueExists('personName', true);
+    query.includeObject(['account', 'category']);
+    query.orderByAscending('overdueDate');
+
+    var response = await query.query();
+
+    if (isResponseSuccesful(response)) {
+      if (response.results == null) return [];
+
+      return (response.results! as List<ParseObject>)
+          .map(ExpenseMapper.fromParse)
+          .toList();
+    }
+
+    throw extractFail(response);
+  }
 }

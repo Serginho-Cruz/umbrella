@@ -1,15 +1,18 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobx/mobx.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/paiyable.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/utils/resolve_paiyable_name.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/loading_animation_crossfade.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/texts/big_text.dart';
 
 import '../../../domain/models/paiyable_model.dart';
 import '../../../domain/states/state.dart' as s;
 import '../../stores/paiyable_store.dart';
 import '../../utils/currency_format.dart';
+import '../../utils/loading_animation_type.dart';
 import '../buttons/primary_button.dart';
 import '../buttons/secondary_button.dart';
 import '../layout/dialog_layout.dart';
@@ -58,59 +61,65 @@ class _DeletePaiyableDialogState extends State<DeletePaiyableDialog> {
 
   @override
   Widget build(BuildContext context) {
+    String type = resolvePaiyableTypeName(widget.model);
     return DialogLayout(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Align(
-            alignment: Alignment.center,
-            child: BigText.bold(
-              'Deletar ${resolvePaiyableTypeName(widget.model)}',
-            ),
-          ),
-          const SizedBox(height: 30),
-          Wrap(
-            direction: Axis.vertical,
-            spacing: 25,
+      child: Observer(
+        builder: (_) => LoadingAnimationCrossfade(
+          state: widget.store.state,
+          type: LoadingAnimationType.erase,
+          animationHeight: 400,
+          animationWidth: MediaQuery.sizeOf(context).width * 0.8 - 50,
+          animationText: 'Deletando $type...',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              MediumText.bold('Conta: ${widget.model.account.name}'),
-              MediumText.bold('Nome: ${resolvePaiyableName(widget.model)}'),
-              SmallText(
-                  'Valor Total: ${CurrencyFormat.format(widget.model.totalValue)}'),
-              SmallText(
-                  'Valor Pago: ${CurrencyFormat.format(widget.model.paidValue)}'),
+              Align(
+                alignment: Alignment.center,
+                child: BigText.bold(
+                  'Deletar $type',
+                ),
+              ),
+              const SizedBox(height: 30),
+              Wrap(
+                direction: Axis.vertical,
+                spacing: 25,
+                children: [
+                  MediumText.bold('Conta: ${widget.model.account.name}'),
+                  MediumText.bold('Nome: ${resolvePaiyableName(widget.model)}'),
+                  SmallText(
+                      'Valor Total: ${CurrencyFormat.format(widget.model.totalValue)}'),
+                  SmallText(
+                      'Valor Pago: ${CurrencyFormat.format(widget.model.paidValue)}'),
+                ],
+              ),
+              const SizedBox(height: 30),
+              const Align(
+                alignment: Alignment.center,
+                child: MediumText.bold('Prosseguir com a ação?'),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SecondaryButton(
+                    width: 150,
+                    label: const MediumText('Cancelar'),
+                    icon: null,
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  PrimaryButton(
+                    width: 150,
+                    label: const MediumText('Deletar'),
+                    onPressed: widget.store.delete,
+                  ),
+                ],
+              ),
             ],
           ),
-          const SizedBox(height: 30),
-          const Align(
-            alignment: Alignment.center,
-            child: MediumText.bold('Prosseguir com a ação?'),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SecondaryButton(
-                width: 150,
-                label: const MediumText('Cancelar'),
-                icon: null,
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-              PrimaryButton(
-                width: 150,
-                label: const MediumText('Deletar'),
-                onPressed: () async {
-                  widget.store.delete().then((fail) {
-                    if (fail == null) Navigator.pop(context);
-                  });
-                },
-              ),
-            ],
-          ),
-        ],
+        ),
       ),
     );
   }

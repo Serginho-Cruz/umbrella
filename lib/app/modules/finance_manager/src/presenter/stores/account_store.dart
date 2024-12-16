@@ -149,6 +149,7 @@ abstract class _AccountStoreBase with Store {
     if (state is SuccessState && !force) return;
 
     state = const LoadingState();
+
     await _fetchAccounts();
     _needsFetch = false;
   }
@@ -189,6 +190,12 @@ abstract class _AccountStoreBase with Store {
     });
 
     _needsFetch = true;
+  }
+
+  @action
+  void cleanFields() {
+    name = '';
+    balance = 0.00;
   }
 
   @action

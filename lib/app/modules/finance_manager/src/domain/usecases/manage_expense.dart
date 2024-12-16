@@ -20,5 +20,9 @@ abstract interface class ManageExpense {
     required int year,
     required Account account,
   });
+  AsyncResult<List<Expense>, Fail> getAllWhereHasPerson(
+    String personName,
+    Account account,
+  );
   AsyncResult<Unit, Fail> delete(Expense expense);
 }

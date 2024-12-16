@@ -92,21 +92,8 @@ class _CreditCardsScreenState extends State<CreditCardsScreen> {
                         ),
                       );
                     },
-                    onEmpty: (ctx) => SizedBox(
-                      height: 200.0,
-                      width: MediaQuery.sizeOf(context).width * 0.8,
-                      child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.credit_card, size: 60.0),
-                          SizedBox(height: 20.0),
-                          MediumText.bold(
-                            'Nenhum Cartão encontrado. Que tal cadastrar um agora mesmo?',
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                          ),
-                        ],
-                      ),
+                    onEmpty: (ctx) => _mountEmptyCase(
+                      'Nenhum Cartão encontrado. Que tal cadastrar um agora mesmo?',
                     ),
                     onState: (ctx, _) => Observer(
                       builder: (_) {
@@ -136,12 +123,14 @@ class _CreditCardsScreenState extends State<CreditCardsScreen> {
 
   Widget _mountEmptyCase(String text) {
     return SizedBox(
-      height: 200.0,
       width: MediaQuery.sizeOf(context).width * 0.8,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.credit_card, size: 60.0),
+          Image.asset(
+            'assets/images/no_data_found.png',
+            fit: BoxFit.fitWidth,
+          ),
           const SizedBox(height: 20.0),
           MediumText.bold(
             text,
@@ -163,7 +152,6 @@ class _CreditCardsScreenState extends State<CreditCardsScreen> {
             store: widget._cardStore,
             context: context,
             card: cards[i],
-            onPop: _fetchCards,
           ),
           child: CreditCardWidget(
             creditCard: cards[i],

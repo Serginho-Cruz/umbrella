@@ -306,6 +306,19 @@ abstract class _ExpenseStoreBase
     state = SuccessState(models);
   }
 
+  AsyncResult<List<ExpenseModel>, Fail> getWhereHasPerson(
+    String personName,
+    Account account,
+  ) async {
+    var result = await _manageExpense.getAllWhereHasPerson(personName, account);
+
+    if (result.isError()) return result.pure([]);
+
+    var models = result.getOrDefault([]).map((e) =>
+        ExpenseModel.fromExpense(e, status: StatusUtils.resolveForPaiyable(e)));
+    return Success(models.toList());
+  }
+
   @override
   @action
   Future<Fail?> delete() async {

@@ -14,8 +14,6 @@ abstract class AccountTappableOptions {
     required AccountStore store,
     VoidCallback? onPop,
   }) {
-    //Integrate the images and the animations
-
     return [
       TappableOption('Editar', () {
         showDialog(
@@ -25,31 +23,38 @@ abstract class AccountTappableOptions {
             acc: account,
           ),
         ).then((_) {
+          store.cleanFields();
+
           onPop?.call();
         });
       }),
-      TappableOption('Definir como Padrão', () {
-        showDialog(
-          context: context,
-          builder: (ctx) => SetDefaultAccountDialog(
-            store: store,
-            account: account,
-          ),
-        ).then((_) {
-          onPop?.call();
-        });
-      }),
-      TappableOption('Deletar', () {
-        showDialog(
-          context: context,
-          builder: (ctx) => DeleteAccountDialog(
-            store: store,
-            account: account,
-          ),
-        ).then((_) {
-          onPop?.call();
-        });
-      }),
+      if (account.isDefault == false)
+        TappableOption('Definir como Padrão', () {
+          showDialog(
+            context: context,
+            builder: (ctx) => SetDefaultAccountDialog(
+              store: store,
+              account: account,
+            ),
+          ).then((_) {
+            store.cleanFields();
+            onPop?.call();
+          });
+        }),
+      if (account.isDefault == false)
+        TappableOption('Deletar', () {
+          showDialog(
+            context: context,
+            builder: (ctx) => DeleteAccountDialog(
+              store: store,
+              account: account,
+            ),
+          ).then((_) {
+            store.cleanFields();
+
+            onPop?.call();
+          });
+        }),
     ];
   }
 }

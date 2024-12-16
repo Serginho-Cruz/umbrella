@@ -19,5 +19,6 @@ abstract interface class ExpenseDatasource {
     required Date inferiorLimit,
     required Date upperLimit,
   });
+  Future<List<Expense>> getWhereHasPerson(Account account);
   Future<void> delete(Expense expense);
 }

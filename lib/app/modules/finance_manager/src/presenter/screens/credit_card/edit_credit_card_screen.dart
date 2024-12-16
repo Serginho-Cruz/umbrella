@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:mobx/mobx.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/stores/credit_card_store.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/appbar/custom_app_bar.dart';
 
 import '../../../domain/entities/credit_card.dart';
+import '../../../domain/states/state.dart' as s;
 import '../../utils/umbrella_palette.dart';
+import '../../widgets/dialogs/loading_dialog.dart';
 import '../../widgets/simple_information/account_name.dart';
 import '../../widgets/buttons/primary_button.dart';
 import '../../widgets/buttons/secondary_button.dart';
@@ -38,10 +41,49 @@ class EditCreditCardScreen extends StatefulWidget {
 class _EditCreditCardScreenState extends State<EditCreditCardScreen> {
   final GlobalKey<FormState> formKey = GlobalKey();
 
+  bool _isLoading = false;
+  late final ReactionDisposer _disposer;
+
+  void _setUpReaction() {
+    _disposer = reaction(
+      (_) => widget._cardStore.state,
+      (st) async {
+        switch (st) {
+          case s.LoadingState():
+            _isLoading = true;
+            LoadingDialog.show(
+              context,
+              message: 'Atualizando seu cartão...',
+            );
+            break;
+          case s.SuccessState():
+            if (_isLoading) Navigator.pop(context);
+            _isLoading = false;
+            await UmbrellaDialogs.showSuccess(
+              context,
+              title: 'Cartão Atualizado',
+              message:
+                  'Seu Cartão de Crédito foi atualizado com sucesso. Iremos redireciona-lo para a Tela Anterior',
+            );
+            _disposer();
+
+            if (mounted) Navigator.pop(context);
+            break;
+          case s.FailState f:
+            if (_isLoading) Navigator.pop(context);
+            _isLoading = false;
+            await UmbrellaDialogs.showError(context, f.fail.message);
+            break;
+        }
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
 
+    _setUpReaction();
     _setVariablesToOriginal();
   }
 
@@ -50,6 +92,12 @@ class _EditCreditCardScreenState extends State<EditCreditCardScreen> {
     widget._cardStore.setColor(widget._card.color);
     widget._cardStore.setCloseDay(widget._card.cardInvoiceClosingDay);
     widget._cardStore.setDueDay(widget._card.cardInvoiceDueDay);
+  }
+
+  @override
+  void dispose() {
+    widget._cardStore.resetFields();
+    super.dispose();
   }
 
   @override
@@ -160,19 +208,7 @@ class _EditCreditCardScreenState extends State<EditCreditCardScreen> {
       return;
     }
 
-    widget._cardStore.updateCard(widget._card).then((fail) {
-      if (!mounted) return;
-      fail == null
-          ? UmbrellaDialogs.showSuccess(
-              context,
-              title: 'Cartão Atualizado',
-              message: 'Seu Cartão de Crédito foi atualizado com sucesso.',
-            ).then((_) {
-              widget._cardStore.resetFields();
-              if (mounted) Navigator.pop(context);
-            })
-          : UmbrellaDialogs.showError(context, fail.message);
-    });
+    widget._cardStore.updateCard(widget._card);
   }
 
   void _resetForm() => _setVariablesToOriginal();

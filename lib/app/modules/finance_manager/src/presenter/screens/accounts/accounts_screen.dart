@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:umbrella_echonomics/app/modules/auth/src/presenter/stores/auth_store.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/buttons/primary_button.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/dialogs/create_account_dialog.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/dialogs/umbrella_dialogs.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/tappable/account_tappable_options.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/tappable/tappable.dart';
 
@@ -33,7 +33,9 @@ class _AccountsScreenState extends State<AccountsScreen> {
     showDialog(
       context: context,
       builder: (ctx) => CreateAccountDialog(accountStore: widget._accountStore),
-    );
+    ).then((_) {
+      widget._accountStore.cleanFields();
+    });
   }
 
   @override
@@ -80,14 +82,22 @@ class _AccountsScreenState extends State<AccountsScreen> {
                   ),
                 ),
                 onFail: (ctx, f) {
-                  UmbrellaDialogs.showError(ctx, f.message,
-                      onRetry: widget._accountStore.get);
-                  return Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        MediumText(f.message),
-                      ],
+                  return SliverFillRemaining(
+                    child: Center(
+                      child: SizedBox(
+                        height: 150,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            MediumText('Erro: ${f.message}'),
+                            PrimaryButton(
+                              label: const MediumText('Recarregar Contas'),
+                              onPressed: widget._accountStore.get,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   );
                 },

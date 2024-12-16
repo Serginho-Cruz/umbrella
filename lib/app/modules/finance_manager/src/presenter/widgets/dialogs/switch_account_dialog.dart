@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/entities/paiyable.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/models/paiyable_model.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/utils/resolve_paiyable_name.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/loading_animation_crossfade.dart';
 
 import '../../../domain/entities/account.dart';
 import '../../stores/paiyable_store.dart';
@@ -44,52 +46,61 @@ class _SwitchAccountDialogState extends State<SwitchAccountDialog> {
   @override
   Widget build(BuildContext context) {
     return DialogLayout(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Align(child: TitleText.bold('Trocar Conta')),
-          const SizedBox(height: 40.0),
-          PaiyableName(model: widget.model),
-          const SizedBox(height: 30.0),
-          AccountName(
-            account: widget.model.account,
-            trailingText: 'Conta Atual:',
-            alignment: MainAxisAlignment.start,
-            minimalSpace: 10.0,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20.0),
-            child: Observer(
-              builder: (_) => AccountSelector(
-                accounts: widget.accounts,
-                onSelected: widget.store.setAccount,
-                label: ('Conta Destino:'),
-                fontSize: UmbrellaSizes.medium,
-                canSelectNull: false,
-                selectedAccount: widget.store.account,
+      child: Observer(
+        builder: (_) => LoadingAnimationCrossfade(
+          state: widget.store.state,
+          animationHeight: 400,
+          animationText:
+              'Atualizando sua ${resolvePaiyableTypeName(widget.model)}',
+          animationWidth: MediaQuery.sizeOf(context).width * 0.8,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Align(child: TitleText.bold('Trocar Conta')),
+              const SizedBox(height: 40.0),
+              PaiyableName(model: widget.model),
+              const SizedBox(height: 30.0),
+              AccountName(
+                account: widget.model.account,
+                trailingText: 'Conta Atual:',
+                alignment: MainAxisAlignment.start,
+                minimalSpace: 10.0,
               ),
-            ),
-          ),
-          Spaced(
-            first: SecondaryButton(
-              width: MediaQuery.sizeOf(context).width * 0.25,
-              label: const MediumText.bold('Voltar'),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            second: PrimaryButton(
-              width: MediaQuery.sizeOf(context).width * 0.4,
-              icon: const Icon(
-                Icons.edit_square,
-                color: Colors.black,
-                size: 24.0,
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20.0),
+                child: Observer(
+                  builder: (_) => AccountSelector(
+                    accounts: widget.accounts,
+                    onSelected: widget.store.setAccount,
+                    label: ('Conta Destino:'),
+                    fontSize: UmbrellaSizes.medium,
+                    canSelectNull: false,
+                    selectedAccount: widget.store.account,
+                  ),
+                ),
               ),
-              label: const MediumText.bold('Trocar'),
-              onPressed: switchAccount,
-            ),
+              Spaced(
+                first: SecondaryButton(
+                  width: MediaQuery.sizeOf(context).width * 0.25,
+                  label: const MediumText.bold('Voltar'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                second: PrimaryButton(
+                  width: MediaQuery.sizeOf(context).width * 0.4,
+                  icon: const Icon(
+                    Icons.edit_square,
+                    color: Colors.black,
+                    size: 24.0,
+                  ),
+                  label: const MediumText.bold('Trocar'),
+                  onPressed: switchAccount,
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

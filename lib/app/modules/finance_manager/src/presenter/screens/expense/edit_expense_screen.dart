@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:mobx/mobx.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/stores/expense_category_store.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/dialogs/umbrella_dialogs.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/forms/my_form.dart';
@@ -8,9 +9,10 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/wi
 import '../../../domain/entities/category.dart';
 import '../../../domain/entities/date.dart';
 import '../../../domain/entities/frequency.dart';
-import '../../../errors/errors.dart';
+import '../../../domain/states/state.dart' as s;
 import '../../stores/expense_store.dart';
 import '../../widgets/appbar/custom_app_bar.dart';
+import '../../widgets/dialogs/loading_dialog.dart';
 import '../../widgets/simple_information/account_name.dart';
 import '../../widgets/buttons/primary_button.dart';
 import '../../widgets/buttons/secondary_button.dart';
@@ -44,6 +46,44 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
   late final TextEditingController _nameController;
   late final TextEditingController _personNameController;
 
+  bool _isLoading = false;
+  late final ReactionDisposer _disposer;
+
+  void _setUpReaction() {
+    _disposer = reaction(
+      (_) => widget._expenseStore.state,
+      (st) async {
+        switch (st) {
+          case s.LoadingState():
+            _isLoading = true;
+            LoadingDialog.show(
+              context,
+              message: 'Atualizando sua Despesa...',
+            );
+            break;
+          case s.SuccessState():
+            if (_isLoading) Navigator.pop(context);
+            _isLoading = false;
+            await UmbrellaDialogs.showSuccess(
+              context,
+              title: 'Despesa Atualizada',
+              message:
+                  'Sua despesa foi atualizada com sucesso. Iremos redireciona-lo de volta',
+            );
+            _disposer();
+
+            if (mounted) Navigator.pop(context);
+            break;
+          case s.FailState f:
+            if (_isLoading) Navigator.pop(context);
+            _isLoading = false;
+            await UmbrellaDialogs.showError(context, f.fail.message);
+            break;
+        }
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -53,6 +93,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
     _personNameController = TextEditingController();
 
     _setListeners();
+    _setUpReaction();
 
     _setVariablesToOriginal();
   }
@@ -219,22 +260,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
       return;
     }
 
-    widget._expenseStore.edit().then((fail) {
-      switch (fail) {
-        case Fail f when mounted:
-          UmbrellaDialogs.showError(context, f.message);
-          break;
-        case null when mounted:
-          UmbrellaDialogs.showSuccess(
-            context,
-            title: 'Despesa Atualizada',
-            message:
-                'Sua despesa foi atualizada com sucesso. Iremos redireciona-lo de volta',
-          ).then((_) {
-            if (mounted) Navigator.pop(context);
-          });
-      }
-    });
+    widget._expenseStore.edit();
   }
 
   void resetForm() {

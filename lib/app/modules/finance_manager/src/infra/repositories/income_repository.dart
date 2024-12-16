@@ -122,4 +122,16 @@ class IncomeRepositoryImpl implements IncomeRepository {
       return const Failure(GenericError());
     }
   }
+
+  @override
+  AsyncResult<List<Income>, Fail> getWhereHasPersons(Account account) async {
+    try {
+      var incomes = await _datasource.getWhereHasPerson(account);
+      return Success(incomes);
+    } on Fail catch (f) {
+      return Failure(f);
+    } catch (e) {
+      return const Failure(GenericError());
+    }
+  }
 }

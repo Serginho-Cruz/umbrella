@@ -123,4 +123,16 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
       return const Failure(GenericError());
     }
   }
+
+  @override
+  AsyncResult<List<Expense>, Fail> getWhereHasPersons(Account account) async {
+    try {
+      var expenses = await _datasource.getWhereHasPerson(account);
+      return Success(expenses);
+    } on Fail catch (f) {
+      return Failure(f);
+    } catch (e) {
+      return const Failure(GenericError());
+    }
+  }
 }

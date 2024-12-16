@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/no_data_found.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/segmented_state_widget.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/payment_records/payment_record_section.dart';
 
@@ -8,14 +9,16 @@ import '../../domain/entities/payment_record.dart';
 import '../stores/account_store.dart';
 import '../stores/month_store.dart';
 import '../stores/payment_record_store.dart';
+import '../widgets/animations/loading_animation.dart';
 import '../widgets/appbar/custom_app_bar.dart';
+import '../widgets/buttons/primary_button.dart';
 import '../widgets/dialogs/umbrella_dialogs.dart';
 import '../widgets/filters/payment_record_filter.dart';
 import '../widgets/layout/umbrella_scaffold.dart';
 import '../widgets/others/list_segmented_state_widget.dart';
 import '../widgets/payment_records/payment_record_widget.dart';
 import '../widgets/selectors/account_selector.dart';
-import '../widgets/texts/big_text.dart';
+import '../widgets/texts/medium_text.dart';
 
 class PaymentRecordScreen extends StatefulWidget {
   const PaymentRecordScreen({
@@ -60,16 +63,10 @@ class _PaymentRecordScreenState extends State<PaymentRecordScreen> {
             showBalances: false,
           ),
           child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox.square(
-                  dimension: MediaQuery.sizeOf(context).width - 100.0,
-                  child: const CircularProgressIndicator(),
-                ),
-                const SizedBox(height: 20.0),
-                const BigText.bold('Carregando Contas...')
-              ],
+            child: LoadingAnimation(
+              width: MediaQuery.sizeOf(context).width * 0.8,
+              height: 400,
+              message: 'Carregando Contas...',
             ),
           ),
         ),
@@ -81,7 +78,18 @@ class _PaymentRecordScreenState extends State<PaymentRecordScreen> {
             onConfirmPressed: widget._accountStore.get,
           );
 
-          return const SizedBox.shrink();
+          return Center(
+            child: Column(
+              children: [
+                const MediumText('Houve um erro ao obter suas contas'),
+                const SizedBox(height: 30),
+                PrimaryButton(
+                  label: const MediumText.bold('Tentar novamente'),
+                  onPressed: widget._accountStore.get,
+                ),
+              ],
+            ),
+          );
         },
         onEmpty: (_) {
           UmbrellaDialogs.showError(
@@ -91,7 +99,18 @@ class _PaymentRecordScreenState extends State<PaymentRecordScreen> {
             onConfirmPressed: widget._accountStore.get,
           );
 
-          return const SizedBox.shrink();
+          return Center(
+            child: Column(
+              children: [
+                const MediumText('Houve um erro ao obter suas contas'),
+                const SizedBox(height: 30),
+                PrimaryButton(
+                  label: const MediumText.bold('Tentar novamente'),
+                  onPressed: widget._accountStore.get,
+                ),
+              ],
+            ),
+          );
         },
         onInitial: (_) => UmbrellaScaffold(
           appBar: CustomAppBar(
@@ -138,13 +157,11 @@ class _PaymentRecordScreenState extends State<PaymentRecordScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              SizedBox.square(
-                                dimension:
-                                    MediaQuery.sizeOf(context).width - 150.0,
-                                child: const CircularProgressIndicator(),
+                              LoadingAnimation(
+                                width: MediaQuery.sizeOf(context).width * 0.8,
+                                height: 400,
+                                message: 'Carregando Registros...',
                               ),
-                              const SizedBox(height: 20.0),
-                              const BigText.bold('Carregando Informações...')
                             ],
                           ),
                         ),
@@ -152,18 +169,18 @@ class _PaymentRecordScreenState extends State<PaymentRecordScreen> {
                           return const SizedBox.shrink();
                         },
                         onFail: (_, fail) {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            UmbrellaDialogs.showError(
-                              context,
-                              fail.message,
-                              onRetry: widget._recordStore.fetch,
-                              onConfirmPressed: widget._recordStore.fetch,
-                            );
-                          });
+                          UmbrellaDialogs.showError(
+                            context,
+                            fail.message,
+                            onRetry: widget._recordStore.fetch,
+                            onConfirmPressed: widget._recordStore.fetch,
+                          );
 
                           return const SizedBox.shrink();
                         },
-                        onState: (_, map) => _getRecordsListWidget(),
+                        onState: (_, map) => map.isEmpty
+                            ? _getRecordsEmptyCase()
+                            : _getRecordsListWidget(),
                       ),
                     ),
                   ],
@@ -173,6 +190,16 @@ class _PaymentRecordScreenState extends State<PaymentRecordScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _getRecordsEmptyCase() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 40),
+      child: NoDataFound(
+          width: MediaQuery.sizeOf(context).width * 0.8,
+          message: 'Nenhum registro de pagamento foi encontrado',
+          tooltipMessage: 'Nenhum registro de pagamento foi encontrado'),
     );
   }
 

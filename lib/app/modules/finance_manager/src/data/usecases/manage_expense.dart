@@ -206,8 +206,6 @@ class ManageExpenseImpl implements ManageExpense {
       );
 
       if (res.isError()) return res;
-
-      //TODO: Call Refund usecase
     }
 
     if (expense.dueDate.isOfActualMonth) {
@@ -220,5 +218,24 @@ class ManageExpenseImpl implements ManageExpense {
     }
 
     return updateRes;
+  }
+
+  @override
+  AsyncResult<List<Expense>, Fail> getAllWhereHasPerson(
+    String personName,
+    Account account,
+  ) async {
+    var fetchRes = await _expenseRepository.getWhereHasPersons(account);
+
+    if (fetchRes.isError()) return fetchRes;
+
+    var expenses = fetchRes.getOrDefault([]);
+
+    var filtered = expenses
+        .where((expense) =>
+            expense.personName == personName && expense.remainingValue != 0.00)
+        .toList();
+
+    return Success(filtered);
   }
 }

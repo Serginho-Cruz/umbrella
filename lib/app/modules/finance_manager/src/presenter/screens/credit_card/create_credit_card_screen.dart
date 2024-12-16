@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:mobx/mobx.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/appbar/custom_app_bar.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/list_segmented_state_widget.dart';
 
 import '../../../domain/entities/account.dart';
 import '../../../domain/entities/credit_card.dart';
+import '../../../domain/states/state.dart' as s;
 import '../../stores/credit_card_store.dart';
+import '../../utils/loading_animation_type.dart';
 import '../../utils/umbrella_palette.dart';
 import '../../stores/account_store.dart';
 import '../../widgets/buttons/primary_button.dart';
 import '../../widgets/buttons/secondary_button.dart';
+import '../../widgets/dialogs/loading_dialog.dart';
 import '../../widgets/others/card_preview_section.dart';
 import '../../widgets/simple_information/color_row.dart';
 import '../../widgets/layout/umbrella_scaffold.dart';
@@ -40,14 +44,59 @@ class CreateCreditCardScreen extends StatefulWidget {
 
 class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
   final GlobalKey<FormState> formKey = GlobalKey();
+  late final ReactionDisposer _disposer;
+
+  bool _isLoading = false;
+
+  void _setUpReaction() {
+    _disposer = reaction(
+      (_) => widget._cardStore.state,
+      (st) async {
+        switch (st) {
+          case s.LoadingState():
+            _isLoading = true;
+            LoadingDialog.show(
+              context,
+              message: 'Criando seu novo cartão...',
+              type: LoadingAnimationType.create,
+            );
+            break;
+          case s.SuccessState():
+            if (_isLoading) Navigator.pop(context);
+            _isLoading = false;
+            await UmbrellaDialogs.showSuccess(
+              context,
+              title: 'Cartão Cadastrado',
+              message:
+                  'Seu Cartão de Crédito foi cadastrada com sucesso. Iremos redireciona-lo para a Tela Anterior',
+            );
+            _disposer();
+
+            if (mounted) Navigator.pop(context);
+            break;
+          case s.FailState f:
+            if (_isLoading) Navigator.pop(context);
+            _isLoading = false;
+            await UmbrellaDialogs.showError(context, f.fail.message);
+            break;
+        }
+      },
+    );
+  }
 
   @override
   void initState() {
     super.initState();
 
     var first = UmbrellaPalette.cardHexAndNames.keys.first;
-
     widget._cardStore.setColor(first);
+    _setUpReaction();
+  }
+
+  @override
+  void dispose() {
+    widget._cardStore.resetFields();
+    super.dispose();
   }
 
   @override
@@ -174,7 +223,7 @@ class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
     );
   }
 
-  void onFormSubmitted() {
+  void onFormSubmitted() async {
     bool isValid = formKey.currentState!.validate();
 
     if (!isValid) {
@@ -183,21 +232,7 @@ class _CreateCreditCardScreenState extends State<CreateCreditCardScreen> {
       return;
     }
 
-    widget._cardStore.register().then((fail) {
-      if (!mounted) return;
-
-      fail == null
-          ? UmbrellaDialogs.showSuccess(
-              context,
-              title: 'Cartão Cadastrado',
-              message:
-                  'Seu Cartão de Crédito foi cadastrada com sucesso. Iremos redireciona-lo para a Tela Anterior',
-            ).then((_) {
-              widget._cardStore.resetFields();
-              if (mounted) Navigator.pop(context);
-            })
-          : UmbrellaDialogs.showError(context, fail.message);
-    });
+    widget._cardStore.register();
   }
 
   void resetForm() {

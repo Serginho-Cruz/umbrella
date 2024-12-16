@@ -1,11 +1,16 @@
 import 'package:mobx/mobx.dart';
+import 'package:result_dart/result_dart.dart';
+import 'package:umbrella_echonomics/app/modules/bind_service_provider.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/usecases/obtain_persons_debts.dart';
 
+import '../../domain/entities/account.dart';
 import '../../domain/models/expense_model.dart';
 import '../../domain/models/income_model.dart';
+import '../../domain/models/paiyable_model.dart';
 import '../../domain/states/state.dart';
 import '../../domain/usecases/gets/get_persons.dart';
 import '../../errors/errors.dart';
+import 'account_store.dart';
 import 'expense_store.dart';
 import 'income_store.dart';
 part 'person_store.g.dart';
@@ -31,6 +36,12 @@ abstract class _PersonStoreBase with Store {
   @observable
   State<Map<String, double>> personsDebts = const InitialState();
 
+  @observable
+  State<List<IncomeModel>> debts = const InitialState();
+
+  @observable
+  State<List<ExpenseModel>> credits = const InitialState();
+
   ObservableList<String> personNames = ObservableList();
 
   ReactionDisposer? _incomesReaction;
@@ -51,6 +62,8 @@ abstract class _PersonStoreBase with Store {
   void deactivate() {
     _incomesReaction?.call();
     _expensesReaction?.call();
+    debts = const InitialState();
+    credits = const InitialState();
   }
 
   @action
@@ -59,6 +72,78 @@ abstract class _PersonStoreBase with Store {
 
     personNames.clear();
     personNames.addAll(names);
+  }
+
+  @action
+  Future<void> getDataFor(String personName) async {
+    var accsState = BindServiceProvider.get<AccountStore>().state;
+
+    if (accsState is! SuccessState) return;
+
+    List<Account> accounts = (accsState as SuccessState<List<Account>>).state;
+
+    debts = const LoadingState();
+    credits = const LoadingState();
+
+    var results = await Future.wait<Result<List<PaiyableModel>, Fail>>([
+      _getExpenseModelsWhereHasPerson(personName, accounts),
+      _getIncomeModelsWhereHasPerson(personName, accounts),
+    ]);
+
+    Result<List, Fail>? errorResult;
+
+    for (var res in results) {
+      if (res.isError()) {
+        errorResult = res;
+        break;
+      }
+    }
+
+    if (errorResult != null) {
+      debts = FailState(errorResult.exceptionOrNull()!);
+      credits = FailState(errorResult.exceptionOrNull()!);
+      return;
+    }
+
+    var expenses = results.elementAt(0).getOrDefault(<ExpenseModel>[])
+        as List<ExpenseModel>;
+    var incomes =
+        results.elementAt(1).getOrDefault(<IncomeModel>[]) as List<IncomeModel>;
+
+    debts = SuccessState(incomes);
+    credits = SuccessState(expenses);
+  }
+
+  AsyncResult<List<ExpenseModel>, Fail> _getExpenseModelsWhereHasPerson(
+    String personName,
+    List<Account> accounts,
+  ) async {
+    List<ExpenseModel> models = [];
+
+    for (var acc in accounts) {
+      var result = await _expenseStore.getWhereHasPerson(personName, acc);
+      if (result.isError()) return result;
+
+      models.addAll(result.getOrDefault([]));
+    }
+
+    return Success(models);
+  }
+
+  AsyncResult<List<IncomeModel>, Fail> _getIncomeModelsWhereHasPerson(
+    String personName,
+    List<Account> accounts,
+  ) async {
+    List<IncomeModel> models = [];
+
+    for (var acc in accounts) {
+      var result = await _incomeStore.getWhereHasPerson(personName, acc);
+      if (result.isError()) return result;
+
+      models.addAll(result.getOrDefault([]));
+    }
+
+    return Success(models);
   }
 
   @action

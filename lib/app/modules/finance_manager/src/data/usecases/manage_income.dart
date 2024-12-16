@@ -223,4 +223,23 @@ class ManageIncomeImpl implements ManageIncome {
 
     return updateRes;
   }
+
+  @override
+  AsyncResult<List<Income>, Fail> getAllWhereHasPerson(
+    String personName,
+    Account account,
+  ) async {
+    var fetchRes = await _incomeRepository.getWhereHasPersons(account);
+
+    if (fetchRes.isError()) return fetchRes;
+
+    var incomes = fetchRes.getOrDefault([]);
+
+    var filtered = incomes
+        .where((income) =>
+            income.personName == personName && income.remainingValue != 0.00)
+        .toList();
+
+    return Success(filtered);
+  }
 }

@@ -19,6 +19,6 @@ abstract interface class IncomeDatasource {
     required Frequency frequency,
     required Account account,
   });
-
+  Future<List<Income>> getWhereHasPerson(Account account);
   Future<void> delete(Income income);
 }

@@ -316,6 +316,19 @@ abstract class _IncomeStoreBase
     state = SuccessState(models);
   }
 
+  AsyncResult<List<IncomeModel>, Fail> getWhereHasPerson(
+    String personName,
+    Account account,
+  ) async {
+    var result = await _manageIncome.getAllWhereHasPerson(personName, account);
+
+    if (result.isError()) return result.pure([]);
+
+    var models = result.getOrDefault([]).map((i) =>
+        IncomeModel.fromIncome(i, status: StatusUtils.resolveForPaiyable(i)));
+    return Success(models.toList());
+  }
+
   @override
   @action
   void toggleCategory(Category category) {

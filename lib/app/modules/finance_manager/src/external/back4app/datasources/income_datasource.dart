@@ -162,4 +162,27 @@ class Back4AppIncomeDatasource implements IncomeDatasource {
 
     throw extractFail(response);
   }
+
+  @override
+  Future<List<Income>> getWhereHasPerson(Account account) async {
+    var query = QueryBuilder(IncomeObject());
+
+    query.whereEqualTo('isDeleted', false);
+    query.whereEqualTo('account', AccountMapper.toParse(account));
+    query.whereValueExists('personName', true);
+    query.includeObject(['account', 'category']);
+    query.orderByAscending('overdueDate');
+
+    var response = await query.query();
+
+    if (isResponseSuccesful(response)) {
+      if (response.results == null) return [];
+
+      return (response.results! as List<ParseObject>)
+          .map(IncomeMapper.fromParse)
+          .toList();
+    }
+
+    throw extractFail(response);
+  }
 }

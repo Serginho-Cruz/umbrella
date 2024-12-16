@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:mobx/mobx.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/domain/states/state.dart'
+    as s;
 
 import '../../../domain/entities/date.dart';
 import '../../../domain/entities/frequency.dart';
 import '../../../errors/api_errors.dart';
-import '../../../errors/errors.dart';
 import '../../utils/umbrella_palette.dart';
 import '../../stores/account_store.dart';
 import '../../stores/income_store.dart';
@@ -12,6 +14,7 @@ import '../../stores/income_category_store.dart';
 import '../../widgets/appbar/custom_app_bar.dart';
 import '../../widgets/buttons/primary_button.dart';
 import '../../widgets/buttons/secondary_button.dart';
+import '../../widgets/dialogs/loading_dialog.dart';
 import '../../widgets/others/list_segmented_state_widget.dart';
 import '../../widgets/simple_information/category_row.dart';
 import '../../widgets/layout/umbrella_scaffold.dart';
@@ -52,6 +55,44 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
   late final TextEditingController _valueController;
   late final TextEditingController _personNameController;
 
+  bool _isLoading = false;
+  late final ReactionDisposer _disposer;
+
+  void _setUpReaction() {
+    _disposer = reaction(
+      (_) => widget._incomeStore.state,
+      (st) async {
+        switch (st) {
+          case s.LoadingState():
+            _isLoading = true;
+            LoadingDialog.show(
+              context,
+              message: 'Cadastrando sua Receita...',
+            );
+            break;
+          case s.SuccessState():
+            if (_isLoading) Navigator.pop(context);
+            _isLoading = false;
+            await UmbrellaDialogs.showSuccess(
+              context,
+              title: 'Receita Cadastrada',
+              message:
+                  'Sua receita foi cadastrada com sucesso. Iremos redireciona-lo para a Tela Anterior',
+            );
+            _disposer();
+
+            if (mounted) Navigator.pop(context);
+            break;
+          case s.FailState f:
+            if (_isLoading) Navigator.pop(context);
+            _isLoading = false;
+            await UmbrellaDialogs.showError(context, f.fail.message);
+            break;
+        }
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -62,6 +103,7 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
     _personNameController = TextEditingController();
 
     _setListeners();
+    _setUpReaction();
   }
 
   @override
@@ -240,22 +282,7 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
       return;
     }
 
-    widget._incomeStore.register().then((fail) async {
-      switch (fail) {
-        case Fail f when mounted:
-          UmbrellaDialogs.showError(context, f.message);
-          break;
-        case null when mounted:
-          await UmbrellaDialogs.showSuccess(
-            context,
-            title: 'Receita Cadastrada',
-            message:
-                'Sua receita foi cadastrada com sucesso. Iremos redireciona-lo para a Tela Anterior',
-          );
-          if (mounted) Navigator.pop(context);
-          break;
-      }
-    });
+    widget._incomeStore.register();
   }
 
   void _setListeners() {

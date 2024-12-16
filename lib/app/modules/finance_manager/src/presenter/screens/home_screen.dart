@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:umbrella_echonomics/app/modules/auth/src/domain/entities/user_state.dart';
 import 'package:umbrella_echonomics/app/modules/auth/src/presenter/stores/auth_store.dart';
+import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/no_data_found.dart';
 import '../../../../bind_service_provider.dart';
 import '../stores/credit_card_store.dart';
 import '../stores/expense_store.dart';
 import '../stores/income_store.dart';
 import '../utils/umbrella_palette.dart';
 import '../stores/account_store.dart';
+import '../widgets/animations/loading_animation.dart';
+import '../widgets/buttons/primary_button.dart';
 import '../widgets/cards/credit_card_widget.dart';
 import '../widgets/cards/expense_card.dart';
 import '../widgets/dialogs/umbrella_dialogs.dart';
@@ -61,6 +64,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext screenContext) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+
     return Observer(
       builder: (_) => ListSegmentedStateWidget(
         state: widget._accountStore.state,
@@ -76,16 +81,10 @@ class _HomeScreenState extends State<HomeScreen> {
         onLoading: (_) => UmbrellaScaffold(
           appBar: CustomAppBar(title: 'Home', showBalances: false),
           child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox.square(
-                  dimension: MediaQuery.sizeOf(screenContext).width - 100.0,
-                  child: const CircularProgressIndicator(),
-                ),
-                const SizedBox(height: 20.0),
-                const BigText.bold('Carregando Contas...')
-              ],
+            child: LoadingAnimation(
+              width: screenWidth * 0.8,
+              height: 400,
+              message: 'Carregando Contas...',
             ),
           ),
         ),
@@ -97,7 +96,18 @@ class _HomeScreenState extends State<HomeScreen> {
             onConfirmPressed: widget._accountStore.get,
           );
 
-          return const SizedBox.shrink();
+          return Center(
+            child: Column(
+              children: [
+                const MediumText('Houve um erro ao obter suas contas'),
+                const SizedBox(height: 30),
+                PrimaryButton(
+                  label: const MediumText.bold('Tentar novamente'),
+                  onPressed: widget._accountStore.get,
+                ),
+              ],
+            ),
+          );
         },
         onEmpty: (_) {
           UmbrellaDialogs.showError(
@@ -107,7 +117,18 @@ class _HomeScreenState extends State<HomeScreen> {
             onConfirmPressed: widget._accountStore.get,
           );
 
-          return const SizedBox.shrink();
+          return Center(
+            child: Column(
+              children: [
+                const MediumText('Houve um erro ao obter suas contas'),
+                const SizedBox(height: 30),
+                PrimaryButton(
+                  label: const MediumText.bold('Tentar novamente'),
+                  onPressed: widget._accountStore.get,
+                ),
+              ],
+            ),
+          );
         },
         onState: (ctx, accounts) => UmbrellaScaffold(
           appBar: CustomAppBar(
@@ -149,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         onLoading: (_) => _makeShimmerList(),
                         onFail: (ctx, f) => SizedBox(
                           height: 240,
-                          width: 300,
+                          width: screenWidth,
                           child: Center(child: MediumText(f.message)),
                         ),
                         onState: (ctx, state) => HorizontalAnimatedList(
@@ -173,7 +194,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ),
-                        onEmpty: (_) => const SizedBox(height: 300),
+                        onEmpty: (_) => NoDataFound(
+                          width: screenWidth * 0.8,
+                          message: 'Nenhuma Receita encontrada',
+                          tooltipMessage: 'Nenhuma Receita encontrada',
+                        ),
                       ),
                     ),
                   ),
@@ -185,7 +210,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         onLoading: (_) => _makeShimmerList(),
                         onFail: (ctx, f) => SizedBox(
                           height: 240,
-                          width: 300,
+                          width: screenWidth,
                           child: Center(child: MediumText(f.message)),
                         ),
                         onState: (ctx, state) => HorizontalAnimatedList(
@@ -210,7 +235,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             );
                           },
                         ),
-                        onEmpty: (_) => const SizedBox(height: 300),
+                        onEmpty: (_) => NoDataFound(
+                          width: screenWidth * 0.8,
+                          message: 'Nenhuma Despesa encontrada',
+                          tooltipMessage: 'Nenhuma Despesa encontrada',
+                        ),
                       ),
                     ),
                   ),
@@ -245,7 +274,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ),
-                        onEmpty: (ctx) => const SizedBox(height: 220),
+                        onEmpty: (ctx) => NoDataFound(
+                          width: screenWidth * 0.8,
+                          message: 'Nenhum Cartão de Crédito encontrado',
+                          tooltipMessage: 'Nenhum Cartão de Crédito encontrado',
+                        ),
                       ),
                     ),
                   ),

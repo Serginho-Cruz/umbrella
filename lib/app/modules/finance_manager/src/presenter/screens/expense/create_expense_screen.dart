@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:umbrella_echonomics/app/modules/finance_manager/src/errors/errors.dart';
+import 'package:mobx/mobx.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/stores/expense_category_store.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/dialogs/umbrella_dialogs.dart';
 import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/widgets/others/list_segmented_state_widget.dart';
@@ -10,6 +10,7 @@ import 'package:umbrella_echonomics/app/modules/finance_manager/src/presenter/wi
 import '../../../domain/entities/category.dart';
 import '../../../domain/entities/date.dart';
 import '../../../domain/entities/frequency.dart';
+import '../../../domain/states/state.dart' as s;
 import '../../../errors/api_errors.dart';
 import '../../utils/umbrella_palette.dart';
 import '../../stores/account_store.dart';
@@ -17,6 +18,7 @@ import '../../stores/expense_store.dart';
 import '../../widgets/appbar/custom_app_bar.dart';
 import '../../widgets/buttons/primary_button.dart';
 import '../../widgets/buttons/secondary_button.dart';
+import '../../widgets/dialogs/loading_dialog.dart';
 import '../../widgets/simple_information/category_row.dart';
 import '../../widgets/layout/umbrella_scaffold.dart';
 import '../../widgets/selectors/category_selector.dart';
@@ -52,6 +54,44 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
   late final TextEditingController _valueController;
   late final TextEditingController _personNameController;
 
+  bool _isLoading = false;
+  late final ReactionDisposer _disposer;
+
+  void _setUpReaction() {
+    _disposer = reaction(
+      (_) => widget._expenseStore.state,
+      (st) async {
+        switch (st) {
+          case s.LoadingState():
+            _isLoading = true;
+            LoadingDialog.show(
+              context,
+              message: 'Cadastrando sua Despesa...',
+            );
+            break;
+          case s.SuccessState():
+            if (_isLoading) Navigator.pop(context);
+            _isLoading = false;
+            await UmbrellaDialogs.showSuccess(
+              context,
+              title: 'Despesa Cadastrada',
+              message:
+                  'Sua despesa foi cadastrada com sucesso. Iremos redireciona-lo para a Tela Anterior',
+            );
+            _disposer();
+
+            if (mounted) Navigator.pop(context);
+            break;
+          case s.FailState f:
+            if (_isLoading) Navigator.pop(context);
+            _isLoading = false;
+            await UmbrellaDialogs.showError(context, f.fail.message);
+            break;
+        }
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -61,6 +101,7 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
 
     _personNameController = TextEditingController();
 
+    _setUpReaction();
     _setListeners();
   }
 
@@ -158,7 +199,7 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                       ),
                       Observer(
                         builder: (_) => Visibility(
-                          visible: widget._expenseStore.category != null,
+                          visible: widget._expenseStore.category == null,
                           child: const SmallText(
                             'Uma categoria precisa ser selecionada',
                             color: UmbrellaPalette.errorColor,
@@ -244,22 +285,7 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
       return;
     }
 
-    widget._expenseStore.register().then((fail) async {
-      switch (fail) {
-        case Fail f when mounted:
-          UmbrellaDialogs.showError(context, f.message);
-          break;
-        case null when mounted:
-          await UmbrellaDialogs.showSuccess(
-            context,
-            title: 'Despesa Cadastrada',
-            message:
-                'Sua despesa foi cadastrada com sucesso. Iremos redireciona-lo para a Tela Anterior',
-          );
-          if (mounted) Navigator.pop(context);
-          break;
-      }
-    });
+    widget._expenseStore.register();
   }
 
   void _setListeners() {

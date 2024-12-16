@@ -25,5 +25,6 @@ abstract interface class IncomeRepository {
     required Date upperLimit,
     required Account account,
   });
+  AsyncResult<List<Income>, Fail> getWhereHasPersons(Account account);
   AsyncResult<Unit, Fail> delete(Income income);
 }
